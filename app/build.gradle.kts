@@ -63,6 +63,10 @@ dependencies {
     implementation(Dependencies.AndroidX.Activity.compose)
     implementation(Dependencies.AndroidX.Lifecycle.viewModel)
 
+    implementation(Dependencies.Navigation.ui)
+    implementation(Dependencies.Navigation.fragment)
+    implementation(Dependencies.Navigation.compose)
+
     androidTestImplementation(Dependencies.Test.junit)
     androidTestImplementation(Dependencies.Test.espresso)
 

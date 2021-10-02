@@ -39,6 +39,13 @@ object Dependencies {
 
     }
 
+    object Navigation {
+        private const val version = "2.4.0-alpha08"
+        const val fragment = "androidx.navigation:navigation-fragment-ktx:$version"
+        const val ui = "androidx.navigation:navigation-ui-ktx:$version"
+        const val compose = "androidx.navigation:navigation-compose:$version"
+    }
+
     object Compose {
         const val version = "1.0.1"
         const val ui = "androidx.compose.ui:ui:$version"
@@ -79,6 +86,7 @@ object Dependencies {
         const val glide = "com.github.bumptech.glide:glide:4.12.0"
         const val glideCompiler = "com.github.bumptech.glide:compiler:4.12.0"
     }
+
     const val timber = "com.jakewharton.timber:timber:4.7.1"
     const val inject = "javax.inject:javax.inject:1"
 }
