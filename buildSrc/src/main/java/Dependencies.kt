@@ -38,6 +38,14 @@ object Dependencies {
 
     }
 
+    object Compose {
+        const val version = "1.0.1"
+        const val ui = "androidx.compose.ui:ui:$version"
+        const val material = "androidx.compose.material:material:$version"
+        const val tooling = "androidx.compose.ui:ui-tooling:$version"
+        const val themeAdapter = "com.google.android.material:compose-theme-adapter:$version"
+    }
+
     object Kotlin {
         const val version = "1.5.31"
         const val coroutineVersion = "1.5.1"
@@ -69,10 +77,6 @@ object Dependencies {
     object Image {
         const val glide = "com.github.bumptech.glide:glide:4.12.0"
         const val glideCompiler = "com.github.bumptech.glide:compiler:4.12.0"
-    }
-
-    object Parser {
-        const val jsoup = "org.jsoup:jsoup:1.12.1"
     }
 
     const val inject = "javax.inject:javax.inject:1"
