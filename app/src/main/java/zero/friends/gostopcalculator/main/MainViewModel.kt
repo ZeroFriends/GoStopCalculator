@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator
+package zero.friends.gostopcalculator.main
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
