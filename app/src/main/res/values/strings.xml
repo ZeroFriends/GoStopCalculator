@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">GoStopCalculator</string>
+    <string name="company_name">ZEROFRIENDS</string>
+    <string name="today_game">오늘의 게임 👊</string>
+    <string name="guide">Guide</string>
+    <string name="start">시작하기</string>
+    <string name="history">HISTORY</string>
+    <string name="progress">진행내역 🤝</string>
+    <string name="onodofu">오노도후</string>
+    <string name="empty_game">게임을 추가한 내역이 없습니다.</string>
+    <string name="info_game_start">상단에 시작하기 버튼을 눌러 게임을 생성해주세요.</string>
+
 </resources>

@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,7 +59,7 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
             modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TitleText(text = "오늘의 게임 👊")
+            TitleText(text = stringResource(id = R.string.today_game))
             Button(
                 onClick = { onShowGuide() },
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
@@ -66,7 +67,7 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
                 shape = RoundedCornerShape((12.5).dp)
             ) {
                 Text(
-                    text = "Guide",
+                    text = stringResource(id = R.string.guide),
                     fontSize = 14.sp,
                     color = Color.Red,
                     fontWeight = FontWeight.Bold,
@@ -82,7 +83,7 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
                 .fillMaxWidth()
         ) {
             Text(
-                text = "시작하기",
+                text = stringResource(id = R.string.start),
                 textAlign = TextAlign.Center,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
@@ -97,8 +98,8 @@ fun History(modifier: Modifier, games: List<Game>) {
     Column(
         modifier.padding(16.dp)
     ) {
-        SubTitleText(text = "HISTORY")
-        TitleText(text = "진행내역 🤝")
+        SubTitleText(text = stringResource(id = R.string.history))
+        TitleText(text = stringResource(id = R.string.progress))
         if (games.isEmpty()) {
             EmptyHistory(modifier)
         } else {
@@ -135,16 +136,16 @@ fun EmptyHistory(modifier: Modifier) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
                 painter = painterResource(id = R.drawable.ic_onodofu),
-                contentDescription = "오노도후",
+                contentDescription = stringResource(id = R.string.onodofu),
                 alignment = Alignment.Center,
                 contentScale = ContentScale.Crop,
                 modifier = modifier.padding(bottom = 9.dp)
             )
-            Text(text = "게임을 추가한 내역이 없습니다.",
+            Text(text = stringResource(id = R.string.empty_game),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = modifier.padding(bottom = 2.dp))
-            Text(text = "상단에 시작하기 버튼을 눌러 게임을 생성해주세요.")
+            Text(text = stringResource(id = R.string.info_game_start))
         }
     }
 }
