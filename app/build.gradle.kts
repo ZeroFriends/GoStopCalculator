@@ -16,6 +16,10 @@ android {
         minSdk = Versions.minSdk
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -33,8 +37,12 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    composeOptions {
+        kotlinCompilerExtensionVersion = Dependencies.Compose.version
+    }
+
     buildFeatures {
-        viewBinding = true
+        compose = true
     }
 }
 
@@ -50,10 +58,9 @@ dependencies {
 
     implementation(Dependencies.AndroidX.core)
     implementation(Dependencies.AndroidX.appcompat)
-    implementation(Dependencies.AndroidX.material)
-    implementation(Dependencies.AndroidX.constraintlayout)
     implementation(Dependencies.AndroidX.fragment)
     implementation(Dependencies.AndroidX.Activity.activity)
+    implementation(Dependencies.AndroidX.Activity.compose)
     implementation(Dependencies.AndroidX.Lifecycle.viewModel)
 
     androidTestImplementation(Dependencies.Test.junit)

@@ -18,6 +18,7 @@ object Dependencies {
         object Activity {
             private const val version = "1.4.0-alpha02"
             const val activity = "androidx.activity:activity-ktx:$version"
+            const val compose = "androidx.activity:activity-compose:$version"
         }
 
         const val fragment = "androidx.fragment:fragment-ktx:1.3.6"
@@ -47,7 +48,7 @@ object Dependencies {
     }
 
     object Kotlin {
-        const val version = "1.5.31"
+        const val version = "1.5.21"
         const val coroutineVersion = "1.5.1"
 
         const val gradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
