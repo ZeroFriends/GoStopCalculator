@@ -75,4 +75,6 @@ dependencies {
 
     implementation(Dependencies.Image.glide)
     implementation(Dependencies.Image.glideCompiler)
+
+    implementation(Dependencies.timber)
 }
