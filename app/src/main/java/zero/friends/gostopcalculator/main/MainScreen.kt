@@ -63,14 +63,13 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
                 onClick = { onShowGuide() },
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
                 border = BorderStroke(1.dp, Color.Red),
-                shape = RoundedCornerShape(12.5.dp),
-                modifier = modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                shape = RoundedCornerShape((12.5).dp)
             ) {
                 Text(
-                    text = "가이드",
+                    text = "Guide",
                     fontSize = 14.sp,
                     color = Color.Red,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
                 )
             }
         }
@@ -79,13 +78,15 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
             onClick = { onStartGame() },
             colors = ButtonDefaults.buttonColors(Color.Red),
             shape = RoundedCornerShape(100.dp),
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier
+                .fillMaxWidth()
         ) {
             Text(
                 text = "시작하기",
                 textAlign = TextAlign.Center,
                 color = Color.White,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                modifier = modifier.padding(vertical = 12.dp)
             )
         }
     }
@@ -136,9 +137,13 @@ fun EmptyHistory(modifier: Modifier) {
                 painter = painterResource(id = R.drawable.ic_onodofu),
                 contentDescription = "오노도후",
                 alignment = Alignment.Center,
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                modifier = modifier.padding(bottom = 9.dp)
             )
-            Text(text = "게임을 추가한 내역이 없습니다.", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(text = "게임을 추가한 내역이 없습니다.",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = modifier.padding(bottom = 2.dp))
             Text(text = "상단에 시작하기 버튼을 눌러 게임을 생성해주세요.")
         }
     }
