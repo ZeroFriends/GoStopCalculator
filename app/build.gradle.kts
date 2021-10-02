@@ -62,6 +62,7 @@ dependencies {
     implementation(Dependencies.AndroidX.Activity.activity)
     implementation(Dependencies.AndroidX.Activity.compose)
     implementation(Dependencies.AndroidX.Lifecycle.viewModel)
+    implementation(Dependencies.AndroidX.Lifecycle.composeViewModel)
 
     implementation(Dependencies.Navigation.ui)
     implementation(Dependencies.Navigation.fragment)
@@ -75,6 +76,7 @@ dependencies {
 
     implementation(Dependencies.Dagger.hiltAndroid)
     implementation(Dependencies.Dagger.hiltLifeCycleViewModel)
+    implementation(Dependencies.Dagger.navigationCompose)
     kapt(Dependencies.Dagger.hiltCompiler)
 
     implementation(Dependencies.Image.glide)

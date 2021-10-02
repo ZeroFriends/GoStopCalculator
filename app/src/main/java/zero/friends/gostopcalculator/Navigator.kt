@@ -21,12 +21,14 @@ fun Navigator() {
             composable("splash") {
                 SplashScreen {
                     coroutineScope.launch {
-                        delay(3000)
+                        delay(1000)
                         navController.navigate("main")
                     }
                 }
             }
-            composable("main") { MainScreen() }
+            composable("main") {
+                MainScreen()
+            }
         }
     }
 }

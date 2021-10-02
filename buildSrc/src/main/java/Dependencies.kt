@@ -28,6 +28,7 @@ object Dependencies {
         object Lifecycle {
             private const val lifecycleVersion = "2.3.1"
             const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+            const val composeViewModel = "androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07"
         }
 
         object Room {
@@ -71,6 +72,7 @@ object Dependencies {
         const val hiltCompiler = "com.google.dagger:hilt-compiler:$daggerVersion"
         const val hiltGradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:$daggerVersion"
         const val hiltLifeCycleViewModel = "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
+        const val navigationCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
     }
 
     object Square {
