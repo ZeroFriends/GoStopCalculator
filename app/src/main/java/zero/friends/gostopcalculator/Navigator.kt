@@ -1,5 +1,7 @@
 package zero.friends.gostopcalculator
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -28,6 +30,9 @@ fun Navigator() {
             }
             composable("main") {
                 MainScreen()
+                BackHandler(true) {
+                    (navController.context as? Activity)?.finish()
+                }
             }
         }
     }
