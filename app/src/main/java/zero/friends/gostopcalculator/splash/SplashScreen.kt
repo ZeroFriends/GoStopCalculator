@@ -40,6 +40,6 @@ fun SplashScreen(endOfSplash: () -> Unit) {
                 .padding(bottom = 20.dp)
                 .align(Alignment.BottomCenter)
         )
-        endOfSplash()
     }
+    endOfSplash()
 }

@@ -7,6 +7,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import zero.friends.gostopcalculator.main.MainScreen
@@ -51,17 +52,19 @@ fun Navigator(onBackPressed: () -> Unit) {
     MaterialTheme {
         val navController = rememberNavController()
         val coroutineScope = rememberCoroutineScope()
+        val splashJob = Job()
 
         NavHost(navController = navController, startDestination = Navigate.Splash.route) {
             composable(Navigate.Splash.route) {
                 SplashScreen {
-                    coroutineScope.launch {
-                        delay(1000)
+                    coroutineScope.launch(splashJob) {
+                        delay(500)
                         navController.navigate(Navigate.Main.route)
                     }
                 }
             }
             composable(Navigate.Main.route) {
+                splashJob.cancel()
                 MainScreen(
                     onStartGame = {
                         navController.navigate(Navigate.Precondition.Player.route)
