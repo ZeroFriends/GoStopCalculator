@@ -30,35 +30,10 @@ fun Player(onBack: () -> Unit) {
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = String.format(stringResource(id = R.string.game_setting_title), 1),
-                        textAlign = TextAlign.Center,
-                        fontSize = 14.sp,
-                        modifier = Modifier
-                            .wrapContentWidth(align = Alignment.CenterHorizontally)
-                            .fillMaxWidth()
-                    )
-                },
-                navigationIcon = {
-                    Box(modifier = modifier, contentAlignment = Alignment.Center) {
-                        IconButton(onClick = { onBack() }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_topbar_back),
-                                contentDescription = "Back",
-                                tint = colorResource(id = R.color.white)
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    Box(modifier = modifier)
-                },
-                modifier = Modifier.fillMaxWidth(),
-                backgroundColor = colorResource(id = R.color.orangey_red),
-                contentColor = colorResource(id = R.color.white),
-                elevation = 0.dp
+            CenterTextTopBar(
+                text = String.format(stringResource(id = R.string.game_setting_title), 1),
+                modifier = modifier,
+                onBack = onBack
             )
         }
     ) {
@@ -69,6 +44,40 @@ fun Player(onBack: () -> Unit) {
             Text("Hello world")
         }
     }
+}
+
+@Composable
+private fun CenterTextTopBar(text: String, modifier: Modifier, onBack: () -> Unit) {
+    TopAppBar(
+        title = {
+            Text(
+                text = text,
+                textAlign = TextAlign.Center,
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .wrapContentWidth(align = Alignment.CenterHorizontally)
+                    .fillMaxWidth()
+            )
+        },
+        navigationIcon = {
+            Box(modifier = modifier, contentAlignment = Alignment.Center) {
+                IconButton(onClick = { onBack() }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_topbar_back),
+                        contentDescription = "Back",
+                        tint = colorResource(id = R.color.white)
+                    )
+                }
+            }
+        },
+        actions = {
+            Box(modifier = modifier)
+        },
+        modifier = Modifier.fillMaxWidth(),
+        backgroundColor = colorResource(id = R.color.orangey_red),
+        contentColor = colorResource(id = R.color.white),
+        elevation = 0.dp
+    )
 }
 
 @Composable

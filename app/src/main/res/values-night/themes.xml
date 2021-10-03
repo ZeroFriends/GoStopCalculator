@@ -2,15 +2,15 @@
     <!-- Base application theme. -->
     <style name="Theme.GoStopCalculator" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">@color/orangey_red</item>
+        <item name="colorPrimaryVariant">@color/orangey_red</item>
+        <item name="colorOnPrimary">@color/orangey_red</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/orangey_red</item>
+        <item name="colorSecondaryVariant">@color/orangey_red</item>
+        <item name="colorOnSecondary">@color/orangey_red</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/orangey_red</item>
         <!-- Customize your theme here. -->
     </style>
 </resources>
