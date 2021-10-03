@@ -10,7 +10,41 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import zero.friends.gostopcalculator.main.MainScreen
+import zero.friends.gostopcalculator.precondition.Player
 import zero.friends.gostopcalculator.splash.SplashScreen
+
+sealed class Navigate(val route: String) {
+    object Main : Navigate("main")
+    object Splash : Navigate("splash")
+
+    sealed class Precondition(route: String) : Navigate(route) {
+        object Player : Precondition("precondition_player")
+        object Load : Precondition("precondition_load")
+        object Rule : Precondition("precondition_rule")
+    }
+
+    sealed class Board(route: String) : Navigate(route) {
+        object Main : Board("board_main")
+        object Prepare : Board("board_prepare")
+        object Selling : Board("board_selling")
+        object Score : Board("board_score")
+        object Winner : Board("board_winner")
+        object Loser : Board("board_loser")
+        object End : Board("board_end")
+
+        sealed class Setting(route: String) : Board(route) {
+            object Rule : Setting("board_setting_rule")
+            object AddRule : Setting("board_setting_add_rule")
+            object Player : Setting("board_setting_player")
+        }
+
+        object Detail : Board("board_detail")
+        object Calculate : Board("board_calculate")
+
+    }
+
+
+}
 
 @Composable
 fun Navigator(onBackPressed: () -> Unit) {
@@ -18,20 +52,31 @@ fun Navigator(onBackPressed: () -> Unit) {
         val navController = rememberNavController()
         val coroutineScope = rememberCoroutineScope()
 
-        NavHost(navController = navController, startDestination = "splash") {
-            composable("splash") {
+        NavHost(navController = navController, startDestination = Navigate.Splash.route) {
+            composable(Navigate.Splash.route) {
                 SplashScreen {
                     coroutineScope.launch {
                         delay(1000)
-                        navController.navigate("main")
+                        navController.navigate(Navigate.Main.route)
                     }
                 }
             }
-            composable("main") {
-                MainScreen()
+            composable(Navigate.Main.route) {
+                MainScreen(
+                    onStartGame = {
+                        navController.navigate(Navigate.Precondition.Player.route)
+                    },
+                    onShowGuide = {
+
+                    }
+                )
                 BackHandler(true) {
                     onBackPressed()
                 }
+            }
+
+            composable(Navigate.Precondition.Player.route) {
+                Player()
             }
         }
     }

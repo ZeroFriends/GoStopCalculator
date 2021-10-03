@@ -1,6 +1,5 @@
 package zero.friends.gostopcalculator.main
 
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -30,14 +29,14 @@ import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.model.Game
 
 @Composable
-fun MainScreen(viewModel: MainViewModel = hiltViewModel()) {
+fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Unit, onShowGuide: () -> Unit) {
     val context = LocalContext.current
     val modifier = Modifier
     Column {
         NewGame(
             modifier = modifier,
-            onStartGame = { Toast.makeText(context, "onStartGame", Toast.LENGTH_SHORT).show() },
-            onShowGuide = { Toast.makeText(context, "onShowGuide", Toast.LENGTH_SHORT).show() }
+            onStartGame = { onStartGame() },
+            onShowGuide = { onShowGuide() }
         )
 
         Divider(
@@ -154,5 +153,5 @@ fun EmptyHistory(modifier: Modifier) {
 @Preview("MainPreview")
 @Composable
 fun MainPreview() {
-    MainScreen(MainViewModel(SavedStateHandle()))
+    MainScreen(MainViewModel(SavedStateHandle()), {}, {})
 }
