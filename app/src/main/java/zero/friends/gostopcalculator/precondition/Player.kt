@@ -1,10 +1,8 @@
 package zero.friends.gostopcalculator.precondition
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +21,7 @@ import zero.friends.gostopcalculator.R
 fun Player(onBack: () -> Unit) {
     val scaffoldState = rememberScaffoldState()
     val modifier = Modifier
-        .defaultMinSize(60.dp, 60.dp)
+        .defaultMinSize(60.dp, 60.dp)//todo title Center 방법이 있다면 변경해보자...
         .background(Color.Transparent)
 
     Scaffold(
@@ -56,11 +54,32 @@ fun Player(onBack: () -> Unit) {
                 },
                 modifier = Modifier.fillMaxWidth(),
                 backgroundColor = colorResource(id = R.color.orangey_red),
-                contentColor = colorResource(id = R.color.white)
+                contentColor = colorResource(id = R.color.white),
+                elevation = 0.dp
             )
         }
     ) {
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(id = R.color.orangey_red))
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_april),
+                contentDescription = null,
+                alignment = Alignment.CenterEnd,
+                modifier = Modifier.align(Alignment.TopEnd)
+            )
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(stringResource(id = R.string.player_title),
+                    fontSize = 24.sp,
+                    color = colorResource(id = R.color.white))
+                Spacer(modifier = Modifier.padding(8.dp))
+                Text(stringResource(id = R.string.player_description),
+                    fontSize = 14.sp,
+                    color = colorResource(id = R.color.white))
+            }
 
+        }
     }
 }
 
