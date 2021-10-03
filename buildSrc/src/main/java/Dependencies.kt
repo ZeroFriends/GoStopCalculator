@@ -24,6 +24,7 @@ object Dependencies {
         const val fragment = "androidx.fragment:fragment-ktx:1.3.6"
         const val material = "com.google.android.material:material:1.4.0"
         const val constraintlayout = "androidx.constraintlayout:constraintlayout:2.0.4"
+        const val constraintCompose = "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02"
 
         object Lifecycle {
             private const val lifecycleVersion = "2.3.1"

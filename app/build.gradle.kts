@@ -57,8 +57,8 @@ dependencies {
 
 
     implementation(Dependencies.AndroidX.core)
-    implementation(Dependencies.AndroidX.appcompat)
     implementation(Dependencies.AndroidX.fragment)
+    implementation(Dependencies.AndroidX.constraintCompose)
     implementation(Dependencies.AndroidX.Activity.activity)
     implementation(Dependencies.AndroidX.Activity.compose)
     implementation(Dependencies.AndroidX.Lifecycle.viewModel)
