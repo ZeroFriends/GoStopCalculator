@@ -9,5 +9,6 @@
     <string name="onodofu">오노도후</string>
     <string name="empty_game">게임을 추가한 내역이 없습니다.</string>
     <string name="info_game_start">상단에 시작하기 버튼을 눌러 게임을 생성해주세요.</string>
+    <string name="game_setting_title">게임 설정 (%d/2)</string>
 
 </resources>

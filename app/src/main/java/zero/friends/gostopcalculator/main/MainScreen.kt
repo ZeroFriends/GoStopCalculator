@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -62,13 +63,13 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
             Button(
                 onClick = { onShowGuide() },
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
-                border = BorderStroke(1.dp, Color.Red),
+                border = BorderStroke(1.dp, colorResource(id = R.color.orangey_red)),
                 shape = RoundedCornerShape((12.5).dp)
             ) {
                 Text(
                     text = stringResource(id = R.string.guide),
                     fontSize = 14.sp,
-                    color = Color.Red,
+                    color = colorResource(id = R.color.orangey_red),
                     fontWeight = FontWeight.Bold,
                 )
             }
@@ -76,7 +77,7 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
         Spacer(modifier = modifier.padding(18.dp))
         Button(
             onClick = { onStartGame() },
-            colors = ButtonDefaults.buttonColors(Color.Red),
+            colors = ButtonDefaults.buttonColors(colorResource(id = R.color.orangey_red)),
             shape = RoundedCornerShape(100.dp),
             modifier = modifier
                 .fillMaxWidth()

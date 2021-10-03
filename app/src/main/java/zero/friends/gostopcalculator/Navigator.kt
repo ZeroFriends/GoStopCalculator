@@ -79,7 +79,7 @@ fun Navigator(onBackPressed: () -> Unit) {
             }
 
             composable(Navigate.Precondition.Player.route) {
-                Player()
+                Player { navController.navigateUp() }
             }
         }
     }
