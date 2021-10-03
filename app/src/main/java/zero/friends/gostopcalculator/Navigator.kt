@@ -1,6 +1,5 @@
 package zero.friends.gostopcalculator
 
-import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -14,7 +13,7 @@ import zero.friends.gostopcalculator.main.MainScreen
 import zero.friends.gostopcalculator.splash.SplashScreen
 
 @Composable
-fun Navigator() {
+fun Navigator(onBackPressed: () -> Unit) {
     MaterialTheme {
         val navController = rememberNavController()
         val coroutineScope = rememberCoroutineScope()
@@ -31,7 +30,7 @@ fun Navigator() {
             composable("main") {
                 MainScreen()
                 BackHandler(true) {
-                    (navController.context as? Activity)?.finish()
+                    onBackPressed()
                 }
             }
         }
