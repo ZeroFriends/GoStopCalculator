@@ -87,7 +87,7 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
                 textAlign = TextAlign.Center,
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                modifier = modifier.padding(vertical = 12.dp)
+                modifier = modifier.padding(vertical = 6.dp)
             )
         }
     }
