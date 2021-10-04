@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.model.Player
+import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.ui.common.*
 
 @Composable

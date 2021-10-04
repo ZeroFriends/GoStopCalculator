@@ -8,10 +8,13 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import zero.friends.domain.model.Player
+import zero.friends.domain.repository.PlayerRepository
+import zero.friends.domain.usecase.PlayerUseCase
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.model.Player
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -23,7 +26,12 @@ data class PlayerUiState(
 )
 
 @HiltViewModel
-class PlayerViewModel @Inject constructor(application: Application, savedStateHandle: SavedStateHandle) :
+class PlayerViewModel @Inject constructor(
+    application: Application,
+    savedStateHandle: SavedStateHandle,
+    private val playerUseCase: PlayerUseCase,//do not use...(일단은)
+    private val playerRepository: PlayerRepository,
+) :
     AndroidViewModel(application) {
     @SuppressLint("StaticFieldLeak")
     private val applicationContext = application.applicationContext
@@ -33,21 +41,23 @@ class PlayerViewModel @Inject constructor(application: Application, savedStateHa
 
     init {
         viewModelScope.launch {
-//            _uiState.update {
-//
-//            }
+            playerRepository.observePlayer()
+                .collect { players ->
+                    _uiState.update {
+                        it.copy(players = players)
+                    }
+                }
+
         }
+
     }
 
     fun addPlayer() {
         viewModelScope.launch {
-            _uiState.update {
-                val id = it.players.size + 1
-                val newPlayer = Player(id.toString(),
-                    String.format(applicationContext.getString(R.string.new_player), id))
-
-                it.copy(players = it.players + listOf(newPlayer))
-            }
+            val id = getUiState().value.players.size + 1
+            val newPlayer = Player(id.toString(),
+                String.format(applicationContext.getString(R.string.new_player), id))
+            playerRepository.addPlayer(newPlayer)
         }
     }
 
