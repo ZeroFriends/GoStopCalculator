@@ -11,7 +11,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import zero.friends.gostopcalculator.main.MainScreen
-import zero.friends.gostopcalculator.precondition.Player
+import zero.friends.gostopcalculator.precondition.PlayerScreen
 import zero.friends.gostopcalculator.splash.SplashScreen
 
 sealed class Navigate(val route: String) {
@@ -79,7 +79,7 @@ fun Navigator(onBackPressed: () -> Unit) {
             }
 
             composable(Navigate.Precondition.Player.route) {
-                Player { navController.navigateUp() }
+                PlayerScreen { navController.navigateUp() }
             }
         }
     }
