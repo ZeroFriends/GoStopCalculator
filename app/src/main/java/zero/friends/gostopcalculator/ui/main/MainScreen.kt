@@ -27,6 +27,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.model.Game
+import zero.friends.gostopcalculator.ui.common.SubActionOutLineButton
+import zero.friends.gostopcalculator.ui.common.SubTitleText
+import zero.friends.gostopcalculator.ui.common.TitleText
 
 @Composable
 fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Unit, onShowGuide: () -> Unit) {
@@ -58,7 +61,7 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TitleText(text = stringResource(id = R.string.today_game))
-            GoStopOutLineButton(stringResource(id = R.string.guide), onShowGuide)
+            SubActionOutLineButton(stringResource(id = R.string.guide), onShowGuide)
         }
         Spacer(modifier = modifier.padding(18.dp))
         Button(
@@ -80,23 +83,6 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
 }
 
 @Composable
-fun GoStopOutLineButton(text: String, onButtonClicked: () -> Unit) {
-    Button(
-        onClick = { onButtonClicked() },
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
-        border = BorderStroke(1.dp, colorResource(id = R.color.orangey_red)),
-        shape = RoundedCornerShape((12.5).dp)
-    ) {
-        Text(
-            text = text,
-            fontSize = 14.sp,
-            color = colorResource(id = R.color.orangey_red),
-            fontWeight = FontWeight.Bold,
-        )
-    }
-}
-
-@Composable
 fun History(modifier: Modifier, games: List<Game>) {
     Column(
         modifier.padding(16.dp)
@@ -113,24 +99,6 @@ fun History(modifier: Modifier, games: List<Game>) {
             }
         }
     }
-}
-
-@Composable
-fun TitleText(text: String) {
-    Text(
-        text = text,
-        fontWeight = FontWeight.Bold,
-        fontSize = 24.sp
-    )
-}
-
-@Composable
-private fun SubTitleText(text: String) {
-    Text(
-        text = text,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Bold,
-    )
 }
 
 @Composable

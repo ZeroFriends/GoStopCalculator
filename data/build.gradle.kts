@@ -13,7 +13,6 @@ android {
 dependencies {
     implementation(project(":domain"))
     implementation(Dependencies.Dagger.hiltAndroid)
-    implementation(Dependencies.Square.retrofit)
     kapt(Dependencies.Dagger.hiltCompiler)
 
     implementation(Dependencies.Kotlin.coroutineCore)
