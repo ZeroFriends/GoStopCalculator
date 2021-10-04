@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -30,6 +31,7 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Uni
         scaffoldState,
         uiState,
         onBack,
+        onAddPlayer = { viewModel.addPlayer() },
         onLoadPlayer = {},
         onClickNext = {}
     )
@@ -40,6 +42,7 @@ private fun PlayerScreen(
     scaffoldState: ScaffoldState,
     uiState: PlayerUiState,
     onBack: () -> Unit,
+    onAddPlayer: () -> Unit,
     onLoadPlayer: () -> Unit,
     onClickNext: () -> Unit,
 ) {
@@ -58,7 +61,7 @@ private fun PlayerScreen(
         AprilBackground(
             title = stringResource(id = R.string.player_title),
             subTitle = stringResource(id = R.string.player_description),
-            buttonEnabled = uiState.players.isNotEmpty(),
+            buttonEnabled = uiState.players.size > 1,
             onClickNextButton = { onClickNext() }
         ) {
             Column(
@@ -77,12 +80,16 @@ private fun PlayerScreen(
                     textFieldValue.value = it
                 }
                 Spacer(modifier = Modifier.padding(17.dp))
-                Player { onLoadPlayer() }
+                PlayerBlock { onLoadPlayer() }
                 Spacer(modifier = Modifier.padding(10.dp))
-                PlayerLazyColumn(uiState.players)
+                PlayerLazyColumn(
+                    players = uiState.players,
+                    onClickEdit = {},
+                    onClickDelete = {}
+                )
                 Spacer(modifier = Modifier.padding(5.dp))
                 OutlinedButton(
-                    onClick = { openDialog.value = true },
+                    onClick = onAddPlayer,
                     border = BorderStroke(1.dp, colorResource(id = R.color.nero)),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp)
@@ -96,7 +103,7 @@ private fun PlayerScreen(
                 }
             }
         }
-
+//        openDialog.value = true
         if (openDialog.value) {
             NameEditDialog(openDialog)
         }
@@ -105,7 +112,7 @@ private fun PlayerScreen(
 }
 
 @Composable
-private fun PlayerLazyColumn(players: List<Player>) {
+private fun PlayerLazyColumn(players: List<Player>, onClickEdit: () -> Unit, onClickDelete: () -> Unit) {
     if (players.isEmpty()) {
         Text(
             text = stringResource(id = R.string.info_player_add),
@@ -115,7 +122,7 @@ private fun PlayerLazyColumn(players: List<Player>) {
     } else {
         LazyColumn {
             this.items(players) { player ->
-                Text(text = player.name)
+                PlayerItem(player, onClickEdit, onClickDelete)
             }
         }
     }
@@ -134,7 +141,7 @@ fun TitleOutlinedTextField(
 }
 
 @Composable
-fun Player(onLoadButtonClicked: () -> Unit) {
+fun PlayerBlock(onLoadButtonClicked: () -> Unit) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -143,6 +150,38 @@ fun Player(onLoadButtonClicked: () -> Unit) {
         ) {
             Text(text = stringResource(id = R.string.player), fontSize = 16.sp, fontWeight = FontWeight.Bold)
             SubActionOutLineButton(stringResource(id = R.string.load)) { onLoadButtonClicked() }
+        }
+    }
+}
+
+@Composable
+fun PlayerItem(player: Player, onClickEdit: () -> Unit, onClickDelete: () -> Unit) {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(text = player.id,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(16.dp),
+                fontSize = 16.sp,
+                color = colorResource(id = R.color.orangey_red))
+            Text(
+                text = player.name,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(end = 6.dp),
+                fontSize = 16.sp,
+                color = colorResource(id = R.color.nero)
+            )
+            IconButton(onClick = onClickEdit) {
+                Icon(painter = painterResource(id = R.drawable.ic_mode_edit_black), contentDescription = null)
+            }
+        }
+        IconButton(onClick = onClickDelete) {
+            Icon(painter = painterResource(id = R.drawable.ic_delete_black), contentDescription = null)
         }
     }
 }
