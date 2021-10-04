@@ -22,4 +22,8 @@ class PlayerRepositoryImpl(private val playerDao: PlayerDao) : PlayerRepository 
             playerEntities.map { it.toPlayer() }
         }
 
+    override suspend fun deletePlayer(player: Player) {
+        playerDao.delete(player.toEntity())
+    }
+
 }

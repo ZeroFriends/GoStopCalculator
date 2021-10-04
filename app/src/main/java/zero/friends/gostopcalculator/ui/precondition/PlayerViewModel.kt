@@ -43,8 +43,9 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             playerRepository.observePlayer()
                 .collect { players ->
+                    val sorted = players.sortedBy { it.id }
                     _uiState.update {
-                        it.copy(players = players)
+                        it.copy(players = sorted)
                     }
                 }
 
@@ -58,6 +59,12 @@ class PlayerViewModel @Inject constructor(
             val newPlayer = Player(id.toString(),
                 String.format(applicationContext.getString(R.string.new_player), id))
             playerRepository.addPlayer(newPlayer)
+        }
+    }
+
+    fun deletePlayer(id: Player) {
+        viewModelScope.launch {
+            playerRepository.deletePlayer(id)
         }
     }
 

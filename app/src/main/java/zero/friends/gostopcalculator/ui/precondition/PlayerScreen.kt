@@ -18,8 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import zero.friends.gostopcalculator.R
 import zero.friends.domain.model.Player
+import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
 
 @Composable
@@ -32,6 +32,7 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Uni
         uiState,
         onBack,
         onAddPlayer = { viewModel.addPlayer() },
+        onDeletePlayer = { viewModel.deletePlayer(it) },
         onLoadPlayer = {},
         onClickNext = {}
     )
@@ -43,6 +44,7 @@ private fun PlayerScreen(
     uiState: PlayerUiState,
     onBack: () -> Unit,
     onAddPlayer: () -> Unit,
+    onDeletePlayer: (Player) -> Unit,
     onLoadPlayer: () -> Unit,
     onClickNext: () -> Unit,
 ) {
@@ -85,7 +87,7 @@ private fun PlayerScreen(
                 PlayerLazyColumn(
                     players = uiState.players,
                     onClickEdit = {},
-                    onClickDelete = {}
+                    onClickDelete = onDeletePlayer
                 )
                 Spacer(modifier = Modifier.padding(5.dp))
                 OutlinedButton(
@@ -112,7 +114,7 @@ private fun PlayerScreen(
 }
 
 @Composable
-private fun PlayerLazyColumn(players: List<Player>, onClickEdit: () -> Unit, onClickDelete: () -> Unit) {
+private fun PlayerLazyColumn(players: List<Player>, onClickEdit: () -> Unit, onClickDelete: (Player) -> Unit) {
     if (players.isEmpty()) {
         Text(
             text = stringResource(id = R.string.info_player_add),
@@ -155,7 +157,7 @@ fun PlayerBlock(onLoadButtonClicked: () -> Unit) {
 }
 
 @Composable
-fun PlayerItem(player: Player, onClickEdit: () -> Unit, onClickDelete: () -> Unit) {
+fun PlayerItem(player: Player, onClickEdit: () -> Unit, onClickDelete: (Player) -> Unit) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -180,7 +182,7 @@ fun PlayerItem(player: Player, onClickEdit: () -> Unit, onClickDelete: () -> Uni
                 Icon(painter = painterResource(id = R.drawable.ic_mode_edit_black), contentDescription = null)
             }
         }
-        IconButton(onClick = onClickDelete) {
+        IconButton(onClick = { onClickDelete(player) }) {
             Icon(painter = painterResource(id = R.drawable.ic_delete_black), contentDescription = null)
         }
     }

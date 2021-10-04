@@ -6,4 +6,5 @@ import zero.friends.domain.model.Player
 interface PlayerRepository {
     suspend fun addPlayer(newPlayer: Player)
     suspend fun observePlayer(): Flow<List<Player>>
+    suspend fun deletePlayer(player: Player)
 }
