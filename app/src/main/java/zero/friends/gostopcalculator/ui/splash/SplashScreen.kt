@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator.splash
+package zero.friends.gostopcalculator.ui.splash
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -13,13 +13,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import timber.log.Timber
 import zero.friends.gostopcalculator.R
 
 
 @Composable
 fun SplashScreen(endOfSplash: () -> Unit) {
-    Timber.tag("zero1").i("invoke SplashScreen")
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             verticalArrangement = Arrangement.Center,

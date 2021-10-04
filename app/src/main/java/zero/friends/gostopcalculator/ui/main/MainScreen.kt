@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator.main
+package zero.friends.gostopcalculator.ui.main
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

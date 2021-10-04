@@ -10,9 +10,9 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import zero.friends.gostopcalculator.main.MainScreen
-import zero.friends.gostopcalculator.precondition.PlayerScreen
-import zero.friends.gostopcalculator.splash.SplashScreen
+import zero.friends.gostopcalculator.ui.main.MainScreen
+import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
+import zero.friends.gostopcalculator.ui.splash.SplashScreen
 
 sealed class Navigate(val route: String) {
     object Main : Navigate("main")

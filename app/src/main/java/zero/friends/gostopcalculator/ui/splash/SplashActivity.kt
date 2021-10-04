@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator.splash
+package zero.friends.gostopcalculator.ui.splash
 
 import android.os.Bundle
 import androidx.activity.compose.setContent

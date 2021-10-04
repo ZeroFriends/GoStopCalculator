@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator.precondition
+package zero.friends.gostopcalculator.ui.precondition
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.main.GoStopOutLineButton
+import zero.friends.gostopcalculator.ui.main.GoStopOutLineButton
 import zero.friends.gostopcalculator.model.Player
 
 @Composable
