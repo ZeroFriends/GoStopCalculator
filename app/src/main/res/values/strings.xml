@@ -17,6 +17,7 @@
     <string name="group_name">모임이름</string>
     <string name="load">불러오기</string>
     <string name="next">다음</string>
+    <string name="add_new_player">+ 플레이어 추가</string>
 
 
 </resources>

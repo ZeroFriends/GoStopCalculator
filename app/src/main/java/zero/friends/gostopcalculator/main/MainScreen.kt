@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -59,7 +58,7 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TitleText(text = stringResource(id = R.string.today_game))
-            OutLineButton(stringResource(id = R.string.guide), onShowGuide)
+            GoStopOutLineButton(stringResource(id = R.string.guide), onShowGuide)
         }
         Spacer(modifier = modifier.padding(18.dp))
         Button(
@@ -81,7 +80,7 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
 }
 
 @Composable
-fun OutLineButton(text: String, onButtonClicked: () -> Unit) {
+fun GoStopOutLineButton(text: String, onButtonClicked: () -> Unit) {
     Button(
         onClick = { onButtonClicked() },
         colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),

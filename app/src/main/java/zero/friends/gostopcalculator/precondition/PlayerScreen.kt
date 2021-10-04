@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.precondition
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,7 +25,8 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.main.OutLineButton
+import zero.friends.gostopcalculator.main.GoStopOutLineButton
+import zero.friends.gostopcalculator.model.Player
 
 @Composable
 fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Unit) {
@@ -32,9 +34,29 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Uni
     val modifier = Modifier
         .defaultMinSize(60.dp, 60.dp)//todo title Center 방법이 있다면 변경해보자...
         .background(Color.Transparent)
-
     val uiState by viewModel.getUiState().collectAsState()
 
+    PlayerScreen(
+        scaffoldState,
+        modifier,
+        uiState,
+        onBack,
+        onLoadPlayer = {},
+        onAddPlayer = {},
+        onClickNext = {}
+    )
+}
+
+@Composable
+private fun PlayerScreen(
+    scaffoldState: ScaffoldState,
+    modifier: Modifier,
+    uiState: PlayerUiState,
+    onBack: () -> Unit,
+    onLoadPlayer: () -> Unit,
+    onAddPlayer: () -> Unit,
+    onClickNext: () -> Unit,
+) {
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -48,37 +70,61 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Uni
         AprilBackground(
             title = stringResource(id = R.string.player_title),
             subTitle = stringResource(id = R.string.player_description),
-            onClickButton = {/*todo onClickNextButton*/ }
+            onClickNextButton = { onClickNext() }
         ) {
             Column(
                 Modifier
                     .fillMaxWidth()
                     .padding(top = 44.dp, start = 16.dp, end = 16.dp, bottom = 20.dp)
             ) {
+                val textFieldValue = remember {
+                    mutableStateOf(TextFieldValue())
+                }
                 TitleOutlinedTextField(
                     title = stringResource(id = R.string.group_name),
-                    hint = uiState.currentTime
-                )
+                    hint = uiState.currentTime,
+                    inputText = textFieldValue
+                ) {
+                    textFieldValue.value = it
+                }
                 Spacer(modifier = Modifier.padding(17.dp))
-                Player { /* todo on Loaded player job */ }
+                Player { onLoadPlayer() }
                 Spacer(modifier = Modifier.padding(10.dp))
-                val players = uiState.players
-                if (players.isEmpty()) {
+                PlayerLazyColumn(uiState.players)
+                Spacer(modifier = Modifier.padding(5.dp))
+                OutlinedButton(
+                    onClick = { onAddPlayer() },
+                    border = BorderStroke(1.dp, colorResource(id = R.color.nero)),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp)
+                ) {
                     Text(
-                        text = stringResource(id = R.string.info_player_add),
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(start = 28.dp, end = 28.dp)
+                        text = stringResource(id = R.string.add_new_player),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = colorResource(id = R.color.nero)
                     )
-                } else {
-                    LazyColumn {
-                        this.items(players) { player ->
-                            Text(text = player.name)
-                        }
-                    }
                 }
             }
         }
 
+    }
+}
+
+@Composable
+private fun PlayerLazyColumn(players: List<Player>) {
+    if (players.isEmpty()) {
+        Text(
+            text = stringResource(id = R.string.info_player_add),
+            fontSize = 14.sp,
+            modifier = Modifier.padding(start = 28.dp, end = 28.dp)
+        )
+    } else {
+        LazyColumn {
+            this.items(players) { player ->
+                Text(text = player.name)
+            }
+        }
     }
 }
 
@@ -120,7 +166,7 @@ private fun CenterTextTopBar(text: String, modifier: Modifier, onBack: () -> Uni
 fun AprilBackground(
     title: String,
     subTitle: String,
-    onClickButton: () -> Unit,
+    onClickNextButton: () -> Unit,
     contentInvoker: @Composable (BoxScope) -> Unit,
 ) {
     Box(
@@ -167,7 +213,7 @@ fun AprilBackground(
             }
 
             OutlinedButton(
-                onClick = { onClickButton() },
+                onClick = { onClickNextButton() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 20.dp, start = 16.dp, end = 16.dp)
@@ -190,14 +236,18 @@ fun AprilBackground(
 }
 
 @Composable
-fun TitleOutlinedTextField(title: String, hint: String) {
+fun TitleOutlinedTextField(
+    title: String,
+    hint: String,
+    inputText: MutableState<TextFieldValue>,
+    onValueChange: (TextFieldValue) -> Unit,
+) {
     Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold)
     Spacer(modifier = Modifier.padding(4.dp))
-    val text = remember { mutableStateOf(TextFieldValue()) }
     OutlinedTextField(
-        value = text.value,
+        value = inputText.value,
         onValueChange = {
-            text.value = it
+            onValueChange.invoke(it)
         },
         modifier = Modifier.fillMaxWidth(),
         singleLine = true,
@@ -220,7 +270,7 @@ fun Player(onLoadButtonClicked: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = stringResource(id = R.string.player), fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            OutLineButton(stringResource(id = R.string.load)) { onLoadButtonClicked() }
+            GoStopOutLineButton(stringResource(id = R.string.load)) { onLoadButtonClicked() }
         }
     }
 }
