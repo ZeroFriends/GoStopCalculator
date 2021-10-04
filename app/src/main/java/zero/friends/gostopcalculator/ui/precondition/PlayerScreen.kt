@@ -137,8 +137,8 @@ fun TitleOutlinedTextField(
         singleLine = true,
         shape = RoundedCornerShape(18.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            unfocusedBorderColor = Color.Red,
-            focusedBorderColor = Color.Red,
+            unfocusedBorderColor = colorResource(id = R.color.orangey_red),
+            focusedBorderColor = colorResource(id = R.color.orangey_red),
             cursorColor = colorResource(id = R.color.nero)
         ),
         placeholder = { Text(text = hint) }

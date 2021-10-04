@@ -44,7 +44,7 @@ fun SubTitleText(text: String) {
 fun SubActionOutLineButton(text: String, onButtonClicked: () -> Unit) {
     Button(
         onClick = { onButtonClicked() },
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = colorResource(id = R.color.orangey_red)),
         border = BorderStroke(1.dp, colorResource(id = R.color.orangey_red)),
         shape = RoundedCornerShape((12.5).dp)
     ) {
