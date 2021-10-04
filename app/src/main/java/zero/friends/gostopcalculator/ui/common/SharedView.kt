@@ -109,6 +109,7 @@ fun CenterTextTopBar(text: String, onBack: () -> Unit, onAction: (() -> Unit)?) 
 fun AprilBackground(
     title: String,
     subTitle: String,
+    buttonEnabled: Boolean,
     onClickNextButton: () -> Unit,
     contentInvoker: @Composable (BoxScope) -> Unit,
 ) {
@@ -162,9 +163,10 @@ fun AprilBackground(
                     .padding(bottom = 20.dp, start = 16.dp, end = 16.dp)
                     .constrainAs(button) { bottom.linkTo(parent.bottom) },
                 colors = ButtonDefaults.outlinedButtonColors(
-                    backgroundColor = colorResource(id = R.color.gray)
+                    backgroundColor = colorResource(id = if (buttonEnabled) R.color.orangey_red else R.color.gray)
                 ),
-                shape = RoundedCornerShape(22.dp)
+                shape = RoundedCornerShape(22.dp),
+                enabled = buttonEnabled
             ) {
                 Text(
                     text = stringResource(id = R.string.next),

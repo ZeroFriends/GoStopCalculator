@@ -2,9 +2,13 @@ package zero.friends.gostopcalculator.ui.precondition
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import zero.friends.gostopcalculator.model.Player
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,9 +26,12 @@ class PlayerViewModel @Inject constructor(savedStateHandle: SavedStateHandle) : 
     fun getUiState() = _uiState.asStateFlow()
 
     init {
-//        _uiState.update {
-//            it.copy(players = listOf(Player("zero"), Player("khan")))
-//        }
+        viewModelScope.launch {
+            delay(5000)
+            _uiState.update {
+                it.copy(players = listOf(Player("zero"), Player("khan")))
+            }
+        }
     }
 
 }

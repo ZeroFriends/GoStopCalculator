@@ -9,7 +9,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +60,7 @@ private fun PlayerScreen(
         AprilBackground(
             title = stringResource(id = R.string.player_title),
             subTitle = stringResource(id = R.string.player_description),
+            buttonEnabled = uiState.players.isNotEmpty(),
             onClickNextButton = { onClickNext() }
         ) {
             Column(
