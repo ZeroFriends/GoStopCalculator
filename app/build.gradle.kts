@@ -79,8 +79,5 @@ dependencies {
     implementation(Dependencies.Dagger.navigationCompose)
     kapt(Dependencies.Dagger.hiltCompiler)
 
-    implementation(Dependencies.Image.glide)
-    implementation(Dependencies.Image.glideCompiler)
-
     implementation(Dependencies.timber)
 }

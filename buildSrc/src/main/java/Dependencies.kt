@@ -13,7 +13,6 @@ object Dependencies {
 
     object AndroidX {
         const val core = "androidx.core:core-ktx:1.6.0"
-        const val appcompat = "androidx.appcompat:appcompat:1.3.1"
 
         object Activity {
             private const val version = "1.4.0-alpha02"
@@ -23,7 +22,6 @@ object Dependencies {
 
         const val fragment = "androidx.fragment:fragment-ktx:1.3.6"
         const val material = "com.google.android.material:material:1.4.0"
-        const val constraintlayout = "androidx.constraintlayout:constraintlayout:2.0.4"
         const val constraintCompose = "androidx.constraintlayout:constraintlayout-compose:1.0.0-beta02"
 
         object Lifecycle {
@@ -76,18 +74,9 @@ object Dependencies {
         const val navigationCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
     }
 
-    object Square {
-        const val retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
-    }
-
     object Test {
         const val junit = "junit:junit:4.13.2"
         const val espresso = "androidx.test.espresso:espresso-core:3.4.0"
-    }
-
-    object Image {
-        const val glide = "com.github.bumptech.glide:glide:4.12.0"
-        const val glideCompiler = "com.github.bumptech.glide:compiler:4.12.0"
     }
 
     const val timber = "com.jakewharton.timber:timber:4.7.1"
