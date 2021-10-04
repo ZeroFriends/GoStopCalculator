@@ -9,4 +9,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="nero">#212121</color>
+    <color name="gray">#bdbdbd</color>
+
 </resources>

@@ -11,8 +11,12 @@
     <string name="info_game_start">상단에 시작하기 버튼을 눌러 게임을 생성해주세요.</string>
     <string name="game_setting_title">게임 설정 (%d/2)</string>
     <string name="player_title">플레이어 설정 👥</string>
+    <string name="player">플레이어</string>
+    <string name="info_player_add">플레이어 추가 버튼으로 플레이어를 등록해주세요.</string>
     <string name="player_description">최소 플레이어는 2인입니다.\n5인 이상 추가하실 경우 4인 이하만 플레이할 수 있습니다.</string>
     <string name="group_name">모임이름</string>
+    <string name="load">불러오기</string>
+    <string name="next">다음</string>
 
 
 </resources>

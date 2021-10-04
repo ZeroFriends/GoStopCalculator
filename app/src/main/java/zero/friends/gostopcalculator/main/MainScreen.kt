@@ -31,7 +31,6 @@ import zero.friends.gostopcalculator.model.Game
 
 @Composable
 fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Unit, onShowGuide: () -> Unit) {
-    val context = LocalContext.current
     val modifier = Modifier
     Column {
         NewGame(
@@ -41,7 +40,7 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Un
         )
 
         Divider(
-            color = Color.LightGray,
+            color = colorResource(id = R.color.gray),
             thickness = 10.dp,
             modifier = modifier.padding(vertical = 16.dp)
         )
@@ -60,19 +59,7 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TitleText(text = stringResource(id = R.string.today_game))
-            Button(
-                onClick = { onShowGuide() },
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
-                border = BorderStroke(1.dp, colorResource(id = R.color.orangey_red)),
-                shape = RoundedCornerShape((12.5).dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.guide),
-                    fontSize = 14.sp,
-                    color = colorResource(id = R.color.orangey_red),
-                    fontWeight = FontWeight.Bold,
-                )
-            }
+            OutLineButton(stringResource(id = R.string.guide), onShowGuide)
         }
         Spacer(modifier = modifier.padding(18.dp))
         Button(
@@ -90,6 +77,23 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
                 modifier = modifier.padding(vertical = 6.dp)
             )
         }
+    }
+}
+
+@Composable
+fun OutLineButton(text: String, onButtonClicked: () -> Unit) {
+    Button(
+        onClick = { onButtonClicked() },
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
+        border = BorderStroke(1.dp, colorResource(id = R.color.orangey_red)),
+        shape = RoundedCornerShape((12.5).dp)
+    ) {
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            color = colorResource(id = R.color.orangey_red),
+            fontWeight = FontWeight.Bold,
+        )
     }
 }
 
