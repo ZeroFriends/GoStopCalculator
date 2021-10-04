@@ -7,6 +7,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -14,7 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -178,4 +183,87 @@ fun AprilBackground(
             }
         }
     }
+}
+
+@Composable
+fun GoStopButton(text: String, modifier: Modifier, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(colorResource(id = R.color.orangey_red)),
+        shape = RoundedCornerShape(100.dp),
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = text,
+            textAlign = TextAlign.Center,
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            modifier = modifier.padding(vertical = 6.dp)
+        )
+    }
+}
+
+@Composable
+fun GoStopOutLinedTextField(
+    inputText: MutableState<TextFieldValue>,
+    onValueChange: (TextFieldValue) -> Unit,
+    hint: String,
+    color: Color = colorResource(id = R.color.gray),
+    modifier: Modifier = Modifier,
+) {
+    OutlinedTextField(
+        value = inputText.value,
+        onValueChange = {
+            onValueChange.invoke(it)
+        },
+        modifier = modifier
+            .fillMaxWidth(),
+        singleLine = true,
+        shape = RoundedCornerShape(18.dp),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            unfocusedBorderColor = color,
+            focusedBorderColor = color,
+            cursorColor = colorResource(id = R.color.nero)
+        ),
+        placeholder = { Text(text = hint, color = color) },
+        textStyle = TextStyle(fontSize = 16.sp)
+    )
+}
+
+@Composable
+fun NameEditDialog(openDialog: MutableState<Boolean>) {
+    val inputText = remember {
+        mutableStateOf(TextFieldValue("새 플레이어 %d"))
+    }
+
+    AlertDialog(
+        onDismissRequest = { openDialog.value = false },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "이름 수정하기",
+                    textAlign = TextAlign.Center,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(id = R.color.nero),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.padding(bottom = 40.dp))
+                GoStopOutLinedTextField(
+                    inputText = inputText,
+                    onValueChange = { inputText.value = it },
+                    hint = "",
+                    color = colorResource(id = R.color.nero)
+                )
+            }
+
+        },
+        confirmButton = {
+            GoStopButton("수정하기", modifier = Modifier) {/*todo confirm*/ }
+        },
+        shape = RoundedCornerShape(16.dp),
+    )
 }

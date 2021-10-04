@@ -19,9 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.model.Player
-import zero.friends.gostopcalculator.ui.common.AprilBackground
-import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
-import zero.friends.gostopcalculator.ui.common.SubActionOutLineButton
+import zero.friends.gostopcalculator.ui.common.*
 
 @Composable
 fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Unit) {
@@ -33,7 +31,6 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Uni
         uiState,
         onBack,
         onLoadPlayer = {},
-        onAddPlayer = {},
         onClickNext = {}
     )
 }
@@ -44,9 +41,10 @@ private fun PlayerScreen(
     uiState: PlayerUiState,
     onBack: () -> Unit,
     onLoadPlayer: () -> Unit,
-    onAddPlayer: () -> Unit,
     onClickNext: () -> Unit,
 ) {
+    val openDialog = remember { mutableStateOf(false) }
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -84,7 +82,7 @@ private fun PlayerScreen(
                 PlayerLazyColumn(uiState.players)
                 Spacer(modifier = Modifier.padding(5.dp))
                 OutlinedButton(
-                    onClick = { onAddPlayer() },
+                    onClick = { openDialog.value = true },
                     border = BorderStroke(1.dp, colorResource(id = R.color.nero)),
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp)
@@ -97,6 +95,10 @@ private fun PlayerScreen(
                     )
                 }
             }
+        }
+
+        if (openDialog.value) {
+            NameEditDialog(openDialog)
         }
 
     }
@@ -128,21 +130,7 @@ fun TitleOutlinedTextField(
 ) {
     Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold)
     Spacer(modifier = Modifier.padding(4.dp))
-    OutlinedTextField(
-        value = inputText.value,
-        onValueChange = {
-            onValueChange.invoke(it)
-        },
-        modifier = Modifier.fillMaxWidth(),
-        singleLine = true,
-        shape = RoundedCornerShape(18.dp),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            unfocusedBorderColor = colorResource(id = R.color.orangey_red),
-            focusedBorderColor = colorResource(id = R.color.orangey_red),
-            cursorColor = colorResource(id = R.color.nero)
-        ),
-        placeholder = { Text(text = hint) }
-    )
+    GoStopOutLinedTextField(inputText, onValueChange, hint)
 }
 
 @Composable
