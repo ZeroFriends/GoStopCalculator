@@ -11,9 +11,10 @@ import zero.friends.domain.model.Player
 import zero.friends.domain.repository.PlayerRepository
 
 class PlayerRepositoryImpl(private val playerDao: PlayerDao) : PlayerRepository {
-    override suspend fun addPlayer(newPlayer: Player) {
+
+    override suspend fun addPlayer(gameId: Long, newPlayer: Player) {
         CoroutineScope(Dispatchers.IO).launch {
-            playerDao.insert(newPlayer.toEntity())
+            playerDao.insert(newPlayer.toEntity(gameId))
         }
     }
 

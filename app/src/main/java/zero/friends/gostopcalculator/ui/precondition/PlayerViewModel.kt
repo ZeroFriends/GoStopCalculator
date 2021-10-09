@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Player
+import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.usecase.AddPlayerUseCase
 import zero.friends.gostopcalculator.R
@@ -27,6 +28,7 @@ data class PlayerUiState(
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
     application: Application,
+    private val gameRepository: GameRepository,
     private val addPlayerUseCase: AddPlayerUseCase,
     private val playerRepository: PlayerRepository,
 ) : AndroidViewModel(application) {
@@ -38,6 +40,7 @@ class PlayerViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            gameRepository.newGame(_uiState.value.currentTime, _uiState.value.currentTime)
             playerRepository.observePlayer()
                 .collect { players ->
                     val sorted = players.sortedBy { it.number }

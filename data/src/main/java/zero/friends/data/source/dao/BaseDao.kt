@@ -5,7 +5,7 @@ import androidx.room.*
 @Dao
 interface BaseDao<DATA> {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(data: DATA)
+    suspend fun insert(data: DATA): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(data: List<DATA>)

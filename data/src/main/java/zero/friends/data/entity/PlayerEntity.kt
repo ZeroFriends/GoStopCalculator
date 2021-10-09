@@ -11,19 +11,19 @@ data class PlayerEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val number: Int = 0,
     val name: String = "",
-    val gameId: String = "",
+    val gameId: Long = 0L,
 ) {
     companion object {
-        fun Player.toEntity() = PlayerEntity(number = number, name = name)
+        fun Player.toEntity(gameId: Long) = PlayerEntity(number = number, name = name, gameId = gameId)
         fun PlayerEntity.toPlayer() = Player(number, name)
     }
 }
 
-data class GameAndPlayer(
+data class GameAndPlayerRelation(
     @Embedded val game: GameEntity,
     @Relation(
-        parentColumn = "time",
+        parentColumn = "id",
         entityColumn = "gameId"
     )
-    val playerList: List<PlayerEntity>,
+    val players: List<PlayerEntity>,
 )
