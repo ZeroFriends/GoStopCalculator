@@ -8,7 +8,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import zero.friends.data.source.DataBase
-import zero.friends.data.source.PlayerDao
+import zero.friends.data.source.dao.GameDao
+import zero.friends.data.source.dao.PlayerDao
 import javax.inject.Singleton
 
 @Module
@@ -22,4 +23,8 @@ class DataBaseModule {
     @Provides
     @Singleton
     fun providePlayerDao(dataBase: DataBase): PlayerDao = dataBase.PlayerDao()
+
+    @Provides
+    @Singleton
+    fun provideGamerDao(dataBase: DataBase): GameDao = dataBase.GameDao()
 }

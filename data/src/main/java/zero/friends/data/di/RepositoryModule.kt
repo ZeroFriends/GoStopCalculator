@@ -4,8 +4,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import zero.friends.data.repository.GameRepositoryImpl
 import zero.friends.data.repository.PlayerRepositoryImpl
-import zero.friends.data.source.PlayerDao
+import zero.friends.data.source.dao.GameDao
+import zero.friends.data.source.dao.PlayerDao
+import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
 import javax.inject.Singleton
 
@@ -14,5 +17,9 @@ import javax.inject.Singleton
 class RepositoryModule {
     @Provides
     @Singleton
-    fun provideRepository(playerDao: PlayerDao): PlayerRepository = PlayerRepositoryImpl(playerDao)
+    fun providePlayerRepository(playerDao: PlayerDao): PlayerRepository = PlayerRepositoryImpl(playerDao)
+
+    @Provides
+    @Singleton
+    fun provideGameRepository(gameDao: GameDao): GameRepository = GameRepositoryImpl(gameDao)
 }
