@@ -3,7 +3,7 @@ package zero.friends.gostopcalculator.ui.precondition
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -155,9 +155,8 @@ private fun PlayerLazyColumn(
                 )
             }
         }
-
-        this.items(players) { player ->
-            PlayerItem(player, clickEvent)
+        itemsIndexed(players) { index, player ->
+            PlayerItem(index, player, clickEvent)
         }
 
         item {
@@ -197,14 +196,14 @@ fun PlayerBlock(modifier: Modifier = Modifier, onLoadButtonClicked: () -> Unit) 
 }
 
 @Composable
-fun PlayerItem(player: Player, clickEvent: (ClickEvent) -> Unit) {
+fun PlayerItem(index: Int, player: Player, clickEvent: (ClickEvent) -> Unit) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = player.number.toString(),
+            Text(text = (index + 1).toString(),
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(16.dp),

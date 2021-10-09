@@ -25,7 +25,7 @@ class PlayerRepositoryImpl(private val playerDao: PlayerDao) : PlayerRepository 
 
     override suspend fun deletePlayer(player: Player) {
         CoroutineScope(Dispatchers.IO).launch {
-            playerDao.deletePlayer(player.number)
+            playerDao.deletePlayer(player.name)
         }
     }
 

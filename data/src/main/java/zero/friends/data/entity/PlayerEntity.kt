@@ -16,13 +16,12 @@ import zero.friends.domain.model.Player
 )
 data class PlayerEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val number: Int = 0,
     val name: String = "",
     val gameId: Long = 0,
 ) {
     companion object {
-        fun Player.toEntity() = PlayerEntity(number = number, name = name)
-        fun PlayerEntity.toPlayer() = Player(number, name)
+        fun Player.toEntity() = PlayerEntity(name = name)
+        fun PlayerEntity.toPlayer() = Player(name)
     }
 }
 

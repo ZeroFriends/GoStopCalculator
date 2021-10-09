@@ -14,6 +14,7 @@ import zero.friends.domain.model.Player
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.usecase.AddPlayerUseCase
+import zero.friends.domain.usecase.DeletePlayerUseCase
 import zero.friends.gostopcalculator.R
 import java.text.SimpleDateFormat
 import java.util.*
@@ -30,6 +31,7 @@ class PlayerViewModel @Inject constructor(
     application: Application,
     private val gameRepository: GameRepository,
     private val addPlayerUseCase: AddPlayerUseCase,
+    private val deletePlayerUseCase: DeletePlayerUseCase,
     private val playerRepository: PlayerRepository,
 ) : AndroidViewModel(application) {
     @SuppressLint("StaticFieldLeak")
@@ -43,9 +45,8 @@ class PlayerViewModel @Inject constructor(
             gameRepository.newGame(_uiState.value.currentTime, _uiState.value.currentTime)
             playerRepository.observePlayer()
                 .collect { players ->
-                    val sorted = players.sortedBy { it.number }
                     _uiState.update {
-                        it.copy(players = sorted)
+                        it.copy(players = players)
                     }
                 }
 
@@ -56,15 +57,16 @@ class PlayerViewModel @Inject constructor(
     fun addPlayer() {
         viewModelScope.launch {
             val id = getUiState().value.players.size + 1
-            val newPlayer = Player(id,
-                String.format(applicationContext.getString(R.string.new_player), id))
+            val newPlayer = Player(
+                String.format(applicationContext.getString(R.string.new_player), id)
+            )
             addPlayerUseCase(newPlayer)
         }
     }
 
     fun deletePlayer(player: Player) {
         viewModelScope.launch {
-            playerRepository.deletePlayer(player = player)
+            deletePlayerUseCase.invoke(player)
         }
     }
 
