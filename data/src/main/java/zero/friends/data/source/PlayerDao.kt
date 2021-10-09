@@ -23,4 +23,7 @@ interface BaseDao<DATA> {
 interface PlayerDao : BaseDao<PlayerEntity> {
     @Query("SELECT * FROM PlayerEntity")
     fun observePlayer(): Flow<List<PlayerEntity>>
+
+    @Query("DELETE FROM PlayerEntity WHERE :id == number")
+    suspend fun deletePlayer(id: Int)
 }

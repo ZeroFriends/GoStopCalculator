@@ -3,7 +3,6 @@ package zero.friends.gostopcalculator.ui.precondition
 import android.annotation.SuppressLint
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Player
 import zero.friends.domain.repository.PlayerRepository
-import zero.friends.domain.usecase.PlayerUseCase
+import zero.friends.domain.usecase.AddPlayerUseCase
 import zero.friends.gostopcalculator.R
 import java.text.SimpleDateFormat
 import java.util.*
@@ -28,11 +27,9 @@ data class PlayerUiState(
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
     application: Application,
-    savedStateHandle: SavedStateHandle,
-    private val playerUseCase: PlayerUseCase,//do not use...(일단은)
+    private val addPlayerUseCase: AddPlayerUseCase,
     private val playerRepository: PlayerRepository,
-) :
-    AndroidViewModel(application) {
+) : AndroidViewModel(application) {
     @SuppressLint("StaticFieldLeak")
     private val applicationContext = application.applicationContext
 
@@ -43,7 +40,7 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             playerRepository.observePlayer()
                 .collect { players ->
-                    val sorted = players.sortedBy { it.id }
+                    val sorted = players.sortedBy { it.number }
                     _uiState.update {
                         it.copy(players = sorted)
                     }
@@ -56,15 +53,15 @@ class PlayerViewModel @Inject constructor(
     fun addPlayer() {
         viewModelScope.launch {
             val id = getUiState().value.players.size + 1
-            val newPlayer = Player(id.toString(),
+            val newPlayer = Player(id,
                 String.format(applicationContext.getString(R.string.new_player), id))
-            playerRepository.addPlayer(newPlayer)
+            addPlayerUseCase(newPlayer)
         }
     }
 
-    fun deletePlayer(id: Player) {
+    fun deletePlayer(player: Player) {
         viewModelScope.launch {
-            playerRepository.deletePlayer(id)
+            playerRepository.deletePlayer(player = player)
         }
     }
 

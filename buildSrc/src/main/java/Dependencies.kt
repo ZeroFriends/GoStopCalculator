@@ -75,7 +75,8 @@ object Dependencies {
     }
 
     object Test {
-        const val junit = "junit:junit:4.13.2"
+        const val junit = "org.junit.jupiter:junit-jupiter-engine:5.5.2"
+        const val mockito = "org.mockito:mockito-all:2.0.2-beta"
         const val espresso = "androidx.test.espresso:espresso-core:3.4.0"
     }
 

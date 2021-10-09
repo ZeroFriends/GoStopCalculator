@@ -18,7 +18,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.SavedStateHandle
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.model.Game
 import zero.friends.gostopcalculator.ui.common.GoStopButton
@@ -107,5 +106,5 @@ fun EmptyHistory(modifier: Modifier) {
 @Preview("MainPreview")
 @Composable
 fun MainPreview() {
-    MainScreen(MainViewModel(SavedStateHandle()), {}, {})
+    MainScreen(MainViewModel(), {}, {})
 }

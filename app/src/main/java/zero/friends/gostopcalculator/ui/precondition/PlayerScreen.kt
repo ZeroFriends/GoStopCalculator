@@ -195,7 +195,7 @@ fun PlayerItem(player: Player, clickEvent: (ClickEvent) -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = player.id,
+            Text(text = player.number.toString(),
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(16.dp),
