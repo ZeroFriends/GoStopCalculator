@@ -14,7 +14,7 @@ class PlayerRepositoryImpl(private val playerDao: PlayerDao) : PlayerRepository 
 
     override suspend fun addPlayer(gameId: Long, newPlayer: Player) {
         CoroutineScope(Dispatchers.IO).launch {
-            playerDao.insert(newPlayer.toEntity(gameId))
+            playerDao.insert(newPlayer.toEntity().copy(gameId = gameId))
         }
     }
 

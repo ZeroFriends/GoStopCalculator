@@ -10,8 +10,8 @@ class AddPlayerUseCase(
     private val playerRepository: PlayerRepository,
 ) {
     suspend operator fun invoke(newPlayer: Player) {
-        val gameAndPlayer = gameRepository.getCurrentGameUser()
-        playerRepository.addPlayer(newPlayer)
+        val gameId = gameRepository.getCurrentGameId()
+        playerRepository.addPlayer(gameId, newPlayer)
     }
 
 }

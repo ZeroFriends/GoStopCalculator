@@ -6,7 +6,7 @@ import zero.friends.domain.model.Game
 
 @Entity
 data class GameEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String = "",
     val time: String = "",
 ) {
