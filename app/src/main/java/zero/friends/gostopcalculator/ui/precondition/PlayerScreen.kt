@@ -12,6 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -102,11 +103,11 @@ private fun PlayerScreen(
                     text = stringResource(id = R.string.next),
                     buttonEnabled = uiState.players.size > 1,
                     modifier = Modifier
-                        .padding(bottom = 20.dp)
                         .constrainAs(button) {
                             top.linkTo(upper.bottom)
                             bottom.linkTo(parent.bottom)
-                        },
+                        }
+                        .padding(bottom = 20.dp),
                     onClick = onClickNext
                 )
 
@@ -131,7 +132,7 @@ private fun PlayerLazyColumn(
 ) {
     LazyColumn {
         item {
-            PlayerBlock(modifier = Modifier.padding(bottom = 10.dp)) { onLoadPlayer() }
+            PlayerBlock(modifier = Modifier.padding(bottom = 20.dp)) { onLoadPlayer() }
         }
 
         if (players.isEmpty()) {
@@ -139,7 +140,8 @@ private fun PlayerLazyColumn(
                 Text(
                     text = stringResource(id = R.string.info_player_add),
                     fontSize = 14.sp,
-                    modifier = Modifier.padding(start = 28.dp, end = 28.dp)
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -147,10 +149,11 @@ private fun PlayerLazyColumn(
         this.items(players) { player ->
             PlayerItem(player, onClickEdit, onClickDelete)
         }
+
         item {
             GoStopExtraButton(
                 text = stringResource(id = R.string.add_new_player),
-                modifier = Modifier.padding(top = 5.dp),
+                modifier = Modifier.padding(top = 10.dp),
                 onClick = onAddPlayer
             )
         }

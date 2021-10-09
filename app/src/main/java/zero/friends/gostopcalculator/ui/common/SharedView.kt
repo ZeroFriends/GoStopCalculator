@@ -142,7 +142,7 @@ fun AprilBackground(
                 modifier = Modifier
                     .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
                     .background(Color.White)
-                    .padding(top = 44.dp),
+                    .padding(top = 30.dp),
             ) {
                 contentInvoker()
             }
