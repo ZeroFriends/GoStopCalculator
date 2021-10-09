@@ -113,9 +113,10 @@ fun CenterTextTopBar(text: String, onBack: () -> Unit, onAction: (() -> Unit)?) 
 fun AprilBackground(
     title: String,
     subTitle: String,
+    modifier: Modifier = Modifier,
     contentInvoker: @Composable () -> Unit,
 ) {
-    Surface(Modifier.fillMaxSize()) {
+    Surface(modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.ic_april),
             contentDescription = null,
@@ -124,7 +125,7 @@ fun AprilBackground(
             modifier = Modifier.background(colorResource(id = R.color.orangey_red))
         )
 
-        Column {
+        Column(Modifier.padding(top = 30.dp)) {
             val textModifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)
             Text(
                 title,
@@ -142,7 +143,6 @@ fun AprilBackground(
                 modifier = Modifier
                     .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
                     .background(Color.White)
-                    .padding(top = 30.dp),
             ) {
                 contentInvoker()
             }

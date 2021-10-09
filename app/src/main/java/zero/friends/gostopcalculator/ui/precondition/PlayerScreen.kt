@@ -22,6 +22,15 @@ import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
 
+sealed class ClickEvent {
+    object Back : ClickEvent()
+    object AddPlayer : ClickEvent()
+    class DeletePlayer(val player: Player) : ClickEvent()
+    object LoadPlayer : ClickEvent()
+    object EditPlayer : ClickEvent()
+    object Next : ClickEvent()
+}
+
 @Composable
 fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Unit) {
     val scaffoldState = rememberScaffoldState()
@@ -29,24 +38,24 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Uni
 
     PlayerScreen(
         scaffoldState,
-        uiState,
-        onBack,
-        onAddPlayer = { viewModel.addPlayer() },
-        onDeletePlayer = { viewModel.deletePlayer(it) },
-        onLoadPlayer = {},
-        onClickNext = {}
-    )
+        uiState
+    ) { clickEvent ->
+        when (clickEvent) {
+            ClickEvent.AddPlayer -> viewModel.addPlayer()
+            ClickEvent.Back -> onBack()
+            is ClickEvent.DeletePlayer -> viewModel.deletePlayer(clickEvent.player)
+            ClickEvent.LoadPlayer -> TODO()
+            ClickEvent.Next -> TODO()
+            ClickEvent.EditPlayer -> TODO()
+        }
+    }
 }
 
 @Composable
 private fun PlayerScreen(
     scaffoldState: ScaffoldState,
     uiState: PlayerUiState,
-    onBack: () -> Unit,
-    onAddPlayer: () -> Unit,
-    onDeletePlayer: (Player) -> Unit,
-    onLoadPlayer: () -> Unit,
-    onClickNext: () -> Unit,
+    clickEvent: (ClickEvent) -> Unit,
 ) {
     val openDialog = remember { mutableStateOf(false) }
 
@@ -55,25 +64,24 @@ private fun PlayerScreen(
         topBar = {
             CenterTextTopBar(
                 text = String.format(stringResource(id = R.string.game_setting_title), 1),
-                onBack = onBack,
+                onBack = { clickEvent.invoke(ClickEvent.Back) },
                 onAction = null
             )
         }
     ) {
         AprilBackground(
             title = stringResource(id = R.string.player_title),
-            subTitle = stringResource(id = R.string.player_description),
+            subTitle = stringResource(id = R.string.player_description)
         ) {
             ConstraintLayout(
                 modifier = Modifier
-                    .padding(top = 44.dp, start = 16.dp, end = 16.dp, bottom = 20.dp)
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .padding(top = 44.dp, start = 16.dp, end = 16.dp, bottom = 40.dp),
             ) {
                 val (upper, button) = createRefs()
 
                 Column(
                     modifier = Modifier
-                        .padding(bottom = 16.dp)
                         .constrainAs(upper) {
                             bottom.linkTo(button.top)
                             top.linkTo(parent.top)
@@ -92,10 +100,7 @@ private fun PlayerScreen(
 
                     PlayerLazyColumn(
                         players = uiState.players,
-                        onLoadPlayer = {},
-                        onAddPlayer = onAddPlayer,
-                        onClickEdit = {},
-                        onClickDelete = onDeletePlayer
+                        clickEvent = clickEvent
                     )
                 }
 
@@ -106,9 +111,8 @@ private fun PlayerScreen(
                         .constrainAs(button) {
                             top.linkTo(upper.bottom)
                             bottom.linkTo(parent.bottom)
-                        }
-                        .padding(bottom = 20.dp),
-                    onClick = onClickNext
+                        },
+                    onClick = { clickEvent(ClickEvent.Next) }
                 )
 
             }
@@ -125,14 +129,11 @@ private fun PlayerScreen(
 @Composable
 private fun PlayerLazyColumn(
     players: List<Player>,
-    onLoadPlayer: () -> Unit,
-    onAddPlayer: () -> Unit,
-    onClickEdit: () -> Unit,
-    onClickDelete: (Player) -> Unit,
+    clickEvent: (ClickEvent) -> Unit,
 ) {
     LazyColumn {
         item {
-            PlayerBlock(modifier = Modifier.padding(bottom = 20.dp)) { onLoadPlayer() }
+            PlayerBlock(modifier = Modifier.padding(bottom = 20.dp)) { clickEvent(ClickEvent.LoadPlayer) }
         }
 
         if (players.isEmpty()) {
@@ -147,14 +148,14 @@ private fun PlayerLazyColumn(
         }
 
         this.items(players) { player ->
-            PlayerItem(player, onClickEdit, onClickDelete)
+            PlayerItem(player, clickEvent)
         }
 
         item {
             GoStopExtraButton(
                 text = stringResource(id = R.string.add_new_player),
                 modifier = Modifier.padding(top = 10.dp),
-                onClick = onAddPlayer
+                onClick = { clickEvent(ClickEvent.AddPlayer) }
             )
         }
     }
@@ -187,7 +188,7 @@ fun PlayerBlock(modifier: Modifier = Modifier, onLoadButtonClicked: () -> Unit) 
 }
 
 @Composable
-fun PlayerItem(player: Player, onClickEdit: () -> Unit, onClickDelete: (Player) -> Unit) {
+fun PlayerItem(player: Player, clickEvent: (ClickEvent) -> Unit) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -208,11 +209,11 @@ fun PlayerItem(player: Player, onClickEdit: () -> Unit, onClickDelete: (Player) 
                 fontSize = 16.sp,
                 color = colorResource(id = R.color.nero)
             )
-            IconButton(onClick = onClickEdit) {
+            IconButton(onClick = { clickEvent(ClickEvent.EditPlayer) }) {
                 Icon(painter = painterResource(id = R.drawable.ic_mode_edit_black), contentDescription = null)
             }
         }
-        IconButton(onClick = { onClickDelete(player) }) {
+        IconButton(onClick = { clickEvent(ClickEvent.DeletePlayer(player)) }) {
             Icon(painter = painterResource(id = R.drawable.ic_delete_black), contentDescription = null)
         }
     }
@@ -223,11 +224,6 @@ fun PlayerItem(player: Player, onClickEdit: () -> Unit, onClickDelete: (Player) 
 fun PlayerPreview() {
     PlayerScreen(
         scaffoldState = rememberScaffoldState(),
-        uiState = PlayerUiState(),
-        {},
-        {},
-        {},
-        {},
-        {}
-    )
+        uiState = PlayerUiState()
+    ) {}
 }
