@@ -191,7 +191,13 @@ fun PlayerItem(player: Player, onClickEdit: () -> Unit, onClickDelete: (Player) 
 @Preview
 @Composable
 fun PlayerPreview() {
-    PlayerScreen {
-
-    }
+    PlayerScreen(
+        scaffoldState = rememberScaffoldState(),
+        uiState = PlayerUiState(),
+        {},
+        {},
+        {},
+        {},
+        {}
+    )
 }
