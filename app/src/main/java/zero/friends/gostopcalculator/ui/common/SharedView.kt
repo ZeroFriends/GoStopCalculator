@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -22,7 +23,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import zero.friends.gostopcalculator.R
 
 
@@ -115,50 +115,37 @@ fun AprilBackground(
     subTitle: String,
     contentInvoker: @Composable () -> Unit,
 ) {
-    ConstraintLayout(
-        Modifier
-            .background(colorResource(id = R.color.orangey_red))
-            .fillMaxSize()
-    ) {
-        val (titleBox, content, image) = createRefs()
-
+    Surface(Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.ic_april),
             contentDescription = null,
-            alignment = Alignment.CenterEnd,
-            modifier = Modifier.constrainAs(image) { end.linkTo(parent.end) }
+            alignment = Alignment.TopEnd,
+            contentScale = ContentScale.Inside,
+            modifier = Modifier.background(colorResource(id = R.color.orangey_red))
         )
 
-        Column(
-            modifier = Modifier
-                .constrainAs(titleBox) { top.linkTo(parent.top) }
-                .fillMaxHeight(.15f)
-                .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-        ) {
+        Column {
+            val textModifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)
             Text(
                 title,
                 fontSize = 24.sp,
                 color = colorResource(id = R.color.white),
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = textModifier
             )
             Text(
                 subTitle,
                 fontSize = 14.sp,
                 color = colorResource(id = R.color.white),
+                modifier = textModifier.padding(bottom = 26.dp)
             )
-        }
-
-        Surface(
-            modifier = Modifier
-                .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                .fillMaxHeight(.85f)
-                .constrainAs(content) {
-                    top.linkTo(titleBox.bottom)
-                    bottom.linkTo(parent.bottom)
-                }
-                .background(Color.White),
-        ) {
-            contentInvoker()
+            Surface(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                    .background(Color.White)
+                    .padding(top = 44.dp),
+            ) {
+                contentInvoker()
+            }
         }
     }
 }

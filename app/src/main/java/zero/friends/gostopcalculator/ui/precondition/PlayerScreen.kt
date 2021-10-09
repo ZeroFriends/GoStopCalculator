@@ -72,12 +72,12 @@ private fun PlayerScreen(
 
                 Column(
                     modifier = Modifier
-                        .fillMaxHeight()
+                        .padding(bottom = 16.dp)
                         .constrainAs(upper) {
                             bottom.linkTo(button.top)
                             top.linkTo(parent.top)
                         }
-                        .padding(bottom = 16.dp)
+                        .fillMaxHeight()
                 ) {
                     val textFieldValue = remember {
                         mutableStateOf(TextFieldValue())
