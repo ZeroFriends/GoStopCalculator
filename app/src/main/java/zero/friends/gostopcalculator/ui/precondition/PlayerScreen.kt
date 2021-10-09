@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.precondition
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -36,13 +37,21 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Uni
     val scaffoldState = rememberScaffoldState()
     val uiState by viewModel.getUiState().collectAsState()
 
+    BackHandler(true) {
+        viewModel.clearGame()
+        onBack()
+    }
+
     PlayerScreen(
         scaffoldState,
         uiState
     ) { clickEvent ->
         when (clickEvent) {
             ClickEvent.AddPlayer -> viewModel.addPlayer()
-            ClickEvent.Back -> onBack()
+            ClickEvent.Back -> {
+                viewModel.clearGame()
+                onBack()
+            }
             is ClickEvent.DeletePlayer -> viewModel.deletePlayer(clickEvent.player)
             ClickEvent.LoadPlayer -> TODO()
             ClickEvent.Next -> TODO()

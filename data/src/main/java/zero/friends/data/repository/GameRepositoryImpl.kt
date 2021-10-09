@@ -1,6 +1,9 @@
 package zero.friends.data.repository
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import zero.friends.data.entity.GameEntity
 import zero.friends.data.entity.GameEntity.Companion.toGame
 import zero.friends.data.entity.PlayerEntity.Companion.toPlayer
@@ -21,6 +24,12 @@ class GameRepositoryImpl(private val gameDao: GameDao) : GameRepository {
     override suspend fun getCurrentGameUser(): GameAndPlayer {
         val relation = gameDao.getGameAndPlayer(gameId.value)
         return GameAndPlayer(relation.game.toGame(), relation.players.map { it.toPlayer() })
+    }
+
+    override suspend fun clearGame() {
+        CoroutineScope(Dispatchers.IO).launch {
+            gameDao.delete(GameEntity(id = gameId.value))
+        }
     }
 
 }

@@ -68,4 +68,10 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
+    fun clearGame() {
+        viewModelScope.launch {
+            gameRepository.clearGame()
+        }
+    }
+
 }
