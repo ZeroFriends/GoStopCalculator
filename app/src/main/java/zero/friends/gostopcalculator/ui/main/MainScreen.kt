@@ -59,7 +59,7 @@ fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit
             SubActionOutLineButton(stringResource(id = R.string.guide), onShowGuide)
         }
         Spacer(modifier = modifier.padding(18.dp))
-        GoStopButton(stringResource(id = R.string.start), modifier, onStartGame)
+        GoStopButton(stringResource(id = R.string.start), modifier, onClick = onStartGame)
     }
 }
 

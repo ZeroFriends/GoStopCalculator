@@ -16,7 +16,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -114,83 +113,64 @@ fun CenterTextTopBar(text: String, onBack: () -> Unit, onAction: (() -> Unit)?) 
 fun AprilBackground(
     title: String,
     subTitle: String,
-    buttonEnabled: Boolean,
-    onClickNextButton: () -> Unit,
-    contentInvoker: @Composable (BoxScope) -> Unit,
+    contentInvoker: @Composable () -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
+    ConstraintLayout(
+        Modifier
             .background(colorResource(id = R.color.orangey_red))
+            .fillMaxSize()
     ) {
-        ConstraintLayout {
-            val (subtitle, content, image, button) = createRefs()
+        val (titleBox, content, image) = createRefs()
 
-            Image(
-                painter = painterResource(id = R.drawable.ic_april),
-                contentDescription = null,
-                alignment = Alignment.CenterEnd,
-                modifier = Modifier.constrainAs(image) { end.linkTo(parent.end) }
+        Image(
+            painter = painterResource(id = R.drawable.ic_april),
+            contentDescription = null,
+            alignment = Alignment.CenterEnd,
+            modifier = Modifier.constrainAs(image) { end.linkTo(parent.end) }
+        )
+
+        Column(
+            modifier = Modifier
+                .constrainAs(titleBox) { top.linkTo(parent.top) }
+                .fillMaxHeight(.15f)
+                .padding(top = 8.dp, start = 16.dp, end = 16.dp)
+        ) {
+            Text(
+                title,
+                fontSize = 24.sp,
+                color = colorResource(id = R.color.white),
+                modifier = Modifier.padding(bottom = 16.dp)
             )
+            Text(
+                subTitle,
+                fontSize = 14.sp,
+                color = colorResource(id = R.color.white),
+            )
+        }
 
-            Column(
-                modifier = Modifier
-                    .constrainAs(subtitle) { top.linkTo(parent.top) }
-                    .padding(top = 8.dp, start = 16.dp, end = 16.dp)
-            ) {
-                Text(
-                    title,
-                    fontSize = 24.sp,
-                    color = colorResource(id = R.color.white)
-                )
-                Spacer(modifier = Modifier.padding(8.dp))
-                Text(
-                    subTitle,
-                    fontSize = 14.sp,
-                    color = colorResource(id = R.color.white),
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                    .constrainAs(content) { top.linkTo(subtitle.bottom, margin = 10.dp) }
-                    .background(Color.White)
-                    .fillMaxSize(),
-            ) {
-                contentInvoker(this)
-            }
-
-            OutlinedButton(
-                onClick = { onClickNextButton() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 20.dp, start = 16.dp, end = 16.dp)
-                    .constrainAs(button) { bottom.linkTo(parent.bottom) },
-                colors = ButtonDefaults.outlinedButtonColors(
-                    backgroundColor = colorResource(id = if (buttonEnabled) R.color.orangey_red else R.color.gray)
-                ),
-                shape = RoundedCornerShape(22.dp),
-                enabled = buttonEnabled
-            ) {
-                Text(
-                    text = stringResource(id = R.string.next),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.padding(vertical = 6.dp)
-                )
-            }
+        Surface(
+            modifier = Modifier
+                .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                .fillMaxHeight(.85f)
+                .constrainAs(content) {
+                    top.linkTo(titleBox.bottom)
+                    bottom.linkTo(parent.bottom)
+                }
+                .background(Color.White),
+        ) {
+            contentInvoker()
         }
     }
 }
 
 @Composable
-fun GoStopButton(text: String, modifier: Modifier, onClick: () -> Unit) {
+fun GoStopButton(text: String, modifier: Modifier=Modifier, buttonEnabled: Boolean = true, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(colorResource(id = R.color.orangey_red)),
-        shape = RoundedCornerShape(100.dp),
+        colors = ButtonDefaults.outlinedButtonColors(
+            backgroundColor = colorResource(id = if (buttonEnabled) R.color.orangey_red else R.color.gray)
+        ),
+        shape = RoundedCornerShape(22.dp),
         modifier = modifier
             .fillMaxWidth()
     ) {
@@ -199,7 +179,7 @@ fun GoStopButton(text: String, modifier: Modifier, onClick: () -> Unit) {
             textAlign = TextAlign.Center,
             color = Color.White,
             fontWeight = FontWeight.Bold,
-            modifier = modifier.padding(vertical = 6.dp)
+            modifier = Modifier.padding(vertical = 6.dp)
         )
     }
 }
@@ -266,4 +246,21 @@ fun NameEditDialog(openDialog: MutableState<Boolean>) {
         },
         shape = RoundedCornerShape(16.dp),
     )
+}
+
+@Composable
+fun GoStopExtraButton(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    OutlinedButton(
+        onClick = onClick,
+        border = BorderStroke(1.dp, colorResource(id = R.color.nero)),
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp)
+    ) {
+        Text(
+            text = text,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            color = colorResource(id = R.color.nero)
+        )
+    }
 }
