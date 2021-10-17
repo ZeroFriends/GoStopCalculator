@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GoStopCalculator</string>
+    <string name="app_name">고스톱 금액계산기</string>
     <string name="company_name">ZEROFRIENDS</string>
     <string name="today_game">오늘의 게임 👊</string>
     <string name="guide">Guide</string>
