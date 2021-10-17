@@ -2,6 +2,7 @@ package zero.friends.gostopcalculator.ui.precondition
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +14,7 @@ import kotlinx.coroutines.launch
 import zero.friends.domain.model.Player
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
-import zero.friends.domain.usecase.AddPlayerUseCase
+import zero.friends.domain.usecase.AddAutoGeneratePlayerUseCase
 import zero.friends.domain.usecase.DeletePlayerUseCase
 import zero.friends.gostopcalculator.R
 import java.text.SimpleDateFormat
@@ -30,7 +31,7 @@ data class PlayerUiState(
 class PlayerViewModel @Inject constructor(
     application: Application,
     private val gameRepository: GameRepository,
-    private val addPlayerUseCase: AddPlayerUseCase,
+    private val addAutoGeneratePlayerUseCase: AddAutoGeneratePlayerUseCase,
     private val deletePlayerUseCase: DeletePlayerUseCase,
     private val playerRepository: PlayerRepository,
 ) : AndroidViewModel(application) {
@@ -56,11 +57,11 @@ class PlayerViewModel @Inject constructor(
 
     fun addPlayer() {
         viewModelScope.launch {
-            val id = getUiState().value.players.size + 1
-            val newPlayer = Player(
-                String.format(applicationContext.getString(R.string.new_player), id)
-            )
-            addPlayerUseCase(newPlayer)
+            kotlin.runCatching {
+                addAutoGeneratePlayerUseCase.invoke(applicationContext.getString(R.string.new_player))
+            }.onFailure {
+                Toast.makeText(applicationContext, "${it.message}", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
