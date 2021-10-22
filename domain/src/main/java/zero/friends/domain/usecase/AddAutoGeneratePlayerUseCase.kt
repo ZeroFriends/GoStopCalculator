@@ -8,9 +8,9 @@ class AddAutoGeneratePlayerUseCase(
     private val gameRepository: GameRepository,
     private val playerRepository: PlayerRepository,
 ) {
-    suspend operator fun invoke(playerStringFormat: String) {
+    suspend operator fun invoke() {
         val gameId = gameRepository.getCurrentGameId()
-        playerRepository.addAutoGeneratePlayer(gameId, playerStringFormat)
+        playerRepository.addAutoGeneratePlayer(gameId)
     }
 
 }

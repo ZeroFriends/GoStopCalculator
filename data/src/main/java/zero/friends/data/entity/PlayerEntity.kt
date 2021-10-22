@@ -16,6 +16,7 @@ import zero.friends.domain.model.Player
 )
 data class PlayerEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val playerId: Long = 0,
     val name: String = "",
     val gameId: Long = 0,
 ) {

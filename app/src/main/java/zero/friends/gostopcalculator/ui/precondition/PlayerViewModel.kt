@@ -16,7 +16,6 @@ import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.usecase.AddAutoGeneratePlayerUseCase
 import zero.friends.domain.usecase.DeletePlayerUseCase
-import zero.friends.gostopcalculator.R
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -58,7 +57,7 @@ class PlayerViewModel @Inject constructor(
     fun addPlayer() {
         viewModelScope.launch {
             kotlin.runCatching {
-                addAutoGeneratePlayerUseCase.invoke(applicationContext.getString(R.string.new_player))
+                addAutoGeneratePlayerUseCase()
             }.onFailure {
                 Toast.makeText(applicationContext, "${it.message}", Toast.LENGTH_SHORT).show()
             }
