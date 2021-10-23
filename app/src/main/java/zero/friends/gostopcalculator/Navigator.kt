@@ -59,7 +59,9 @@ fun Navigator(onBackPressed: () -> Unit) {
                 SplashScreen {
                     coroutineScope.launch(splashJob) {
                         delay(500)
-                        navController.navigate(Navigate.Main.route)
+                        navController.navigate(Navigate.Main.route) {
+                            popUpTo(Navigate.Splash.route)
+                        }
                     }
                 }
             }
