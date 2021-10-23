@@ -61,8 +61,8 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Uni
         }
     }
 
-    if (uiState.openDialog) {
-        NameEditDialog(uiState.editPlayer) {
+    if (uiState.dialogState.openDialog) {
+        NameEditDialog {
             viewModel.closeDialog()
         }
     }

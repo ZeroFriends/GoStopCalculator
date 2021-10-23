@@ -8,7 +8,8 @@ class EditPlayerUseCase(private val gameRepository: GameRepository, private val 
     suspend operator fun invoke(originalPlayer: Player, editPlayer: Player) {
         val gameId = gameRepository.getCurrentGameId()
         val isExist = playerRepository.isExistPlayer(gameId, editPlayer.name)
-        if (isExist) throw IllegalStateException("중복된 이름이 존재합니다.")
+        val isSame = originalPlayer == editPlayer
+        if (isExist && !isSame) throw IllegalStateException("중복된 이름이 존재합니다.")
         playerRepository.editPlayer(gameId, originalPlayer, editPlayer)
     }
 }

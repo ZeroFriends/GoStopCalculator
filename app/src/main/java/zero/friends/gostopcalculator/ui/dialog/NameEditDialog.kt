@@ -17,26 +17,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.GoStopButton
 import zero.friends.gostopcalculator.ui.common.GoStopOutLinedTextField
+import zero.friends.gostopcalculator.ui.precondition.PlayerViewModel
 
 @Composable
 fun NameEditDialog(
-    player: Player?,
-    viewModel: NameEditDialogViewModel = hiltViewModel(),
+    viewModel: PlayerViewModel = hiltViewModel(),
     dismissCallback: () -> Unit,
 ) {
     val uiState by viewModel.getUiState().collectAsState()
     val inputText = remember {
-        mutableStateOf(TextFieldValue(""))
+        mutableStateOf(TextFieldValue(uiState.dialogState.editPlayer?.name ?: ""))
     }
 
-    if (uiState.modify) {
+    if (!uiState.dialogState.openDialog) {
         dismissCallback()
     }
-
 
     AlertDialog(
         onDismissRequest = { dismissCallback() },
@@ -54,23 +52,25 @@ fun NameEditDialog(
                 )
                 Spacer(modifier = Modifier.padding(bottom = 40.dp))
                 GoStopOutLinedTextField(
-                    initialText = player?.name ?: "",
+                    initialText = uiState.dialogState.editPlayer?.name ?: "",
                     hint = "",
                     color = colorResource(id = R.color.black),
                     onValueChane = {
                         inputText.value = it
                     },
-                    error = uiState.error?.message
+                    error = uiState.dialogState.error?.message
                 )
             }
 
         },
         confirmButton = {
             GoStopButton(stringResource(R.string.edit), modifier = Modifier.padding(horizontal = 12.dp)) {
+                val player = uiState.dialogState.editPlayer
                 requireNotNull(player)
                 viewModel.editPlayer(player, player.copy(name = inputText.value.text))
             }
         },
         shape = RoundedCornerShape(16.dp),
+        contentColor = colorResource(id = R.color.black)
     )
 }

@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
@@ -16,16 +17,23 @@ import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.usecase.AddAutoGeneratePlayerUseCase
 import zero.friends.domain.usecase.DeletePlayerUseCase
+import zero.friends.domain.usecase.EditPlayerUseCase
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 
 data class PlayerUiState(
     val players: List<Player> = emptyList(),
     val currentTime: String = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(System.currentTimeMillis()),
+    val dialogState: DialogState = DialogState(),
+)
+
+data class DialogState(
     val openDialog: Boolean = false,
     val editPlayer: Player? = null,
+    val error: Throwable? = null,
 )
 
 @HiltViewModel
@@ -35,12 +43,21 @@ class PlayerViewModel @Inject constructor(
     private val addAutoGeneratePlayerUseCase: AddAutoGeneratePlayerUseCase,
     private val deletePlayerUseCase: DeletePlayerUseCase,
     private val playerRepository: PlayerRepository,
+    private val editPlayerUseCase: EditPlayerUseCase,
 ) : AndroidViewModel(application) {
     @SuppressLint("StaticFieldLeak")
     private val applicationContext = application.applicationContext
 
     private val _uiState = MutableStateFlow(PlayerUiState())
     fun getUiState() = _uiState.asStateFlow()
+
+    private val exceptionHandler =
+        CoroutineExceptionHandler { _: CoroutineContext, throwable: Throwable ->
+            _uiState.update {
+                val dialogState = DialogState(openDialog = true, error = throwable)
+                it.copy(dialogState = dialogState)
+            }
+        }
 
     init {
         viewModelScope.launch {
@@ -80,11 +97,24 @@ class PlayerViewModel @Inject constructor(
     }
 
     fun openDialog(player: Player) {
-        _uiState.update { it.copy(openDialog = true, editPlayer = player) }
+        _uiState.update {
+            val dialogState = it.dialogState.copy(openDialog = true, editPlayer = player)
+            it.copy(dialogState = dialogState)
+        }
     }
 
     fun closeDialog() {
-        _uiState.update { it.copy(openDialog = false, editPlayer = null) }
+        _uiState.update {
+            val dialogState = it.dialogState.copy(openDialog = false)
+            it.copy(dialogState = dialogState)
+        }
+    }
+
+    fun editPlayer(originalPlayer: Player, editPlayer: Player) {
+        viewModelScope.launch(exceptionHandler) {
+            editPlayerUseCase(originalPlayer, editPlayer)
+            closeDialog()
+        }
     }
 
 }
