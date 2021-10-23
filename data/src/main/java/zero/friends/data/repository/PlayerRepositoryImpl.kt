@@ -10,7 +10,6 @@ import zero.friends.data.source.dao.PlayerDao
 import zero.friends.domain.model.Player
 import zero.friends.domain.repository.PlayerRepository
 import java.util.*
-
 class PlayerRepositoryImpl(
     private val playerDao: PlayerDao,
 ) : PlayerRepository {
@@ -28,17 +27,21 @@ class PlayerRepositoryImpl(
         }
     }
 
-    override suspend fun observePlayer() =
-        playerDao.observePlayer().map { playerEntities ->
+    override suspend fun observePlayer(gameId: Long) =
+        playerDao.observePlayer(gameId).map { playerEntities ->
             playerEntities.map { it.toPlayer() }
         }
 
 
-    override suspend fun isExistPlayer(name: String): Boolean = playerDao.isExistPlayer(name)
+    override suspend fun isExistPlayer(gameId: Long, name: String): Boolean = playerDao.isExistPlayer(gameId, name)
 
-    override suspend fun deletePlayer(player: Player) {
+    override suspend fun editPlayer(gameId: Long, player: Player, editPlayer: Player) {
+        playerDao.editPlayerName(gameId, player.name, editPlayer.name)
+    }
+
+    override suspend fun deletePlayer(gameId: Long, player: Player) {
         CoroutineScope(Dispatchers.IO).launch {
-            playerDao.deletePlayer(player.name)
+            playerDao.deletePlayer(gameId, player.name)
         }
     }
 
@@ -50,3 +53,4 @@ class PlayerRepositoryImpl(
         const val PLAYER_FORMAT = "새 플레이어 %d"
     }
 }
+

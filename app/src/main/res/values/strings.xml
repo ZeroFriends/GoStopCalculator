@@ -19,6 +19,8 @@
     <string name="next">다음</string>
     <string name="add_new_player">+ 플레이어 추가</string>
     <string name="new_player">새 플레이어 %d</string>
+    <string name="edit">수정하기</string>
+    <string name="edit_name">이름 수정하기</string>
 
 
 </resources>

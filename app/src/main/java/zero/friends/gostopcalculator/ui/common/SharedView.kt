@@ -8,8 +8,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -195,43 +193,6 @@ fun GoStopOutLinedTextField(
         ),
         placeholder = { Text(text = hint, color = color) },
         textStyle = TextStyle(fontSize = 16.sp)
-    )
-}
-
-@Composable
-fun NameEditDialog(openDialog: MutableState<Boolean>) {
-    val inputText = remember {
-        mutableStateOf(TextFieldValue("새 플레이어 %d"))
-    }
-
-    AlertDialog(
-        onDismissRequest = { openDialog.value = false },
-        text = {
-            Column(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "이름 수정하기",
-                    textAlign = TextAlign.Center,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(id = R.color.nero),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.padding(bottom = 40.dp))
-                GoStopOutLinedTextField(
-                    inputText = inputText,
-                    onValueChange = { inputText.value = it },
-                    hint = "",
-                    color = colorResource(id = R.color.nero)
-                )
-            }
-
-        },
-        confirmButton = {
-            GoStopButton("수정하기", modifier = Modifier) {/*todo confirm*/ }
-        },
-        shape = RoundedCornerShape(16.dp),
     )
 }
 

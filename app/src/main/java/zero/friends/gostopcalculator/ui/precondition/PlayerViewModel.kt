@@ -43,7 +43,7 @@ class PlayerViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             gameRepository.newGame(_uiState.value.currentTime, _uiState.value.currentTime)
-            playerRepository.observePlayer()
+            playerRepository.observePlayer(0L)
                 .collect { players ->
                     _uiState.update {
                         it.copy(players = players)

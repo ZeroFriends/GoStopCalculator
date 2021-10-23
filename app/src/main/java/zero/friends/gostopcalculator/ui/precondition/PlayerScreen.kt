@@ -22,13 +22,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
+import zero.friends.gostopcalculator.ui.dialog.NameEditDialog
 
 sealed class ClickEvent {
     object Back : ClickEvent()
     object AddPlayer : ClickEvent()
     class DeletePlayer(val player: Player) : ClickEvent()
     object LoadPlayer : ClickEvent()
-    object EditPlayer : ClickEvent()
+    class EditPlayer(val player: Player) : ClickEvent()
     object Next : ClickEvent()
 }
 
@@ -41,7 +42,7 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Uni
         viewModel.clearGame()
         onBack()
     }
-
+    val playerEditDialog = remember { mutableStateOf<Player?>(null) }
     PlayerScreen(
         scaffoldState,
         uiState
@@ -55,8 +56,13 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Uni
             is ClickEvent.DeletePlayer -> viewModel.deletePlayer(clickEvent.player)
             ClickEvent.LoadPlayer -> TODO()
             ClickEvent.Next -> TODO()
-            ClickEvent.EditPlayer -> TODO()
+            is ClickEvent.EditPlayer -> playerEditDialog.value = clickEvent.player
+
         }
+    }
+
+    if (playerEditDialog.value != null) {
+        NameEditDialog(playerEditDialog)
     }
 }
 
@@ -66,7 +72,6 @@ private fun PlayerScreen(
     uiState: PlayerUiState,
     clickEvent: (ClickEvent) -> Unit,
 ) {
-    val openDialog = remember { mutableStateOf(false) }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -125,11 +130,6 @@ private fun PlayerScreen(
                 )
 
             }
-        }
-
-//        openDialog.value = true
-        if (openDialog.value) {
-            NameEditDialog(openDialog)
         }
 
     }
@@ -217,7 +217,7 @@ fun PlayerItem(index: Int, player: Player, clickEvent: (ClickEvent) -> Unit) {
                 fontSize = 16.sp,
                 color = colorResource(id = R.color.nero)
             )
-            IconButton(onClick = { clickEvent(ClickEvent.EditPlayer) }) {
+            IconButton(onClick = { clickEvent(ClickEvent.EditPlayer(player)) }) {
                 Icon(painter = painterResource(id = R.drawable.ic_mode_edit_black), contentDescription = null)
             }
         }
