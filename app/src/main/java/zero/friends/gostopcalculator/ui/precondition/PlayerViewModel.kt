@@ -24,6 +24,8 @@ import javax.inject.Inject
 data class PlayerUiState(
     val players: List<Player> = emptyList(),
     val currentTime: String = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(System.currentTimeMillis()),
+    val openDialog: Boolean = false,
+    val editPlayer: Player? = null,
 )
 
 @HiltViewModel
@@ -43,7 +45,8 @@ class PlayerViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             gameRepository.newGame(_uiState.value.currentTime, _uiState.value.currentTime)
-            playerRepository.observePlayer(0L)
+            val gameId = gameRepository.getCurrentGameId()
+            playerRepository.observePlayer(gameId = gameId)
                 .collect { players ->
                     _uiState.update {
                         it.copy(players = players)
@@ -74,6 +77,14 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             gameRepository.clearGame()
         }
+    }
+
+    fun openDialog(player: Player) {
+        _uiState.update { it.copy(openDialog = true, editPlayer = player) }
+    }
+
+    fun closeDialog() {
+        _uiState.update { it.copy(openDialog = false, editPlayer = null) }
     }
 
 }

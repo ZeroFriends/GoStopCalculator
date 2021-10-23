@@ -42,7 +42,7 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Uni
         viewModel.clearGame()
         onBack()
     }
-    val playerEditDialog = remember { mutableStateOf<Player?>(null) }
+
     PlayerScreen(
         scaffoldState,
         uiState
@@ -56,13 +56,15 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Uni
             is ClickEvent.DeletePlayer -> viewModel.deletePlayer(clickEvent.player)
             ClickEvent.LoadPlayer -> TODO()
             ClickEvent.Next -> TODO()
-            is ClickEvent.EditPlayer -> playerEditDialog.value = clickEvent.player
+            is ClickEvent.EditPlayer -> viewModel.openDialog(player = clickEvent.player)
 
         }
     }
 
-    if (playerEditDialog.value != null) {
-        NameEditDialog(playerEditDialog)
+    if (uiState.openDialog) {
+        NameEditDialog(uiState.editPlayer) {
+            viewModel.closeDialog()
+        }
     }
 }
 
@@ -108,7 +110,6 @@ private fun PlayerScreen(
                     TitleOutlinedTextField(
                         title = stringResource(id = R.string.group_name),
                         hint = uiState.currentTime,
-                        inputText = textFieldValue,
                         modifier = Modifier.padding(bottom = 17.dp)
                     ) { textFieldValue.value = it }
 
@@ -173,13 +174,12 @@ private fun PlayerLazyColumn(
 fun TitleOutlinedTextField(
     title: String,
     hint: String,
-    inputText: MutableState<TextFieldValue>,
     modifier: Modifier = Modifier,
     onValueChange: (TextFieldValue) -> Unit,
 ) {
     Column(modifier = modifier) {
         Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 4.dp))
-        GoStopOutLinedTextField(inputText, onValueChange, hint)
+        GoStopOutLinedTextField("", hint, onValueChane = onValueChange)
     }
 }
 

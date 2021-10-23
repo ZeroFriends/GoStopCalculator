@@ -7,7 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import zero.friends.gostopcalculator.R
@@ -171,29 +173,46 @@ fun GoStopButton(text: String, modifier: Modifier=Modifier, buttonEnabled: Boole
 
 @Composable
 fun GoStopOutLinedTextField(
-    inputText: MutableState<TextFieldValue>,
-    onValueChange: (TextFieldValue) -> Unit,
+    initialText: String,
     hint: String,
     color: Color = colorResource(id = R.color.gray),
     modifier: Modifier = Modifier,
+    onValueChane: (TextFieldValue) -> Unit,
+    error: String? = null,
 ) {
-    OutlinedTextField(
-        value = inputText.value,
-        onValueChange = {
-            onValueChange.invoke(it)
-        },
-        modifier = modifier
-            .fillMaxWidth(),
-        singleLine = true,
-        shape = RoundedCornerShape(18.dp),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            unfocusedBorderColor = color,
-            focusedBorderColor = color,
-            cursorColor = colorResource(id = R.color.nero)
-        ),
-        placeholder = { Text(text = hint, color = color) },
-        textStyle = TextStyle(fontSize = 16.sp)
-    )
+    val inputText = remember {
+        mutableStateOf(TextFieldValue(initialText))
+    }
+
+    Column {
+        OutlinedTextField(
+            value = inputText.value,
+            onValueChange = {
+                inputText.value = it
+                onValueChane(it)
+            },
+            modifier = modifier
+                .fillMaxWidth(),
+            singleLine = true,
+            shape = RoundedCornerShape(18.dp),
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                unfocusedBorderColor = color,
+                focusedBorderColor = color,
+                cursorColor = colorResource(id = R.color.nero)
+            ),
+            placeholder = { Text(text = hint, color = color) },
+            textStyle = TextStyle(fontSize = 16.sp)
+        )
+        if (error != null) {
+            Text(
+                text = error,
+                color = MaterialTheme.colors.error,
+                style = MaterialTheme.typography.caption,
+                modifier = modifier
+            )
+        }
+    }
+
 }
 
 @Composable
@@ -211,4 +230,10 @@ fun GoStopExtraButton(text: String, modifier: Modifier = Modifier, onClick: () -
             color = colorResource(id = R.color.nero)
         )
     }
+}
+
+@Preview
+@Composable
+fun GoStopOutLinedTextFieldPreView() {
+    GoStopOutLinedTextField("", "", onValueChane = {})
 }
