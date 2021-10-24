@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import zero.friends.gostopcalculator.R
 
 
@@ -113,10 +114,19 @@ fun CenterTextTopBar(text: String, onBack: () -> Unit, onAction: (() -> Unit)?) 
 }
 
 @Composable
+@Preview
+fun AprilBackPreview() {
+    AprilBackground("MainTitle", "SubTitle", buttonText = "다음", onClick = {}) {}
+}
+
+@Composable
 fun AprilBackground(
     title: String,
     subTitle: String,
     modifier: Modifier = Modifier,
+    buttonText: String,
+    buttonEnabled: Boolean = false,
+    onClick: () -> Unit,
     contentInvoker: @Composable () -> Unit,
 ) {
     Surface(modifier.fillMaxSize()) {
@@ -147,7 +157,33 @@ fun AprilBackground(
                     .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
                     .background(Color.White)
             ) {
-                contentInvoker()
+                ConstraintLayout(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 44.dp, start = 16.dp, end = 16.dp, bottom = 40.dp),
+                ) {
+                    val (upper, button) = createRefs()
+                    Surface(
+                        modifier = Modifier
+                            .constrainAs(upper) {
+                                bottom.linkTo(button.top)
+                                top.linkTo(parent.top)
+                            }
+                            .fillMaxHeight()
+                    ) {
+                        contentInvoker()
+                    }
+                    GoStopButton(
+                        text = buttonText,
+                        buttonEnabled = buttonEnabled,
+                        modifier = Modifier
+                            .constrainAs(button) {
+                                top.linkTo(upper.bottom)
+                                bottom.linkTo(parent.bottom)
+                            },
+                        onClick = onClick
+                    )
+                }
             }
         }
     }

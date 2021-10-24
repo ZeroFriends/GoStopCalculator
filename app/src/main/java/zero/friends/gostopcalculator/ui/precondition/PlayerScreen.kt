@@ -17,20 +17,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.dialog.NameEditDialog
 
-sealed class ClickEvent {
-    object Back : ClickEvent()
-    object AddPlayer : ClickEvent()
-    class DeletePlayer(val player: Player) : ClickEvent()
-    object LoadPlayer : ClickEvent()
-    class EditPlayer(val player: Player) : ClickEvent()
-    object Next : ClickEvent()
+sealed class PlayerClickEvent {
+    object Back : PlayerClickEvent()
+    object AddPlayer : PlayerClickEvent()
+    class DeletePlayer(val player: Player) : PlayerClickEvent()
+    object LoadPlayer : PlayerClickEvent()
+    class EditPlayer(val player: Player) : PlayerClickEvent()
+    object Next : PlayerClickEvent()
 }
 
 @Composable
@@ -48,15 +47,15 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Uni
         uiState
     ) { clickEvent ->
         when (clickEvent) {
-            ClickEvent.AddPlayer -> viewModel.addPlayer()
-            ClickEvent.Back -> {
+            PlayerClickEvent.AddPlayer -> viewModel.addPlayer()
+            PlayerClickEvent.Back -> {
                 viewModel.clearGame()
                 onBack()
             }
-            is ClickEvent.DeletePlayer -> viewModel.deletePlayer(clickEvent.player)
-            ClickEvent.LoadPlayer -> TODO()
-            ClickEvent.Next -> onNext()
-            is ClickEvent.EditPlayer -> viewModel.openDialog(player = clickEvent.player)
+            is PlayerClickEvent.DeletePlayer -> viewModel.deletePlayer(clickEvent.player)
+            PlayerClickEvent.LoadPlayer -> TODO()
+            PlayerClickEvent.Next -> onNext()
+            is PlayerClickEvent.EditPlayer -> viewModel.openDialog(player = clickEvent.player)
 
         }
     }
@@ -70,7 +69,7 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Uni
 private fun PlayerScreen(
     scaffoldState: ScaffoldState,
     uiState: PlayerUiState,
-    clickEvent: (ClickEvent) -> Unit,
+    clickEvent: (PlayerClickEvent) -> Unit,
 ) {
 
     Scaffold(
@@ -78,56 +77,31 @@ private fun PlayerScreen(
         topBar = {
             CenterTextTopBar(
                 text = String.format(stringResource(id = R.string.game_setting_title), 1),
-                onBack = { clickEvent.invoke(ClickEvent.Back) },
+                onBack = { clickEvent.invoke(PlayerClickEvent.Back) },
                 onAction = null
             )
         }
     ) {
         AprilBackground(
             title = stringResource(id = R.string.player_title),
-            subTitle = stringResource(id = R.string.player_description)
+            subTitle = stringResource(id = R.string.player_description),
+            buttonText = stringResource(id = R.string.next),
+            buttonEnabled = uiState.players.size > 1,
+            onClick = { clickEvent(PlayerClickEvent.Next) }
         ) {
-            ConstraintLayout(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 44.dp, start = 16.dp, end = 16.dp, bottom = 40.dp),
-            ) {
-                val (upper, button) = createRefs()
-
-                Column(
-                    modifier = Modifier
-                        .constrainAs(upper) {
-                            bottom.linkTo(button.top)
-                            top.linkTo(parent.top)
-                        }
-                        .fillMaxHeight()
-                ) {
-                    val textFieldValue = remember {
-                        mutableStateOf(TextFieldValue())
-                    }
-                    TitleOutlinedTextField(
-                        title = stringResource(id = R.string.group_name),
-                        hint = uiState.currentTime,
-                        modifier = Modifier.padding(bottom = 17.dp)
-                    ) { textFieldValue.value = it }
-
-                    PlayerLazyColumn(
-                        players = uiState.players,
-                        clickEvent = clickEvent
-                    )
+            Column {
+                val textFieldValue = remember {
+                    mutableStateOf(TextFieldValue())
                 }
+                TitleOutlinedTextField(
+                    title = stringResource(id = R.string.group_name),
+                    hint = uiState.currentTime,
+                ) { textFieldValue.value = it }
 
-                GoStopButton(
-                    text = stringResource(id = R.string.next),
-                    buttonEnabled = uiState.players.size > 1,
-                    modifier = Modifier
-                        .constrainAs(button) {
-                            top.linkTo(upper.bottom)
-                            bottom.linkTo(parent.bottom)
-                        },
-                    onClick = { clickEvent(ClickEvent.Next) }
+                PlayerLazyColumn(
+                    players = uiState.players,
+                    clickEvent = clickEvent
                 )
-
             }
         }
 
@@ -137,11 +111,11 @@ private fun PlayerScreen(
 @Composable
 private fun PlayerLazyColumn(
     players: List<Player>,
-    clickEvent: (ClickEvent) -> Unit,
+    clickEvent: (PlayerClickEvent) -> Unit,
 ) {
-    LazyColumn {
+    LazyColumn(contentPadding = PaddingValues(top = 35.dp, bottom = 12.dp)) {
         item {
-            PlayerBlock(modifier = Modifier.padding(bottom = 20.dp)) { clickEvent(ClickEvent.LoadPlayer) }
+            PlayerBlock(modifier = Modifier.padding(bottom = 20.dp)) { clickEvent(PlayerClickEvent.LoadPlayer) }
         }
 
         if (players.isEmpty()) {
@@ -162,7 +136,7 @@ private fun PlayerLazyColumn(
             GoStopExtraButton(
                 text = stringResource(id = R.string.add_new_player),
                 modifier = Modifier.padding(top = 10.dp),
-                onClick = { clickEvent(ClickEvent.AddPlayer) }
+                onClick = { clickEvent(PlayerClickEvent.AddPlayer) }
             )
         }
     }
@@ -194,7 +168,7 @@ fun PlayerBlock(modifier: Modifier = Modifier, onLoadButtonClicked: () -> Unit) 
 }
 
 @Composable
-fun PlayerItem(index: Int, player: Player, clickEvent: (ClickEvent) -> Unit) {
+fun PlayerItem(index: Int, player: Player, clickEvent: (PlayerClickEvent) -> Unit) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -215,11 +189,11 @@ fun PlayerItem(index: Int, player: Player, clickEvent: (ClickEvent) -> Unit) {
                 fontSize = 16.sp,
                 color = colorResource(id = R.color.nero)
             )
-            IconButton(onClick = { clickEvent(ClickEvent.EditPlayer(player)) }) {
+            IconButton(onClick = { clickEvent(PlayerClickEvent.EditPlayer(player)) }) {
                 Icon(painter = painterResource(id = R.drawable.ic_mode_edit_black), contentDescription = null)
             }
         }
-        IconButton(onClick = { clickEvent(ClickEvent.DeletePlayer(player)) }) {
+        IconButton(onClick = { clickEvent(PlayerClickEvent.DeletePlayer(player)) }) {
             Icon(painter = painterResource(id = R.drawable.ic_delete_black), contentDescription = null)
         }
     }

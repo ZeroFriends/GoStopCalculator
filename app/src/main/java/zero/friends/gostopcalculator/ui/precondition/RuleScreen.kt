@@ -12,6 +12,10 @@ import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.AprilBackground
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 
+sealed class RuleClickEvent {
+    object Back : RuleClickEvent()
+    object Complete : RuleClickEvent()
+}
 @Composable
 fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onBack: () -> Unit) {
     val scaffoldState = rememberScaffoldState()
@@ -20,27 +24,33 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onBack: () -> Uni
         onBack()
     }
 
-    RuleScreen(scaffoldState)
+    RuleScreen(scaffoldState) { ruleClickEvent ->
+        when (ruleClickEvent) {
+            RuleClickEvent.Back -> onBack()
+        }
+    }
 }
 
 @Composable
 fun RuleScreen(
     scaffoldState: ScaffoldState,
+    clickEvent: (RuleClickEvent) -> Unit,
 ) {
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(
                 text = String.format(stringResource(id = R.string.game_setting_title), 2),
-                onBack = { /*TODO*/ },
+                onBack = { clickEvent(RuleClickEvent.Back) },
                 onAction = null
             )
         }
     ) {
         AprilBackground(
             title = "게임규칙 💡",
-            subTitle = "게임 플레이 시 적용될 금액입니다.\n" +
-                    "과도한 금액이 나오지 않게 주의해 주세요 :)"
+            subTitle = "게임 플레이 시 적용될 금액입니다.\n과도한 금액이 나오지 않게 주의해 주세요 :)",
+            buttonText = "완료",
+            onClick = { clickEvent(RuleClickEvent.Complete) }
         ) {
 
         }
