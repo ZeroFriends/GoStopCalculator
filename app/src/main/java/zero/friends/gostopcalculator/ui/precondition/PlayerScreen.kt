@@ -34,7 +34,7 @@ sealed class ClickEvent {
 }
 
 @Composable
-fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Unit) {
+fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Unit, onBack: () -> Unit) {
     val scaffoldState = rememberScaffoldState()
     val uiState by viewModel.getUiState().collectAsState()
 
@@ -55,7 +55,7 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onBack: () -> Uni
             }
             is ClickEvent.DeletePlayer -> viewModel.deletePlayer(clickEvent.player)
             ClickEvent.LoadPlayer -> TODO()
-            ClickEvent.Next -> TODO()
+            ClickEvent.Next -> onNext()
             is ClickEvent.EditPlayer -> viewModel.openDialog(player = clickEvent.player)
 
         }
