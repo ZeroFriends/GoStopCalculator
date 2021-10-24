@@ -68,7 +68,7 @@ dependencies {
     implementation(Dependencies.Navigation.fragment)
     implementation(Dependencies.Navigation.compose)
 
-    androidTestImplementation(Dependencies.Test.junit)
+    androidTestImplementation(Dependencies.Test.junit5)
     androidTestImplementation(Dependencies.Test.espresso)
 
     implementation(Dependencies.Kotlin.coroutineCore)

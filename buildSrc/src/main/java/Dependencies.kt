@@ -75,9 +75,13 @@ object Dependencies {
     }
 
     object Test {
-        const val junit = "org.junit.jupiter:junit-jupiter-engine:5.5.2"
-        const val mockito = "org.mockito:mockito-all:2.0.2-beta"
+        const val junit5 = "org.junit.jupiter:junit-jupiter"
+        const val junit_bom = "org.junit:junit-bom:5.8.1"
         const val espresso = "androidx.test.espresso:espresso-core:3.4.0"
+
+        const val mockito_kotlin = "org.mockito.kotlin:mockito-kotlin:3.1.0"
+        const val mockito_core = "org.mockito:mockito-core:3.9.0"
+        const val mockito_inline = "org.mockito:mockito-inline:3.9.0"
     }
 
     const val timber = "com.jakewharton.timber:timber:4.7.1"
