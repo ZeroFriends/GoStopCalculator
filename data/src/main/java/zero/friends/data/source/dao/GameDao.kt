@@ -3,6 +3,7 @@ package zero.friends.data.source.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
+import kotlinx.coroutines.flow.Flow
 import zero.friends.data.entity.GameAndPlayerRelation
 import zero.friends.data.entity.GameEntity
 
@@ -14,4 +15,7 @@ interface GameDao : BaseDao<GameEntity> {
 
     @Query("UPDATE GameEntity SET name = :editName WHERE id == :gameId")
     suspend fun editGameName(gameId: Long, editName: String)
+
+    @Query("SELECT name From GameEntity WHERE id == :gameId")
+    fun observeGameName(gameId: Long): Flow<String>
 }

@@ -86,7 +86,7 @@ private fun PlayerScreen(
         }
     ) {
         val textFieldValue = remember {
-            mutableStateOf(TextFieldValue())
+            mutableStateOf(TextFieldValue(uiState.gameName))
         }
 
         AprilBackground(
@@ -100,6 +100,7 @@ private fun PlayerScreen(
                 TitleOutlinedTextField(
                     title = stringResource(id = R.string.group_name),
                     hint = uiState.currentTime,
+                    initialText = uiState.gameName
                 ) { textFieldValue.value = it }
 
                 PlayerLazyColumn(
@@ -150,12 +151,13 @@ private fun PlayerLazyColumn(
 fun TitleOutlinedTextField(
     title: String,
     hint: String,
+    initialText: String,
     modifier: Modifier = Modifier,
     onValueChange: (TextFieldValue) -> Unit,
 ) {
     Column(modifier = modifier) {
         Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 4.dp))
-        GoStopOutLinedTextField("", hint, onValueChane = onValueChange)
+        GoStopOutLinedTextField(initialText, hint, onValueChane = onValueChange)
     }
 }
 

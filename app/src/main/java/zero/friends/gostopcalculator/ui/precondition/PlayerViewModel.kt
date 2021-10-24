@@ -1,9 +1,6 @@
 package zero.friends.gostopcalculator.ui.precondition
 
-import android.annotation.SuppressLint
-import android.app.Application
-import android.widget.Toast
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -23,6 +20,7 @@ import kotlin.coroutines.CoroutineContext
 
 data class PlayerUiState(
     val players: List<Player> = emptyList(),
+    val gameName: String = "",
     val currentTime: String = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(System.currentTimeMillis()),
     val dialogState: DialogState = DialogState(),
 )
@@ -35,15 +33,12 @@ data class DialogState(
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
-    application: Application,
     private val gameRepository: GameRepository,
     private val addAutoGeneratePlayerUseCase: AddAutoGeneratePlayerUseCase,
     private val deletePlayerUseCase: DeletePlayerUseCase,
     private val playerRepository: PlayerRepository,
     private val editPlayerUseCase: EditPlayerUseCase,
-) : AndroidViewModel(application) {
-    @SuppressLint("StaticFieldLeak")
-    private val applicationContext = application.applicationContext
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PlayerUiState())
     fun getUiState() = _uiState.asStateFlow()
@@ -67,17 +62,17 @@ class PlayerViewModel @Inject constructor(
                     }
                 }
                 .launchIn(this)
+
+            gameRepository.observeGameName().onEach { gameName ->
+                _uiState.update { it.copy(gameName = gameName) }
+            }.launchIn(this)
         }
 
     }
 
     fun addPlayer() {
         viewModelScope.launch {
-            kotlin.runCatching {
-                addAutoGeneratePlayerUseCase()
-            }.onFailure {
-                Toast.makeText(applicationContext, "${it.message}", Toast.LENGTH_SHORT).show()
-            }
+            addAutoGeneratePlayerUseCase()
         }
     }
 

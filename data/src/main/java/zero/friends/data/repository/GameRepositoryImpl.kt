@@ -2,6 +2,7 @@ package zero.friends.data.repository
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import zero.friends.data.entity.GameEntity
@@ -34,6 +35,10 @@ class GameRepositoryImpl(private val gameDao: GameDao) : GameRepository {
 
     override suspend fun editGameName(gameName: String) {
         gameDao.editGameName(gameId.value, gameName)
+    }
+
+    override fun observeGameName(): Flow<String> {
+        return gameDao.observeGameName(gameId.value)
     }
 
 }
