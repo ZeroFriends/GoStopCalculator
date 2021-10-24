@@ -48,7 +48,7 @@ class PlayerViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(PlayerUiState())
     fun getUiState() = _uiState.asStateFlow()
 
-    private val exceptionHandler =
+    private val editNameExceptionHandler =
         CoroutineExceptionHandler { _: CoroutineContext, throwable: Throwable ->
             _uiState.update {
                 val dialogState = it.dialogState.copy(openDialog = true, error = throwable)
@@ -108,7 +108,7 @@ class PlayerViewModel @Inject constructor(
     }
 
     fun editPlayer(originalPlayer: Player, editPlayer: Player) {
-        viewModelScope.launch(exceptionHandler) {
+        viewModelScope.launch(editNameExceptionHandler) {
             editPlayerUseCase(originalPlayer, editPlayer)
             closeDialog()
         }
