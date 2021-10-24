@@ -32,4 +32,8 @@ class GameRepositoryImpl(private val gameDao: GameDao) : GameRepository {
         }
     }
 
+    override suspend fun editGameName(gameName: String) {
+        gameDao.editGameName(gameId.value, gameName)
+    }
+
 }

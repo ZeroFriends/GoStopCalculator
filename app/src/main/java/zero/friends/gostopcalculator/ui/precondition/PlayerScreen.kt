@@ -29,7 +29,7 @@ sealed class PlayerClickEvent {
     class DeletePlayer(val player: Player) : PlayerClickEvent()
     object LoadPlayer : PlayerClickEvent()
     class EditPlayer(val player: Player) : PlayerClickEvent()
-    object Next : PlayerClickEvent()
+    class Next(val groupName: String) : PlayerClickEvent()
 }
 
 @Composable
@@ -54,7 +54,10 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Uni
             }
             is PlayerClickEvent.DeletePlayer -> viewModel.deletePlayer(clickEvent.player)
             PlayerClickEvent.LoadPlayer -> TODO()
-            PlayerClickEvent.Next -> onNext()
+            is PlayerClickEvent.Next -> {
+                viewModel.editGameName(clickEvent.groupName)
+                onNext()
+            }
             is PlayerClickEvent.EditPlayer -> viewModel.openDialog(player = clickEvent.player)
 
         }
@@ -82,17 +85,18 @@ private fun PlayerScreen(
             )
         }
     ) {
+        val textFieldValue = remember {
+            mutableStateOf(TextFieldValue())
+        }
+
         AprilBackground(
             title = stringResource(id = R.string.player_title),
             subTitle = stringResource(id = R.string.player_description),
             buttonText = stringResource(id = R.string.next),
             buttonEnabled = uiState.players.size > 1,
-            onClick = { clickEvent(PlayerClickEvent.Next) }
+            onClick = { clickEvent(PlayerClickEvent.Next(textFieldValue.value.text)) }
         ) {
             Column {
-                val textFieldValue = remember {
-                    mutableStateOf(TextFieldValue())
-                }
                 TitleOutlinedTextField(
                     title = stringResource(id = R.string.group_name),
                     hint = uiState.currentTime,

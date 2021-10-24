@@ -10,5 +10,8 @@ import zero.friends.data.entity.GameEntity
 interface GameDao : BaseDao<GameEntity> {
     @Transaction
     @Query("SELECT * FROM GameEntity WHERE :id = id")
-    suspend fun getGameAndPlayer(id:Long): GameAndPlayerRelation
+    suspend fun getGameAndPlayer(id: Long): GameAndPlayerRelation
+
+    @Query("UPDATE GameEntity SET name = :editName WHERE id == :gameId")
+    suspend fun editGameName(gameId: Long, editName: String)
 }

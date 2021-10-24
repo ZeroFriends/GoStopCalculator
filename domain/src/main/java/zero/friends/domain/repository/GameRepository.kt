@@ -7,4 +7,5 @@ interface GameRepository{
     fun getCurrentGameId():Long
     suspend fun getCurrentGameUser(): GameAndPlayer
     suspend fun clearGame()
+    suspend fun editGameName(gameName: String)
 }

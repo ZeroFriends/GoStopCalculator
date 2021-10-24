@@ -114,4 +114,10 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
+    fun editGameName(gameName: String) {
+        viewModelScope.launch {
+            gameRepository.editGameName(gameName)
+        }
+    }
+
 }
