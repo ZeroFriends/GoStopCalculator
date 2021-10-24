@@ -25,7 +25,7 @@ fun SplashScreen(endOfSplash: () -> Unit) {
             modifier = Modifier.fillMaxSize()
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
+                painter = painterResource(id = R.mipmap.song),
                 contentDescription = "고스톱 이미지",
                 alignment = Alignment.Center
             )
