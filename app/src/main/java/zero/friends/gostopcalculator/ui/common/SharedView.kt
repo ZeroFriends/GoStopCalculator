@@ -5,6 +5,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +20,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -179,6 +182,7 @@ fun GoStopOutLinedTextField(
     modifier: Modifier = Modifier,
     onValueChane: (TextFieldValue) -> Unit,
     error: String? = null,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
     val inputText = remember {
         mutableStateOf(TextFieldValue(initialText))
@@ -201,14 +205,15 @@ fun GoStopOutLinedTextField(
                 cursorColor = colorResource(id = R.color.nero)
             ),
             placeholder = { Text(text = hint, color = color) },
-            textStyle = TextStyle(fontSize = 16.sp)
+            textStyle = TextStyle(fontSize = 16.sp),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = keyboardActions
         )
         if (error != null) {
             Text(
                 text = error,
                 color = MaterialTheme.colors.error,
                 style = MaterialTheme.typography.caption,
-                modifier = modifier
             )
         }
     }

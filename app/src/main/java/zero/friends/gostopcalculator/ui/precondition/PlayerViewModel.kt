@@ -7,10 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Player
 import zero.friends.domain.repository.GameRepository
@@ -54,7 +51,7 @@ class PlayerViewModel @Inject constructor(
     private val exceptionHandler =
         CoroutineExceptionHandler { _: CoroutineContext, throwable: Throwable ->
             _uiState.update {
-                val dialogState = DialogState(openDialog = true, error = throwable)
+                val dialogState = it.dialogState.copy(openDialog = true, error = throwable)
                 it.copy(dialogState = dialogState)
             }
         }
@@ -64,12 +61,12 @@ class PlayerViewModel @Inject constructor(
             gameRepository.newGame(_uiState.value.currentTime, _uiState.value.currentTime)
             val gameId = gameRepository.getCurrentGameId()
             playerRepository.observePlayer(gameId = gameId)
-                .collect { players ->
+                .onEach { players ->
                     _uiState.update {
                         it.copy(players = players)
                     }
                 }
-
+                .launchIn(this)
         }
 
     }
@@ -105,7 +102,7 @@ class PlayerViewModel @Inject constructor(
 
     fun closeDialog() {
         _uiState.update {
-            val dialogState = it.dialogState.copy(openDialog = false)
+            val dialogState = it.dialogState.copy(openDialog = false, error = null)
             it.copy(dialogState = dialogState)
         }
     }
