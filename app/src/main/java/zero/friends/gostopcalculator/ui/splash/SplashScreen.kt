@@ -17,7 +17,7 @@ import zero.friends.gostopcalculator.R
 
 
 @Composable
-fun SplashScreen(endOfSplash: () -> Unit) {
+fun SplashScreen() {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             verticalArrangement = Arrangement.Center,
@@ -41,5 +41,4 @@ fun SplashScreen(endOfSplash: () -> Unit) {
                 .align(Alignment.BottomCenter)
         )
     }
-    endOfSplash()
 }
