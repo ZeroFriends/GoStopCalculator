@@ -205,6 +205,12 @@ fun PlayerItem(index: Int, player: Player, clickEvent: (PlayerClickEvent) -> Uni
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun PlayerItemPreView() {
+    PlayerItem(index = 0, player = Player("hello"), clickEvent = {})
+}
+
 @Preview
 @Composable
 fun PlayerPreview() {

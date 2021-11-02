@@ -1,65 +1,25 @@
 package zero.friends.gostopcalculator.ui.common
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import zero.friends.gostopcalculator.R
 
-
-@Composable
-fun TitleText(text: String) {
-    Text(
-        text = text,
-        fontWeight = FontWeight.Bold,
-        fontSize = 24.sp
-    )
-}
-
-@Composable
-fun SubTitleText(text: String) {
-    Text(
-        text = text,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Bold,
-    )
-}
-
-@Composable
-fun SubActionOutLineButton(text: String, onButtonClicked: () -> Unit) {
-    Button(
-        onClick = { onButtonClicked() },
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = colorResource(id = R.color.orangey_red)),
-        border = BorderStroke(1.dp, colorResource(id = R.color.orangey_red)),
-        shape = RoundedCornerShape((12.5).dp)
-    ) {
-        Text(
-            text = text,
-            fontSize = 14.sp,
-            color = colorResource(id = R.color.orangey_red),
-            fontWeight = FontWeight.Bold,
-        )
-    }
-}
 
 @Composable
 fun CenterTextTopBar(text: String, onBack: () -> Unit, onAction: (() -> Unit)?) {
@@ -110,93 +70,3 @@ fun CenterTextTopBar(text: String, onBack: () -> Unit, onAction: (() -> Unit)?) 
 }
 
 
-
-@Composable
-fun GoStopButton(text: String, modifier: Modifier=Modifier, buttonEnabled: Boolean = true, onClick: () -> Unit) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.outlinedButtonColors(
-            backgroundColor = colorResource(id = if (buttonEnabled) R.color.orangey_red else R.color.gray)
-        ),
-        shape = RoundedCornerShape(22.dp),
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        Text(
-            text = text,
-            textAlign = TextAlign.Center,
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(vertical = 6.dp)
-        )
-    }
-}
-
-@Composable
-fun GoStopOutLinedTextField(
-    initialText: String,
-    hint: String,
-    color: Color = colorResource(id = R.color.gray),
-    modifier: Modifier = Modifier,
-    onValueChane: (TextFieldValue) -> Unit,
-    error: String? = null,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
-) {
-    val inputText = remember {
-        mutableStateOf(TextFieldValue(initialText))
-    }
-
-    Column {
-        OutlinedTextField(
-            value = inputText.value,
-            onValueChange = {
-                inputText.value = it
-                onValueChane(it)
-            },
-            modifier = modifier
-                .fillMaxWidth(),
-            singleLine = true,
-            shape = RoundedCornerShape(18.dp),
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                unfocusedBorderColor = color,
-                focusedBorderColor = color,
-                cursorColor = colorResource(id = R.color.nero)
-            ),
-            placeholder = { Text(text = hint, color = color) },
-            textStyle = TextStyle(fontSize = 16.sp),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = keyboardActions
-        )
-        if (error != null) {
-            Text(
-                text = error,
-                color = MaterialTheme.colors.error,
-                style = MaterialTheme.typography.caption,
-            )
-        }
-    }
-
-}
-
-@Composable
-fun GoStopExtraButton(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    OutlinedButton(
-        onClick = onClick,
-        border = BorderStroke(1.dp, colorResource(id = R.color.nero)),
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(18.dp)
-    ) {
-        Text(
-            text = text,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            color = colorResource(id = R.color.nero)
-        )
-    }
-}
-
-@Preview
-@Composable
-fun GoStopOutLinedTextFieldPreView() {
-    GoStopOutLinedTextField("", "", onValueChane = {})
-}
