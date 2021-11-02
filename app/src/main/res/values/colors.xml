@@ -10,5 +10,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="nero">#212121</color>
     <color name="gray">#bdbdbd</color>
+    <color name="gray38">#616161</color>
+    <color name="ford_gray">#979797</color>
 
 </resources>
