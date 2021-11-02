@@ -1,7 +1,6 @@
 package zero.friends.gostopcalculator
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.NavHost
@@ -10,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import zero.friends.gostopcalculator.theme.GoStopTheme
 import zero.friends.gostopcalculator.ui.main.MainScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
@@ -50,7 +50,7 @@ sealed class Navigate(val route: String) {
 
 @Composable
 fun Navigator(onBackPressed: () -> Unit) {
-    MaterialTheme {
+    GoStopTheme {
         val navController = rememberNavController()
         val coroutineScope = rememberCoroutineScope()
         val splashJob = Job()
