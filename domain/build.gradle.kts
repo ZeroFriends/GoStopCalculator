@@ -15,7 +15,6 @@ tasks.test {
     }
 }
 dependencies {
-    project(":data")
     implementation(Dependencies.inject)
     implementation(Dependencies.Kotlin.coroutineCore)
 
