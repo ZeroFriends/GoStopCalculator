@@ -42,7 +42,7 @@ class NetworkModule {
         okHttpClient: OkHttpClient,
         convertFactory: Converter.Factory,
     ): Retrofit = Retrofit.Builder()
-        .baseUrl("https://github.com/ZeroFriends/")
+        .baseUrl("https://raw.githubusercontent.com/")
         .addConverterFactory(convertFactory)
         .client(okHttpClient)
         .build()

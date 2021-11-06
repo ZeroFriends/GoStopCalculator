@@ -7,6 +7,12 @@ import javax.inject.Inject
 
 class RuleRepositoryImpl @Inject constructor(private val ruleApi: RuleApi) : RuleRepository {
     override suspend fun getDefaultRule(): List<Rule> {
-        return ruleApi.getDefaultRule()
+        val rules = ruleApi.getDefaultRule()
+        return rules.map {
+            Rule(it.title, it.isEssential, it.script,
+//                it.score
+            0
+            )
+        }
     }
 }

@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="zero.friends.gostopcalculator">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:name=".GoStopApplication"
         android:allowBackup="true"

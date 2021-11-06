@@ -1,44 +1,42 @@
-{
-  "rules": [
-    {
-      "title": "점당",
-      "isEssential": true,
-      "script": "필수 항목입니다."
-    },
-    {
-      "title": "첫 뻑",
-      "isEssential": false,
-      "script": ""
-    },
-    {
-      "title": "쓰리 뻑",
-      "isEssential": false,
-      "script": ""
-    },
-    {
-      "title": "첫 따닥",
-      "isEssential": false,
-      "script": ""
-    },
-    {
-      "title": "총 통",
-      "isEssential": false,
-      "script": ""
-    },
-    {
-      "title": "5광",
-      "isEssential": false,
-      "script": ""
-    },
-    {
-      "title": "광팔기",
-      "isEssential": false,
-      "script": "4인 플레이 시에만 적용됩니다."
-    },
-    {
-      "title": "상한선 금액",
-      "isEssential": false,
-      "script": ""
-    }
-  ]
-}
+[
+  {
+    "title": "점당",
+    "isEssential": true,
+    "script": "필수 항목입니다."
+  },
+  {
+    "title": "첫 뻑",
+    "isEssential": false,
+    "script": ""
+  },
+  {
+    "title": "쓰리 뻑",
+    "isEssential": false,
+    "script": ""
+  },
+  {
+    "title": "첫 따닥",
+    "isEssential": false,
+    "script": ""
+  },
+  {
+    "title": "총 통",
+    "isEssential": false,
+    "script": ""
+  },
+  {
+    "title": "5광",
+    "isEssential": false,
+    "script": ""
+  },
+  {
+    "title": "광팔기",
+    "isEssential": false,
+    "script": "4인 플레이 시에만 적용됩니다."
+  },
+  {
+    "title": "상한선 금액",
+    "isEssential": false,
+    "script": ""
+  }
+]

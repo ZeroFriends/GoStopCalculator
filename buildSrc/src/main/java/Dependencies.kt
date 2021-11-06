@@ -60,7 +60,7 @@ object Dependencies {
 
         const val gradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
 
-        const val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+        const val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0"
         const val serializationPlugin = "org.jetbrains.kotlin:kotlin-serialization:$version"
 
         const val coroutineCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion"

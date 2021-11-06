@@ -18,6 +18,8 @@ dependencies {
     implementation(Dependencies.inject)
     implementation(Dependencies.Kotlin.coroutineCore)
 
+    implementation(Dependencies.Kotlin.serialization)
+
     testImplementation(Dependencies.Test.junit5)
     testImplementation(platform(Dependencies.Test.junit_bom))
     testImplementation(Dependencies.Test.mockito_kotlin)
