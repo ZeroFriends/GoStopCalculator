@@ -1,4 +1,4 @@
-package zero.friends.data
+package zero.friends.data.dto
 
 import kotlinx.serialization.Serializable
 
