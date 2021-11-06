@@ -9,10 +9,7 @@ class RuleRepositoryImpl @Inject constructor(private val ruleApi: RuleApi) : Rul
     override suspend fun getDefaultRule(): List<Rule> {
         val rules = ruleApi.getDefaultRule()
         return rules.map {
-            Rule(it.title, it.isEssential, it.script,
-//                it.score
-            0
-            )
+            Rule(it.title, it.isEssential, it.script, 0)
         }
     }
 }

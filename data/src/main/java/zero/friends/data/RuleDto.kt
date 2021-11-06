@@ -7,5 +7,4 @@ data class RuleDto(
     val title: String,
     val isEssential: Boolean,
     val script: String,
-//    val score: Int,
 )
