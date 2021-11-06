@@ -89,20 +89,20 @@ fun RuleScreen(
 }
 
 @Composable
-fun RuleLazyColumn(rules: Rule, clickEvent: (RuleClickEvent) -> Unit) {
+fun RuleLazyColumn(rules: List<Rule>, clickEvent: (RuleClickEvent) -> Unit) {
     LazyColumn(contentPadding = PaddingValues(top = 35.dp, bottom = 12.dp)) {
         item {
             AmountSettingBlock { clickEvent(RuleClickEvent.Helper) }
         }
-        itemsIndexed(rules.spread()) { index, rule ->
-            RuleItem(index = index)
+        itemsIndexed(rules) { index, rule ->
+            RuleItem(index = index, rule)
         }
 
     }
 }
 
 @Composable
-fun RuleItem(index: Int) {
+fun RuleItem(index: Int, rule: Rule) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -124,11 +124,13 @@ fun RuleItem(index: Int) {
                     .padding(end = 6.dp)
             ) {
                 Text(
-                    text = "RuleName",
+                    text = rule.title,
                     fontSize = 16.sp,
                     color = colorResource(id = R.color.nero)
                 )
-                Text(text = "필수 항목입니다.", fontSize = 10.sp, color = colorResource(id = R.color.gray38))
+                if (rule.script.isNotEmpty()) {
+                    Text(text = rule.script, fontSize = 10.sp, color = colorResource(id = R.color.gray38))
+                }
             }
         }
         

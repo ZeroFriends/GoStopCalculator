@@ -6,9 +6,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
+import zero.friends.domain.repository.RuleRepository
 import zero.friends.domain.usecase.AddAutoGeneratePlayerUseCase
 import zero.friends.domain.usecase.DeletePlayerUseCase
 import zero.friends.domain.usecase.EditPlayerUseCase
+import zero.friends.domain.usecase.GetDefaultRuleUseCase
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
@@ -33,4 +35,9 @@ class AppModule {
         playerRepository: PlayerRepository,
     ): EditPlayerUseCase =
         EditPlayerUseCase(gameRepository, playerRepository)
+
+    @Provides
+    fun provideGetDefaultRuleUseCase(
+        ruleRepository: RuleRepository,
+    ): GetDefaultRuleUseCase = GetDefaultRuleUseCase(ruleRepository)
 }

@@ -60,6 +60,9 @@ object Dependencies {
 
         const val gradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
 
+        const val serialization = "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+        const val serializationPlugin = "org.jetbrains.kotlin:kotlin-serialization:$version"
+
         const val coroutineCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion"
         const val coroutineAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
 
@@ -72,6 +75,13 @@ object Dependencies {
         const val hiltGradlePlugin = "com.google.dagger:hilt-android-gradle-plugin:$daggerVersion"
         const val hiltLifeCycleViewModel = "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
         const val navigationCompose = "androidx.hilt:hilt-navigation-compose:1.0.0-alpha03"
+    }
+
+    object Square {
+        const val retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
+        const val okhttp3_logging = "com.squareup.okhttp3:logging-interceptor:4.9.1"
+        const val serialization =
+            "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
     }
 
     object Test {
