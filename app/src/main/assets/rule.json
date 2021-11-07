@@ -33,10 +33,5 @@
     "title": "광팔기",
     "isEssential": false,
     "script": "4인 플레이 시에만 적용됩니다."
-  },
-  {
-    "title": "상한선 금액",
-    "isEssential": false,
-    "script": ""
   }
 ]
