@@ -16,9 +16,8 @@ class RuleRepositoryImpl @Inject constructor(private val context: Context, priva
         val json = AssetUtil.loadAsset(context, "rule.json")
         val result = Json.decodeFromString<List<RuleDto>>(json)
 
-        return runCatching {
-            ruleApi.getDefaultRule()
-                .map { Rule(it.title, it.isEssential, it.script, 0) }
-        }.getOrDefault(result.map { Rule(it.title, it.isEssential, it.script, 0) })
+        return runCatching { ruleApi.getDefaultRule() }
+            .getOrDefault(result)
+            .map { Rule(it.title, it.isEssential, it.script, 0) }
     }
 }
