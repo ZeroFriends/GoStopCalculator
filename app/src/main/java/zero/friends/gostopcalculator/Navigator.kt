@@ -52,9 +52,9 @@ sealed class Navigate(val route: String) {
 fun Navigator(onBackPressed: () -> Unit) {
     GoStopTheme {
         val navController = rememberNavController()
-        val splashScope = rememberCoroutineScope()
         NavHost(navController = navController, startDestination = Navigate.Splash.route) {
             composable(Navigate.Splash.route) {
+                val splashScope = rememberCoroutineScope()
                 SplashScreen()
                 splashScope.launch {
                     delay(500)
