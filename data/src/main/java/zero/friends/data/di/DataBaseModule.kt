@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import zero.friends.data.source.DataBase
 import zero.friends.data.source.dao.GameDao
 import zero.friends.data.source.dao.PlayerDao
+import zero.friends.data.source.dao.RuleDao
 import javax.inject.Singleton
 
 @Module
@@ -27,4 +28,8 @@ class DataBaseModule {
     @Provides
     @Singleton
     fun provideGamerDao(dataBase: DataBase): GameDao = dataBase.GameDao()
+
+    @Provides
+    @Singleton
+    fun provideRuleDao(dataBase: DataBase): RuleDao = dataBase.RuleDao()
 }

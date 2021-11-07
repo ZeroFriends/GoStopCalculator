@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.precondition
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,12 +30,13 @@ import zero.friends.gostopcalculator.ui.common.SubActionOutLineButton
 
 sealed class RuleClickEvent {
     object Back : RuleClickEvent()
-    class Complete : RuleClickEvent()
+    class Complete(val ruleName: String) : RuleClickEvent()
     object Helper : RuleClickEvent()
 }
 
 @Composable
-fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onBack: () -> Unit) {
+fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: () -> Unit, onBack: () -> Unit) {
+    val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val uiState by ruleViewModel.getUiState().collectAsState()
 
@@ -47,7 +50,14 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onBack: () -> Uni
         clickEvent = { ruleClickEvent ->
             when (ruleClickEvent) {
                 RuleClickEvent.Back -> onBack()
-                is RuleClickEvent.Complete -> TODO()
+                is RuleClickEvent.Complete -> {
+                    val ruleName =
+                        if (ruleClickEvent.ruleName.isNotEmpty()) ruleClickEvent.ruleName
+                        else uiState.currentTime
+                    ruleViewModel.startGame(ruleName)
+                    onNext()
+                }
+                RuleClickEvent.Helper -> Toast.makeText(context, "아직 기능구현 안됨", Toast.LENGTH_SHORT).show()
             }
         },
         onUpdateRule = {
@@ -79,13 +89,13 @@ fun RuleScreen(
             title = "게임규칙 💡",
             subTitle = "게임 플레이 시 적용될 금액입니다.\n과도한 금액이 나오지 않게 주의해 주세요 :)",
             buttonText = "완료",
-            onClick = { clickEvent(RuleClickEvent.Complete()) }
+            onClick = { clickEvent(RuleClickEvent.Complete(textFieldValue.value.text)) }
         ) {
             Column {
                 TitleOutlinedTextField(
                     title = "규칙이름",
                     hint = uiState.currentTime,
-                    initialText = ""
+                    initialText = uiState.ruleName
                 ) { textFieldValue.value = it }
 
                 RuleLazyColumn(uiState.rules, clickEvent, onUpdateRule)

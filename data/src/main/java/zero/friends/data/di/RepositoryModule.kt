@@ -12,6 +12,7 @@ import zero.friends.data.repository.RuleRepositoryImpl
 import zero.friends.data.source.api.RuleApi
 import zero.friends.data.source.dao.GameDao
 import zero.friends.data.source.dao.PlayerDao
+import zero.friends.data.source.dao.RuleDao
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.repository.RuleRepository
@@ -31,6 +32,10 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideRuleRepository(@ApplicationContext context: Context, ruleApi: RuleApi): RuleRepository =
-        RuleRepositoryImpl(context, ruleApi)
+    fun provideRuleRepository(
+        @ApplicationContext context: Context,
+        ruleApi: RuleApi,
+        ruleDao: RuleDao,
+    ): RuleRepository =
+        RuleRepositoryImpl(context, ruleApi, ruleDao)
 }

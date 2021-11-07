@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import zero.friends.gostopcalculator.theme.GoStopTheme
+import zero.friends.gostopcalculator.ui.board.BoardScreen
 import zero.friends.gostopcalculator.ui.main.MainScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
@@ -84,8 +85,13 @@ fun Navigator(onBackPressed: () -> Unit) {
 
             composable(Navigate.Precondition.Rule.route) {
                 RuleScreen(
-                    onBack = { navController.navigateUp() }
+                    onNext = { navController.navigate(Navigate.Board.Main.route) },
+                    onBack = { navController.navigateUp() },
                 )
+            }
+
+            composable(Navigate.Board.Main.route) {
+                BoardScreen()
             }
         }
     }

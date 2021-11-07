@@ -2,6 +2,7 @@ plugins {
     id("kotlin")
     kotlin("kapt")
     id("java-library")
+    id("kotlinx-serialization")
 }
 
 repositories {
@@ -25,6 +26,8 @@ dependencies {
     testImplementation(Dependencies.Test.mockito_kotlin)
     testImplementation(Dependencies.Test.mockito_core)
     testImplementation(Dependencies.Test.mockito_inline)
+
+    implementation(Dependencies.Square.serialization)
 }
 
 java {
