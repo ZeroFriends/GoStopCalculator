@@ -95,19 +95,21 @@ fun GoStopOutLinedTextField(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun NumberTextField(modifier: Modifier = Modifier, endText: String, onValueChane: (TextFieldValue) -> Unit = {}) {
+fun NumberTextField(modifier: Modifier = Modifier, endText: String, onValueChane: (Int) -> Unit = {}) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val textFieldValue = remember {
+    val inputText = remember {
         mutableStateOf(TextFieldValue("0"))
     }
     Box(
         modifier = modifier.background(colorResource(id = R.color.white))
     ) {
         TextField(
-            value = textFieldValue.value,
+            value = inputText.value,
             onValueChange = {
-                textFieldValue.value = it
-                onValueChane(it)
+                if (Regex("[0-9]+").matches(it.text)) {
+                    inputText.value = it
+                    onValueChane(it.text.toInt())
+                }
             },
             singleLine = true,
             colors = TextFieldDefaults.textFieldColors(
@@ -123,7 +125,7 @@ fun NumberTextField(modifier: Modifier = Modifier, endText: String, onValueChane
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
             }),
-            modifier = Modifier.padding(end = 3.dp)
+            modifier = Modifier.padding(end = 3.dp),
         )
         Text(
             text = endText,

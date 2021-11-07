@@ -169,7 +169,7 @@ fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) {
         }
 
         NumberTextField(modifier = Modifier.weight(1f), "원") {
-            onUpdateScore(it.text.toInt())
+            onUpdateScore(it)
         }
     }
 }
