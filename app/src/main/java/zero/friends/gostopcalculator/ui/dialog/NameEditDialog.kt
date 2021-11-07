@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -32,7 +31,6 @@ fun NameEditDialog(
     val inputText = remember {
         mutableStateOf(TextFieldValue(uiState.dialogState.editPlayer?.name ?: ""))
     }
-
     if (!uiState.dialogState.openDialog) {
         viewModel.closeDialog()
     }
@@ -60,9 +58,8 @@ fun NameEditDialog(
                         inputText.value = it
                     },
                     error = uiState.dialogState.error?.message,
-                    keyboardActions = KeyboardActions(onDone = {
-                        editPlayer(uiState, viewModel, inputText)
-                    }),
+                    showKeyboard = true,
+                    onDone = { editPlayer(uiState, viewModel, inputText) }
                 )
             }
 

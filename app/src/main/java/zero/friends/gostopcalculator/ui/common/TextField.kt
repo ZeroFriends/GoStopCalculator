@@ -10,11 +10,14 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -26,8 +29,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import zero.friends.gostopcalculator.R
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun GoStopOutLinedTextField(
     initialText: String,
@@ -36,8 +41,14 @@ fun GoStopOutLinedTextField(
     modifier: Modifier = Modifier,
     onValueChane: (TextFieldValue) -> Unit,
     error: String? = null,
-    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    showKeyboard: Boolean = false,
+    onDone: () -> Unit = {},
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val (focusRequester) = remember {
+        FocusRequester.createRefs()
+    }
+
     val inputText = remember {
         mutableStateOf(TextFieldValue(initialText))
     }
@@ -50,7 +61,8 @@ fun GoStopOutLinedTextField(
                 onValueChane(it)
             },
             modifier = modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .focusRequester(focusRequester),
             singleLine = true,
             shape = RoundedCornerShape(18.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -61,7 +73,7 @@ fun GoStopOutLinedTextField(
             placeholder = { Text(text = hint, color = color) },
             textStyle = TextStyle(fontSize = 16.sp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = keyboardActions
+            keyboardActions = KeyboardActions(onDone = { onDone() }),
         )
         if (error != null) {
             Text(
@@ -72,6 +84,13 @@ fun GoStopOutLinedTextField(
         }
     }
 
+    LaunchedEffect(Unit) {
+        if (showKeyboard) {
+            focusRequester.requestFocus()
+            delay(100)
+            keyboardController?.show()
+        }
+    }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
