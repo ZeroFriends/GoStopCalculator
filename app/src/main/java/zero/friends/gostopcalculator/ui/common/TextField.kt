@@ -13,8 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -72,8 +74,10 @@ fun GoStopOutLinedTextField(
 
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NumberTextField(modifier: Modifier = Modifier, endText: String, onValueChane: (TextFieldValue) -> Unit = {}) {
+    val keyboardController = LocalSoftwareKeyboardController.current
     val textFieldValue = remember {
         mutableStateOf(TextFieldValue("0"))
     }
@@ -93,7 +97,13 @@ fun NumberTextField(modifier: Modifier = Modifier, endText: String, onValueChane
                 focusedIndicatorColor = colorResource(id = R.color.ford_gray)
             ),
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+            }),
             modifier = Modifier.padding(end = 3.dp)
         )
         Text(
