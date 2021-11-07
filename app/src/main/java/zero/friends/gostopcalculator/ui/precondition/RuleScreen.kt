@@ -28,7 +28,7 @@ import zero.friends.gostopcalculator.ui.common.SubActionOutLineButton
 
 sealed class RuleClickEvent {
     object Back : RuleClickEvent()
-    object Complete : RuleClickEvent()
+    class Complete : RuleClickEvent()
     object Helper : RuleClickEvent()
 }
 
@@ -41,19 +41,26 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onBack: () -> Uni
         onBack()
     }
 
-    RuleScreen(scaffoldState, uiState) { ruleClickEvent ->
-        when (ruleClickEvent) {
-            RuleClickEvent.Back -> onBack()
-            RuleClickEvent.Complete -> TODO()
-        }
-    }
+    RuleScreen(
+        scaffoldState = scaffoldState,
+        uiState = uiState,
+        clickEvent = { ruleClickEvent ->
+            when (ruleClickEvent) {
+                RuleClickEvent.Back -> onBack()
+                is RuleClickEvent.Complete -> TODO()
+            }
+        },
+        onUpdateRule = {
+            ruleViewModel.updateRuleScore(it)
+        })
 }
 
 @Composable
 fun RuleScreen(
     scaffoldState: ScaffoldState,
     uiState: RuleUiState,
-    clickEvent: (RuleClickEvent) -> Unit,
+    clickEvent: (RuleClickEvent) -> Unit = {},
+    onUpdateRule: (Rule) -> Unit = {},
 ) {
     Scaffold(
         scaffoldState = scaffoldState,
@@ -72,7 +79,7 @@ fun RuleScreen(
             title = "게임규칙 💡",
             subTitle = "게임 플레이 시 적용될 금액입니다.\n과도한 금액이 나오지 않게 주의해 주세요 :)",
             buttonText = "완료",
-            onClick = { clickEvent(RuleClickEvent.Complete) }
+            onClick = { clickEvent(RuleClickEvent.Complete()) }
         ) {
             Column {
                 TitleOutlinedTextField(
@@ -81,27 +88,29 @@ fun RuleScreen(
                     initialText = ""
                 ) { textFieldValue.value = it }
 
-                RuleLazyColumn(uiState.rules, clickEvent)
+                RuleLazyColumn(uiState.rules, clickEvent, onUpdateRule)
             }
         }
     }
 }
 
 @Composable
-fun RuleLazyColumn(rules: List<Rule>, clickEvent: (RuleClickEvent) -> Unit) {
+fun RuleLazyColumn(rules: List<Rule>, clickEvent: (RuleClickEvent) -> Unit, onUpdateRule: (Rule) -> Unit = {}) {
     LazyColumn(contentPadding = PaddingValues(top = 35.dp, bottom = 12.dp)) {
         item {
             AmountSettingBlock { clickEvent(RuleClickEvent.Helper) }
         }
         itemsIndexed(rules) { index, rule ->
-            RuleItem(index = index, rule)
+            RuleItem(index = index, rule) {
+                onUpdateRule(rule.copy(score = it))
+            }
         }
 
     }
 }
 
 @Composable
-fun RuleItem(index: Int, rule: Rule) {
+fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -146,8 +155,10 @@ fun RuleItem(index: Int, rule: Rule) {
                 }
             }
         }
-        
-        NumberTextField(modifier = Modifier.weight(1f), "원")
+
+        NumberTextField(modifier = Modifier.weight(1f), "원") {
+            onUpdateScore(it.text.toInt())
+        }
     }
 }
 
@@ -172,5 +183,5 @@ fun RuleItemPreview() {
 @Preview
 @Composable
 fun RuleScreenPreview() {
-    RuleScreen(rememberScaffoldState(), uiState = RuleUiState()) {}
+    RuleScreen(rememberScaffoldState(), uiState = RuleUiState())
 }

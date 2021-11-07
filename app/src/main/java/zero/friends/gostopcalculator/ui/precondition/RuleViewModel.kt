@@ -33,4 +33,12 @@ class RuleViewModel @Inject constructor(private val getDefaultRuleUseCase: GetDe
         }
     }
 
+    fun updateRuleScore(targetRule: Rule) {
+        _uiState.update { state ->
+            state.apply {
+                rules.find { it.title == targetRule.title }?.score = targetRule.score
+            }
+        }
+    }
+
 }

@@ -73,7 +73,7 @@ fun GoStopOutLinedTextField(
 }
 
 @Composable
-fun NumberTextField(modifier: Modifier = Modifier, endText: String) {
+fun NumberTextField(modifier: Modifier = Modifier, endText: String, onValueChane: (TextFieldValue) -> Unit = {}) {
     val textFieldValue = remember {
         mutableStateOf(TextFieldValue("0"))
     }
@@ -84,6 +84,7 @@ fun NumberTextField(modifier: Modifier = Modifier, endText: String) {
             value = textFieldValue.value,
             onValueChange = {
                 textFieldValue.value = it
+                onValueChane(it)
             },
             singleLine = true,
             colors = TextFieldDefaults.textFieldColors(
