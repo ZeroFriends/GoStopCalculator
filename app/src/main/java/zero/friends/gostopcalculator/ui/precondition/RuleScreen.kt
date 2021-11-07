@@ -4,14 +4,13 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -117,17 +116,31 @@ fun RuleItem(index: Int, rule: Rule) {
                     .align(Alignment.CenterVertically)
                     .padding(16.dp),
                 fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
                 color = colorResource(id = R.color.orangey_red))
             Column(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(end = 6.dp)
             ) {
-                Text(
-                    text = rule.title,
-                    fontSize = 16.sp,
-                    color = colorResource(id = R.color.nero)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = rule.title,
+                        fontSize = 16.sp,
+                        color = colorResource(id = R.color.nero)
+                    )
+                    if (rule.isEssential) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_star_red),
+                            contentDescription = null,
+                            tint = Color.Red,
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
+                    }
+                }
                 if (rule.script.isNotEmpty()) {
                     Text(text = rule.script, fontSize = 10.sp, color = colorResource(id = R.color.gray38))
                 }
@@ -148,6 +161,12 @@ fun AmountSettingBlock(modifier: Modifier = Modifier, onHelperClick: () -> Unit)
         Text(text = "금액설정", fontSize = 16.sp, fontWeight = FontWeight.Bold)
         SubActionOutLineButton("도움말") { onHelperClick() }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RuleItemPreview() {
+    RuleItem(index = 0, rule = Rule("점당", true, "필수 항목 입니다.", 0))
 }
 
 @Preview
