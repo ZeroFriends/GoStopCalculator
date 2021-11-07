@@ -44,6 +44,7 @@ fun GoStopButton(text: String, modifier: Modifier = Modifier, buttonEnabled: Boo
             backgroundColor = colorResource(id = if (buttonEnabled) R.color.orangey_red else R.color.gray)
         ),
         shape = RoundedCornerShape(22.dp),
+        enabled = buttonEnabled,
         modifier = modifier
             .fillMaxWidth()
     ) {

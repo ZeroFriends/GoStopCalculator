@@ -18,6 +18,7 @@ data class RuleUiState(
     val currentTime: String = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(System.currentTimeMillis()),
     val ruleName: String = "",
     val rules: List<Rule> = emptyList(),
+    val enableComplete: Boolean = false,
 )
 
 @HiltViewModel
@@ -39,15 +40,18 @@ class RuleViewModel @Inject constructor(
     }
 
     fun updateRuleScore(targetRule: Rule) {
-        _uiState.update { state ->
-            state.apply {
-                rules.find { it.title == targetRule.title }?.score = targetRule.score
-            }
-        }
+        getUiState().value.rules.find { it.title == targetRule.title }?.score = targetRule.score
     }
 
     fun startGame(ruleName: String) {
         addNewRuleUseCase(ruleName = ruleName, rules = getUiState().value.rules)
+    }
+
+    fun checkButtonState() {
+        val verify = getUiState().value.rules.filter { it.isEssential }.any { it.score > 0 }
+        _uiState.update {
+            it.copy(enableComplete = verify)
+        }
     }
 
 }

@@ -62,6 +62,7 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: () -> Uni
         },
         onUpdateRule = {
             ruleViewModel.updateRuleScore(it)
+            ruleViewModel.checkButtonState()
         })
 }
 
@@ -89,6 +90,7 @@ fun RuleScreen(
             title = "게임규칙 💡",
             subTitle = "게임 플레이 시 적용될 금액입니다.\n과도한 금액이 나오지 않게 주의해 주세요 :)",
             buttonText = "완료",
+            buttonEnabled = uiState.enableComplete,
             onClick = { clickEvent(RuleClickEvent.Complete(textFieldValue.value.text)) }
         ) {
             Column {
