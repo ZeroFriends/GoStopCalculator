@@ -91,7 +91,7 @@ fun Navigator(onBackPressed: () -> Unit) {
             }
 
             composable(Navigate.Board.Main.route) {
-                BoardScreen()
+                BoardScreen(onBack = { navController.navigate(Navigate.Main.route) })
             }
         }
     }
