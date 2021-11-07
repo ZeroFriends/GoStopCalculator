@@ -17,11 +17,11 @@ class RuleRepositoryImpl @Inject constructor(
     private val ruleDao: RuleDao,
 ) : RuleRepository {
     override suspend fun getDefaultRule(): List<Rule> {
-        val json = AssetUtil.loadAsset(context, "rule.json")
-        val result = Json.decodeFromString<List<Rule>>(json)
-
-        return runCatching { ruleApi.getDefaultRule() }
-            .getOrDefault(result)
+        return runCatching {
+            val json = AssetUtil.loadAsset(context, "rule.json")
+            Json.decodeFromString<List<Rule>>(json)
+        }
+            .getOrDefault(ruleApi.getDefaultRule())
             .map { Rule(it.title, it.isEssential, it.script, 0) }
     }
 
