@@ -193,7 +193,8 @@ fun PlayerItem(index: Int, player: Player, clickEvent: (PlayerClickEvent) -> Uni
                     .align(Alignment.CenterVertically)
                     .padding(end = 6.dp),
                 fontSize = 16.sp,
-                color = colorResource(id = R.color.nero)
+                color = colorResource(id = R.color.nero),
+                maxLines = 1
             )
             IconButton(onClick = { clickEvent(PlayerClickEvent.EditPlayer(player)) }) {
                 Icon(painter = painterResource(id = R.drawable.ic_mode_edit_black), contentDescription = null)

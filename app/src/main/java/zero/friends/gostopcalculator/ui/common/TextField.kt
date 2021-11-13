@@ -57,6 +57,7 @@ fun GoStopOutLinedTextField(
                 .fillMaxWidth()
                 .focusRequester(focusRequester),
             singleLine = true,
+            maxLines = 1,
             shape = RoundedCornerShape(18.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = color,
