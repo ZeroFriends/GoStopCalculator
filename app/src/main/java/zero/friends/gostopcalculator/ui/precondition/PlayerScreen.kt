@@ -5,17 +5,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -88,8 +85,8 @@ private fun PlayerScreen(
             )
         }
     ) {
-        val gameName = rememberSaveable {
-            mutableStateOf(uiState.gameName)
+        val gameName = remember {
+            mutableStateOf(TextFieldValue(uiState.gameName))
         }
 
         AprilBackground(
@@ -97,7 +94,7 @@ private fun PlayerScreen(
             subTitle = stringResource(id = R.string.player_description),
             buttonText = stringResource(id = R.string.next),
             buttonEnabled = uiState.players.size > 1,
-            onClick = { clickEvent(PlayerClickEvent.Next(gameName.value)) }
+            onClick = { clickEvent(PlayerClickEvent.Next(gameName.value.text)) }
         ) {
             Column {
                 TitleOutlinedTextField(
@@ -153,10 +150,10 @@ private fun PlayerLazyColumn(
 @Composable
 fun TitleOutlinedTextField(
     title: String,
-    text: String,
+    text: TextFieldValue,
     hint: String,
     modifier: Modifier = Modifier,
-    onValueChange: (String) -> Unit,
+    onValueChange: (TextFieldValue) -> Unit,
 ) {
     Column(modifier = modifier) {
         Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 4.dp))

@@ -8,11 +8,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,7 +21,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.GoStopButton
 import zero.friends.gostopcalculator.ui.common.GoStopOutLinedTextField
-import zero.friends.gostopcalculator.ui.precondition.PlayerUiState
 import zero.friends.gostopcalculator.ui.precondition.PlayerViewModel
 
 @Composable
@@ -28,11 +28,18 @@ fun NameEditDialog(
     viewModel: PlayerViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.getUiState().collectAsState()
-    val editPlayerName = rememberSaveable {
-        mutableStateOf(uiState.dialogState.editPlayer?.name ?: "")
+    val editPlayerName = remember {
+        val playerName = uiState.dialogState.editPlayer?.name ?: ""
+        mutableStateOf(TextFieldValue(playerName, selection = TextRange(playerName.length)))
     }
     if (!uiState.dialogState.openDialog) {
         viewModel.closeDialog()
+    }
+
+    val editPlayer = {
+        val player = uiState.dialogState.editPlayer
+        requireNotNull(player)
+        viewModel.editPlayer(player, player.copy(name = editPlayerName.value.text))
     }
 
     AlertDialog(
@@ -58,27 +65,20 @@ fun NameEditDialog(
                         editPlayerName.value = it
                     },
                     error = uiState.dialogState.error?.message,
-                    showKeyboard = true
-                ) { editPlayer(uiState, viewModel, editPlayerName) }
+                    showKeyboard = true,
+                    onDone = editPlayer
+                )
             }
 
         },
         confirmButton = {
-            GoStopButton(stringResource(R.string.edit), modifier = Modifier.padding(horizontal = 12.dp)) {
-                editPlayer(uiState, viewModel, editPlayerName)
-            }
+            GoStopButton(
+                text = stringResource(R.string.edit),
+                modifier = Modifier.padding(horizontal = 12.dp),
+                onClick = editPlayer
+            )
         },
         shape = RoundedCornerShape(16.dp),
         contentColor = colorResource(id = R.color.black)
     )
-}
-
-private fun editPlayer(
-    uiState: PlayerUiState,
-    viewModel: PlayerViewModel,
-    inputText: MutableState<String>,
-) {
-    val player = uiState.dialogState.editPlayer
-    requireNotNull(player)
-    viewModel.editPlayer(player, player.copy(name = inputText.value))
 }

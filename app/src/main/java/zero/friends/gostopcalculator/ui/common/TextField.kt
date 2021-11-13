@@ -35,11 +35,11 @@ import zero.friends.gostopcalculator.R
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun GoStopOutLinedTextField(
-    text: String,
+    text: TextFieldValue,
     hint: String,
     color: Color = colorResource(id = R.color.gray),
     modifier: Modifier = Modifier,
-    onValueChange: (String) -> Unit,
+    onValueChange: (TextFieldValue) -> Unit,
     error: String? = null,
     showKeyboard: Boolean = false,
     onDone: () -> Unit = {},
@@ -69,7 +69,7 @@ fun GoStopOutLinedTextField(
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
                 onDone()
-            }),
+            })
         )
         if (error != null) {
             Text(
@@ -134,7 +134,7 @@ fun NumberTextField(modifier: Modifier = Modifier, endText: String, onValueChane
 @Preview(showBackground = true)
 @Composable
 fun GoStopOutLinedTextFieldPreView() {
-    GoStopOutLinedTextField("ZeroWorld!!", "hint", onValueChange = {})
+    GoStopOutLinedTextField(TextFieldValue("ZeroWorld!!"), "hint", onValueChange = {})
 }
 
 @Preview
