@@ -73,7 +73,10 @@ fun GoStopOutLinedTextField(
             placeholder = { Text(text = hint, color = color) },
             textStyle = TextStyle(fontSize = 16.sp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { onDone() }),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboardController?.hide()
+                onDone()
+            }),
         )
         if (error != null) {
             Text(
