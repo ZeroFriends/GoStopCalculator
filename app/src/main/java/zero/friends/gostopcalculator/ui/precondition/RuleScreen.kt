@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,7 +16,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -87,22 +87,22 @@ fun RuleScreen(
             )
         }
     ) {
-        val textFieldValue = remember {
-            mutableStateOf(TextFieldValue())
+        val ruleName = rememberSaveable {
+            mutableStateOf(uiState.ruleName)
         }
         AprilBackground(
             title = "게임규칙 💡",
             subTitle = "게임 플레이 시 적용될 금액입니다.\n과도한 금액이 나오지 않게 주의해 주세요 :)",
             buttonText = "완료",
             buttonEnabled = uiState.enableComplete,
-            onClick = { clickEvent(RuleClickEvent.Complete(textFieldValue.value.text)) }
+            onClick = { clickEvent(RuleClickEvent.Complete(ruleName.value)) }
         ) {
             Column {
                 TitleOutlinedTextField(
                     title = "규칙이름",
-                    hint = uiState.currentTime,
-                    initialText = uiState.ruleName
-                ) { textFieldValue.value = it }
+                    text = ruleName.value,
+                    hint = uiState.currentTime
+                ) { ruleName.value = it }
 
                 RuleLazyColumn(uiState.rules, clickEvent, onUpdateRule)
             }
