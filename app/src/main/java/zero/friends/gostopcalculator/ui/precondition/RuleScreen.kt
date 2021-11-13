@@ -64,6 +64,10 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: () -> Uni
             ruleViewModel.updateRuleScore(it)
             ruleViewModel.checkButtonState()
         })
+
+    LaunchedEffect(Unit) {
+        ruleViewModel.updateRule()
+    }
 }
 
 @Composable

@@ -1,12 +1,10 @@
 package zero.friends.gostopcalculator.ui.precondition
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import zero.friends.domain.model.Rule
 import zero.friends.domain.usecase.AddNewRuleUseCase
 import zero.friends.domain.usecase.GetDefaultRuleUseCase
@@ -30,12 +28,10 @@ class RuleViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RuleUiState())
     fun getUiState() = _uiState.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            _uiState.update {
-                val rules = getDefaultRuleUseCase.invoke()
-                it.copy(rules = rules)
-            }
+    suspend fun updateRule() {
+        _uiState.update {
+            val rules = getDefaultRuleUseCase.invoke()
+            it.copy(rules = rules)
         }
     }
 
