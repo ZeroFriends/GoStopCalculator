@@ -40,7 +40,7 @@ object Dependencies {
     }
 
     object Navigation {
-        private const val version = "2.4.0-alpha08"
+        private const val version = "2.4.0-beta01"
         const val fragment = "androidx.navigation:navigation-fragment-ktx:$version"
         const val ui = "androidx.navigation:navigation-ui-ktx:$version"
         const val compose = "androidx.navigation:navigation-compose:$version"
@@ -55,7 +55,7 @@ object Dependencies {
     }
 
     object Kotlin {
-        private const val version = "1.5.21"
+        private const val version = "1.5.31"
         private const val coroutineVersion = "1.5.1"
 
         const val gradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"

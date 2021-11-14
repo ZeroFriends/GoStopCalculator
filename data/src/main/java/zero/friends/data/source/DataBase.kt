@@ -11,7 +11,7 @@ import zero.friends.data.source.dao.PlayerDao
 import zero.friends.data.source.dao.RuleDao
 import zero.friends.data.util.SerializationConverters
 
-@Database(entities = [PlayerEntity::class, GameEntity::class, RuleEntity::class], version = 1)
+@Database(entities = [PlayerEntity::class, GameEntity::class, RuleEntity::class], version = 1, exportSchema = false)
 @TypeConverters(SerializationConverters::class)
 abstract class DataBase : RoomDatabase() {
     abstract fun PlayerDao(): PlayerDao
