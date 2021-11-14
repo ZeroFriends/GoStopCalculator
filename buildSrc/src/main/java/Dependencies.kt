@@ -55,8 +55,8 @@ object Dependencies {
     }
 
     object Kotlin {
-        const val version = "1.5.21"
-        const val coroutineVersion = "1.5.1"
+        private const val version = "1.5.21"
+        private const val coroutineVersion = "1.5.1"
 
         const val gradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
 
@@ -80,18 +80,7 @@ object Dependencies {
     object Square {
         const val retrofit = "com.squareup.retrofit2:retrofit:2.9.0"
         const val okhttp3_logging = "com.squareup.okhttp3:logging-interceptor:4.9.1"
-        const val serialization =
-            "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
-    }
-
-    object Test {
-        const val junit5 = "org.junit.jupiter:junit-jupiter"
-        const val junit_bom = "org.junit:junit-bom:5.8.1"
-        const val espresso = "androidx.test.espresso:espresso-core:3.4.0"
-
-        const val mockito_kotlin = "org.mockito.kotlin:mockito-kotlin:3.1.0"
-        const val mockito_core = "org.mockito:mockito-core:3.9.0"
-        const val mockito_inline = "org.mockito:mockito-inline:3.9.0"
+        const val serialization = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
     }
 
     const val timber = "com.jakewharton.timber:timber:4.7.1"
