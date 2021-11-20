@@ -5,10 +5,10 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath(Dependencies.androidGradlePlugin)
-        classpath(Dependencies.Dagger.hiltGradlePlugin)
-        classpath(Dependencies.Kotlin.gradlePlugin)
-        classpath(Dependencies.Kotlin.serializationPlugin)
+        classpath(Dep.androidGradlePlugin)
+        classpath(Dep.Dagger.hiltGradlePlugin)
+        classpath(Dep.Kotlin.gradlePlugin)
+        classpath(Dep.Kotlin.serializationPlugin)
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

@@ -38,7 +38,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = Dependencies.Compose.version
+        kotlinCompilerExtensionVersion = Dep.Compose.version
     }
 
     buildFeatures {
@@ -50,31 +50,31 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
 
-    implementation(Dependencies.Compose.ui)
-    implementation(Dependencies.Compose.tooling)
-    implementation(Dependencies.Compose.material)
-    implementation(Dependencies.Compose.themeAdapter)
+    implementation(Dep.Compose.ui)
+    implementation(Dep.Compose.tooling)
+    implementation(Dep.Compose.material)
+    implementation(Dep.Compose.themeAdapter)
 
 
-    implementation(Dependencies.AndroidX.core)
-    implementation(Dependencies.AndroidX.fragment)
-    implementation(Dependencies.AndroidX.constraintCompose)
-    implementation(Dependencies.AndroidX.Activity.activity)
-    implementation(Dependencies.AndroidX.Activity.compose)
-    implementation(Dependencies.AndroidX.Lifecycle.viewModel)
-    implementation(Dependencies.AndroidX.Lifecycle.composeViewModel)
+    implementation(Dep.AndroidX.core)
+    implementation(Dep.AndroidX.fragment)
+    implementation(Dep.AndroidX.constraintCompose)
+    implementation(Dep.AndroidX.Activity.activity)
+    implementation(Dep.AndroidX.Activity.compose)
+    implementation(Dep.AndroidX.Lifecycle.viewModel)
+    implementation(Dep.AndroidX.Lifecycle.composeViewModel)
 
-    implementation(Dependencies.Navigation.ui)
-    implementation(Dependencies.Navigation.fragment)
-    implementation(Dependencies.Navigation.compose)
+    implementation(Dep.Navigation.ui)
+    implementation(Dep.Navigation.fragment)
+    implementation(Dep.Navigation.compose)
 
-    implementation(Dependencies.Kotlin.coroutineCore)
-    implementation(Dependencies.Kotlin.coroutineAndroid)
+    implementation(Dep.Kotlin.coroutineCore)
+    implementation(Dep.Kotlin.coroutineAndroid)
 
-    implementation(Dependencies.Dagger.hiltAndroid)
-    implementation(Dependencies.Dagger.hiltLifeCycleViewModel)
-    implementation(Dependencies.Dagger.navigationCompose)
-    kapt(Dependencies.Dagger.hiltCompiler)
+    implementation(Dep.Dagger.hiltAndroid)
+    implementation(Dep.Dagger.hiltLifeCycleViewModel)
+    implementation(Dep.Dagger.navigationCompose)
+    kapt(Dep.Dagger.hiltCompiler)
 
-    implementation(Dependencies.timber)
+    implementation(Dep.timber)
 }

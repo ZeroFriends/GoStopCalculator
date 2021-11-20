@@ -12,18 +12,18 @@ android {
 
 dependencies {
     implementation(project(":domain"))
-    implementation(Dependencies.Dagger.hiltAndroid)
-    kapt(Dependencies.Dagger.hiltCompiler)
+    implementation(Dep.Dagger.hiltAndroid)
+    kapt(Dep.Dagger.hiltCompiler)
 
-    implementation(Dependencies.Kotlin.coroutineCore)
-    implementation(Dependencies.Kotlin.serialization)
+    implementation(Dep.Kotlin.coroutineCore)
+    implementation(Dep.Kotlin.serialization)
 
-    api(Dependencies.AndroidX.Room.room)
-    implementation(Dependencies.AndroidX.Room.roomKtx)
-    kapt(Dependencies.AndroidX.Room.roomCompiler)
+    api(Dep.AndroidX.Room.room)
+    implementation(Dep.AndroidX.Room.roomKtx)
+    kapt(Dep.AndroidX.Room.roomCompiler)
 
-    api(Dependencies.Square.retrofit)
-    implementation(Dependencies.Square.okhttp3_logging)
-    implementation(Dependencies.Square.serialization)
+    api(Dep.Square.retrofit)
+    implementation(Dep.Square.okhttp3_logging)
+    implementation(Dep.Square.serialization)
 
 }

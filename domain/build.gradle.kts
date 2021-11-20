@@ -16,11 +16,11 @@ tasks.test {
     }
 }
 dependencies {
-    implementation(Dependencies.inject)
-    implementation(Dependencies.Kotlin.coroutineCore)
+    implementation(Dep.inject)
+    implementation(Dep.Kotlin.coroutineCore)
 
-    implementation(Dependencies.Kotlin.serialization)
-    implementation(Dependencies.Square.serialization)
+    implementation(Dep.Kotlin.serialization)
+    implementation(Dep.Square.serialization)
 }
 
 java {

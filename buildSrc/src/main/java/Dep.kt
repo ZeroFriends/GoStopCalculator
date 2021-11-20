@@ -8,7 +8,7 @@ object Versions {
     const val versionName = "0.0.0"
 }
 
-object Dependencies {
+object Dep {
     const val androidGradlePlugin = "com.android.tools.build:gradle:7.0.2"
 
     object AndroidX {
