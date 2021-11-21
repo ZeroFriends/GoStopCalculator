@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,62 +21,81 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.model.Game
 import zero.friends.gostopcalculator.ui.common.GoStopButton
-import zero.friends.gostopcalculator.ui.common.SubActionOutLineButton
+import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.ui.common.SubTitleText
 import zero.friends.gostopcalculator.ui.common.TitleText
 
+sealed class MainEvent {
+    object StartGame : MainEvent()
+    object ShowGuide : MainEvent()
+    class ShowGame(val game: Game) : MainEvent()
+}
+
 @Composable
-fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Unit, onShowGuide: () -> Unit) {
-    val modifier = Modifier
+fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Unit) {
+    MainScreen(viewModel.getGameHistory()) { event ->
+        when (event) {
+            is MainEvent.ShowGame -> {
+                //TODO show game dialog
+            }
+            MainEvent.ShowGuide -> {
+                //TODO on Show guide
+            }
+            MainEvent.StartGame -> {
+                onStartGame()
+            }
+        }
+    }
+}
+
+@Composable
+private fun MainScreen(games: List<Game>, event: (MainEvent) -> Unit = {}) {
     Column {
-        NewGame(
-            modifier = modifier,
-            onStartGame = { onStartGame() },
-            onShowGuide = { onShowGuide() }
-        )
+        NewGame(event)
 
         Divider(
             color = colorResource(id = R.color.gray),
             thickness = 10.dp,
-            modifier = modifier.padding(vertical = 16.dp)
+            modifier = Modifier.padding(vertical = 16.dp)
         )
 
-        History(modifier, listOf(Game("hello", "2021.11.21"), Game("world", "2021.11.21")))
+        History(games, onClick = { event(MainEvent.ShowGame(it)) })
     }
 }
 
 @Composable
-fun NewGame(modifier: Modifier, onStartGame: () -> Unit, onShowGuide: () -> Unit) {
-    Column(modifier.padding(16.dp)) {
+fun NewGame(event: (MainEvent) -> Unit) {
+    Column(Modifier.padding(16.dp)) {
         SubTitleText("NEW GAME")
-        Spacer(modifier = modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         Row(
-            modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             TitleText(text = stringResource(id = R.string.today_game))
-            SubActionOutLineButton(
-                stringResource(id = R.string.guide),
-                colorResource(id = R.color.orangey_red),
-                14.sp,
-                onShowGuide
+            RoundedCornerText(
+                text = stringResource(id = R.string.guide),
+                color = colorResource(id = R.color.orangey_red),
+                fontSize = 14.sp,
+                onButtonClicked = { event(MainEvent.ShowGuide) }
             )
         }
-        Spacer(modifier = modifier.padding(18.dp))
-        GoStopButton(stringResource(id = R.string.start), modifier, onClick = onStartGame)
+        Spacer(modifier = Modifier.padding(18.dp))
+        GoStopButton(stringResource(id = R.string.start), onClick = { event(MainEvent.StartGame) })
     }
 }
 
 
 @Composable
-fun History(modifier: Modifier, games: List<Game>) {
+fun History(games: List<Game>, onClick: (Game) -> Unit) {
     Column(
-        modifier.padding(16.dp)
+        Modifier.padding(16.dp)
     ) {
         SubTitleText(text = stringResource(id = R.string.history))
         TitleText(text = stringResource(id = R.string.progress))
         if (games.isEmpty()) {
-            EmptyHistory(modifier)
+            EmptyHistory()
         } else {
             LazyColumn(
                 modifier = Modifier
@@ -88,7 +104,7 @@ fun History(modifier: Modifier, games: List<Game>) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(games) { game ->
-                    GameLog(game) {}
+                    GameLog(game, onClick = { onClick(game) })
                 }
             }
         }
@@ -96,21 +112,21 @@ fun History(modifier: Modifier, games: List<Game>) {
 }
 
 @Composable
-fun EmptyHistory(modifier: Modifier) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+fun EmptyHistory() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
                 painter = painterResource(id = R.drawable.ic_onodofu),
                 contentDescription = stringResource(id = R.string.onodofu),
                 alignment = Alignment.Center,
                 contentScale = ContentScale.Crop,
-                modifier = modifier.padding(bottom = 9.dp)
+                modifier = Modifier.padding(bottom = 9.dp)
             )
             Text(
                 text = stringResource(id = R.string.empty_game),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = modifier.padding(bottom = 2.dp)
+                modifier = Modifier.padding(bottom = 2.dp)
             )
             Text(text = stringResource(id = R.string.info_game_start))
         }
@@ -123,11 +139,13 @@ fun GameLogPreview() {
     GameLog(Game("gameTitle", "2021.11.21"))
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun GameLog(game: Game, onClick: () -> Unit = {}) {
     Card(
         elevation = 6.dp,
-        shape = RoundedCornerShape(18.dp)
+        shape = RoundedCornerShape(18.dp),
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier
@@ -155,11 +173,11 @@ fun GameLog(game: Game, onClick: () -> Unit = {}) {
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.padding(4.dp))
-                    SubActionOutLineButton(
+                    RoundedCornerText(
                         stringResource(R.string.playing),
                         colorResource(id = R.color.gray38),
                         12.sp,
-                        onClick
+                        null
                     )
                 }
 
@@ -176,5 +194,5 @@ fun GameLog(game: Game, onClick: () -> Unit = {}) {
 @Preview("MainPreview", showBackground = true)
 @Composable
 fun MainPreview() {
-    MainScreen(MainViewModel(), {}, {})
+    MainScreen(emptyList())
 }
