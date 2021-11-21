@@ -36,7 +36,11 @@ private sealed class MainEvent {
 }
 
 @Composable
-fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Unit) {
+fun MainScreen(
+    viewModel: MainViewModel = hiltViewModel(),
+    onStartGame: () -> Unit = {},
+    onShowGame: (Game) -> Unit = {}
+) {
     val uiState by viewModel.getUiState().collectAsState()
     val dialogState by viewModel.getDialogState().collectAsState()
 
@@ -65,7 +69,7 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Un
     MainScreen(uiState) { event ->
         when (event) {
             is MainEvent.ShowGame -> {
-                //TODO show game dialog
+                onShowGame(event.game)
             }
             MainEvent.ShowGuide -> {
                 //TODO on Show guide

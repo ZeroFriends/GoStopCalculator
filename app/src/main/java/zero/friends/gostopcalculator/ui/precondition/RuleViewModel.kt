@@ -5,7 +5,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
+import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.usecase.AddNewRuleUseCase
 import zero.friends.domain.usecase.GetDefaultRuleUseCase
 import java.text.SimpleDateFormat
@@ -23,6 +25,7 @@ data class RuleUiState(
 class RuleViewModel @Inject constructor(
     private val getDefaultRuleUseCase: GetDefaultRuleUseCase,
     private val addNewRuleUseCase: AddNewRuleUseCase,
+    private val gameRepository: GameRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RuleUiState())
@@ -39,8 +42,9 @@ class RuleViewModel @Inject constructor(
         getUiState().value.rules.find { it.title == targetRule.title }?.score = targetRule.score
     }
 
-    fun startGame(ruleName: String) {
+    suspend fun startGame(ruleName: String): Game {
         addNewRuleUseCase(ruleName = ruleName, rules = getUiState().value.rules)
+        return gameRepository.getCurrentGame()
     }
 
     fun checkButtonState() {

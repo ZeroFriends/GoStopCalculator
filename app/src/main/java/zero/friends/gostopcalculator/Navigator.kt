@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import zero.friends.domain.model.Game
 import zero.friends.gostopcalculator.theme.GoStopTheme
 import zero.friends.gostopcalculator.ui.board.BoardScreen
 import zero.friends.gostopcalculator.ui.main.MainScreen
@@ -64,9 +65,16 @@ fun Navigator(onBackPressed: () -> Unit) {
                 }
             }
             composable(Navigate.Main.route) {
-                MainScreen {
-                    navController.navigate(Navigate.Precondition.Player.route)
-                }
+                MainScreen(
+                    onStartGame = {
+                        navController.navigate(Navigate.Precondition.Player.route)
+                    },
+                    onShowGame = {
+                        navController.currentBackStackEntry?.arguments?.putSerializable("game", it)
+                        navController.navigate(Navigate.Board.Main.route)
+                    }
+                )
+
                 BackHandler(true) {
                     onBackPressed()
                 }
@@ -81,13 +89,20 @@ fun Navigator(onBackPressed: () -> Unit) {
 
             composable(Navigate.Precondition.Rule.route) {
                 RuleScreen(
-                    onNext = { navController.navigate(Navigate.Board.Main.route) },
+                    onNext = {
+                        navController.currentBackStackEntry?.arguments?.putSerializable("game", it)
+                        navController.navigate(Navigate.Board.Main.route)
+                    },
                     onBack = { navController.navigateUp() },
                 )
             }
 
             composable(Navigate.Board.Main.route) {
-                BoardScreen(onBack = { navController.navigate(Navigate.Main.route) })
+                val game = navController.previousBackStackEntry?.arguments?.getSerializable("game") as Game
+                BoardScreen(game, onBack = {
+                    navController.popBackStack()
+                    navController.navigate(Navigate.Main.route)
+                })
             }
         }
     }

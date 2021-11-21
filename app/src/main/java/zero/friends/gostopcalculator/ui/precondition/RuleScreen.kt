@@ -20,6 +20,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
@@ -32,7 +36,7 @@ sealed class RuleClickEvent {
 }
 
 @Composable
-fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: () -> Unit, onBack: () -> Unit) {
+fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (Game) -> Unit, onBack: () -> Unit) {
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val uiState by ruleViewModel.getUiState().collectAsState()
@@ -55,8 +59,11 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: () -> Uni
                     val ruleName =
                         if (ruleClickEvent.ruleName.isNotEmpty()) ruleClickEvent.ruleName
                         else uiState.currentTime
-                    ruleViewModel.startGame(ruleName)
-                    onNext()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        val game = ruleViewModel.startGame(ruleName)
+                        onNext(game)
+                    }
+
                 }
                 RuleClickEvent.Helper -> Toast.makeText(context, "아직 기능구현 안됨", Toast.LENGTH_SHORT).show()
             }
