@@ -32,17 +32,39 @@ private sealed class MainEvent {
     object StartGame : MainEvent()
     object ShowGuide : MainEvent()
     class ShowGame(val game: Game) : MainEvent()
-    object ShowMore : MainEvent()
+    class ShowMore(val game: Game) : MainEvent()
 }
 
 @Composable
 fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Unit) {
     val uiState by viewModel.getUiState().collectAsState()
+    val dialogState by viewModel.getDialogState().collectAsState()
+
+    if (dialogState.openDialog) {
+        AlertDialog(
+            onDismissRequest = { viewModel.closeDialog() },
+            title = { Text(text = "삭제하시겠습니까?") },
+            confirmButton = {
+                Button(onClick = {
+                    val gameId = dialogState.gameId
+                    requireNotNull(gameId)
+                    viewModel.deleteGame(gameId)
+                    viewModel.closeDialog()
+                }) {
+                    Text(text = "삭제")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { viewModel.closeDialog() }) {
+                    Text(text = "취소")
+                }
+            }
+        )
+    }
 
     MainScreen(uiState) { event ->
         when (event) {
             is MainEvent.ShowGame -> {
-                viewModel.deleteGame(event.game.id)
                 //TODO show game dialog
             }
             MainEvent.ShowGuide -> {
@@ -51,8 +73,8 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Un
             MainEvent.StartGame -> {
                 onStartGame()
             }
-            MainEvent.ShowMore -> {
-                //TODO on Show More Dialog
+            is MainEvent.ShowMore -> {
+                viewModel.openDialog(event.game.id)
             }
         }
     }
@@ -69,7 +91,10 @@ private fun MainScreen(uiState: MainUiState, event: (MainEvent) -> Unit = {}) {
             modifier = Modifier.padding(vertical = 16.dp)
         )
 
-        History(uiState.games, onClick = { event(MainEvent.ShowGame(it)) }, onClickMore = { event(MainEvent.ShowMore) })
+        History(
+            uiState.games,
+            onClick = { event(MainEvent.ShowGame(it)) },
+            onClickMore = { event(MainEvent.ShowMore(it)) })
     }
 }
 
@@ -98,7 +123,7 @@ private fun NewGame(event: (MainEvent) -> Unit) {
 
 
 @Composable
-private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: () -> Unit) {
+private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: (Game) -> Unit) {
     Column(
         Modifier.padding(16.dp)
     ) {
@@ -114,7 +139,7 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: () 
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(games) { game ->
-                    GameLog(game, onClick = { onClick(game) }, onClickMore = {})
+                    GameLog(game, onClick = { onClick(game) }, onClickMore = { onClickMore(game) })
                 }
             }
         }
