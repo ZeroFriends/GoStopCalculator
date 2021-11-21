@@ -25,7 +25,7 @@ import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.AprilBackground
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.NumberTextField
-import zero.friends.gostopcalculator.ui.common.SubActionOutLineButton
+import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 
 
 sealed class RuleClickEvent {
@@ -186,7 +186,7 @@ fun AmountSettingBlock(modifier: Modifier = Modifier, onHelperClick: () -> Unit)
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = "금액설정", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        SubActionOutLineButton("도움말", colorResource(id = R.color.orangey_red), fontSize = 14.sp) { onHelperClick() }
+        RoundedCornerText("도움말", colorResource(id = R.color.orangey_red), fontSize = 14.sp) { onHelperClick() }
     }
 }
 

@@ -1,7 +1,6 @@
 package zero.friends.gostopcalculator.ui.common
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,33 +15,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import zero.friends.gostopcalculator.R
-
-@Composable
-fun SubActionOutLineButton(
-    text: String,
-    color: Color = colorResource(id = R.color.orangey_red),
-    fontSize: TextUnit = 14.sp,
-    onButtonClicked: () -> Unit
-) {
-    Button(
-        onClick = { onButtonClicked() },
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = color),
-        border = BorderStroke(1.dp, color),
-        shape = RoundedCornerShape(15.dp),
-        contentPadding = PaddingValues(0.dp)
-    ) {
-        Text(
-            text = text,
-            fontSize = fontSize,
-            color = color,
-            fontWeight = FontWeight.Bold,
-        )
-    }
-}
 
 @Composable
 fun GoStopButton(text: String, modifier: Modifier = Modifier, buttonEnabled: Boolean = true, onClick: () -> Unit) {
@@ -80,14 +55,6 @@ fun GoStopExtraButton(text: String, modifier: Modifier = Modifier, onClick: () -
             fontSize = 16.sp,
             color = colorResource(id = R.color.nero)
         )
-    }
-}
-
-@Composable
-@Preview
-fun SubActionOutLineButtonPreView() {
-    SubActionOutLineButton(text = "text", color = colorResource(id = R.color.orangey_red), 14.sp) {
-
     }
 }
 

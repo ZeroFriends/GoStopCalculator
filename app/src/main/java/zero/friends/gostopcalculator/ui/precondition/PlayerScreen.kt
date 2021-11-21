@@ -169,7 +169,7 @@ fun PlayerBlock(modifier: Modifier = Modifier, onLoadButtonClicked: () -> Unit) 
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = stringResource(id = R.string.player), fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        SubActionOutLineButton(
+        RoundedCornerText(
             stringResource(id = R.string.load),
             colorResource(id = R.color.orangey_red),
             fontSize = 14.sp

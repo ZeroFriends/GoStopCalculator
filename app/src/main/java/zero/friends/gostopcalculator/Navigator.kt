@@ -64,14 +64,9 @@ fun Navigator(onBackPressed: () -> Unit) {
                 }
             }
             composable(Navigate.Main.route) {
-                MainScreen(
-                    onStartGame = {
-                        navController.navigate(Navigate.Precondition.Player.route)
-                    },
-                    onShowGuide = {
-
-                    }
-                )
+                MainScreen {
+                    navController.navigate(Navigate.Precondition.Player.route)
+                }
                 BackHandler(true) {
                     onBackPressed()
                 }
