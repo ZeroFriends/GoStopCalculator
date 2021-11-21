@@ -6,11 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val ColorPalette = lightColors(
-    surface = Color.White
+    surface = Color.White,
+    primary = GoStopColor,
 )
 
 @Composable
-fun GoStopTheme(content: @Composable() () -> Unit) {
+fun GoStopTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colors = ColorPalette,
         typography = Typography,
