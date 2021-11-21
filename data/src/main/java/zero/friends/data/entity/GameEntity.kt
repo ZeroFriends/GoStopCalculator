@@ -8,10 +8,10 @@ import zero.friends.domain.model.Game
 data class GameEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val name: String = "",
-    val time: String = "",
+    val createdAt: String = "",
 ) {
     companion object {
-        fun Game.toEntity() = GameEntity(name = name, time = time)
-        fun GameEntity.toGame() = Game(name, time)
+        fun Game.toEntity() = GameEntity(name = name, createdAt = createdAt)
+        fun GameEntity.toGame() = Game(name, createdAt)
     }
 }

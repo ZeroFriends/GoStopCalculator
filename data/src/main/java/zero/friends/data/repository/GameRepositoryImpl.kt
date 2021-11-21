@@ -15,8 +15,8 @@ import zero.friends.domain.repository.GameRepository
 
 class GameRepositoryImpl(private val gameDao: GameDao) : GameRepository {
     private val gameId = MutableStateFlow(0L)
-    override suspend fun newGame(name: String, time: String) {
-        gameId.value = gameDao.insert(GameEntity(name = name, time = time))
+    override suspend fun newGame(name: String, createdAt: String) {
+        gameId.value = gameDao.insert(GameEntity(name = name, createdAt = createdAt))
     }
 
     override fun getCurrentGameId(): Long {
