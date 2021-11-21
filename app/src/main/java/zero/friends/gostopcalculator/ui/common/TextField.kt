@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -132,14 +133,34 @@ fun NumberTextField(modifier: Modifier = Modifier, endText: String, onValueChane
     }
 }
 
+@Composable
+fun TitleOutlinedTextField(
+    title: String,
+    text: TextFieldValue,
+    hint: String,
+    modifier: Modifier = Modifier,
+    onValueChange: (TextFieldValue) -> Unit,
+) {
+    Column(modifier = modifier) {
+        Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 4.dp))
+        GoStopOutLinedTextField(text, hint, onValueChange = onValueChange)
+    }
+}
+
+@Preview
+@Composable
+private fun TitleOutlinedTextField() {
+    TitleOutlinedTextField(title = "title", text = TextFieldValue("text"), hint = "hint", onValueChange = {})
+}
+
 @Preview(showBackground = true)
 @Composable
-fun GoStopOutLinedTextFieldPreView() {
+private fun GoStopOutLinedTextFieldPreView() {
     GoStopOutLinedTextField(TextFieldValue("ZeroWorld!!"), "hint", onValueChange = {})
 }
 
 @Preview
 @Composable
-fun NumberTextFieldPreView() {
+private fun NumberTextFieldPreView() {
     NumberTextField(endText = "원")
 }

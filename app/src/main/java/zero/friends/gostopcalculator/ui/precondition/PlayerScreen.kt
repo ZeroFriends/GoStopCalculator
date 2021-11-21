@@ -23,7 +23,7 @@ import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.dialog.NameEditDialog
 
-sealed class PlayerClickEvent {
+private sealed class PlayerClickEvent {
     object Back : PlayerClickEvent()
     object AddPlayer : PlayerClickEvent()
     class DeletePlayer(val player: Player) : PlayerClickEvent()
@@ -148,21 +148,7 @@ private fun PlayerLazyColumn(
 }
 
 @Composable
-fun TitleOutlinedTextField(
-    title: String,
-    text: TextFieldValue,
-    hint: String,
-    modifier: Modifier = Modifier,
-    onValueChange: (TextFieldValue) -> Unit,
-) {
-    Column(modifier = modifier) {
-        Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 4.dp))
-        GoStopOutLinedTextField(text, hint, onValueChange = onValueChange)
-    }
-}
-
-@Composable
-fun PlayerBlock(modifier: Modifier = Modifier, onLoadButtonClicked: () -> Unit) {
+private fun PlayerBlock(modifier: Modifier = Modifier, onLoadButtonClicked: () -> Unit) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -178,19 +164,21 @@ fun PlayerBlock(modifier: Modifier = Modifier, onLoadButtonClicked: () -> Unit) 
 }
 
 @Composable
-fun PlayerItem(index: Int, player: Player, clickEvent: (PlayerClickEvent) -> Unit) {
+private fun PlayerItem(index: Int, player: Player, clickEvent: (PlayerClickEvent) -> Unit) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = (index + 1).toString(),
+            Text(
+                text = (index + 1).toString(),
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(16.dp),
                 fontSize = 16.sp,
-                color = colorResource(id = R.color.orangey_red))
+                color = colorResource(id = R.color.orangey_red)
+            )
             Text(
                 text = player.name,
                 modifier = Modifier
@@ -212,13 +200,13 @@ fun PlayerItem(index: Int, player: Player, clickEvent: (PlayerClickEvent) -> Uni
 
 @Preview(showBackground = true)
 @Composable
-fun PlayerItemPreView() {
+private fun PlayerItemPreView() {
     PlayerItem(index = 0, player = Player("hello"), clickEvent = {})
 }
 
 @Preview
 @Composable
-fun PlayerPreview() {
+private fun PlayerPreview() {
     PlayerScreen(
         scaffoldState = rememberScaffoldState(),
         uiState = PlayerUiState()

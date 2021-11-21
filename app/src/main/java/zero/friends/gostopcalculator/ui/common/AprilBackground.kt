@@ -25,7 +25,7 @@ import zero.friends.gostopcalculator.R
 
 @Composable
 @Preview
-fun AprilBackPreview() {
+private fun AprilBackPreview() {
     AprilBackground("MainTitle", "SubTitle", buttonText = "다음", onClick = {}) {}
 }
 

@@ -13,6 +13,6 @@ fun BoardScreen(onBack: () -> Unit = {}) {
 
 @Preview
 @Composable
-fun BoardScreenPreview() {
+private fun BoardScreenPreview() {
     BoardScreen()
 }

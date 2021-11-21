@@ -22,10 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.domain.model.Rule
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.ui.common.AprilBackground
-import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
-import zero.friends.gostopcalculator.ui.common.NumberTextField
-import zero.friends.gostopcalculator.ui.common.RoundedCornerText
+import zero.friends.gostopcalculator.ui.common.*
 
 
 sealed class RuleClickEvent {
@@ -71,7 +68,7 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: () -> Uni
 }
 
 @Composable
-fun RuleScreen(
+private fun RuleScreen(
     scaffoldState: ScaffoldState,
     uiState: RuleUiState,
     clickEvent: (RuleClickEvent) -> Unit = {},
@@ -111,7 +108,7 @@ fun RuleScreen(
 }
 
 @Composable
-fun RuleLazyColumn(rules: List<Rule>, clickEvent: (RuleClickEvent) -> Unit, onUpdateRule: (Rule) -> Unit = {}) {
+private fun RuleLazyColumn(rules: List<Rule>, clickEvent: (RuleClickEvent) -> Unit, onUpdateRule: (Rule) -> Unit = {}) {
     LazyColumn(contentPadding = PaddingValues(top = 35.dp, bottom = 12.dp)) {
         item {
             AmountSettingBlock { clickEvent(RuleClickEvent.Helper) }
@@ -126,7 +123,7 @@ fun RuleLazyColumn(rules: List<Rule>, clickEvent: (RuleClickEvent) -> Unit, onUp
 }
 
 @Composable
-fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) {
+private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -136,13 +133,15 @@ fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.weight(1f)
         ) {
-            Text(text = (index + 1).toString(),
+            Text(
+                text = (index + 1).toString(),
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(16.dp),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.orangey_red))
+                color = colorResource(id = R.color.orangey_red)
+            )
             Column(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
@@ -179,7 +178,7 @@ fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) {
 }
 
 @Composable
-fun AmountSettingBlock(modifier: Modifier = Modifier, onHelperClick: () -> Unit) {
+private fun AmountSettingBlock(modifier: Modifier = Modifier, onHelperClick: () -> Unit) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -192,12 +191,12 @@ fun AmountSettingBlock(modifier: Modifier = Modifier, onHelperClick: () -> Unit)
 
 @Preview(showBackground = true)
 @Composable
-fun RuleItemPreview() {
+private fun RuleItemPreview() {
     RuleItem(index = 0, rule = Rule("점당", true, "필수 항목 입니다.", 0))
 }
 
 @Preview
 @Composable
-fun RuleScreenPreview() {
+private fun RuleScreenPreview() {
     RuleScreen(rememberScaffoldState(), uiState = RuleUiState())
 }
