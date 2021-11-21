@@ -112,7 +112,7 @@ fun NumberTextField(modifier: Modifier = Modifier, endText: String, onValueChane
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = colorResource(id = R.color.white),
                 cursorColor = colorResource(id = R.color.black),
-                focusedIndicatorColor = colorResource(id = R.color.ford_gray)
+                focusedIndicatorColor = colorResource(id = R.color.orangey_red)
             ),
             textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End),
             keyboardOptions = KeyboardOptions.Default.copy(
