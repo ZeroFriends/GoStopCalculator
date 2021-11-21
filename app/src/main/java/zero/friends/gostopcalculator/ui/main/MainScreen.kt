@@ -139,8 +139,7 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: (Ga
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    .padding(vertical = 10.dp)
             ) {
                 items(games) { game ->
                     GameLog(game, onClick = { onClick(game) }, onClickMore = { onClickMore(game) })
@@ -184,6 +183,7 @@ private fun GameLog(game: Game, onClick: () -> Unit = {}, onClickMore: () -> Uni
     Card(
         elevation = 6.dp,
         shape = RoundedCornerShape(18.dp),
+        modifier = Modifier.padding(vertical = 6.dp),
         onClick = onClick
     ) {
         Row(
@@ -229,4 +229,19 @@ private fun GameLog(game: Game, onClick: () -> Unit = {}, onClickMore: () -> Uni
 @Composable
 private fun MainPreview() {
     MainScreen(MainUiState())
+}
+
+@Preview("MainPreviewWithItem", showBackground = true)
+@Composable
+private fun MainPreviewWithItem() {
+    MainScreen(
+        MainUiState(
+            games = listOf(
+                Game(1, "첫 번째 게임", "2021.11.22"),
+                Game(2, "두 번째 게임", "2021.11.23"),
+                Game(3, "세 번째 게임", "2021.11.24"),
+                Game(4, "네 번째 게임", "2021.11.25")
+            )
+        )
+    )
 }
