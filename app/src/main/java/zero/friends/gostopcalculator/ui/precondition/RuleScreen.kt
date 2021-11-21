@@ -186,7 +186,7 @@ fun AmountSettingBlock(modifier: Modifier = Modifier, onHelperClick: () -> Unit)
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = "금액설정", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        SubActionOutLineButton("도움말") { onHelperClick() }
+        SubActionOutLineButton("도움말", colorResource(id = R.color.orangey_red), fontSize = 14.sp) { onHelperClick() }
     }
 }
 

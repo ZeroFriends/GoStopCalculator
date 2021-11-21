@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import zero.friends.gostopcalculator.R
@@ -67,6 +68,12 @@ fun CenterTextTopBar(text: String, onBack: () -> Unit, onAction: (() -> Unit)?) 
         contentColor = colorResource(id = R.color.white),
         elevation = 0.dp
     )
+}
+
+@Preview
+@Composable
+fun CenterTextTopBarPreview() {
+    CenterTextTopBar("hello", {}, {})
 }
 
 

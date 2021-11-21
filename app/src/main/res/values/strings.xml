@@ -21,6 +21,8 @@
     <string name="new_player">새 플레이어 %d</string>
     <string name="edit">수정하기</string>
     <string name="edit_name">이름 수정하기</string>
+    <string name="created_at">생성일자</string>
+    <string name="playing">진행중</string>
 
 
 </resources>
