@@ -1,6 +1,7 @@
 package zero.friends.gostopcalculator.ui.main
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,6 +32,7 @@ private sealed class MainEvent {
     object StartGame : MainEvent()
     object ShowGuide : MainEvent()
     class ShowGame(val game: Game) : MainEvent()
+    object ShowMore : MainEvent()
 }
 
 @Composable
@@ -40,7 +42,7 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Un
     MainScreen(uiState) { event ->
         when (event) {
             is MainEvent.ShowGame -> {
-                event.game
+                viewModel.deleteGame(event.game.id)
                 //TODO show game dialog
             }
             MainEvent.ShowGuide -> {
@@ -48,6 +50,9 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Un
             }
             MainEvent.StartGame -> {
                 onStartGame()
+            }
+            MainEvent.ShowMore -> {
+                //TODO on Show More Dialog
             }
         }
     }
@@ -64,7 +69,7 @@ private fun MainScreen(uiState: MainUiState, event: (MainEvent) -> Unit = {}) {
             modifier = Modifier.padding(vertical = 16.dp)
         )
 
-        History(uiState.games, onClick = { event(MainEvent.ShowGame(it)) })
+        History(uiState.games, onClick = { event(MainEvent.ShowGame(it)) }, onClickMore = { event(MainEvent.ShowMore) })
     }
 }
 
@@ -93,7 +98,7 @@ private fun NewGame(event: (MainEvent) -> Unit) {
 
 
 @Composable
-private fun History(games: List<Game>, onClick: (Game) -> Unit) {
+private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: () -> Unit) {
     Column(
         Modifier.padding(16.dp)
     ) {
@@ -109,7 +114,7 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(games) { game ->
-                    GameLog(game, onClick = { onClick(game) })
+                    GameLog(game, onClick = { onClick(game) }, onClickMore = {})
                 }
             }
         }
@@ -141,12 +146,12 @@ private fun EmptyHistory() {
 @Preview(showBackground = true)
 @Composable
 private fun GameLogPreview() {
-    GameLog(Game("gameTitle", "2021.11.21"))
+    GameLog(Game(0, "gameTitle", "2021.11.21"))
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun GameLog(game: Game, onClick: () -> Unit = {}) {
+private fun GameLog(game: Game, onClick: () -> Unit = {}, onClickMore: () -> Unit = {}) {
     Card(
         elevation = 6.dp,
         shape = RoundedCornerShape(18.dp),
@@ -183,7 +188,8 @@ private fun GameLog(game: Game, onClick: () -> Unit = {}) {
             }
             Icon(
                 painter = painterResource(id = R.drawable.ic_more_black),
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.clickable(onClick = onClickMore)
             )
         }
     }

@@ -12,6 +12,6 @@ data class GameEntity(
 ) {
     companion object {
         fun Game.toEntity() = GameEntity(name = name, createdAt = createdAt)
-        fun GameEntity.toGame() = Game(name, createdAt)
+        fun GameEntity.toGame() = Game(id, name, createdAt)
     }
 }

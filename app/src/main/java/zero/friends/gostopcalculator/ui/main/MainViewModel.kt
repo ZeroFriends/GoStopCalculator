@@ -3,9 +3,7 @@ package zero.friends.gostopcalculator.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.repository.GameRepository
@@ -21,12 +19,16 @@ class MainViewModel @Inject constructor(private val gameRepository: GameReposito
     fun getUiState() = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
+        gameRepository.observeGameList().onEach { gameList ->
             _uiState.update {
-                val gameList = gameRepository.getGameList()
                 it.copy(games = gameList)
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
+    fun deleteGame(gameId: Long) {
+        viewModelScope.launch {
+            gameRepository.deleteGame(gameId)
+        }
+    }
 }

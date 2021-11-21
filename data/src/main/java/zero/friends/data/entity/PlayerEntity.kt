@@ -12,7 +12,8 @@ import zero.friends.domain.model.Player
             childColumns = ["gameId"],
             onDelete = CASCADE,
         )
-    ]
+    ],
+    indices = [Index(value = ["gameId"], unique = false)]
 )
 data class PlayerEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

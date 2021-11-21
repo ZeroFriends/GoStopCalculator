@@ -8,8 +8,8 @@ interface GameRepository{
     suspend fun newGame(name: String, createdAt: String)
     fun getCurrentGameId(): Long
     suspend fun getCurrentGameUser(): GameAndPlayer
-    suspend fun clearGame()
+    suspend fun deleteGame(gameId: Long)
     suspend fun editGameName(gameName: String)
     fun observeGameName(): Flow<String>
-    suspend fun getGameList(): List<Game>
+    fun observeGameList(): Flow<List<Game>>
 }

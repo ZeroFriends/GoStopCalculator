@@ -84,7 +84,8 @@ class PlayerViewModel @Inject constructor(
 
     fun clearGame() {
         viewModelScope.launch {
-            gameRepository.clearGame()
+            val gameId = gameRepository.getCurrentGameId()
+            gameRepository.deleteGame(gameId)
         }
     }
 
