@@ -1,6 +1,7 @@
 package zero.friends.domain.repository
 
 import kotlinx.coroutines.flow.Flow
+import zero.friends.domain.model.Game
 import zero.friends.domain.model.GameAndPlayer
 
 interface GameRepository{
@@ -10,4 +11,5 @@ interface GameRepository{
     suspend fun clearGame()
     suspend fun editGameName(gameName: String)
     fun observeGameName(): Flow<String>
+    suspend fun getGameList(): List<Game>
 }

@@ -18,4 +18,7 @@ interface GameDao : BaseDao<GameEntity> {
 
     @Query("SELECT name From GameEntity WHERE id == :gameId")
     fun observeGameName(gameId: Long): Flow<String>
+
+    @Query("SELECT * FROM GameEntity")
+    suspend fun getAllGame(): List<GameEntity>
 }

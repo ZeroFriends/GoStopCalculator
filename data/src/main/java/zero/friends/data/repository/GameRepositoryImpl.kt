@@ -10,6 +10,7 @@ import zero.friends.data.entity.GameEntity
 import zero.friends.data.entity.GameEntity.Companion.toGame
 import zero.friends.data.entity.PlayerEntity.Companion.toPlayer
 import zero.friends.data.source.dao.GameDao
+import zero.friends.domain.model.Game
 import zero.friends.domain.model.GameAndPlayer
 import zero.friends.domain.repository.GameRepository
 
@@ -40,6 +41,12 @@ class GameRepositoryImpl(private val gameDao: GameDao) : GameRepository {
 
     override fun observeGameName(): Flow<String> {
         return gameDao.observeGameName(gameId.value).filterNotNull()
+    }
+
+    override suspend fun getGameList(): List<Game> {
+        return gameDao.getAllGame().map { entity ->
+            entity.toGame()
+        }
     }
 
 }

@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -18,8 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import zero.friends.domain.model.Game
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.model.Game
 import zero.friends.gostopcalculator.ui.common.GoStopButton
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.ui.common.SubTitleText
@@ -33,9 +35,12 @@ private sealed class MainEvent {
 
 @Composable
 fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Unit) {
-    MainScreen(viewModel.getGameHistory()) { event ->
+    val uiState by viewModel.getUiState().collectAsState()
+
+    MainScreen(uiState) { event ->
         when (event) {
             is MainEvent.ShowGame -> {
+                event.game
                 //TODO show game dialog
             }
             MainEvent.ShowGuide -> {
@@ -49,7 +54,7 @@ fun MainScreen(viewModel: MainViewModel = hiltViewModel(), onStartGame: () -> Un
 }
 
 @Composable
-private fun MainScreen(games: List<Game>, event: (MainEvent) -> Unit = {}) {
+private fun MainScreen(uiState: MainUiState, event: (MainEvent) -> Unit = {}) {
     Column {
         NewGame(event)
 
@@ -59,7 +64,7 @@ private fun MainScreen(games: List<Game>, event: (MainEvent) -> Unit = {}) {
             modifier = Modifier.padding(vertical = 16.dp)
         )
 
-        History(games, onClick = { event(MainEvent.ShowGame(it)) })
+        History(uiState.games, onClick = { event(MainEvent.ShowGame(it)) })
     }
 }
 
@@ -101,7 +106,7 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(games) { game ->
                     GameLog(game, onClick = { onClick(game) })
@@ -164,21 +169,15 @@ private fun GameLog(game: Game, onClick: () -> Unit = {}) {
                     Spacer(modifier = Modifier.padding(8.dp))
                     Text(text = game.createdAt, color = colorResource(id = R.color.gray), fontSize = 14.sp)
                 }
-                Spacer(modifier = Modifier.padding(4.dp))
+                Spacer(modifier = Modifier.padding(2.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = game.title,
+                        text = game.name,
                         color = colorResource(id = R.color.nero),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.padding(4.dp))
-                    RoundedCornerText(
-                        stringResource(R.string.playing),
-                        colorResource(id = R.color.gray38),
-                        12.sp,
-                        null
-                    )
                 }
 
             }
@@ -194,5 +193,5 @@ private fun GameLog(game: Game, onClick: () -> Unit = {}) {
 @Preview("MainPreview", showBackground = true)
 @Composable
 private fun MainPreview() {
-    MainScreen(emptyList())
+    MainScreen(MainUiState())
 }
