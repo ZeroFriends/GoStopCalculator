@@ -37,6 +37,10 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: () -> Uni
     val scaffoldState = rememberScaffoldState()
     val uiState by ruleViewModel.getUiState().collectAsState()
 
+    LaunchedEffect(Unit) {
+        ruleViewModel.updateRule()
+    }
+
     BackHandler(true) {
         onBack()
     }
@@ -62,9 +66,7 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: () -> Uni
             ruleViewModel.checkButtonState()
         })
 
-    LaunchedEffect(Unit) {
-        ruleViewModel.updateRule()
-    }
+
 }
 
 @Composable
