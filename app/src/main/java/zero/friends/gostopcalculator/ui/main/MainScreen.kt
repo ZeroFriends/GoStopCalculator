@@ -25,7 +25,7 @@ import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.ui.common.SubTitleText
 import zero.friends.gostopcalculator.ui.common.TitleText
 
-sealed class MainEvent {
+private sealed class MainEvent {
     object StartGame : MainEvent()
     object ShowGuide : MainEvent()
     class ShowGame(val game: Game) : MainEvent()
@@ -64,7 +64,7 @@ private fun MainScreen(games: List<Game>, event: (MainEvent) -> Unit = {}) {
 }
 
 @Composable
-fun NewGame(event: (MainEvent) -> Unit) {
+private fun NewGame(event: (MainEvent) -> Unit) {
     Column(Modifier.padding(16.dp)) {
         SubTitleText("NEW GAME")
         Spacer(modifier = Modifier.height(4.dp))
@@ -88,7 +88,7 @@ fun NewGame(event: (MainEvent) -> Unit) {
 
 
 @Composable
-fun History(games: List<Game>, onClick: (Game) -> Unit) {
+private fun History(games: List<Game>, onClick: (Game) -> Unit) {
     Column(
         Modifier.padding(16.dp)
     ) {
@@ -112,7 +112,7 @@ fun History(games: List<Game>, onClick: (Game) -> Unit) {
 }
 
 @Composable
-fun EmptyHistory() {
+private fun EmptyHistory() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
@@ -135,13 +135,13 @@ fun EmptyHistory() {
 
 @Preview(showBackground = true)
 @Composable
-fun GameLogPreview() {
+private fun GameLogPreview() {
     GameLog(Game("gameTitle", "2021.11.21"))
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun GameLog(game: Game, onClick: () -> Unit = {}) {
+private fun GameLog(game: Game, onClick: () -> Unit = {}) {
     Card(
         elevation = 6.dp,
         shape = RoundedCornerShape(18.dp),
@@ -193,6 +193,6 @@ fun GameLog(game: Game, onClick: () -> Unit = {}) {
 
 @Preview("MainPreview", showBackground = true)
 @Composable
-fun MainPreview() {
+private fun MainPreview() {
     MainScreen(emptyList())
 }
