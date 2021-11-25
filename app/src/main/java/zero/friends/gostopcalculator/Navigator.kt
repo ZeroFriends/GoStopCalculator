@@ -16,62 +16,61 @@ import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
 import zero.friends.gostopcalculator.ui.splash.SplashScreen
 
-sealed class Navigate(val route: String) {
-    object Main : Navigate("main")
-    object Splash : Navigate("splash")
+sealed interface Navigate {
+    fun route() = this::class.supertypes.toString() + this::class.simpleName
 
-    sealed class Precondition(route: String) : Navigate(route) {
-        object Player : Precondition("precondition_player")
-        object Load : Precondition("precondition_load")
-        object Rule : Precondition("precondition_rule")
+    object Main : Navigate
+    object Splash : Navigate
+
+    sealed interface Precondition : Navigate {
+        object Player : Precondition
+        object Load : Precondition
+        object Rule : Precondition
     }
 
-    sealed class Board(route: String) : Navigate(route) {
-        object Main : Board("board_main")
-        object Prepare : Board("board_prepare")
-        object Selling : Board("board_selling")
-        object Score : Board("board_score")
-        object Winner : Board("board_winner")
-        object Loser : Board("board_loser")
-        object End : Board("board_end")
+    sealed interface Board : Navigate {
+        object Main : Board
+        object Prepare : Board
+        object Selling : Board
+        object Score : Board
+        object Winner : Board
+        object Loser : Board
+        object End : Board
 
-        sealed class Setting(route: String) : Board(route) {
-            object Rule : Setting("board_setting_rule")
-            object AddRule : Setting("board_setting_add_rule")
-            object Player : Setting("board_setting_player")
+        sealed interface Setting : Board {
+            object Rule : Setting
+            object AddRule : Setting
+            object Player : Setting
         }
 
-        object Detail : Board("board_detail")
-        object Calculate : Board("board_calculate")
-
+        object Detail : Board
+        object Calculate : Board
     }
-
-
 }
 
 @Composable
 fun Navigator(onBackPressed: () -> Unit) {
     GoStopTheme {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = Navigate.Splash.route) {
-            composable(Navigate.Splash.route) {
+        NavHost(navController = navController, startDestination = Navigate.Splash.route()) {
+            composable(Navigate.Splash.route()) {
                 val splashScope = rememberCoroutineScope()
                 SplashScreen()
                 splashScope.launch {
                     delay(500)
-                    navController.navigate(Navigate.Main.route) {
-                        popUpTo(Navigate.Splash.route)
+                    navController.navigate(Navigate.Main.route()) {
+                        popUpTo(Navigate.Splash.route())
                     }
                 }
             }
-            composable(Navigate.Main.route) {
+            composable(Navigate.Main.route()) {
                 MainScreen(
                     onStartGame = {
-                        navController.navigate(Navigate.Precondition.Player.route)
+                        navController.navigate(Navigate.Precondition.Player.route())
                     },
                     onShowGame = {
                         navController.currentBackStackEntry?.arguments?.putSerializable("game", it)
-                        navController.navigate(Navigate.Board.Main.route)
+                        navController.navigate(Navigate.Board.Main.route())
                     }
                 )
 
@@ -80,28 +79,28 @@ fun Navigator(onBackPressed: () -> Unit) {
                 }
             }
 
-            composable(Navigate.Precondition.Player.route) {
+            composable(Navigate.Precondition.Player.route()) {
                 PlayerScreen(
-                    onNext = { navController.navigate(Navigate.Precondition.Rule.route) },
+                    onNext = { navController.navigate(Navigate.Precondition.Rule.route()) },
                     onBack = { navController.navigateUp() }
                 )
             }
 
-            composable(Navigate.Precondition.Rule.route) {
+            composable(Navigate.Precondition.Rule.route()) {
                 RuleScreen(
                     onNext = {
                         navController.currentBackStackEntry?.arguments?.putSerializable("game", it)
-                        navController.navigate(Navigate.Board.Main.route)
+                        navController.navigate(Navigate.Board.Main.route())
                     },
                     onBack = { navController.navigateUp() },
                 )
             }
 
-            composable(Navigate.Board.Main.route) {
+            composable(Navigate.Board.Main.route()) {
                 val game = navController.previousBackStackEntry?.arguments?.getSerializable("game") as Game
                 BoardScreen(game, onBack = {
                     navController.popBackStack()
-                    navController.navigate(Navigate.Main.route)
+                    navController.navigate(Navigate.Main.route())
                 })
             }
         }

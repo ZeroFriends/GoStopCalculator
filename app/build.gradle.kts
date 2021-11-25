@@ -77,4 +77,5 @@ dependencies {
     kapt(Dep.Dagger.hiltCompiler)
 
     implementation(Dep.timber)
+    implementation(Dep.Kotlin.reflect)
 }

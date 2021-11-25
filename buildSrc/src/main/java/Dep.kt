@@ -66,6 +66,8 @@ object Dep {
         const val coroutineCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion"
         const val coroutineAndroid = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
 
+        const val reflect = "org.jetbrains.kotlin:kotlin-reflect:1.6.0"
+
     }
 
     object Dagger {
