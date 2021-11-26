@@ -10,7 +10,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import zero.friends.gostopcalculator.theme.GoStopTheme
 import zero.friends.gostopcalculator.ui.board.BoardScreen
-import zero.friends.gostopcalculator.ui.board.boardViewModel
+import zero.friends.gostopcalculator.ui.board.createBoardViewModel
 import zero.friends.gostopcalculator.ui.main.MainScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
@@ -98,7 +98,7 @@ fun Navigator(onBackPressed: () -> Unit) {
 
             composable(Navigate.Board.Main.route()) {
                 val gameId = requireNotNull(navController.previousBackStackEntry?.arguments?.getLong(Const.GameId))
-                BoardScreen(boardViewModel(gameId)) {
+                BoardScreen(createBoardViewModel(gameId)) {
                     navController.popBackStack()
                     navController.navigate(Navigate.Main.route())
                 }

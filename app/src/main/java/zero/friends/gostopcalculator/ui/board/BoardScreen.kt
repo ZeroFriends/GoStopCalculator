@@ -25,7 +25,7 @@ private sealed interface BoardEvent {
 }
 
 @Composable
-fun boardViewModel(gameId: Long): BoardViewModel {
+fun createBoardViewModel(gameId: Long): BoardViewModel {
     val entryPoint = getEntryPointFromActivity<ViewModelProvider.FactoryEntryPoint>()
     val factory = entryPoint.boardFactory()
     return viewModel(factory = BoardViewModel.provideFactory(boardViewModelFactory = factory, gameId = gameId))
