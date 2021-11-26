@@ -12,8 +12,7 @@ import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.usecase.AddAutoGeneratePlayerUseCase
 import zero.friends.domain.usecase.DeletePlayerUseCase
 import zero.friends.domain.usecase.EditPlayerUseCase
-import java.text.SimpleDateFormat
-import java.util.*
+import zero.friends.gostopcalculator.util.TimeUtil
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -21,7 +20,7 @@ import kotlin.coroutines.CoroutineContext
 data class PlayerUiState(
     val players: List<Player> = emptyList(),
     val gameName: String = "",
-    val currentTime: String = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(System.currentTimeMillis()),
+    val currentTime: String = TimeUtil.getCurrentTime(),
     val dialogState: DialogState = DialogState(),
 )
 
