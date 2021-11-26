@@ -8,8 +8,8 @@ import zero.friends.gostopcalculator.di.factory.ViewModelFactory
 object ViewModelProvider {
     @EntryPoint
     @InstallIn(ActivityComponent::class)
-    interface ViewModelFactoryProvider {
-        fun boardViewModelFactory(): ViewModelFactory.BoardViewModelFactory
+    interface FactoryEntryPoint {
+        fun boardFactory(): ViewModelFactory.BoardViewModelFactory
     }
 }
 

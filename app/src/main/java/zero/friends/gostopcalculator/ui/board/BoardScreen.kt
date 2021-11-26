@@ -1,6 +1,5 @@
 package zero.friends.gostopcalculator.ui.board
 
-import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,35 +9,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import dagger.hilt.android.EntryPointAccessors
 import zero.friends.domain.model.Game
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.provider.ViewModelProvider
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
+import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 
 private sealed interface BoardEvent {
     object Back : BoardEvent
 
 }
 
-
 @Composable
 fun boardViewModel(gameId: Long): BoardViewModel {
-    val factory = EntryPointAccessors.fromActivity(
-        LocalContext.current as Activity,
-        ViewModelProvider.ViewModelFactoryProvider::class.java
-    ).boardViewModelFactory()
+    val entryPoint = getEntryPointFromActivity<ViewModelProvider.FactoryEntryPoint>()
+    val factory = entryPoint.boardFactory()
     return viewModel(factory = BoardViewModel.provideFactory(boardViewModelFactory = factory, gameId = gameId))
 }
 
 @Composable
 fun BoardScreen(boardViewModel: BoardViewModel, onBack: () -> Unit = {}) {
-
     val scaffoldState = rememberScaffoldState()
     val uiState by boardViewModel.getUiState().collectAsState()
 
