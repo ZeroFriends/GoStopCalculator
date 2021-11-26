@@ -1,7 +1,6 @@
 package zero.friends.gostopcalculator.ui.board
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -68,7 +67,6 @@ private fun BoardScreen(
     ) {
         Surface(
             modifier = Modifier
-                .background(color = colorResource(id = R.color.orangey_red))
                 .fillMaxWidth(),
             shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
             color = colorResource(id = R.color.orangey_red),

@@ -3,45 +3,39 @@ package zero.friends.data.repository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import zero.friends.data.entity.GameEntity
 import zero.friends.data.entity.GameEntity.Companion.toGame
-import zero.friends.data.entity.PlayerEntity.Companion.toPlayer
 import zero.friends.data.source.dao.GameDao
 import zero.friends.domain.model.Game
-import zero.friends.domain.model.GameAndPlayer
 import zero.friends.domain.repository.GameRepository
 
 class GameRepositoryImpl(private val gameDao: GameDao) : GameRepository {
-    private val cacheGameId = MutableStateFlow(0L)
-    override suspend fun newGame(name: String, createdAt: String) {
-        cacheGameId.value = gameDao.insert(GameEntity(name = name, createdAt = createdAt))
+    private var cacheGameId: Long? = null
+
+    override suspend fun newGame(name: String, createdAt: String): Long {
+        return gameDao.insert(GameEntity(name = name, createdAt = createdAt)).also { cacheGameId = it }
     }
 
-    override fun getCurrentGameId(): Long {
-        return cacheGameId.value
-    }
-
-    override suspend fun getCurrentGameUser(): GameAndPlayer {
-        val relation = gameDao.getGameAndPlayer(cacheGameId.value)
-        return GameAndPlayer(relation.game.toGame(), relation.players.map { it.toPlayer() })
+    override fun getCurrentGameId(): Long? {
+        return cacheGameId
     }
 
     override suspend fun deleteGame(gameId: Long) {
         CoroutineScope(Dispatchers.IO).launch {
             gameDao.delete(GameEntity(id = gameId))
+            cacheGameId = null
         }
     }
 
     override suspend fun editGameName(gameName: String) {
-        gameDao.editGameName(cacheGameId.value, gameName)
+        gameDao.editGameName(requireNotNull(cacheGameId), gameName)
     }
 
     override fun observeGameName(): Flow<String> {
-        return gameDao.observeGameName(cacheGameId.value).filterNotNull()
+        return gameDao.observeGameName(requireNotNull(cacheGameId)).filterNotNull()
     }
 
     override fun observeGameList(): Flow<List<Game>> {
@@ -51,12 +45,18 @@ class GameRepositoryImpl(private val gameDao: GameDao) : GameRepository {
     }
 
     override suspend fun getCurrentGame(): Game? {
-        return if (cacheGameId.value == 0L) null
-        else gameDao.getGame(cacheGameId.value).toGame()
+        return cacheGameId?.let { gameId ->
+            gameDao.getGame(gameId).toGame()
+        }
     }
 
     override suspend fun getGame(gameId: Long): Game {
+        cacheGameId = gameId
         return gameDao.getGame(gameId).toGame()
     }
 
+    override fun observeGame(gameId: Long): Flow<Game> {
+        cacheGameId = gameId
+        return gameDao.observeGame(gameId)
+    }
 }

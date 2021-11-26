@@ -9,7 +9,7 @@ class DeletePlayerUseCase(
     private val playerRepository: PlayerRepository,
 ) {
     suspend operator fun invoke(player: Player) {
-        val gameId = gameRepository.getCurrentGameId()
+        val gameId = requireNotNull(gameRepository.getCurrentGameId())
         playerRepository.deletePlayer(gameId, player)
     }
 }

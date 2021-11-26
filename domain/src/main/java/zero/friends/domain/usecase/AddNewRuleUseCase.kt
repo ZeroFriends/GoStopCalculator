@@ -14,7 +14,7 @@ class AddNewRuleUseCase @Inject constructor(
 ) {
     operator fun invoke(ruleName: String, rules: List<Rule>) {
         CoroutineScope(Dispatchers.IO).launch {
-            val gameId = gameRepository.getCurrentGameId()
+            val gameId = requireNotNull(gameRepository.getCurrentGameId())
             ruleRepository.addNewRule(gameId, ruleName, rules)
         }
     }

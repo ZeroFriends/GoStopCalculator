@@ -11,7 +11,7 @@ class GetDefaultRuleUseCase(
     private val ruleRepository: RuleRepository,
 ) {
     suspend operator fun invoke(): List<Rule> {
-        val gameId = gameRepository.getCurrentGameId()
+        val gameId = requireNotNull(gameRepository.getCurrentGameId())
 
         val canSellShine = playerRepository.getPlayers(gameId).size > 3
         val rules = ruleRepository.getDefaultRule().toMutableList()

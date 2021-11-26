@@ -5,10 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 import zero.friends.domain.model.Game
 import zero.friends.domain.repository.GameRepository
 import zero.friends.gostopcalculator.di.factory.ViewModelFactory
@@ -26,11 +23,12 @@ class BoardViewModel @AssistedInject constructor(
     fun getUiState() = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(game = gameRepository.getCurrentGame() ?: gameRepository.getGame(gameId))
-            }
-        }
+        gameRepository.observeGame(gameId)
+            .onEach { game ->
+                _uiState.update {
+                    it.copy(game = game)
+                }
+            }.launchIn(viewModelScope)
     }
 
     companion object {
