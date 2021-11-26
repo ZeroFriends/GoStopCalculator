@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.repository.GameRepository
 import zero.friends.gostopcalculator.di.factory.ViewModelFactory
+import zero.friends.gostopcalculator.util.viewModelFactory
 
 data class BoardUiState(
     val game: Game = Game()
@@ -36,12 +37,8 @@ class BoardViewModel @AssistedInject constructor(
         fun provideFactory(
             boardViewModelFactory: ViewModelFactory.BoardViewModelFactory,
             gameId: Long
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return boardViewModelFactory.create(gameId) as T
-            }
-
-        }
+        ): ViewModelProvider.Factory = viewModelFactory { boardViewModelFactory.create(gameId) }
     }
 }
+
 
