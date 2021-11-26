@@ -1,21 +1,44 @@
 package zero.friends.gostopcalculator.ui.board
 
+import android.app.Activity
 import androidx.activity.compose.BackHandler
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import dagger.hilt.android.EntryPointAccessors
 import zero.friends.domain.model.Game
+import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.di.provider.ViewModelProvider
+import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 
-private sealed class BoardEvent {
+private sealed interface BoardEvent {
+    object Back : BoardEvent
 
 }
 
+
 @Composable
-fun BoardScreen(game: Game, boardViewModel: BoardViewModel = hiltViewModel(), onBack: () -> Unit = {}) {
+fun boardViewModel(gameId: Long): BoardViewModel {
+    val factory = EntryPointAccessors.fromActivity(
+        LocalContext.current as Activity,
+        ViewModelProvider.ViewModelFactoryProvider::class.java
+    ).boardViewModelFactory()
+    return viewModel(factory = BoardViewModel.provideFactory(boardViewModelFactory = factory, gameId = gameId))
+}
+
+@Composable
+fun BoardScreen(boardViewModel: BoardViewModel, onBack: () -> Unit = {}) {
+
     val scaffoldState = rememberScaffoldState()
     val uiState by boardViewModel.getUiState().collectAsState()
 
@@ -27,7 +50,7 @@ fun BoardScreen(game: Game, boardViewModel: BoardViewModel = hiltViewModel(), on
         uiState = uiState,
         event = { event ->
             when (event) {
-
+                BoardEvent.Back -> onBack()
             }
         }
     )
@@ -39,11 +62,31 @@ private fun BoardScreen(
     uiState: BoardUiState = BoardUiState(),
     event: (BoardEvent) -> Unit = {}
 ) {
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            CenterTextTopBar(
+                text = uiState.game.createdAt,
+                onBack = { event(BoardEvent.Back) },
+                onAction = { TODO("준영이한테 이거 왜있냐고 물어보기") }
+            )
+        }
+    ) {
+        Surface(
+            modifier = Modifier
+                .background(color = colorResource(id = R.color.orangey_red))
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
+            color = colorResource(id = R.color.orangey_red),
 
+            ) {
+            Text(text = uiState.game.toString())
+        }
+    }
 }
 
 @Composable
 @Preview
 private fun BoardScreenPreview() {
-    BoardScreen()
+    BoardScreen(uiState = BoardUiState(game = Game(createdAt = "2020.11.26")))
 }

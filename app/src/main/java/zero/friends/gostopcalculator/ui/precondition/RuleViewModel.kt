@@ -44,7 +44,7 @@ class RuleViewModel @Inject constructor(
 
     suspend fun startGame(ruleName: String): Game {
         addNewRuleUseCase(ruleName = ruleName, rules = getUiState().value.rules)
-        return gameRepository.getCurrentGame()
+        return requireNotNull(gameRepository.getCurrentGame())
     }
 
     fun checkButtonState() {

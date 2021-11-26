@@ -23,7 +23,7 @@ import zero.friends.gostopcalculator.R
 
 
 @Composable
-fun CenterTextTopBar(text: String, onBack: () -> Unit, onAction: (() -> Unit)?) {
+fun CenterTextTopBar(text: String, onBack: () -> Unit = {}, onAction: (() -> Unit)? = null) {
     val modifier = Modifier
         .defaultMinSize(60.dp, 60.dp)//todo title Center 방법이 있다면 변경해보자...
         .background(Color.Transparent)
@@ -72,7 +72,7 @@ fun CenterTextTopBar(text: String, onBack: () -> Unit, onAction: (() -> Unit)?) 
 
 @Preview
 @Composable
-fun CenterTextTopBarPreview() {
+private fun CenterTextTopBarPreview() {
     CenterTextTopBar("hello", {}, {})
 }
 

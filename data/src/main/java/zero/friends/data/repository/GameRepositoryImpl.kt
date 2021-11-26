@@ -50,8 +50,13 @@ class GameRepositoryImpl(private val gameDao: GameDao) : GameRepository {
         }
     }
 
-    override suspend fun getCurrentGame(): Game {
-        return gameDao.getCurrentGame(cacheGameId.value).toGame()
+    override suspend fun getCurrentGame(): Game? {
+        return if (cacheGameId.value == 0L) null
+        else gameDao.getGame(cacheGameId.value).toGame()
+    }
+
+    override suspend fun getGame(gameId: Long): Game {
+        return gameDao.getGame(gameId).toGame()
     }
 
 }

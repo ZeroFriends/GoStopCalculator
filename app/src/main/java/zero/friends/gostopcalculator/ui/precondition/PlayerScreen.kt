@@ -23,13 +23,13 @@ import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.dialog.NameEditDialog
 
-private sealed class PlayerClickEvent {
-    object Back : PlayerClickEvent()
-    object AddPlayer : PlayerClickEvent()
-    class DeletePlayer(val player: Player) : PlayerClickEvent()
-    object LoadPlayer : PlayerClickEvent()
-    class EditPlayer(val player: Player) : PlayerClickEvent()
-    class Next(val groupName: String) : PlayerClickEvent()
+private sealed interface PlayerClickEvent {
+    object Back : PlayerClickEvent
+    object AddPlayer : PlayerClickEvent
+    class DeletePlayer(val player: Player) : PlayerClickEvent
+    object LoadPlayer : PlayerClickEvent
+    class EditPlayer(val player: Player) : PlayerClickEvent
+    class Next(val groupName: String) : PlayerClickEvent
 }
 
 @Composable

@@ -26,4 +26,6 @@ dependencies {
     implementation(Dep.Square.okhttp3_logging)
     implementation(Dep.Square.serialization)
 
+    implementation(Dep.timber)
+
 }

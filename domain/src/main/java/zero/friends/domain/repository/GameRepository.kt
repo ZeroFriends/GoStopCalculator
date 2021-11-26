@@ -12,5 +12,6 @@ interface GameRepository{
     suspend fun editGameName(gameName: String)
     fun observeGameName(): Flow<String>
     fun observeGameList(): Flow<List<Game>>
-    suspend fun getCurrentGame(): Game
+    suspend fun getCurrentGame(): Game?
+    suspend fun getGame(gameId: Long): Game
 }

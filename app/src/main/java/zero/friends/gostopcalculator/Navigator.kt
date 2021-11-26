@@ -8,9 +8,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import zero.friends.domain.model.Game
 import zero.friends.gostopcalculator.theme.GoStopTheme
 import zero.friends.gostopcalculator.ui.board.BoardScreen
+import zero.friends.gostopcalculator.ui.board.boardViewModel
 import zero.friends.gostopcalculator.ui.main.MainScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
@@ -69,7 +69,7 @@ fun Navigator(onBackPressed: () -> Unit) {
                         navController.navigate(Navigate.Precondition.Player.route())
                     },
                     onShowGame = {
-                        navController.currentBackStackEntry?.arguments?.putSerializable("game", it)
+                        navController.currentBackStackEntry?.arguments?.putLong(Const.GameId, it.id)
                         navController.navigate(Navigate.Board.Main.route())
                     }
                 )
@@ -89,7 +89,7 @@ fun Navigator(onBackPressed: () -> Unit) {
             composable(Navigate.Precondition.Rule.route()) {
                 RuleScreen(
                     onNext = {
-                        navController.currentBackStackEntry?.arguments?.putSerializable("game", it)
+                        navController.currentBackStackEntry?.arguments?.putLong(Const.GameId, it.id)
                         navController.navigate(Navigate.Board.Main.route())
                     },
                     onBack = { navController.navigateUp() },
@@ -97,11 +97,11 @@ fun Navigator(onBackPressed: () -> Unit) {
             }
 
             composable(Navigate.Board.Main.route()) {
-                val game = navController.previousBackStackEntry?.arguments?.getSerializable("game") as Game
-                BoardScreen(game, onBack = {
+                val gameId = requireNotNull(navController.previousBackStackEntry?.arguments?.getLong(Const.GameId))
+                BoardScreen(boardViewModel(gameId)) {
                     navController.popBackStack()
                     navController.navigate(Navigate.Main.route())
-                })
+                }
             }
         }
     }
