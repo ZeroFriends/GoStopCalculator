@@ -68,7 +68,7 @@ fun AprilBackground(
                 ConstraintLayout(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = 44.dp, start = 16.dp, end = 16.dp, bottom = 40.dp),
+                        .padding(vertical = 40.dp, horizontal = 16.dp),
                 ) {
                     val (upper, button) = createRefs()
                     Surface(

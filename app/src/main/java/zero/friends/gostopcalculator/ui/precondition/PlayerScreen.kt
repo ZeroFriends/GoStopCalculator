@@ -118,9 +118,9 @@ private fun PlayerLazyColumn(
     players: List<Player>,
     clickEvent: (PlayerClickEvent) -> Unit,
 ) {
-    LazyColumn(contentPadding = PaddingValues(top = 35.dp, bottom = 12.dp)) {
+    LazyColumn(contentPadding = PaddingValues(top = 30.dp, bottom = 12.dp)) {
         item {
-            PlayerBlock(modifier = Modifier.padding(bottom = 20.dp)) { clickEvent(PlayerClickEvent.LoadPlayer) }
+            PlayerBlock(modifier = Modifier.padding(bottom = 10.dp)) { clickEvent(PlayerClickEvent.LoadPlayer) }
         }
 
         if (players.isEmpty()) {
