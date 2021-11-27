@@ -1,14 +1,9 @@
 package zero.friends.gostopcalculator.ui.common
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,11 +18,12 @@ import zero.friends.gostopcalculator.R
 
 
 @Composable
-fun CenterTextTopBar(text: String, onBack: () -> Unit = {}, onAction: (() -> Unit)? = null) {
+fun CenterTextTopBar(text: String, isRed: Boolean = true, onBack: () -> Unit = {}, onAction: (() -> Unit)? = null) {
     val modifier = Modifier
         .defaultMinSize(60.dp, 60.dp)//todo title Center 방법이 있다면 변경해보자...
         .background(Color.Transparent)
 
+    val iconColor = if (isRed) R.color.white else R.color.black
     TopAppBar(
         title = {
             Text(
@@ -45,7 +41,7 @@ fun CenterTextTopBar(text: String, onBack: () -> Unit = {}, onAction: (() -> Uni
                     Icon(
                         painter = painterResource(id = R.drawable.ic_topbar_back),
                         contentDescription = "Back",
-                        tint = colorResource(id = R.color.white)
+                        tint = colorResource(id = iconColor)
                     )
                 }
             }
@@ -57,23 +53,49 @@ fun CenterTextTopBar(text: String, onBack: () -> Unit = {}, onAction: (() -> Uni
                         Icon(
                             painter = painterResource(id = R.drawable.ic_topbar_close),
                             contentDescription = "Close",
-                            tint = colorResource(id = R.color.white)
+                            tint = colorResource(id = iconColor)
                         )
                     }
                 }
             }
         },
         modifier = Modifier.fillMaxWidth(),
-        backgroundColor = colorResource(id = R.color.orangey_red),
-        contentColor = colorResource(id = R.color.white),
+        backgroundColor = if (isRed) colorResource(id = R.color.orangey_red) else colorResource(id = R.color.white),
+        contentColor = if (isRed) colorResource(id = R.color.white) else colorResource(id = R.color.black),
         elevation = 0.dp
     )
+}
+
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ContentsCard(onClick: (() -> Unit)? = null, modifier: Modifier = Modifier, boxContents: @Composable () -> Unit) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(18.dp),
+        backgroundColor = colorResource(id = R.color.white),
+        elevation = 6.dp,
+        onClick = onClick ?: {},
+        enabled = onClick != null
+    ) {
+        Surface(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            boxContents()
+        }
+    }
 }
 
 @Preview
 @Composable
 private fun CenterTextTopBarPreview() {
-    CenterTextTopBar("hello", {}, {})
+    CenterTextTopBar("hello")
+}
+
+@Preview
+@Composable
+private fun ContentsCardPreview() {
+    ContentsCard(boxContents = {})
 }
 
 

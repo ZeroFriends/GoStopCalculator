@@ -60,7 +60,7 @@ fun RoundedCornerText(
             width = 1.dp,
             color = color
         ),
-        modifier = if (onButtonClicked != null) Modifier.clickable(onClick = onButtonClicked) else Modifier
+        modifier = Modifier.clickable(onClick = onButtonClicked ?: {}, enabled = onButtonClicked != null),
     ) {
         Text(
             modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp),
