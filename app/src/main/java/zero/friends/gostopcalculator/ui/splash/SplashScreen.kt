@@ -11,6 +11,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import zero.friends.gostopcalculator.R
@@ -29,6 +30,9 @@ fun SplashScreen() {
                 contentDescription = "고스톱 이미지",
                 alignment = Alignment.Center
             )
+            Text(text = "고스톱", fontSize = 40.sp, fontWeight = FontWeight.Bold)
+            Text(text = "금액계산기", fontSize = 20.sp)
+
         }
         Text(
             text = stringResource(id = R.string.company_name),
@@ -41,4 +45,10 @@ fun SplashScreen() {
                 .align(Alignment.BottomCenter)
         )
     }
+}
+
+@Preview
+@Composable
+private fun SplashPreview() {
+    SplashScreen()
 }
