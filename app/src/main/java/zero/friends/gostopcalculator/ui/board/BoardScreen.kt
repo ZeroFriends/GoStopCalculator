@@ -7,10 +7,7 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,6 +35,7 @@ import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 private sealed interface BoardEvent {
     object Back : BoardEvent
     object StartGame : BoardEvent
+    object OpenDropDown : BoardEvent
 }
 
 @Composable
@@ -61,6 +60,22 @@ fun BoardScreen(boardViewModel: BoardViewModel, onBack: () -> Unit = {}) {
         when (event) {
             BoardEvent.Back -> onBack()
             BoardEvent.StartGame -> {}
+            BoardEvent.OpenDropDown -> boardViewModel.openDropDown()
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .wrapContentSize(Alignment.TopEnd)
+    ) {
+        DropdownMenu(
+            expanded = uiState.showMoreDropDown,
+            onDismissRequest = { boardViewModel.closeDropDown() },
+            offset = DpOffset(16.dp, 16.dp)
+        ) {
+            Text(text = "dropDown1")
+            Text(text = "dropDown2")
         }
     }
 }
@@ -79,7 +94,8 @@ private fun BoardScreen(
                 text = uiState.game.createdAt,
                 onBack = { event(BoardEvent.Back) },
                 isRed = false,
-                onAction = { TODO("준영이한테 이거 왜있냐고 물어보기") }
+                onAction = { event(BoardEvent.OpenDropDown) },
+                actionIcon = painterResource(id = R.drawable.ic_more_black)
             )
         }
     ) {
@@ -94,7 +110,6 @@ private fun BoardScreen(
             onClickButton = { event(BoardEvent.StartGame) }
         )
     }
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -107,9 +122,11 @@ private fun BoxContent(
         Player("앙기무치"),
     )
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(bottom = 10.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 10.dp)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

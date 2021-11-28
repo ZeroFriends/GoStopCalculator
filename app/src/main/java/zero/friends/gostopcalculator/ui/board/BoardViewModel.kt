@@ -13,7 +13,8 @@ import zero.friends.gostopcalculator.util.viewModelFactory
 
 data class BoardUiState(
     val game: Game = Game(),
-    val gameHistory: List<String> = emptyList()
+    val gameHistory: List<String> = emptyList(),
+    val showMoreDropDown: Boolean = false
 )
 
 class BoardViewModel @AssistedInject constructor(
@@ -30,6 +31,14 @@ class BoardViewModel @AssistedInject constructor(
                     it.copy(game = game)
                 }
             }.launchIn(viewModelScope)
+    }
+
+    fun closeDropDown() {
+        _uiState.update { it.copy(showMoreDropDown = false) }
+    }
+
+    fun openDropDown() {
+        _uiState.update { it.copy(showMoreDropDown = true) }
     }
 
     companion object {

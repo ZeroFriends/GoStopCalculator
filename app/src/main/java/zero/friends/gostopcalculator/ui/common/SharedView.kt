@@ -23,7 +23,13 @@ import zero.friends.gostopcalculator.R
 
 
 @Composable
-fun CenterTextTopBar(text: String, isRed: Boolean = true, onBack: () -> Unit = {}, onAction: (() -> Unit)? = null) {
+fun CenterTextTopBar(
+    text: String,
+    isRed: Boolean = true,
+    onBack: () -> Unit = {},
+    onAction: (() -> Unit)? = null,
+    actionIcon: Painter = painterResource(id = R.drawable.ic_topbar_close)
+) {
     val modifier = Modifier
         .defaultMinSize(60.dp, 60.dp)//todo title Center 방법이 있다면 변경해보자...
         .background(Color.Transparent)
@@ -56,7 +62,7 @@ fun CenterTextTopBar(text: String, isRed: Boolean = true, onBack: () -> Unit = {
                 if (onAction != null) {
                     IconButton(onClick = onAction) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_topbar_close),
+                            painter = actionIcon,
                             contentDescription = "Close",
                             tint = colorResource(id = iconColor)
                         )
