@@ -124,7 +124,7 @@ fun EmptyHistory(
 
 @Preview
 @Composable
-fun EmptyHistoryPreview() {
+private fun EmptyHistoryPreview() {
     EmptyHistory()
 }
 
