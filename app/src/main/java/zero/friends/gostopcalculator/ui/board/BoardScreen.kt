@@ -11,11 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import zero.friends.domain.model.Game
+import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.provider.ViewModelProvider
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
@@ -75,14 +77,19 @@ private fun BoardScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "수익현황 \uD83D\uDC4F", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                    RoundedCornerText(text = "정산내역>")
+
+                    Text(
+                        text = stringResource(id = R.string.income_history),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    RoundedCornerText(text = stringResource(id = R.string.calculate_history))
                 }
             },
             contents = {
-                Text(text = "진행내역 \uD83E\uDD1D", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                Text(text = stringResource(id = R.string.game_history), fontSize = 24.sp, fontWeight = FontWeight.Bold)
             },
-            buttonText = "게임시작"
+            buttonText = stringResource(R.string.start_game)
         )
     }
 
