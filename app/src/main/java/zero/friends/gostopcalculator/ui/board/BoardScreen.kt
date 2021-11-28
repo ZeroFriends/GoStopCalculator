@@ -99,10 +99,21 @@ private fun BoardScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun BoxContent(players: List<Player> = emptyList()) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+private fun BoxContent(
+    players: List<Player> = listOf(
+        Player("조재영"),
+        Player("송준영"),
+        Player("김경민"),
+        Player("앙기무치"),
+    )
+) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 10.dp)) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -113,7 +124,7 @@ private fun BoxContent(players: List<Player> = emptyList()) {
             )
             RoundedCornerText(text = stringResource(id = R.string.calculate_history))
         }
-        LazyVerticalGrid(cells = GridCells.Adaptive(128.dp)) {
+        LazyVerticalGrid(cells = GridCells.Fixed(2)) {
             itemsIndexed(players) { index: Int, item: Player ->
                 PlayerItem(index = index, player = item)
             }
@@ -124,43 +135,33 @@ private fun BoxContent(players: List<Player> = emptyList()) {
 @Composable
 private fun PlayerItem(index: Int, player: Player) {
     Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f)
-        ) {
+        Row {
             Text(
                 text = (index + 1).toString(),
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(16.dp),
+                    .align(Alignment.CenterVertically),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = colorResource(id = R.color.orangey_red)
             )
-            Column(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(end = 6.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        text = player.name,
-                        fontSize = 16.sp,
-                        color = colorResource(id = R.color.nero)
-                    )
-                }
-
-            }
+            Spacer(modifier = Modifier.padding(8.dp))
+            Text(
+                text = player.name,
+                fontSize = 16.sp,
+                color = colorResource(id = R.color.nero),
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
         }
 
-        Text(modifier = Modifier.weight(1f), text = "원", textAlign = TextAlign.End)
+        Text(
+            text = "0원",
+            textAlign = TextAlign.Center,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
     }
 }
 
@@ -180,29 +181,12 @@ private fun Contents(uiState: BoardUiState) {
             )
         } else {
             LazyColumn {
-
+                //TODO 게임 진행내역 추가
             }
         }
     }
 }
 
-@Preview
-@Composable
-private fun PlayerItemPreview() {
-    PlayerItem(index = 0, player = Player("Zero.dev"))
-}
-
-@Preview
-@Composable
-private fun BoxContentsPreview() {
-    BoxContent()
-}
-
-@Preview
-@Composable
-private fun ContentsPreview() {
-    Contents(uiState = BoardUiState())
-}
 
 @Composable
 @Preview

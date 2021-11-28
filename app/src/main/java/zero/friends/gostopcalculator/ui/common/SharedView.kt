@@ -83,9 +83,7 @@ fun ContentsCard(onClick: (() -> Unit)? = null, modifier: Modifier = Modifier, b
         onClick = onClick ?: {},
         enabled = onClick != null
     ) {
-        Surface(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Surface {
             boxContents()
         }
     }
