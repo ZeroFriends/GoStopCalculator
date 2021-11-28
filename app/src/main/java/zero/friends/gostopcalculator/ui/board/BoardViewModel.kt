@@ -12,7 +12,8 @@ import zero.friends.gostopcalculator.di.factory.ViewModelFactory
 import zero.friends.gostopcalculator.util.viewModelFactory
 
 data class BoardUiState(
-    val game: Game = Game()
+    val game: Game = Game(),
+    val gameHistory: List<String> = emptyList()
 )
 
 class BoardViewModel @AssistedInject constructor(

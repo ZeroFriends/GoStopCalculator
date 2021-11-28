@@ -1,6 +1,5 @@
 package zero.friends.gostopcalculator.ui.main
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,7 +11,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,10 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.domain.model.Game
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.ui.common.GoStopButton
-import zero.friends.gostopcalculator.ui.common.RoundedCornerText
-import zero.friends.gostopcalculator.ui.common.SubTitleText
-import zero.friends.gostopcalculator.ui.common.TitleText
+import zero.friends.gostopcalculator.ui.common.*
 
 private sealed class MainEvent {
     object StartGame : MainEvent()
@@ -134,7 +129,11 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: (Ga
         SubTitleText(text = stringResource(id = R.string.history))
         TitleText(text = stringResource(id = R.string.progress))
         if (games.isEmpty()) {
-            EmptyHistory()
+            EmptyHistory(
+                painter = painterResource(id = R.drawable.ic_onodofu),
+                title = stringResource(id = R.string.empty_game),
+                subTitle = stringResource(id = R.string.info_new_game_start)
+            )
         } else {
             LazyColumn(
                 modifier = Modifier
@@ -149,27 +148,6 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: (Ga
     }
 }
 
-@Composable
-private fun EmptyHistory() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_onodofu),
-                contentDescription = stringResource(id = R.string.onodofu),
-                alignment = Alignment.Center,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.padding(bottom = 9.dp)
-            )
-            Text(
-                text = stringResource(id = R.string.empty_game),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 2.dp)
-            )
-            Text(text = stringResource(id = R.string.info_game_start))
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable
