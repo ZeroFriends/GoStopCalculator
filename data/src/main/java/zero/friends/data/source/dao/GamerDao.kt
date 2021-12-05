@@ -1,0 +1,11 @@
+package zero.friends.data.source.dao
+
+import androidx.room.Dao
+import androidx.room.Query
+import zero.friends.data.entity.GamerEntity
+
+@Dao
+interface GamerDao : BaseDao<GamerEntity> {
+    @Query("SELECT * FROM GamerEntity where gameId = :gameId and playerId = :playerId")
+    suspend fun getAllGamer(gameId: Long, playerId: Long): List<GamerEntity>
+}

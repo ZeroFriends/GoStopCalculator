@@ -201,7 +201,7 @@ private fun PlayerItem(index: Int, player: Player, clickEvent: (PlayerClickEvent
 @Preview(showBackground = true)
 @Composable
 private fun PlayerItemPreView() {
-    PlayerItem(index = 0, player = Player("hello"), clickEvent = {})
+    PlayerItem(index = 0, player = Player(name = "hello"), clickEvent = {})
 }
 
 @Preview

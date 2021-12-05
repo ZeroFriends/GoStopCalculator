@@ -1,0 +1,7 @@
+package zero.friends.domain.repository
+
+import zero.friends.domain.model.Gamer
+
+interface GamerRepository {
+    suspend fun getAllGamer(gameId: Long, playerId: Long): List<Gamer>
+}

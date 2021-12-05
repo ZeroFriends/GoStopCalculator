@@ -23,7 +23,7 @@ data class PlayerEntity(
 ) {
     companion object {
         fun Player.toEntity() = PlayerEntity(name = name)
-        fun PlayerEntity.toPlayer() = Player(name)
+        fun PlayerEntity.toPlayer() = Player(playerId, name)
     }
 }
 

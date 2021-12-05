@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import zero.friends.domain.model.Game
-import zero.friends.domain.model.Player
+import zero.friends.domain.model.PlayerResult
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.provider.ViewModelProvider
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
@@ -101,7 +101,7 @@ private fun BoardScreen(
     ) {
         BoardBackground(
             boxContents = {
-                BoxContent()
+                BoxContent(uiState.playerList)
             },
             contents = {
                 Contents(uiState)
@@ -115,12 +115,7 @@ private fun BoardScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun BoxContent(
-    players: List<Player> = listOf(
-        Player("조재영"),
-        Player("송준영"),
-        Player("김경민"),
-        Player("앙기무치"),
-    )
+    players: List<PlayerResult> = emptyList()
 ) {
     Column(
         modifier = Modifier
@@ -142,15 +137,15 @@ private fun BoxContent(
             RoundedCornerText(text = stringResource(id = R.string.calculate_history))
         }
         LazyVerticalGrid(cells = GridCells.Fixed(2)) {
-            itemsIndexed(players) { index: Int, item: Player ->
-                PlayerItem(index = index, player = item)
+            itemsIndexed(players) { index: Int, item: PlayerResult ->
+                PlayerItem(index = index, playerResult = item)
             }
         }
     }
 }
 
 @Composable
-private fun PlayerItem(index: Int, player: Player) {
+private fun PlayerItem(index: Int, playerResult: PlayerResult) {
     Row(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -167,7 +162,7 @@ private fun PlayerItem(index: Int, player: Player) {
             )
             Spacer(modifier = Modifier.padding(8.dp))
             Text(
-                text = player.name,
+                text = playerResult.name,
                 fontSize = 16.sp,
                 color = colorResource(id = R.color.nero),
                 modifier = Modifier.align(Alignment.CenterVertically)
@@ -175,7 +170,7 @@ private fun PlayerItem(index: Int, player: Player) {
         }
 
         Text(
-            text = "0원",
+            text = "${playerResult.account}원",
             textAlign = TextAlign.Center,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
