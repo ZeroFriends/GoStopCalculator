@@ -9,14 +9,16 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.PlayerResult
+import zero.friends.domain.model.Round
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.usecase.GetPlayerListUseCase
+import zero.friends.domain.usecase.GetRoundListUseCase
 import zero.friends.gostopcalculator.di.factory.ViewModelFactory
 import zero.friends.gostopcalculator.util.viewModelFactory
 
 data class BoardUiState(
     val game: Game = Game(),
-    val gameHistory: List<String> = emptyList(),
+    val gameHistory: List<Round> = emptyList(),
     val playerList: List<PlayerResult> = emptyList(),
     val showMoreDropDown: Boolean = false
 )
@@ -24,7 +26,8 @@ data class BoardUiState(
 class BoardViewModel @AssistedInject constructor(
     @Assisted private val gameId: Long,
     private val gameRepository: GameRepository,
-    private val getPlayerListUseCase: GetPlayerListUseCase
+    private val getPlayerListUseCase: GetPlayerListUseCase,
+    private val getRoundListUseCase: GetRoundListUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(BoardUiState(Game(gameId)))
     fun getUiState() = _uiState.asStateFlow()
@@ -33,7 +36,14 @@ class BoardViewModel @AssistedInject constructor(
         viewModelScope.launch {
             val playerList = getPlayerListUseCase.invoke(gameId)
             _uiState.update { it.copy(playerList = playerList) }
+
+            getRoundListUseCase.invoke(gameId)
+                .onEach { rounds ->
+                    _uiState.update { it.copy(gameHistory = rounds) }
+                }.launchIn(this)
+
         }
+
         gameRepository.observeGame(gameId)
             .onEach { game ->
                 _uiState.update {

@@ -5,6 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import zero.friends.domain.model.Round
 
 @Entity(
     foreignKeys = [
@@ -19,6 +20,10 @@ import androidx.room.PrimaryKey
 )
 data class RoundEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val gamers: List<GamerEntity> = emptyList(),
+//    val gamers: List<GamerEntity> = emptyList(), todo 나중에 필요하면 여기 하자
     val gameId: Long = 0
-)
+) {
+    companion object {
+        fun RoundEntity.toRound() = Round(id, /*gamers.map { it.toGamer() },*/ gameId)
+    }
+}

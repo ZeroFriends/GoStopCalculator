@@ -193,7 +193,9 @@ private fun Contents(uiState: BoardUiState) {
             )
         } else {
             LazyColumn {
-                //TODO 게임 진행내역 추가
+                itemsIndexed(uiState.gameHistory) { i, r ->
+                    Text(text = r.id.toString())
+                }
             }
         }
     }

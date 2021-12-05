@@ -6,19 +6,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import zero.friends.data.repository.GameRepositoryImpl
-import zero.friends.data.repository.GamerRepositoryImpl
-import zero.friends.data.repository.PlayerRepositoryImpl
-import zero.friends.data.repository.RuleRepositoryImpl
+import zero.friends.data.repository.*
 import zero.friends.data.source.api.RuleApi
-import zero.friends.data.source.dao.GameDao
-import zero.friends.data.source.dao.GamerDao
-import zero.friends.data.source.dao.PlayerDao
-import zero.friends.data.source.dao.RuleDao
-import zero.friends.domain.repository.GameRepository
-import zero.friends.domain.repository.GamerRepository
-import zero.friends.domain.repository.PlayerRepository
-import zero.friends.domain.repository.RuleRepository
+import zero.friends.data.source.dao.*
+import zero.friends.domain.repository.*
 import javax.inject.Singleton
 
 @Module
@@ -45,4 +36,8 @@ class RepositoryModule {
     @Provides
     @Singleton
     fun provideGamerRepository(gamerDao: GamerDao): GamerRepository = GamerRepositoryImpl(gamerDao)
+
+    @Provides
+    @Singleton
+    fun provideRoundRepository(roundDao: RoundDao): RoundRepository = RoundRepositoryImpl(roundDao)
 }
