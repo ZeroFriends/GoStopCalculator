@@ -27,17 +27,17 @@ import zero.friends.gostopcalculator.ui.precondition.PlayerViewModel
 fun NameEditDialog(
     viewModel: PlayerViewModel = hiltViewModel(),
 ) {
-    val uiState by viewModel.getUiState().collectAsState()
+    val dialogState by viewModel.getDialogState().collectAsState()
     val editPlayerName = remember {
-        val playerName = uiState.dialogState.editPlayer?.name ?: ""
+        val playerName = dialogState.editPlayer?.name ?: ""
         mutableStateOf(TextFieldValue(playerName, selection = TextRange(playerName.length)))
     }
-    if (!uiState.dialogState.openDialog) {
+    if (!dialogState.openDialog) {
         viewModel.closeDialog()
     }
 
     val editPlayer = {
-        val player = uiState.dialogState.editPlayer
+        val player = dialogState.editPlayer
         requireNotNull(player)
         viewModel.editPlayer(player, player.copy(name = editPlayerName.value.text))
     }
@@ -64,7 +64,7 @@ fun NameEditDialog(
                     onValueChange = {
                         editPlayerName.value = it
                     },
-                    error = uiState.dialogState.error?.message,
+                    error = dialogState.error?.message,
                     showKeyboard = true,
                     onDone = editPlayer
                 )

@@ -36,6 +36,7 @@ private sealed interface PlayerClickEvent {
 fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Unit, onBack: () -> Unit) {
     val scaffoldState = rememberScaffoldState()
     val uiState by viewModel.getUiState().collectAsState()
+    val dialogState by viewModel.getDialogState().collectAsState()
 
     BackHandler(true) {
         viewModel.clearGame()
@@ -63,7 +64,7 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Uni
         }
     }
 
-    if (uiState.dialogState.openDialog) {
+    if (dialogState.openDialog) {
         NameEditDialog()
     }
 }

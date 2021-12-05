@@ -9,12 +9,12 @@ import zero.friends.domain.model.Gamer
 
 @Entity(
     foreignKeys = [
-//        ForeignKey(
-//            entity = RoundEntity::class,
-//            parentColumns = ["id"],
-//            childColumns = ["roundId"],
-//            onDelete = CASCADE
-//        ),
+        ForeignKey(
+            entity = RoundEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["roundId"],
+            onDelete = CASCADE
+        ),
         ForeignKey(
             entity = GameEntity::class,
             parentColumns = ["id"],
@@ -31,7 +31,7 @@ data class GamerEntity(
     val gameId: Long,
     val account: Int = 0,
     val optional: String? = null,
-//    val calculate: List<Target>
+//    val calculate: List<Target> todo 계산결과 집어넣기
 ) {
     companion object {
         fun GamerEntity.toGamer() = Gamer(id, roundId, playerId, gameId, account, optional)

@@ -21,7 +21,6 @@ data class PlayerUiState(
     val players: List<Player> = emptyList(),
     val gameName: String = "",
     val currentTime: String = TimeUtil.getCurrentTime(),
-    val dialogState: DialogState = DialogState(),
 )
 
 data class DialogState(
@@ -42,12 +41,12 @@ class PlayerViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(PlayerUiState())
     fun getUiState() = _uiState.asStateFlow()
 
+    private val _dialogState = MutableStateFlow(DialogState())
+    fun getDialogState() = _dialogState.asStateFlow()
+
     private val editNameExceptionHandler =
         CoroutineExceptionHandler { _: CoroutineContext, throwable: Throwable ->
-            _uiState.update {
-                val dialogState = it.dialogState.copy(openDialog = true, error = throwable)
-                it.copy(dialogState = dialogState)
-            }
+            _dialogState.update { it.copy(openDialog = true, error = throwable) }
         }
 
     init {
@@ -88,16 +87,14 @@ class PlayerViewModel @Inject constructor(
     }
 
     fun openDialog(player: Player) {
-        _uiState.update {
-            val dialogState = it.dialogState.copy(openDialog = true, editPlayer = player)
-            it.copy(dialogState = dialogState)
+        _dialogState.update {
+            it.copy(openDialog = true, editPlayer = player)
         }
     }
 
     fun closeDialog() {
-        _uiState.update {
-            val dialogState = it.dialogState.copy(openDialog = false, error = null)
-            it.copy(dialogState = dialogState)
+        _dialogState.update {
+            it.copy(openDialog = false, error = null)
         }
     }
 
