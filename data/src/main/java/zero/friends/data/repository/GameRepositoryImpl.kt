@@ -11,8 +11,9 @@ import zero.friends.data.entity.GameEntity.Companion.toGame
 import zero.friends.data.source.dao.GameDao
 import zero.friends.domain.model.Game
 import zero.friends.domain.repository.GameRepository
+import javax.inject.Inject
 
-class GameRepositoryImpl(private val gameDao: GameDao) : GameRepository {
+class GameRepositoryImpl @Inject constructor(private val gameDao: GameDao) : GameRepository {
     private var cacheGameId: Long? = null
 
     override suspend fun newGame(name: String, createdAt: String): Long {

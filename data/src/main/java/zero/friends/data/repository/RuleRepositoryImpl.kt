@@ -1,6 +1,7 @@
 package zero.friends.data.repository
 
 import android.content.Context
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import zero.friends.data.entity.RuleEntity
@@ -12,7 +13,7 @@ import zero.friends.domain.repository.RuleRepository
 import javax.inject.Inject
 
 class RuleRepositoryImpl @Inject constructor(
-    private val context: Context,
+    @ApplicationContext private val context: Context,
     private val ruleApi: RuleApi,
     private val ruleDao: RuleDao,
 ) : RuleRepository {

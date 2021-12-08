@@ -9,8 +9,9 @@ import zero.friends.data.entity.PlayerEntity.Companion.toPlayer
 import zero.friends.data.source.dao.PlayerDao
 import zero.friends.domain.model.Player
 import zero.friends.domain.repository.PlayerRepository
+import javax.inject.Inject
 
-class PlayerRepositoryImpl(
+class PlayerRepositoryImpl @Inject constructor(
     private val playerDao: PlayerDao,
 ) : PlayerRepository {
     private val playerIdCache = mutableMapOf<Long, Int>()

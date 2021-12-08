@@ -4,7 +4,7 @@ data class Gamer(
     val id: Long = 0,
     val roundId: Long = 0,
     val playerId: Long = 0,
-    val gameId: Long,
+    val gameId: Long = 0,
     val account: Int = 0,
     val optional: String? = null,
 )

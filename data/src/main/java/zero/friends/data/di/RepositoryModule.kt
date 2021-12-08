@@ -1,43 +1,33 @@
 package zero.friends.data.di
 
-import android.content.Context
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import zero.friends.data.repository.*
-import zero.friends.data.source.api.RuleApi
-import zero.friends.data.source.dao.*
 import zero.friends.domain.repository.*
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class RepositoryModule {
-    @Provides
+interface RepositoryModule {
+    @Binds
     @Singleton
-    fun providePlayerRepository(playerDao: PlayerDao): PlayerRepository =
-        PlayerRepositoryImpl(playerDao)
+    fun providePlayerRepository(playerRepository: PlayerRepositoryImpl): PlayerRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideGameRepository(gameDao: GameDao): GameRepository = GameRepositoryImpl(gameDao)
+    fun provideGameRepository(gameRepository: GameRepositoryImpl): GameRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRuleRepository(
-        @ApplicationContext context: Context,
-        ruleApi: RuleApi,
-        ruleDao: RuleDao,
-    ): RuleRepository =
-        RuleRepositoryImpl(context, ruleApi, ruleDao)
+    fun provideRuleRepository(ruleRepository: RuleRepositoryImpl): RuleRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideGamerRepository(gamerDao: GamerDao): GamerRepository = GamerRepositoryImpl(gamerDao)
+    fun provideGamerRepository(gamerRepository: GamerRepositoryImpl): GamerRepository
 
-    @Provides
+    @Binds
     @Singleton
-    fun provideRoundRepository(roundDao: RoundDao): RoundRepository = RoundRepositoryImpl(roundDao)
+    fun provideRoundRepository(roundRepository: RoundRepositoryImpl): RoundRepository
 }
