@@ -2,9 +2,11 @@ package zero.friends.data.source.preference
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import dagger.hilt.android.qualifiers.ApplicationContext
 import zero.friends.domain.preference.AppPreference
+import javax.inject.Inject
 
-class Preference constructor(context: Context) : AppPreference {
+class Preference @Inject constructor(@ApplicationContext context: Context) : AppPreference {
     private val preferences = context.getSharedPreferences(APP_PREFERENCE, MODE_PRIVATE)
 
     override fun insertLastPlayerId(id: Long) {
