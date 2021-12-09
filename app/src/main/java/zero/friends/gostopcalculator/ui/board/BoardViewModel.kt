@@ -13,7 +13,7 @@ import zero.friends.domain.model.Round
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.usecase.GetPlayerListUseCase
 import zero.friends.domain.usecase.GetRoundListUseCase
-import zero.friends.gostopcalculator.di.factory.ViewModelFactory
+import zero.friends.gostopcalculator.di.factory.AssistedFactory
 import zero.friends.gostopcalculator.util.viewModelFactory
 
 data class BoardUiState(
@@ -62,9 +62,9 @@ class BoardViewModel @AssistedInject constructor(
 
     companion object {
         fun provideFactory(
-            boardViewModelFactory: ViewModelFactory.BoardViewModelFactory,
+            assistedFactory: AssistedFactory,
             gameId: Long
-        ): ViewModelProvider.Factory = viewModelFactory { boardViewModelFactory.create(gameId) }
+        ): ViewModelProvider.Factory = viewModelFactory { assistedFactory.create(gameId) }
     }
 }
 

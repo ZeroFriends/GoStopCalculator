@@ -2,15 +2,14 @@ package zero.friends.gostopcalculator.ui.board
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -24,9 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import zero.friends.domain.model.Game
+import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.PlayerResult
+import zero.friends.domain.model.Round
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.di.provider.ViewModelProvider
+import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.EmptyHistory
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
@@ -40,9 +41,9 @@ private sealed interface BoardEvent {
 
 @Composable
 fun createBoardViewModel(gameId: Long): BoardViewModel {
-    val entryPoint = getEntryPointFromActivity<ViewModelProvider.FactoryEntryPoint>()
+    val entryPoint = getEntryPointFromActivity<EntryPoint>()
     val factory = entryPoint.boardFactory()
-    return viewModel(factory = BoardViewModel.provideFactory(boardViewModelFactory = factory, gameId = gameId))
+    return viewModel(factory = BoardViewModel.provideFactory(assistedFactory = factory, gameId = gameId))
 }
 
 @Composable
