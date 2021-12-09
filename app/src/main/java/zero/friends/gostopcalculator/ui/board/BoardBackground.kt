@@ -11,23 +11,19 @@ import zero.friends.gostopcalculator.ui.common.ContentsCard
 import zero.friends.gostopcalculator.ui.common.GoStopButton
 
 @Composable
-fun BoardBackground(
-    boxContents: @Composable () -> Unit = {},
-    contents: @Composable () -> Unit = {},
-    buttonText: String = "",
-    onClickButton: () -> Unit = {}
-) {
+@Preview
+private fun BoardBackgroundPreView() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 12.dp, start = 16.dp, end = 16.dp, bottom = 20.dp)
+            .padding(top = 12.dp, bottom = 20.dp)
     ) {
 
         Column {
             ContentsCard(
                 modifier = Modifier
                     .fillMaxWidth(),
-                boxContents = boxContents
+                boxContents = {}
             )
 
             Spacer(modifier = Modifier.padding(9.dp))
@@ -35,23 +31,15 @@ fun BoardBackground(
             Surface(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp)
             ) {
-                contents()
             }
         }
 
 
         GoStopButton(
-            text = buttonText,
+            text = "",
             modifier = Modifier.align(Alignment.BottomCenter),
-            onClick = onClickButton
+            onClick = {}
         )
     }
-}
-
-@Composable
-@Preview
-private fun BoardBackgroundPreView() {
-    BoardBackground()
 }

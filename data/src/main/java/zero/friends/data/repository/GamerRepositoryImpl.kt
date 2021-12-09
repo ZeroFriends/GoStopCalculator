@@ -13,4 +13,8 @@ class GamerRepositoryImpl @Inject constructor(
         return gamerDao.getAllGamer(gameId, playerId).map { it.toGamer() }
     }
 
+    override suspend fun getRoundGamers(roundId: Long): List<Gamer> {
+        return gamerDao.getRoundGamers(roundId).map { it.toGamer() }
+    }
+
 }

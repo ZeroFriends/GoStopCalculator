@@ -1,14 +1,21 @@
 package zero.friends.domain.usecase
 
-import kotlinx.coroutines.flow.Flow
-import zero.friends.domain.model.Round
+import zero.friends.domain.model.Gamer
+import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.repository.RoundRepository
 import javax.inject.Inject
 
 class GetRoundListUseCase @Inject constructor(
-    private val roundRepository: RoundRepository
+    private val roundRepository: RoundRepository,
+    private val gamerRepository: GamerRepository
 ) {
-    suspend operator fun invoke(gameId: Long): Flow<List<Round>> {
-        return roundRepository.observeAllRound(gameId)
+    private val roundMap = mutableMapOf<Long, List<Gamer>>()
+    suspend operator fun invoke(gameId: Long): Map<Long, List<Gamer>> {
+        val allRound = roundRepository.getAllRound(gameId)
+        allRound.forEach {
+            val gamers = gamerRepository.getRoundGamers(it.id)
+            roundMap[it.id] = gamers
+        }
+        return roundMap
     }
 }

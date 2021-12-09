@@ -29,6 +29,8 @@
     <string name="start_game">게임시작</string>
     <string name="empty_game_log">게임을 진행한 내역이 없습니다.</string>
     <string name="info_game_start">하단에 게임시작 버튼을 눌러 게임을 진행해주세요.</string>
+    <string name="detail"><![CDATA[상세보기 >]]></string>
+    <string name="round">%s 라운드"</string>
 
 
 </resources>

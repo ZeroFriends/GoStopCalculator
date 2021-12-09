@@ -28,13 +28,14 @@ data class GamerEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val roundId: Long = 0,
     val playerId: Long = 0,
+    val name: String,
     val gameId: Long,
     val account: Int = 0,
     val optional: String? = null,
 //    val calculate: List<Target> todo 계산결과 집어넣기
 ) {
     companion object {
-        fun GamerEntity.toGamer() = Gamer(id, roundId, playerId, gameId, account, optional)
+        fun GamerEntity.toGamer() = Gamer(id, name, roundId, playerId, gameId, account, optional)
     }
 }
 

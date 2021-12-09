@@ -2,6 +2,7 @@ package zero.friends.domain.model
 
 data class Gamer(
     val id: Long = 0,
+    val name: String = "",
     val roundId: Long = 0,
     val playerId: Long = 0,
     val gameId: Long = 0,

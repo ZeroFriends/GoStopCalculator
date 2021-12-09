@@ -5,7 +5,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
@@ -25,12 +24,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.PlayerResult
-import zero.friends.domain.model.Round
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
-import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
-import zero.friends.gostopcalculator.ui.common.EmptyHistory
-import zero.friends.gostopcalculator.ui.common.RoundedCornerText
+import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 
 private sealed interface BoardEvent {
@@ -87,7 +83,6 @@ private fun BoardScreen(
     uiState: BoardUiState = BoardUiState(),
     event: (BoardEvent) -> Unit = {}
 ) {
-
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -100,49 +95,65 @@ private fun BoardScreen(
             )
         }
     ) {
-        BoardBackground(
-            boxContents = {
-                BoxContent(uiState.playerList)
-            },
-            contents = {
-                Contents(uiState)
-            },
-            buttonText = stringResource(R.string.start_game),
-            onClickButton = { event(BoardEvent.StartGame) }
-        )
+        val contentsModifier = Modifier.padding(horizontal = 16.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 12.dp, bottom = 20.dp)
+        ) {
+
+            Column {
+                IncomeHistory(modifier = contentsModifier, uiState.playerList)
+                Spacer(modifier = Modifier.padding(9.dp))
+                GameHistory(modifier = contentsModifier, uiState)
+            }
+
+            GoStopButton(
+                text = stringResource(R.string.start_game),
+                modifier = contentsModifier.align(Alignment.BottomCenter),
+                onClick = { event(BoardEvent.StartGame) }
+            )
+        }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun BoxContent(
+private fun IncomeHistory(
+    modifier: Modifier = Modifier,
     players: List<PlayerResult> = emptyList()
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 10.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(id = R.string.income_history),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
-            )
-            RoundedCornerText(text = stringResource(id = R.string.calculate_history))
-        }
-        LazyVerticalGrid(cells = GridCells.Fixed(2)) {
-            itemsIndexed(players) { index: Int, item: PlayerResult ->
-                PlayerItem(index = index, playerResult = item)
+    ContentsCard(
+        modifier = modifier
+            .fillMaxWidth(),
+        boxContents = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.income_history),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    RoundedCornerText(text = stringResource(id = R.string.calculate_history))
+                }
+                LazyVerticalGrid(cells = GridCells.Fixed(2)) {
+                    itemsIndexed(players) { index: Int, item: PlayerResult ->
+                        PlayerItem(index = index, playerResult = item)
+                    }
+                }
             }
         }
-    }
+    )
 }
 
 @Composable
@@ -179,8 +190,8 @@ private fun PlayerItem(index: Int, playerResult: PlayerResult) {
 }
 
 @Composable
-private fun Contents(uiState: BoardUiState) {
-    Column {
+private fun GameHistory(modifier: Modifier, uiState: BoardUiState) {
+    Column(modifier = modifier) {
         Text(
             text = stringResource(id = R.string.game_history),
             fontSize = 24.sp,
@@ -193,21 +204,150 @@ private fun Contents(uiState: BoardUiState) {
                 subTitle = stringResource(R.string.info_game_start)
             )
         } else {
-            LazyColumn {
-                itemsIndexed(uiState.gameHistory) { i, r ->
-                    Text(text = r.id.toString())
+            Column(
+                modifier = Modifier
+            ) {
+                uiState.gameHistory.values.forEachIndexed { index, gamer ->
+                    RoundBox(index, gamer)
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun RoundBox(index: Int = 0, gamers: List<Gamer> = emptyList()) {
+    ContentsCard(modifier = Modifier.padding(vertical = 10.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = String.format(stringResource(id = R.string.round, (index + 1))))
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(painter = painterResource(id = R.drawable.ic_more_black), contentDescription = null)
+                }
+            }
+            LazyVerticalGrid(
+                cells = GridCells.Fixed(2),
+                contentPadding = PaddingValues(vertical = 10.dp),
+            ) {
+                itemsIndexed(gamers) { index, gamer ->
+                    GamerItem(index = index, gamer)
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(colorResource(id = R.color.light_gray))
+                    .padding(vertical = 4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.detail),
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun GamerItem(index: Int, gamer: Gamer) {
+    Row(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        val moneyColor by remember(gamer.account) {
+            derivedStateOf {
+                when {
+                    gamer.account > 0 -> {
+                        R.color.orangey_red
+                    }
+                    gamer.account < 0 -> {
+                        R.color.blue
+                    }
+                    else -> {
+                        R.color.nero
+                    }
+                }
+
+            }
+        }
+
+        Row {
+            Text(
+                text = (index + 1).toString(),
+                modifier = Modifier
+                    .align(Alignment.CenterVertically),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(id = R.color.orangey_red)
+            )
+            Spacer(modifier = Modifier.padding(8.dp))
+            Column(
+                modifier = Modifier.align(Alignment.CenterVertically)
+            ) {
+                if (gamer.optional != null) Text(text = gamer.optional.toString(), fontSize = 8.sp)
+                Text(
+                    text = gamer.name,
+                    fontSize = 16.sp,
+                    color = colorResource(id = R.color.nero),
+                )
+            }
+
+        }
+
+        Text(
+            text = "${gamer.account}원",
+            textAlign = TextAlign.Center,
+            color = colorResource(id = moneyColor),
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
+    }
+}
+
+
+@Preview
+@Composable
+fun GamerItemPreview() {
+    GamerItem(index = 0, gamer = Gamer())
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RoundBoxPreview() {
+    RoundBox(gamers = listOf(Gamer(account = 10, optional = "광팜"), Gamer(account = -10, optional = "승자")))
+}
 
 @Composable
 @Preview
 private fun BoardScreenPreview() {
     BoardScreen(
-        uiState = BoardUiState(game = Game(createdAt = "2020.11.26")),
-
+        uiState = BoardUiState(
+            game = Game(createdAt = "2020.11.26"),
+            gameHistory = mapOf(
+                0L to listOf(Gamer(name = "zero"), Gamer(name = "hello")),
+                1L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
+                2L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
+                3L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
+                4L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
+                5L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
+                6L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
+                7L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
+                8L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
+            ),
+            playerList = listOf(PlayerResult("zero", 200), PlayerResult("hello", -100))
         )
+    )
 }

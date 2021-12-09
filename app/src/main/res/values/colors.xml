@@ -6,5 +6,7 @@
     <color name="nero">#212121</color>
     <color name="gray">#bdbdbd</color>
     <color name="gray38">#616161</color>
+    <color name="light_gray">#f5f5f5</color>
+    <color name="blue">#2962ff</color>
 
 </resources>

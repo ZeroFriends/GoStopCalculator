@@ -8,8 +8,8 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
+import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.PlayerResult
-import zero.friends.domain.model.Round
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.usecase.GetPlayerListUseCase
 import zero.friends.domain.usecase.GetRoundListUseCase
@@ -18,7 +18,7 @@ import zero.friends.gostopcalculator.util.viewModelFactory
 
 data class BoardUiState(
     val game: Game = Game(),
-    val gameHistory: List<Round> = emptyList(),
+    val gameHistory: Map<Long, List<Gamer>> = emptyMap(),
     val playerList: List<PlayerResult> = emptyList(),
     val showMoreDropDown: Boolean = false
 )
@@ -37,10 +37,8 @@ class BoardViewModel @AssistedInject constructor(
             val playerList = getPlayerListUseCase.invoke(gameId)
             _uiState.update { it.copy(playerList = playerList) }
 
-            getRoundListUseCase.invoke(gameId)
-                .onEach { rounds ->
-                    _uiState.update { it.copy(gameHistory = rounds) }
-                }.launchIn(this)
+            val roundLists = getRoundListUseCase.invoke(gameId)
+            _uiState.update { it.copy(gameHistory = roundLists) }
 
         }
 
