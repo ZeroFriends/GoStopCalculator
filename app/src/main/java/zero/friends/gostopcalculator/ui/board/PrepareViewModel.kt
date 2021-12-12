@@ -50,6 +50,13 @@ class PrepareViewModel @AssistedInject constructor(
         }
     }
 
+    fun deleteRound() {
+        viewModelScope.launch {
+            roundRepository.deleteRound(roundId)
+            roundId = 0L
+        }
+    }
+
     fun onClickPlayer(check: Boolean, player: Player) {
         viewModelScope.launch {
             _uiState.update { state ->

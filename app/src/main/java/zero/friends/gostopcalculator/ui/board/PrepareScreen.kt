@@ -52,6 +52,7 @@ fun PrepareScreen(prepareViewModel: PrepareViewModel = hiltViewModel(), onBack: 
     val uiState by prepareViewModel.uiState().collectAsState()
 
     BackHandler(true) {
+        prepareViewModel.deleteRound()
         onBack()
     }
 
@@ -60,7 +61,10 @@ fun PrepareScreen(prepareViewModel: PrepareViewModel = hiltViewModel(), onBack: 
         uiState = uiState,
         event = { event ->
             when (event) {
-                PrepareEvent.Back -> onBack()
+                PrepareEvent.Back -> {
+                    prepareViewModel.deleteRound()
+                    onBack()
+                }
                 PrepareEvent.Complete -> {
 
                 }

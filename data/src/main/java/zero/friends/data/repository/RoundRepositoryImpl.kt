@@ -15,4 +15,8 @@ class RoundRepositoryImpl @Inject constructor(private val roundDao: RoundDao) : 
     override suspend fun createNewRound(gameId: Long): Long {
         return roundDao.insert(RoundEntity(gameId = gameId))
     }
+
+    override suspend fun deleteRound(roundId: Long) {
+        roundDao.deleteRound(roundId)
+    }
 }
