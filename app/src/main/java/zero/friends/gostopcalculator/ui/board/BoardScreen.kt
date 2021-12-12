@@ -103,25 +103,17 @@ private fun BoardScreen(
             )
         }
     ) {
-        val contentsModifier = Modifier.padding(horizontal = 16.dp)
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 12.dp, bottom = 20.dp)
-        ) {
-
-            Column {
-                IncomeHistory(modifier = contentsModifier, uiState.playerList)
-                Spacer(modifier = Modifier.padding(9.dp))
-                GameHistory(modifier = contentsModifier, uiState, event)
+        GoStopButtonBackground(
+            buttonString = R.string.start_game,
+            onClick = { event(BoardEvent.StartGame) },
+            contents = {
+                Column {
+                    IncomeHistory(players = uiState.playerList)
+                    Spacer(modifier = Modifier.padding(9.dp))
+                    GameHistory(uiState = uiState, event = event)
+                }
             }
-
-            GoStopButton(
-                text = stringResource(R.string.start_game),
-                modifier = contentsModifier.align(Alignment.BottomCenter),
-                onClick = { event(BoardEvent.StartGame) }
-            )
-        }
+        )
     }
 }
 
@@ -198,7 +190,7 @@ private fun PlayerItem(index: Int, playerResult: PlayerResult) {
 }
 
 @Composable
-private fun GameHistory(modifier: Modifier, uiState: BoardUiState, event: (BoardEvent) -> Unit = {}) {
+private fun GameHistory(modifier: Modifier = Modifier, uiState: BoardUiState, event: (BoardEvent) -> Unit = {}) {
     Column(modifier = modifier) {
         Text(
             text = stringResource(id = R.string.game_history),

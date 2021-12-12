@@ -1,6 +1,9 @@
 package zero.friends.gostopcalculator.ui.board
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Scaffold
@@ -24,7 +27,7 @@ import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.ContentsCard
-import zero.friends.gostopcalculator.ui.common.GoStopButton
+import zero.friends.gostopcalculator.ui.common.GoStopButtonBackground
 
 @Composable
 fun PrepareScreen(prepareViewModel: PrepareViewModel = hiltViewModel()) {
@@ -51,25 +54,18 @@ private fun PrepareScreen(
             )
         }
     ) {
-        //todo 중복제거...@See BoardScreen
-        val contentsModifier = Modifier.padding(horizontal = 16.dp)
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 12.dp, bottom = 20.dp)
-        ) {
-            Column {
-                StartDescription(contentsModifier)
-                Spacer(modifier = Modifier.padding(22.dp))
-                PlayerPickList(contentsModifier)
+        GoStopButtonBackground(
+            buttonString = R.string.complete,
+            onClick = {},
+            contents = {
+                Column {
+                    StartDescription()
+                    Spacer(modifier = Modifier.padding(22.dp))
+                    PlayerPickList()
+                }
             }
+        )
 
-            GoStopButton(
-                text = stringResource(R.string.complete),
-                modifier = contentsModifier.align(Alignment.BottomCenter),
-                onClick = { }
-            )
-        }
     }
 }
 

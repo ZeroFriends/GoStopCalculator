@@ -3,7 +3,6 @@ package zero.friends.gostopcalculator.ui.common
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import zero.friends.gostopcalculator.R
 
 @Composable
@@ -68,7 +68,7 @@ fun AprilBackground(
                 ConstraintLayout(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(vertical = 40.dp, horizontal = 16.dp),
+                        .padding(vertical = 20.dp, horizontal = 16.dp),
                 ) {
                     val (upper, button) = createRefs()
                     Surface(
@@ -76,8 +76,8 @@ fun AprilBackground(
                             .constrainAs(upper) {
                                 bottom.linkTo(button.top)
                                 top.linkTo(parent.top)
+                                height = Dimension.fillToConstraints
                             }
-                            .fillMaxHeight()
                     ) {
                         contents()
                     }
