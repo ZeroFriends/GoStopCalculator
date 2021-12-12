@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import zero.friends.gostopcalculator.theme.GoStopTheme
 import zero.friends.gostopcalculator.ui.board.BoardScreen
+import zero.friends.gostopcalculator.ui.board.PrepareScreen
 import zero.friends.gostopcalculator.ui.board.createBoardViewModel
 import zero.friends.gostopcalculator.ui.main.MainScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
@@ -110,6 +111,11 @@ fun Navigator(onBackPressed: () -> Unit) {
                     }
                 )
             }
+
+            composable(Navigate.Board.Prepare.route()) {
+                PrepareScreen()
+            }
+
         }
     }
 }
