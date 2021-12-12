@@ -117,7 +117,12 @@ fun Navigator(onBackPressed: () -> Unit) {
 
             composable(Navigate.Board.Prepare.route()) {
                 val gameId = navController.getGameId()
-                PrepareScreen(createPrepareViewModel(gameId = gameId))
+                PrepareScreen(
+                    createPrepareViewModel(gameId = gameId),
+                    onBack = {
+                        navController.navigateUp()
+                    }
+                )
             }
 
         }

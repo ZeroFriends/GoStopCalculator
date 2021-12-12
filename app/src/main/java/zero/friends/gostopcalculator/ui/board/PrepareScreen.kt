@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.board
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -12,55 +13,89 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import zero.friends.domain.model.Game
 import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.ContentsCard
 import zero.friends.gostopcalculator.ui.common.GoStopButtonBackground
+import zero.friends.gostopcalculator.util.getEntryPointFromActivity
+
+private sealed interface PrepareEvent {
+    object Back : PrepareEvent
+    object Complete : PrepareEvent
+    class OnClickPlayer(val player: Player, val isCheck: Boolean) : PrepareEvent
+}
 
 @Composable
-fun PrepareScreen(prepareViewModel: PrepareViewModel = hiltViewModel()) {
+fun createPrepareViewModel(gameId: Long): PrepareViewModel {
+    val entryPoint = getEntryPointFromActivity<EntryPoint>()
+    val factory = entryPoint.prepareFactory()
+    return viewModel(factory = PrepareViewModel.provideFactory(prePareViewModelFactory = factory, gameId = gameId))
+}
+
+@Composable
+fun PrepareScreen(prepareViewModel: PrepareViewModel = hiltViewModel(), onBack: () -> Unit = {}) {
     val scaffoldState = rememberScaffoldState()
     val uiState by prepareViewModel.uiState().collectAsState()
+
+    BackHandler(true) {
+        onBack()
+    }
+
     PrepareScreen(
         scaffoldState = scaffoldState,
-        uiState = uiState
+        uiState = uiState,
+        event = { event ->
+            when (event) {
+                PrepareEvent.Back -> onBack()
+                PrepareEvent.Complete -> {
+
+                }
+                is PrepareEvent.OnClickPlayer -> {
+                    prepareViewModel.onClickPlayer(event.isCheck, event.player)
+                }
+            }
+        }
     )
 }
 
 @Composable
 private fun PrepareScreen(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
-    uiState: PrepareUiState = PrepareUiState()
+    uiState: PrepareUiState = PrepareUiState(),
+    event: (PrepareEvent) -> Unit = {},
 ) {
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(
                 text = uiState.game.name,
-                onBack = {},
+                onBack = { event(PrepareEvent.Back) },
                 isRed = false,
             )
         }
     ) {
         GoStopButtonBackground(
             buttonString = R.string.complete,
-            onClick = {},
+            onClick = { event(PrepareEvent.Complete) },
             contents = {
                 Column {
                     StartDescription()
                     Spacer(modifier = Modifier.padding(22.dp))
-                    PlayerPickList()
+                    PlayerPickList(uiState = uiState, event = event)
                 }
             }
         )
@@ -97,7 +132,11 @@ private fun StartDescription(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun PlayerPickList(modifier: Modifier = Modifier, players: List<Player> = emptyList()) {
+private fun PlayerPickList(
+    modifier: Modifier = Modifier,
+    uiState: PrepareUiState,
+    event: (PrepareEvent) -> Unit = {}
+) {
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -108,9 +147,13 @@ private fun PlayerPickList(modifier: Modifier = Modifier, players: List<Player> 
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.padding(9.dp))
-        LazyColumn {
-            itemsIndexed(players) { index: Int, item: Player ->
-                PlayerPickItem(index, item)
+        LazyColumn(contentPadding = PaddingValues(2.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            itemsIndexed(uiState.players) { index: Int, player: Player ->
+                PlayerPickItem(
+                    index = index,
+                    player = player,
+                    isCheck = uiState.gamer.any { player.id == it.playerId },
+                    onClick = { event(PrepareEvent.OnClickPlayer(player, it)) })
             }
         }
     }
@@ -118,10 +161,10 @@ private fun PlayerPickList(modifier: Modifier = Modifier, players: List<Player> 
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun PlayerPickItem(index: Int, item: Player, isCheck: Boolean = true, onClick: (Boolean) -> Unit = {}) {
+private fun PlayerPickItem(index: Int, player: Player, isCheck: Boolean = true, onClick: (Boolean) -> Unit = {}) {
     val modifier = if (isCheck) Modifier.background(
-        color = Color(R.color.orangey_red).copy(alpha = 0.1f),
-        RoundedCornerShape(18.dp)
+        color = colorResource(id = R.color.orangey_red).copy(alpha = 0.1f),
+        shape = RoundedCornerShape(18.dp)
     )
     else Modifier
 
@@ -140,13 +183,20 @@ private fun PlayerPickItem(index: Int, item: Player, isCheck: Boolean = true, on
                 color = colorResource(id = R.color.orangey_red)
             )
             Spacer(modifier = Modifier.padding(8.dp))
-            Text(text = item.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(text = player.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
         Surface(onClick = { onClick(!isCheck) }) {
             if (isCheck) {
-                Image(painter = painterResource(id = R.drawable.ic_check_circle_24_dp), contentDescription = null)
+                Image(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_check_circle_24_dp),
+                    modifier = Modifier.background(color = colorResource(id = R.color.orangey_red).copy(alpha = 0.1f)),
+                    contentDescription = null
+                )
             } else {
-                Image(painter = painterResource(id = R.drawable.ic_unchecked_circle_24_dp), contentDescription = null)
+                Image(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_unchecked_circle_24_dp),
+                    contentDescription = null
+                )
             }
         }
     }
@@ -155,11 +205,21 @@ private fun PlayerPickItem(index: Int, item: Player, isCheck: Boolean = true, on
 @Preview(showBackground = true)
 @Composable
 private fun PickItemPreview() {
-    PlayerPickItem(index = 1, item = Player(1, "zero"))
+    PlayerPickItem(index = 1, player = Player(1, "zero"))
 }
 
 @Preview
 @Composable
 private fun PrepareScreenPreview() {
-    PrepareScreen(rememberScaffoldState())
+    PrepareScreen(
+        rememberScaffoldState(),
+        PrepareUiState(
+            game = Game(1, "gameName"),
+            players = listOf(
+                Player(1, "zero"),
+                Player(2, "hello"),
+                Player(3, "조재영"),
+            )
+        )
+    )
 }

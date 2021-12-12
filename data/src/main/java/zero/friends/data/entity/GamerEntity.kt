@@ -22,7 +22,7 @@ import zero.friends.domain.model.Gamer
             onDelete = CASCADE
         )
     ],
-    indices = [Index(value = ["roundId"], unique = true)]
+    indices = [Index(value = ["roundId"], unique = false)]
 )
 data class GamerEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

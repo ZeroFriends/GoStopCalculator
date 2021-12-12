@@ -16,7 +16,7 @@ import zero.friends.domain.model.Round
             onDelete = CASCADE
         )
     ],
-    indices = [Index(value = ["gameId"], unique = true)]
+    indices = [Index(value = ["gameId"], unique = false)]
 )
 data class RoundEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,

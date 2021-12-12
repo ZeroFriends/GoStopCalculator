@@ -11,4 +11,7 @@ interface GamerDao : BaseDao<GamerEntity> {
 
     @Query("SELECT * FROM GamerEntity where roundId = :roundId")
     suspend fun getRoundGamers(roundId: Long): List<GamerEntity>
+
+    @Query("DELETE FROM GamerEntity where playerId = :playerId AND roundId = :roundId")
+    suspend fun deleteGamer(roundId: Long, playerId: Long)
 }
