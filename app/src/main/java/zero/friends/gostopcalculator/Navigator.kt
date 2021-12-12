@@ -3,6 +3,7 @@ package zero.friends.gostopcalculator
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -11,6 +12,7 @@ import zero.friends.gostopcalculator.theme.GoStopTheme
 import zero.friends.gostopcalculator.ui.board.BoardScreen
 import zero.friends.gostopcalculator.ui.board.PrepareScreen
 import zero.friends.gostopcalculator.ui.board.createBoardViewModel
+import zero.friends.gostopcalculator.ui.board.createPrepareViewModel
 import zero.friends.gostopcalculator.ui.main.MainScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
@@ -91,7 +93,7 @@ fun Navigator(onBackPressed: () -> Unit) {
             composable(Navigate.Precondition.Rule.route()) {
                 RuleScreen(
                     onNext = {
-                        navController.currentBackStackEntry?.arguments?.putLong(Const.GameId, it.id)
+                        navController.putGameId(it.id)
                         navController.navigate(Navigate.Board.Main.route())
                     },
                     onBack = { navController.navigateUp() },
@@ -99,10 +101,11 @@ fun Navigator(onBackPressed: () -> Unit) {
             }
 
             composable(Navigate.Board.Main.route()) {
-                val gameId = requireNotNull(navController.previousBackStackEntry?.arguments?.getLong(Const.GameId))
+                val gameId = navController.getGameId()
                 BoardScreen(
                     createBoardViewModel(gameId),
                     onNext = {
+                        navController.putGameId(it)
                         navController.navigate(Navigate.Board.Prepare.route())
                     },
                     onBack = {
@@ -113,9 +116,18 @@ fun Navigator(onBackPressed: () -> Unit) {
             }
 
             composable(Navigate.Board.Prepare.route()) {
-                PrepareScreen()
+                val gameId = navController.getGameId()
+                PrepareScreen(createPrepareViewModel(gameId = gameId))
             }
 
         }
     }
+}
+
+private fun NavHostController.putGameId(gameId: Long) {
+    currentBackStackEntry?.arguments?.putLong(Const.GameId, gameId)
+}
+
+private fun NavHostController.getGameId(): Long {
+    return requireNotNull(previousBackStackEntry?.arguments?.getLong(Const.GameId))
 }

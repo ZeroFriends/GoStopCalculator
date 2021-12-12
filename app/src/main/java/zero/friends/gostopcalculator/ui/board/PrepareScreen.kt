@@ -47,7 +47,7 @@ private fun PrepareScreen(
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(
-                text = "",
+                text = uiState.game.name,
                 onBack = {},
                 isRed = false,
             )

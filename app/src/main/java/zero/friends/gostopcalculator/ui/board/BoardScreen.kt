@@ -44,11 +44,11 @@ private sealed interface BoardEvent {
 fun createBoardViewModel(gameId: Long): BoardViewModel {
     val entryPoint = getEntryPointFromActivity<EntryPoint>()
     val factory = entryPoint.boardFactory()
-    return viewModel(factory = BoardViewModel.provideFactory(assistedFactory = factory, gameId = gameId))
+    return viewModel(factory = BoardViewModel.provideFactory(BoardViewModelFactory = factory, gameId = gameId))
 }
 
 @Composable
-fun BoardScreen(boardViewModel: BoardViewModel, onNext: () -> Unit = {}, onBack: () -> Unit = {}) {
+fun BoardScreen(boardViewModel: BoardViewModel, onNext: (gameId: Long) -> Unit = {}, onBack: () -> Unit = {}) {
     val scaffoldState = rememberScaffoldState()
     val uiState by boardViewModel.getUiState().collectAsState()
 
@@ -61,7 +61,7 @@ fun BoardScreen(boardViewModel: BoardViewModel, onNext: () -> Unit = {}, onBack:
     ) { event ->
         when (event) {
             BoardEvent.Back -> onBack()
-            BoardEvent.StartGame -> onNext()
+            BoardEvent.StartGame -> onNext(uiState.game.id)
             BoardEvent.OpenDropDown -> boardViewModel.openDropDown()
             BoardEvent.Detail -> {}
             BoardEvent.More -> {}
@@ -95,7 +95,7 @@ private fun BoardScreen(
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(
-                text = uiState.game.createdAt,
+                text = uiState.game.name,
                 onBack = { event(BoardEvent.Back) },
                 isRed = false,
                 onAction = { event(BoardEvent.OpenDropDown) },
