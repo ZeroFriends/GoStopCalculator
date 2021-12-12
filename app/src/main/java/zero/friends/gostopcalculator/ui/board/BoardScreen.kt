@@ -3,8 +3,10 @@ package zero.friends.gostopcalculator.ui.board
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
@@ -27,12 +29,15 @@ import zero.friends.domain.model.PlayerResult
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
 import zero.friends.gostopcalculator.ui.common.*
+import zero.friends.gostopcalculator.util.GridItems
 import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 
 private sealed interface BoardEvent {
     object Back : BoardEvent
     object StartGame : BoardEvent
     object OpenDropDown : BoardEvent
+    object Detail : BoardEvent
+    object More : BoardEvent
 }
 
 @Composable
@@ -58,6 +63,8 @@ fun BoardScreen(boardViewModel: BoardViewModel, onBack: () -> Unit = {}) {
             BoardEvent.Back -> onBack()
             BoardEvent.StartGame -> {}
             BoardEvent.OpenDropDown -> boardViewModel.openDropDown()
+            BoardEvent.Detail -> TODO()
+            BoardEvent.More -> TODO()
         }
     }
 
@@ -77,6 +84,7 @@ fun BoardScreen(boardViewModel: BoardViewModel, onBack: () -> Unit = {}) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun BoardScreen(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
@@ -105,7 +113,7 @@ private fun BoardScreen(
             Column {
                 IncomeHistory(modifier = contentsModifier, uiState.playerList)
                 Spacer(modifier = Modifier.padding(9.dp))
-                GameHistory(modifier = contentsModifier, uiState)
+                GameHistory(modifier = contentsModifier, uiState, event)
             }
 
             GoStopButton(
@@ -190,7 +198,7 @@ private fun PlayerItem(index: Int, playerResult: PlayerResult) {
 }
 
 @Composable
-private fun GameHistory(modifier: Modifier, uiState: BoardUiState) {
+private fun GameHistory(modifier: Modifier, uiState: BoardUiState, event: (BoardEvent) -> Unit = {}) {
     Column(modifier = modifier) {
         Text(
             text = stringResource(id = R.string.game_history),
@@ -204,11 +212,9 @@ private fun GameHistory(modifier: Modifier, uiState: BoardUiState) {
                 subTitle = stringResource(R.string.info_game_start)
             )
         } else {
-            Column(
-                modifier = Modifier
-            ) {
-                uiState.gameHistory.values.forEachIndexed { index, gamer ->
-                    RoundBox(index, gamer)
+            LazyColumn {
+                itemsIndexed(uiState.gameHistory.values.toList()) { index, gamer ->
+                    RoundBox(index, gamer, event)
                 }
             }
         }
@@ -217,7 +223,7 @@ private fun GameHistory(modifier: Modifier, uiState: BoardUiState) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun RoundBox(index: Int = 0, gamers: List<Gamer> = emptyList()) {
+private fun RoundBox(index: Int = 0, gamers: List<Gamer> = emptyList(), event: (BoardEvent) -> Unit = {}) {
     ContentsCard(modifier = Modifier.padding(vertical = 10.dp)) {
         Column(
             modifier = Modifier
@@ -231,25 +237,22 @@ private fun RoundBox(index: Int = 0, gamers: List<Gamer> = emptyList()) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = String.format(stringResource(id = R.string.round, (index + 1))))
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { event(BoardEvent.More) }) {
                     Icon(painter = painterResource(id = R.drawable.ic_more_black), contentDescription = null)
                 }
             }
-            LazyVerticalGrid(
-                cells = GridCells.Fixed(2),
-                contentPadding = PaddingValues(vertical = 10.dp),
-            ) {
-                itemsIndexed(gamers) { index, gamer ->
-                    GamerItem(index = index, gamer)
-                }
+
+            GridItems(data = gamers, nColumns = 2) { index, gamer ->
+                GamerItem(index = index, gamer)
             }
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(colorResource(id = R.color.light_gray))
-                    .padding(vertical = 4.dp),
-                contentAlignment = Alignment.Center
+                    .padding(vertical = 4.dp)
+                    .clickable { event(BoardEvent.Detail) },
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = stringResource(R.string.detail),
@@ -327,7 +330,12 @@ fun GamerItemPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun RoundBoxPreview() {
-    RoundBox(gamers = listOf(Gamer(account = 10, optional = "광팜"), Gamer(account = -10, optional = "승자")))
+    RoundBox(
+        gamers = listOf(
+            Gamer(name = "조재영", account = 10, optional = "광팜"),
+            Gamer(name = "송준영", account = -10, optional = "승자")
+        )
+    )
 }
 
 @Composable
@@ -338,16 +346,27 @@ private fun BoardScreenPreview() {
             game = Game(createdAt = "2020.11.26"),
             gameHistory = mapOf(
                 0L to listOf(Gamer(name = "zero"), Gamer(name = "hello")),
-                1L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
-                2L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
-                3L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
+                1L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas"), Gamer(name = "zerowolrd")),
+                2L to listOf(
+                    Gamer(name = "world"),
+                    Gamer(name = "Asdasdas"),
+                    Gamer(name = "zerowolrd"),
+                    Gamer(name = "zzzzz")
+                ),
+                3L to listOf(
+                    Gamer(name = "world"),
+                    Gamer(name = "Asdasdas"),
+                    Gamer(name = "zerowolrd"),
+                    Gamer(name = "zzzzz"),
+                    Gamer(name = "sdlakfdsfkl")
+                ),
                 4L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
-                5L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
-                6L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
-                7L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
-                8L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
+//                5L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
+//                6L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
+//                7L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
+//                8L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
             ),
-            playerList = listOf(PlayerResult("zero", 200), PlayerResult("hello", -100))
+            playerList = listOf(PlayerResult("hPlayer1", 200), PlayerResult("HPlayer2", -100))
         )
     )
 }
