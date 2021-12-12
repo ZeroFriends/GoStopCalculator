@@ -16,7 +16,10 @@ import zero.friends.gostopcalculator.ui.precondition.RuleScreen
 import zero.friends.gostopcalculator.ui.splash.SplashScreen
 
 sealed interface Navigate {
-    fun route() = this::class.supertypes.toString() + this::class.simpleName
+    fun route() = findRoute()
+
+    private fun findRoute() =
+        (this::class.supertypes.first().toString().split(".").last() + "_" + this::class.simpleName)
 
     object Main : Navigate
     object Splash : Navigate
@@ -96,10 +99,16 @@ fun Navigator(onBackPressed: () -> Unit) {
 
             composable(Navigate.Board.Main.route()) {
                 val gameId = requireNotNull(navController.previousBackStackEntry?.arguments?.getLong(Const.GameId))
-                BoardScreen(createBoardViewModel(gameId)) {
-                    navController.popBackStack()
-                    navController.navigate(Navigate.Main.route())
-                }
+                BoardScreen(
+                    createBoardViewModel(gameId),
+                    onNext = {
+                        navController.navigate(Navigate.Board.Prepare.route())
+                    },
+                    onBack = {
+                        navController.popBackStack()
+                        navController.navigate(Navigate.Main.route())
+                    }
+                )
             }
         }
     }

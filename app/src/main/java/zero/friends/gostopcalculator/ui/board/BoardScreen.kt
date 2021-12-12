@@ -48,7 +48,7 @@ fun createBoardViewModel(gameId: Long): BoardViewModel {
 }
 
 @Composable
-fun BoardScreen(boardViewModel: BoardViewModel, onBack: () -> Unit = {}) {
+fun BoardScreen(boardViewModel: BoardViewModel, onNext: () -> Unit = {}, onBack: () -> Unit = {}) {
     val scaffoldState = rememberScaffoldState()
     val uiState by boardViewModel.getUiState().collectAsState()
 
@@ -61,10 +61,10 @@ fun BoardScreen(boardViewModel: BoardViewModel, onBack: () -> Unit = {}) {
     ) { event ->
         when (event) {
             BoardEvent.Back -> onBack()
-            BoardEvent.StartGame -> {}
+            BoardEvent.StartGame -> onNext()
             BoardEvent.OpenDropDown -> boardViewModel.openDropDown()
-            BoardEvent.Detail -> TODO()
-            BoardEvent.More -> TODO()
+            BoardEvent.Detail -> {}
+            BoardEvent.More -> {}
         }
     }
 
