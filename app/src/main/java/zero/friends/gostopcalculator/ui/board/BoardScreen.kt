@@ -181,6 +181,9 @@ private fun IncomeHistory(
 
 @Composable
 private fun PlayerItem(index: Int, playerResult: PlayerResult) {
+    val moneyColor by remember(playerResult.account) {
+        derivedStateOf { getMoneyColor(playerResult.account) }
+    }
     Row(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -207,7 +210,8 @@ private fun PlayerItem(index: Int, playerResult: PlayerResult) {
         Text(
             text = "${playerResult.account}원",
             textAlign = TextAlign.Center,
-            modifier = Modifier.align(Alignment.CenterVertically)
+            modifier = Modifier.align(Alignment.CenterVertically),
+            color = colorResource(id = moneyColor)
         )
     }
 }
@@ -292,20 +296,7 @@ private fun GamerItem(index: Int, gamer: Gamer) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         val moneyColor by remember(gamer.account) {
-            derivedStateOf {
-                when {
-                    gamer.account > 0 -> {
-                        R.color.orangey_red
-                    }
-                    gamer.account < 0 -> {
-                        R.color.blue
-                    }
-                    else -> {
-                        R.color.nero
-                    }
-                }
-
-            }
+            derivedStateOf { getMoneyColor(gamer.account) }
         }
 
         Row {
@@ -337,6 +328,18 @@ private fun GamerItem(index: Int, gamer: Gamer) {
             color = colorResource(id = moneyColor),
             modifier = Modifier.align(Alignment.CenterVertically)
         )
+    }
+}
+
+private fun getMoneyColor(account: Int) = when {
+    account > 0 -> {
+        R.color.orangey_red
+    }
+    account < 0 -> {
+        R.color.blue
+    }
+    else -> {
+        R.color.nero
     }
 }
 
