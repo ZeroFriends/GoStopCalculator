@@ -72,21 +72,13 @@ fun BoardScreen(boardViewModel: BoardViewModel, onNext: (gameId: Long) -> Unit =
     }
 
     if (dialogState != null) {
-        AlertDialog(
-            onDismissRequest = { boardViewModel.closeDialog() },
-            title = { Text(text = "삭제하시겠습니까?") },
-            confirmButton = {
-                Button(onClick = {
-                    boardViewModel.deleteRound()
-                    boardViewModel.closeDialog()
-                }) {
-                    Text(text = "삭제")
-                }
+        DeleteDialog(
+            onDismiss = {
+                boardViewModel.closeDialog()
             },
-            dismissButton = {
-                Button(onClick = { boardViewModel.closeDialog() }) {
-                    Text(text = "취소")
-                }
+            onClick = {
+                boardViewModel.deleteRound()
+                boardViewModel.closeDialog()
             }
         )
     }

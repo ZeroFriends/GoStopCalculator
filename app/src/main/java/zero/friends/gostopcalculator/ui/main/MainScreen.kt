@@ -22,6 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.domain.model.Game
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
+import zero.friends.gostopcalculator.ui.dialog.DeleteDialog
 
 private sealed class MainEvent {
     object StartGame : MainEvent()
@@ -40,23 +41,13 @@ fun MainScreen(
     val dialogState by viewModel.getDialogState().collectAsState()
 
     if (dialogState.openDialog) {
-        AlertDialog(
-            onDismissRequest = { viewModel.closeDialog() },
-            title = { Text(text = "삭제하시겠습니까?") },
-            confirmButton = {
-                Button(onClick = {
-                    val gameId = dialogState.gameId
-                    requireNotNull(gameId)
-                    viewModel.deleteGame(gameId)
-                    viewModel.closeDialog()
-                }) {
-                    Text(text = "삭제")
-                }
-            },
-            dismissButton = {
-                Button(onClick = { viewModel.closeDialog() }) {
-                    Text(text = "취소")
-                }
+        DeleteDialog(
+            onDismiss = { viewModel.closeDialog() },
+            onClick = {
+                val gameId = dialogState.gameId
+                requireNotNull(gameId)
+                viewModel.deleteGame(gameId)
+                viewModel.closeDialog()
             }
         )
     }
