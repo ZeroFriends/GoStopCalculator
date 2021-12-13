@@ -29,6 +29,7 @@ import zero.friends.domain.model.PlayerResult
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
 import zero.friends.gostopcalculator.ui.common.*
+import zero.friends.gostopcalculator.ui.dialog.DeleteDialog
 import zero.friends.gostopcalculator.util.GridItems
 import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 
@@ -181,7 +182,7 @@ private fun PlayerItem(index: Int, playerResult: PlayerResult) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = (index + 1).toString(),
                 modifier = Modifier
@@ -190,10 +191,10 @@ private fun PlayerItem(index: Int, playerResult: PlayerResult) {
                 fontWeight = FontWeight.Bold,
                 color = colorResource(id = R.color.orangey_red)
             )
-            Spacer(modifier = Modifier.padding(8.dp))
+            Spacer(modifier = Modifier.padding(4.dp))
             Text(
                 text = playerResult.name,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 color = colorResource(id = R.color.nero),
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
@@ -202,6 +203,7 @@ private fun PlayerItem(index: Int, playerResult: PlayerResult) {
         Text(
             text = "${playerResult.account}원",
             textAlign = TextAlign.Center,
+            fontSize = 12.sp,
             modifier = Modifier.align(Alignment.CenterVertically),
             color = colorResource(id = moneyColor)
         )
@@ -266,8 +268,8 @@ private fun RoundBox(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(colorResource(id = R.color.light_gray))
-                    .padding(vertical = 4.dp)
-                    .clickable { event(BoardEvent.Detail) },
+                    .clickable { event(BoardEvent.Detail) }
+                    .padding(vertical = 4.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -291,7 +293,10 @@ private fun GamerItem(index: Int, gamer: Gamer) {
             derivedStateOf { getMoneyColor(gamer.account) }
         }
 
-        Row {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
                 text = (index + 1).toString(),
                 modifier = Modifier
@@ -300,14 +305,15 @@ private fun GamerItem(index: Int, gamer: Gamer) {
                 fontWeight = FontWeight.Bold,
                 color = colorResource(id = R.color.orangey_red)
             )
-            Spacer(modifier = Modifier.padding(8.dp))
+            Spacer(modifier = Modifier.padding(4.dp))
             Column(
-                modifier = Modifier.align(Alignment.CenterVertically)
+                modifier = Modifier.align(Alignment.CenterVertically),
+                verticalArrangement = Arrangement.Center
             ) {
                 if (gamer.optional != null) Text(text = gamer.optional.toString(), fontSize = 8.sp)
                 Text(
                     text = gamer.name,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     color = colorResource(id = R.color.nero),
                 )
             }
@@ -318,6 +324,7 @@ private fun GamerItem(index: Int, gamer: Gamer) {
             text = "${gamer.account}원",
             textAlign = TextAlign.Center,
             color = colorResource(id = moneyColor),
+            fontSize = 12.sp,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
     }
