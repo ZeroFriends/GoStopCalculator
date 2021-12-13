@@ -54,7 +54,7 @@ dependencies {
     implementation(Dep.Compose.tooling)
     implementation(Dep.Compose.material)
     implementation(Dep.Compose.themeAdapter)
-
+    implementation(Dep.lottie)
 
     implementation(Dep.AndroidX.core)
     implementation(Dep.AndroidX.fragment)

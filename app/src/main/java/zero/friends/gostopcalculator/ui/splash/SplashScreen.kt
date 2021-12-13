@@ -1,39 +1,40 @@
 package zero.friends.gostopcalculator.ui.splash
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import zero.friends.gostopcalculator.R
 
 
 @Composable
 fun SplashScreen() {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.gostop_splash))
+    val progress by animateLottieCompositionAsState(composition)
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Image(
-                painter = painterResource(id = R.mipmap.song),
-                contentDescription = "고스톱 이미지",
-                alignment = Alignment.Center
-            )
-            Text(text = "고스톱", fontSize = 40.sp, fontWeight = FontWeight.Bold)
-            Text(text = "금액계산기", fontSize = 20.sp)
-
-        }
+        LottieAnimation(
+            composition,
+            progress,
+            modifier = Modifier
+                .size(150.dp, 150.dp)
+                .align(Alignment.Center)
+        )
         Text(
             text = stringResource(id = R.string.company_name),
             fontSize = 14.sp,

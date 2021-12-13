@@ -85,6 +85,7 @@ object Dep {
         const val serialization = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
     }
 
+    const val lottie = "com.airbnb.android:lottie-compose:4.2.2"
     const val timber = "com.jakewharton.timber:timber:4.7.1"
     const val inject = "javax.inject:javax.inject:1"
 }
