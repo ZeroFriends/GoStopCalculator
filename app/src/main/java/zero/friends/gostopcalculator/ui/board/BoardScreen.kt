@@ -37,7 +37,7 @@ private sealed interface BoardEvent {
     object StartGame : BoardEvent
     object OpenDropDown : BoardEvent
     object Detail : BoardEvent
-    object More : BoardEvent
+    class More(val roundId: Long) : BoardEvent
 }
 
 @Composable
@@ -51,6 +51,7 @@ fun createBoardViewModel(gameId: Long): BoardViewModel {
 fun BoardScreen(boardViewModel: BoardViewModel, onNext: (gameId: Long) -> Unit = {}, onBack: () -> Unit = {}) {
     val scaffoldState = rememberScaffoldState()
     val uiState by boardViewModel.getUiState().collectAsState()
+    val dialogState by boardViewModel.dialogState().collectAsState()
 
     BackHandler(true) {
         onBack()
@@ -64,8 +65,30 @@ fun BoardScreen(boardViewModel: BoardViewModel, onNext: (gameId: Long) -> Unit =
             BoardEvent.StartGame -> onNext(uiState.game.id)
             BoardEvent.OpenDropDown -> boardViewModel.openDropDown()
             BoardEvent.Detail -> {}
-            BoardEvent.More -> {}
+            is BoardEvent.More -> {
+                boardViewModel.openDialog(event.roundId)
+            }
         }
+    }
+
+    if (dialogState != null) {
+        AlertDialog(
+            onDismissRequest = { boardViewModel.closeDialog() },
+            title = { Text(text = "삭제하시겠습니까?") },
+            confirmButton = {
+                Button(onClick = {
+                    boardViewModel.deleteRound()
+                    boardViewModel.closeDialog()
+                }) {
+                    Text(text = "삭제")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { boardViewModel.closeDialog() }) {
+                    Text(text = "취소")
+                }
+            }
+        )
     }
 
     Box(
@@ -205,8 +228,8 @@ private fun GameHistory(modifier: Modifier = Modifier, uiState: BoardUiState, ev
             )
         } else {
             LazyColumn {
-                itemsIndexed(uiState.gameHistory.values.toList()) { index, gamer ->
-                    RoundBox(index, gamer, event)
+                itemsIndexed(uiState.gameHistory.toList()) { index, (roundId, gamer) ->
+                    RoundBox(index, roundId, gamer, event)
                 }
             }
         }
@@ -215,7 +238,12 @@ private fun GameHistory(modifier: Modifier = Modifier, uiState: BoardUiState, ev
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun RoundBox(index: Int = 0, gamers: List<Gamer> = emptyList(), event: (BoardEvent) -> Unit = {}) {
+private fun RoundBox(
+    index: Int = 0,
+    roundId: Long = 0L,
+    gamers: List<Gamer> = emptyList(),
+    event: (BoardEvent) -> Unit = {}
+) {
     ContentsCard(modifier = Modifier.padding(vertical = 10.dp)) {
         Column(
             modifier = Modifier
@@ -229,7 +257,7 @@ private fun RoundBox(index: Int = 0, gamers: List<Gamer> = emptyList(), event: (
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = String.format(stringResource(id = R.string.round, (index + 1))))
-                IconButton(onClick = { event(BoardEvent.More) }) {
+                IconButton(onClick = { event(BoardEvent.More(roundId)) }) {
                     Icon(painter = painterResource(id = R.drawable.ic_more_black), contentDescription = null)
                 }
             }

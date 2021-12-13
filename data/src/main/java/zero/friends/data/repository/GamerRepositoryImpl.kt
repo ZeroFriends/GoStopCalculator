@@ -1,5 +1,6 @@
 package zero.friends.data.repository
 
+import kotlinx.coroutines.flow.Flow
 import zero.friends.data.entity.GamerEntity
 import zero.friends.data.entity.GamerEntity.Companion.toGamer
 import zero.friends.data.source.dao.GamerDao
@@ -17,6 +18,10 @@ class GamerRepositoryImpl @Inject constructor(
 
     override suspend fun getRoundGamers(roundId: Long): List<Gamer> {
         return gamerDao.getRoundGamers(roundId).map { it.toGamer() }
+    }
+
+    override fun observeGamers(gameId: Long): Flow<List<Gamer>> {
+        return gamerDao.observeGamers(gameId)
     }
 
     override suspend fun createGamer(gameId: Long, roundId: Long, player: Player) {

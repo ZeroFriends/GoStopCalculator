@@ -11,8 +11,9 @@ import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.PlayerResult
 import zero.friends.domain.repository.GameRepository
+import zero.friends.domain.repository.RoundRepository
 import zero.friends.domain.usecase.GetPlayerListUseCase
-import zero.friends.domain.usecase.GetRoundListUseCase
+import zero.friends.domain.usecase.ObserveRoundListUseCase
 import zero.friends.gostopcalculator.di.factory.BoardViewModelFactory
 import zero.friends.gostopcalculator.util.viewModelFactory
 
@@ -27,18 +28,25 @@ class BoardViewModel @AssistedInject constructor(
     @Assisted private val gameId: Long,
     private val gameRepository: GameRepository,
     private val getPlayerListUseCase: GetPlayerListUseCase,
-    private val getRoundListUseCase: GetRoundListUseCase
+    private val observeRoundListUseCase: ObserveRoundListUseCase,
+    private val roundRepository: RoundRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(BoardUiState(Game(gameId)))
     fun getUiState() = _uiState.asStateFlow()
+
+    private val _dialogState = MutableStateFlow<Long?>(null)
+    fun dialogState() = _dialogState.asStateFlow()
 
     init {
         viewModelScope.launch {
             val playerList = getPlayerListUseCase.invoke(gameId)
             _uiState.update { it.copy(playerList = playerList) }
 
-            val roundLists = getRoundListUseCase.invoke(gameId)
-            _uiState.update { it.copy(gameHistory = roundLists) }
+            observeRoundListUseCase.invoke(gameId)
+                .onEach { roundLists ->
+                    _uiState.update { it.copy(gameHistory = roundLists) }
+                }
+                .launchIn(this)
 
         }
 
@@ -50,12 +58,26 @@ class BoardViewModel @AssistedInject constructor(
             }.launchIn(viewModelScope)
     }
 
+    fun deleteRound() {
+        viewModelScope.launch {
+            roundRepository.deleteRound(requireNotNull(_dialogState.value))
+        }
+    }
+
     fun closeDropDown() {
         _uiState.update { it.copy(showMoreDropDown = false) }
     }
 
     fun openDropDown() {
         _uiState.update { it.copy(showMoreDropDown = true) }
+    }
+
+    fun closeDialog() {
+        _dialogState.update { null }
+    }
+
+    fun openDialog(roundId: Long) {
+        _dialogState.update { roundId }
     }
 
     companion object {
