@@ -17,6 +17,7 @@ import zero.friends.gostopcalculator.R
 @Composable
 fun GoStopButtonBackground(
     @StringRes buttonString: Int,
+    buttonEnabled: Boolean = true,
     onClick: () -> Unit = {},
     contents: @Composable BoxScope.() -> Unit = {}
 ) {
@@ -42,6 +43,7 @@ fun GoStopButtonBackground(
                 .constrainAs(button) {
                     bottom.linkTo(parent.bottom)
                 },
+            buttonEnabled = buttonEnabled,
             onClick = onClick
         )
     }

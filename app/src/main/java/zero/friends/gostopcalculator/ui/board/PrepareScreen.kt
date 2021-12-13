@@ -3,6 +3,7 @@ package zero.friends.gostopcalculator.ui.board
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -94,6 +95,7 @@ private fun PrepareScreen(
     ) {
         GoStopButtonBackground(
             buttonString = R.string.complete,
+            buttonEnabled = uiState.gamer.size >= 2,
             onClick = { event(PrepareEvent.Complete) },
             contents = {
                 Column {
@@ -175,9 +177,10 @@ private fun PlayerPickItem(index: Int, player: Player, isCheck: Boolean = true, 
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .clickable { onClick(!isCheck) }
             .padding(18.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Row {
             Text(
