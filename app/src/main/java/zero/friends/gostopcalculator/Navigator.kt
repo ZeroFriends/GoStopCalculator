@@ -61,7 +61,7 @@ fun Navigator(onBackPressed: () -> Unit) {
             composable(Navigate.Splash.route()) {
                 SplashScreen()
                 LaunchedEffect(true) {
-                    delay(2000)
+                    delay(1200)
                     navController.navigate(Navigate.Main.route()) {
                         popUpTo(Navigate.Splash.route())
                     }

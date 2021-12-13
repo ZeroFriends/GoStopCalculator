@@ -32,8 +32,8 @@ fun SplashScreen() {
             composition,
             progress,
             modifier = Modifier
-                .size(150.dp, 150.dp)
                 .align(Alignment.Center)
+                .size(150.dp, 150.dp)
         )
         Text(
             text = stringResource(id = R.string.company_name),
