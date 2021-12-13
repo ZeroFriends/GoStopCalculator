@@ -51,7 +51,7 @@ class PlayerRepositoryImpl @Inject constructor(
     }
 
     companion object {
-        const val PLAYER_FORMAT = "새 플레이어 %d"
+        const val PLAYER_FORMAT = "플레이어 %d"
     }
 }
 

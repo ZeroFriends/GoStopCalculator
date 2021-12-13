@@ -14,7 +14,6 @@ import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.Player
 import zero.friends.domain.repository.GameRepository
-import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.repository.RoundRepository
 import zero.friends.domain.usecase.AddGamerUseCase
@@ -31,7 +30,6 @@ class PrepareViewModel @AssistedInject constructor(
     @Assisted private val gameId: Long,
     private val gameRepository: GameRepository,
     private val playerRepository: PlayerRepository,
-    private val gamerRepository: GamerRepository,
     private val roundRepository: RoundRepository,
     private val addGamerUseCase: AddGamerUseCase
 ) : ViewModel() {

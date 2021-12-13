@@ -91,7 +91,7 @@ private fun MainScreen(uiState: MainUiState, event: (MainEvent) -> Unit = {}) {
 @Composable
 private fun NewGame(event: (MainEvent) -> Unit) {
     Column(Modifier.padding(16.dp)) {
-        SubTitleText("NEW GAME")
+        SubTitleText(stringResource(R.string.new_game))
         Spacer(modifier = Modifier.height(4.dp))
         Row(
             Modifier.fillMaxWidth(),

@@ -201,7 +201,7 @@ private fun PlayerItem(index: Int, playerResult: PlayerResult) {
         }
 
         Text(
-            text = "${playerResult.account}원",
+            text = String.format(stringResource(id = R.string.price), playerResult.account),
             textAlign = TextAlign.Center,
             fontSize = 12.sp,
             modifier = Modifier.align(Alignment.CenterVertically),
@@ -321,7 +321,7 @@ private fun GamerItem(index: Int, gamer: Gamer) {
         }
 
         Text(
-            text = "${gamer.account}원",
+            text = String.format(stringResource(id = R.string.price), gamer.account),
             textAlign = TextAlign.Center,
             color = colorResource(id = moneyColor),
             fontSize = 12.sp,

@@ -97,15 +97,15 @@ private fun RuleScreen(
             mutableStateOf(TextFieldValue(uiState.ruleName))
         }
         AprilBackground(
-            title = "게임규칙 💡",
-            subTitle = "게임 플레이 시 적용될 금액입니다.\n과도한 금액이 나오지 않게 주의해 주세요 :)",
-            buttonText = "완료",
+            title = stringResource(R.string.rule_title),
+            subTitle = stringResource(id = R.string.rule_subtitle),
+            buttonText = stringResource(id = R.string.complete),
             buttonEnabled = uiState.enableComplete,
             onClick = { clickEvent(RuleClickEvent.Complete(ruleName.value.text)) }
         ) {
             Column {
                 TitleOutlinedTextField(
-                    title = "규칙이름",
+                    title = stringResource(R.string.rule_name),
                     text = ruleName.value,
                     hint = uiState.currentTime
                 ) { ruleName.value = it }
@@ -180,7 +180,7 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) 
             }
         }
 
-        NumberTextField(modifier = Modifier.weight(1f), "원") {
+        NumberTextField(modifier = Modifier.weight(1f), stringResource(R.string.won)) {
             onUpdateScore(it)
         }
     }
@@ -193,8 +193,12 @@ private fun AmountSettingBlock(modifier: Modifier = Modifier, onHelperClick: () 
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "금액설정", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        RoundedCornerText("도움말", colorResource(id = R.color.orangey_red), fontSize = 14.sp) { onHelperClick() }
+        Text(text = stringResource(R.string.price_setting), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        RoundedCornerText(
+            stringResource(R.string.help),
+            colorResource(id = R.color.orangey_red),
+            fontSize = 14.sp
+        ) { onHelperClick() }
     }
 }
 

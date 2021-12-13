@@ -4,6 +4,8 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import zero.friends.gostopcalculator.R
 
 @Composable
 fun DeleteDialog(
@@ -12,15 +14,15 @@ fun DeleteDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = "삭제하시겠습니까?") },
+        title = { Text(text = stringResource(R.string.delete_dialog_title)) },
         confirmButton = {
             Button(onClick = onClick) {
-                Text(text = "삭제")
+                Text(text = stringResource(R.string.delete))
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text(text = "취소")
+                Text(text = stringResource(R.string.cancel))
             }
         }
     )
