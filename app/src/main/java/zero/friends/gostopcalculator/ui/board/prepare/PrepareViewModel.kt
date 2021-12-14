@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator.ui.board
+package zero.friends.gostopcalculator.ui.board.prepare
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -36,7 +36,8 @@ class PrepareViewModel @AssistedInject constructor(
     private val _uiState = MutableStateFlow(PrepareUiState())
     fun uiState() = _uiState.asStateFlow()
 
-    private var roundId = 0L
+    private val _roundId = MutableStateFlow(0L)
+    fun roundId() = _roundId.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -47,21 +48,23 @@ class PrepareViewModel @AssistedInject constructor(
                 )
             }
 
-            roundId = roundRepository.createNewRound(gameId)
+            _roundId.update {
+                roundRepository.createNewRound(gameId)
+            }
         }
     }
 
     fun deleteRound() {
         viewModelScope.launch {
-            roundRepository.deleteRound(roundId)
-            roundId = 0L
+            roundRepository.deleteRound(_roundId.value)
+            _roundId.update { 0L }
         }
     }
 
     fun onClickPlayer(check: Boolean, player: Player, failCallback: () -> Unit = {}) {
         viewModelScope.launch {
             runCatching {
-                addGamerUseCase(roundId, check, player)
+                addGamerUseCase(_roundId.value, check, player)
             }.onSuccess {
                 _uiState.update { state ->
                     state.copy(gamer = it)

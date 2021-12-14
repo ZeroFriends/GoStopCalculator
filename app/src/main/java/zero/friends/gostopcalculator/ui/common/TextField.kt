@@ -1,6 +1,6 @@
 package zero.friends.gostopcalculator.ui.common
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -93,13 +93,18 @@ fun GoStopOutLinedTextField(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun NumberTextField(modifier: Modifier = Modifier, endText: String, onValueChane: (Int) -> Unit = {}) {
+fun NumberTextField(
+    modifier: Modifier = Modifier,
+    endText: String,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    onValueChane: (Int) -> Unit = {}
+) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val inputText = remember {
         mutableStateOf(TextFieldValue("0"))
     }
     Box(
-        modifier = modifier.background(colorResource(id = R.color.white))
+        modifier = modifier
     ) {
         TextField(
             value = inputText.value,
@@ -124,6 +129,7 @@ fun NumberTextField(modifier: Modifier = Modifier, endText: String, onValueChane
                 keyboardController?.hide()
             }),
             modifier = Modifier.padding(end = 3.dp),
+            interactionSource = interactionSource
         )
         Text(
             text = endText,

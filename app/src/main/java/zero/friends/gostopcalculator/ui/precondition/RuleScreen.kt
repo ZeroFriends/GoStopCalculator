@@ -2,14 +2,17 @@ package zero.friends.gostopcalculator.ui.precondition
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.*
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -166,10 +169,9 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) 
                         color = colorResource(id = R.color.nero)
                     )
                     if (rule.isEssential) {
-                        Icon(
+                        Image(
                             painter = painterResource(id = R.drawable.ic_star_red),
                             contentDescription = null,
-                            tint = Color.Red,
                             modifier = Modifier.padding(horizontal = 4.dp)
                         )
                     }

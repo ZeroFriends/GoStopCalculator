@@ -30,8 +30,6 @@ import zero.friends.domain.model.Game
 import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
-import zero.friends.gostopcalculator.ui.board.PrepareUiState
-import zero.friends.gostopcalculator.ui.board.PrepareViewModel
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.DescriptionBox
 import zero.friends.gostopcalculator.ui.common.GoStopButtonBackground
@@ -53,7 +51,7 @@ fun createPrepareViewModel(gameId: Long): PrepareViewModel {
 @Composable
 fun PrepareScreen(
     prepareViewModel: PrepareViewModel = hiltViewModel(),
-    onComplete: (skipSelling: Boolean) -> Unit = {},
+    onComplete: (skipSelling: Boolean, roundId: Long) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -75,7 +73,7 @@ fun PrepareScreen(
                     onBack()
                 }
                 PrepareEvent.Complete -> {
-                    onComplete(uiState.gamer.count() != 4)
+                    onComplete(uiState.gamer.count() != 4, prepareViewModel.roundId().value)
                 }
                 is PrepareEvent.OnClickPlayer -> {
                     prepareViewModel.onClickPlayer(event.isCheck, event.player) {

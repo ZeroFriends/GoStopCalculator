@@ -1,5 +1,7 @@
 package zero.friends.gostopcalculator.ui.board.selling
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -10,6 +12,7 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -19,16 +22,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import zero.friends.domain.model.Gamer
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
-import zero.friends.gostopcalculator.ui.common.DescriptionBox
-import zero.friends.gostopcalculator.ui.common.GoStopButtonBackground
-import zero.friends.gostopcalculator.ui.common.RoundedCornerText
+import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
+import zero.friends.gostopcalculator.ui.common.*
+import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 
 private sealed interface SellingEvent {
     object Back : SellingEvent
     object Next : SellingEvent
+}
+
+@Composable
+fun createSellingViewModel(roundId: Long): SellingViewModel {
+    val entryPoint = getEntryPointFromActivity<EntryPoint>()
+    val factory = entryPoint.sellingFactory()
+    return viewModel(factory = SellingViewModel.provideFactory(sellingViewModelFactory = factory, roundId = roundId))
 }
 
 @Composable
@@ -102,7 +112,7 @@ private fun GamerList(uiState: SellingUiState, modifier: Modifier = Modifier, ev
             itemsIndexed(uiState.gamers) { index: Int, gamer: Gamer ->
                 GamerPickItem(
                     index = index,
-                    player = gamer,
+                    gamer = gamer,
                 )
             }
         }
@@ -110,10 +120,67 @@ private fun GamerList(uiState: SellingUiState, modifier: Modifier = Modifier, ev
 }
 
 @Composable
-private fun GamerPickItem(index: Int, player: Gamer) {
-//todo 가능하다면 RuleItem을 SharedView로 빼볼까?
+private fun GamerPickItem(
+    index: Int = 0,
+    gamer: Gamer = Gamer(),
+    onUpdateScore: (Int) -> Unit = {}
+) {
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
+    val focused by interactionSource.collectIsFocusedAsState()
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = (index + 1).toString(),
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(16.dp),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(id = R.color.orangey_red)
+            )
+            Column(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(end = 6.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = gamer.name,
+                        fontSize = 16.sp,
+                        color = colorResource(id = R.color.nero)
+                    )
+                }
+            }
+        }
+
+        NumberTextField(
+            modifier = Modifier.weight(1f),
+            endText = stringResource(R.string.page),
+            interactionSource = interactionSource
+        ) {
+            onUpdateScore(it)
+        }
+    }
 }
 
+@Preview(showBackground = true)
+@Composable
+private fun GamerPickItemPreview() {
+    GamerPickItem(0, Gamer(name = "zero.dev"))
+}
 
 @Preview
 @Composable

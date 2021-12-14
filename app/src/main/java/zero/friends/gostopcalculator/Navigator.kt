@@ -15,6 +15,7 @@ import zero.friends.gostopcalculator.ui.board.prepare.PrepareScreen
 import zero.friends.gostopcalculator.ui.board.prepare.createPrepareViewModel
 import zero.friends.gostopcalculator.ui.board.score.ScoreScreen
 import zero.friends.gostopcalculator.ui.board.selling.SellingScreen
+import zero.friends.gostopcalculator.ui.board.selling.createSellingViewModel
 import zero.friends.gostopcalculator.ui.main.MainScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
@@ -96,7 +97,7 @@ fun Navigator(onBackPressed: () -> Unit) {
             composable(Navigate.Precondition.Rule.route()) {
                 RuleScreen(
                     onNext = {
-                        navController.putGameId(it.id)
+                        navController.putLong(Const.GameId, it.id)
                         navController.navigate(Navigate.Board.Main.route())
                     },
                     onBack = { navController.navigateUp() },
@@ -105,11 +106,11 @@ fun Navigator(onBackPressed: () -> Unit) {
 
             //Board
             composable(Navigate.Board.Main.route()) {
-                val gameId = navController.getGameId()
+                val gameId = navController.getLong(Const.GameId)
                 BoardScreen(
                     createBoardViewModel(gameId),
                     onNext = {
-                        navController.putGameId(it)
+                        navController.putLong(Const.GameId, it)
                         navController.navigate(Navigate.Board.Prepare.route())
                     },
                     onBack = {
@@ -120,19 +121,23 @@ fun Navigator(onBackPressed: () -> Unit) {
             }
 
             composable(Navigate.Board.Prepare.route()) {
-                val gameId = navController.getGameId()
+                val gameId = navController.getLong(Const.GameId)
                 PrepareScreen(
                     createPrepareViewModel(gameId = gameId),
-                    onComplete = { skipSelling ->
+                    onComplete = { skipSelling, roundId ->
                         if (skipSelling) navController.navigate(Navigate.Board.Score.route())
-                        else navController.navigate(Navigate.Board.Selling.route())
+                        else {
+                            navController.putLong(Const.RoundId, roundId)
+                            navController.navigate(Navigate.Board.Selling.route())
+                        }
                     },
                     onBack = { navController.navigateUp() }
                 )
             }
 
             composable(Navigate.Board.Selling.route()) {
-                SellingScreen()
+                val roundId = navController.getLong(Const.RoundId)
+                SellingScreen(createSellingViewModel(roundId = roundId))
             }
 
             composable(Navigate.Board.Score.route()) {
@@ -143,10 +148,10 @@ fun Navigator(onBackPressed: () -> Unit) {
     }
 }
 
-private fun NavHostController.putGameId(gameId: Long) {
-    currentBackStackEntry?.arguments?.putLong(Const.GameId, gameId)
+private fun NavHostController.putLong(key: String, value: Long) {
+    currentBackStackEntry?.arguments?.putLong(key, value)
 }
 
-private fun NavHostController.getGameId(): Long {
-    return requireNotNull(previousBackStackEntry?.arguments?.getLong(Const.GameId))
+private fun NavHostController.getLong(key: String): Long {
+    return requireNotNull(previousBackStackEntry?.arguments?.getLong(key))
 }
