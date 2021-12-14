@@ -124,7 +124,7 @@ private fun BoardScreen(
             onClick = { event(BoardEvent.StartGame) },
             contents = {
                 Column {
-                    IncomeHistory(players = uiState.playerList)
+                    IncomeHistory(players = uiState.playerResults)
                     Spacer(modifier = Modifier.padding(9.dp))
                     GameHistory(uiState = uiState, event = event)
                 }
@@ -218,7 +218,7 @@ private fun GameHistory(modifier: Modifier = Modifier, uiState: BoardUiState, ev
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
-        if (uiState.gameHistory.isEmpty()) {
+        if (uiState.gameHistories.isEmpty()) {
             EmptyHistory(
                 painter = painterResource(id = R.drawable.ic_error_outline_black),
                 title = stringResource(R.string.empty_game_log),
@@ -226,7 +226,7 @@ private fun GameHistory(modifier: Modifier = Modifier, uiState: BoardUiState, ev
             )
         } else {
             LazyColumn {
-                itemsIndexed(uiState.gameHistory.toList()) { index, (roundId, gamer) ->
+                itemsIndexed(uiState.gameHistories.toList()) { index, (roundId, gamer) ->
                     RoundBox(index, roundId, gamer, event)
                 }
             }
@@ -366,7 +366,7 @@ private fun BoardScreenPreview() {
     BoardScreen(
         uiState = BoardUiState(
             game = Game(createdAt = "2020.11.26"),
-            gameHistory = mapOf(
+            gameHistories = mapOf(
                 0L to listOf(Gamer(name = "zero"), Gamer(name = "hello")),
                 1L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas"), Gamer(name = "zerowolrd")),
                 2L to listOf(
@@ -388,7 +388,7 @@ private fun BoardScreenPreview() {
 //                7L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
 //                8L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
             ),
-            playerList = listOf(PlayerResult("hPlayer1", 200), PlayerResult("HPlayer2", -100))
+            playerResults = listOf(PlayerResult("hPlayer1", 200), PlayerResult("HPlayer2", -100))
         )
     )
 }

@@ -19,8 +19,8 @@ import zero.friends.gostopcalculator.util.viewModelFactory
 
 data class BoardUiState(
     val game: Game = Game(),
-    val gameHistory: Map<Long, List<Gamer>> = emptyMap(),
-    val playerList: List<PlayerResult> = emptyList(),
+    val gameHistories: Map<Long, List<Gamer>> = emptyMap(),
+    val playerResults: List<PlayerResult> = emptyList(),
     val showMoreDropDown: Boolean = false
 )
 
@@ -40,12 +40,12 @@ class BoardViewModel @AssistedInject constructor(
     init {
         viewModelScope.launch {
             observePlayerResultsUseCase(gameId).onEach { playerList ->
-                _uiState.update { it.copy(playerList = playerList) }
+                _uiState.update { it.copy(playerResults = playerList) }
             }.launchIn(this)
 
             observeRoundListUseCase.invoke(gameId)
                 .onEach { roundLists ->
-                    _uiState.update { it.copy(gameHistory = roundLists) }
+                    _uiState.update { it.copy(gameHistories = roundLists) }
                 }
                 .launchIn(this)
 
