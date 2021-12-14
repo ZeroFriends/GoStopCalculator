@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.board
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -49,6 +51,7 @@ fun createPrepareViewModel(gameId: Long): PrepareViewModel {
 
 @Composable
 fun PrepareScreen(prepareViewModel: PrepareViewModel = hiltViewModel(), onBack: () -> Unit = {}) {
+    val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val uiState by prepareViewModel.uiState().collectAsState()
 
@@ -70,7 +73,9 @@ fun PrepareScreen(prepareViewModel: PrepareViewModel = hiltViewModel(), onBack: 
 
                 }
                 is PrepareEvent.OnClickPlayer -> {
-                    prepareViewModel.onClickPlayer(event.isCheck, event.player)
+                    prepareViewModel.onClickPlayer(event.isCheck, event.player) {
+                        Toast.makeText(context, context.getString(R.string.fail_over_gamer), Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

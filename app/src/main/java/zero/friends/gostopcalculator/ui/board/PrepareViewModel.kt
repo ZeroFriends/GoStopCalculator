@@ -58,7 +58,7 @@ class PrepareViewModel @AssistedInject constructor(
         }
     }
 
-    fun onClickPlayer(check: Boolean, player: Player) {
+    fun onClickPlayer(check: Boolean, player: Player, failCallback: () -> Unit = {}) {
         viewModelScope.launch {
             runCatching {
                 addGamerUseCase(roundId, check, player)
@@ -67,6 +67,7 @@ class PrepareViewModel @AssistedInject constructor(
                     state.copy(gamer = it)
                 }
             }.onFailure {
+                failCallback()
                 Timber.tag("🔥zero:onClickPlayer").e("$it")
             }
         }
