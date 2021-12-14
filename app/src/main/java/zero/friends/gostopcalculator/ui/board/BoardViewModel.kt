@@ -12,7 +12,7 @@ import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.PlayerResult
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.RoundRepository
-import zero.friends.domain.usecase.GetPlayerListUseCase
+import zero.friends.domain.usecase.ObservePlayerResultsUseCase
 import zero.friends.domain.usecase.ObserveRoundListUseCase
 import zero.friends.gostopcalculator.di.factory.BoardViewModelFactory
 import zero.friends.gostopcalculator.util.viewModelFactory
@@ -27,7 +27,7 @@ data class BoardUiState(
 class BoardViewModel @AssistedInject constructor(
     @Assisted private val gameId: Long,
     private val gameRepository: GameRepository,
-    private val getPlayerListUseCase: GetPlayerListUseCase,
+    private val observePlayerResultsUseCase: ObservePlayerResultsUseCase,
     private val observeRoundListUseCase: ObserveRoundListUseCase,
     private val roundRepository: RoundRepository
 ) : ViewModel() {
@@ -39,8 +39,9 @@ class BoardViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
-            val playerList = getPlayerListUseCase.invoke(gameId)
-            _uiState.update { it.copy(playerList = playerList) }
+            observePlayerResultsUseCase(gameId).onEach { playerList ->
+                _uiState.update { it.copy(playerList = playerList) }
+            }.launchIn(this)
 
             observeRoundListUseCase.invoke(gameId)
                 .onEach { roundLists ->

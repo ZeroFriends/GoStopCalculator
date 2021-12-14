@@ -28,7 +28,7 @@ class PlayerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun observePlayer(gameId: Long) =
+    override fun observePlayer(gameId: Long) =
         playerDao.observePlayer(gameId).map { playerEntities ->
             playerEntities.map { it.toPlayer() }
         }
