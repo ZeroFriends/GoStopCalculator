@@ -52,7 +52,7 @@ fun RoundedCornerText(
     text: String,
     color: Color = colorResource(id = R.color.orangey_red),
     fontSize: TextUnit = 14.sp,
-    onButtonClicked: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null
 ) {
     Surface(
         shape = RoundedCornerShape((12.5).dp),
@@ -60,7 +60,7 @@ fun RoundedCornerText(
             width = 1.dp,
             color = color
         ),
-        modifier = Modifier.clickable(onClick = onButtonClicked ?: {}, enabled = onButtonClicked != null),
+        modifier = Modifier.clickable(onClick = onClick ?: {}, enabled = onClick != null),
     ) {
         Text(
             modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp),
@@ -74,6 +74,6 @@ fun RoundedCornerText(
 
 @Composable
 @Preview
-fun RoundedCornerText() {
+private fun RoundedCornerTextPreview() {
     RoundedCornerText(text = "text", color = colorResource(id = R.color.orangey_red), 14.sp)
 }

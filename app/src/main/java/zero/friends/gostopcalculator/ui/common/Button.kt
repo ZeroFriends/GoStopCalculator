@@ -42,7 +42,7 @@ fun GoStopButton(text: String, modifier: Modifier = Modifier, buttonEnabled: Boo
 }
 
 @Composable
-fun GoStopExtraButton(text: String, modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun GoStopExtraButton(text: String, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     OutlinedButton(
         onClick = onClick,
         border = BorderStroke(1.dp, colorResource(id = R.color.nero)),
@@ -60,7 +60,7 @@ fun GoStopExtraButton(text: String, modifier: Modifier = Modifier, onClick: () -
 
 @Composable
 @Preview
-fun GoStopButtonPreView() {
+private fun GoStopButtonPreView() {
     GoStopButton(text = "ZeroWorld!!") {
 
     }
@@ -68,7 +68,7 @@ fun GoStopButtonPreView() {
 
 @Composable
 @Preview
-fun GoStopExtraButtonPreView() {
+private fun GoStopExtraButtonPreView() {
     GoStopExtraButton(text = "ZeroWorld!!") {
 
     }

@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator.ui.board
+package zero.friends.gostopcalculator.ui.board.prepare
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -21,7 +21,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,8 +30,10 @@ import zero.friends.domain.model.Game
 import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
+import zero.friends.gostopcalculator.ui.board.PrepareUiState
+import zero.friends.gostopcalculator.ui.board.PrepareViewModel
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
-import zero.friends.gostopcalculator.ui.common.ContentsCard
+import zero.friends.gostopcalculator.ui.common.DescriptionBox
 import zero.friends.gostopcalculator.ui.common.GoStopButtonBackground
 import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 
@@ -50,7 +51,11 @@ fun createPrepareViewModel(gameId: Long): PrepareViewModel {
 }
 
 @Composable
-fun PrepareScreen(prepareViewModel: PrepareViewModel = hiltViewModel(), onBack: () -> Unit = {}) {
+fun PrepareScreen(
+    prepareViewModel: PrepareViewModel = hiltViewModel(),
+    onComplete: (skipSelling: Boolean) -> Unit = {},
+    onBack: () -> Unit = {}
+) {
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val uiState by prepareViewModel.uiState().collectAsState()
@@ -70,7 +75,7 @@ fun PrepareScreen(prepareViewModel: PrepareViewModel = hiltViewModel(), onBack: 
                     onBack()
                 }
                 PrepareEvent.Complete -> {
-
+                    onComplete(uiState.gamer.count() != 4)
                 }
                 is PrepareEvent.OnClickPlayer -> {
                     prepareViewModel.onClickPlayer(event.isCheck, event.player) {
@@ -104,41 +109,13 @@ private fun PrepareScreen(
             onClick = { event(PrepareEvent.Complete) },
             contents = {
                 Column {
-                    StartDescription()
+                    DescriptionBox(mainText = R.string.start, subText = R.string.start_description)
                     Spacer(modifier = Modifier.padding(22.dp))
                     PlayerPickList(uiState = uiState, event = event)
                 }
             }
         )
 
-    }
-}
-
-@Composable
-private fun StartDescription(modifier: Modifier = Modifier) {
-    ContentsCard(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(vertical = 36.dp, horizontal = 14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = stringResource(id = R.string.start),
-                fontSize = 20.sp,
-                color = colorResource(id = R.color.nero),
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.padding(5.dp))
-            Text(
-                text = stringResource(id = R.string.start_description),
-                fontSize = 14.sp,
-                color = colorResource(id = R.color.nero),
-                textAlign = TextAlign.Center
-            )
-        }
     }
 }
 

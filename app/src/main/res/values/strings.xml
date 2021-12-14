@@ -45,6 +45,9 @@
     <string name="delete">삭제</string>
     <string name="cancel">취소</string>
     <string name="fail_over_gamer">5인이상 게임을 진행할 수 없습니다.</string>
+    <string name="sell_shine">광팔기</string>
+    <string name="sell_shine_description">4인 플레이경우 한명이 필수로 광을 팔아야 플레이가 가능합니다. 광을 판 플레이어를 선택해주세요.</string>
+    <string name="can_celling">광팔 수 있는 패</string>
 
 
 </resources>

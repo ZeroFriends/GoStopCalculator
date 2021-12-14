@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.common
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -126,6 +127,40 @@ fun EmptyHistory(
     }
 }
 
+@Composable
+fun DescriptionBox(modifier: Modifier = Modifier, @StringRes mainText: Int, @StringRes subText: Int) {
+    ContentsCard(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(vertical = 36.dp, horizontal = 14.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(id = mainText),
+                fontSize = 20.sp,
+                color = colorResource(id = R.color.nero),
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.padding(5.dp))
+            Text(
+                text = stringResource(id = subText),
+                fontSize = 14.sp,
+                color = colorResource(id = R.color.nero),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun DescriptionBoxPreview() {
+    DescriptionBox(mainText = R.string.start, subText = R.string.start_description)
+}
+
 @Preview
 @Composable
 private fun EmptyHistoryPreview() {
@@ -138,10 +173,9 @@ private fun CenterTextTopBarPreview() {
     CenterTextTopBar("hello")
 }
 
+
 @Preview
 @Composable
 private fun ContentsCardPreview() {
     ContentsCard(boxContents = {})
 }
-
-

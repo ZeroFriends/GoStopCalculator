@@ -10,9 +10,11 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import zero.friends.gostopcalculator.theme.GoStopTheme
 import zero.friends.gostopcalculator.ui.board.BoardScreen
-import zero.friends.gostopcalculator.ui.board.PrepareScreen
 import zero.friends.gostopcalculator.ui.board.createBoardViewModel
-import zero.friends.gostopcalculator.ui.board.createPrepareViewModel
+import zero.friends.gostopcalculator.ui.board.prepare.PrepareScreen
+import zero.friends.gostopcalculator.ui.board.prepare.createPrepareViewModel
+import zero.friends.gostopcalculator.ui.board.score.ScoreScreen
+import zero.friends.gostopcalculator.ui.board.selling.SellingScreen
 import zero.friends.gostopcalculator.ui.main.MainScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
@@ -83,6 +85,7 @@ fun Navigator(onBackPressed: () -> Unit) {
                 }
             }
 
+            //PreCondition
             composable(Navigate.Precondition.Player.route()) {
                 PlayerScreen(
                     onNext = { navController.navigate(Navigate.Precondition.Rule.route()) },
@@ -100,6 +103,7 @@ fun Navigator(onBackPressed: () -> Unit) {
                 )
             }
 
+            //Board
             composable(Navigate.Board.Main.route()) {
                 val gameId = navController.getGameId()
                 BoardScreen(
@@ -119,10 +123,20 @@ fun Navigator(onBackPressed: () -> Unit) {
                 val gameId = navController.getGameId()
                 PrepareScreen(
                     createPrepareViewModel(gameId = gameId),
-                    onBack = {
-                        navController.navigateUp()
-                    }
+                    onComplete = { skipSelling ->
+                        if (skipSelling) navController.navigate(Navigate.Board.Score.route())
+                        else navController.navigate(Navigate.Board.Selling.route())
+                    },
+                    onBack = { navController.navigateUp() }
                 )
+            }
+
+            composable(Navigate.Board.Selling.route()) {
+                SellingScreen()
+            }
+
+            composable(Navigate.Board.Score.route()) {
+                ScoreScreen()
             }
 
         }

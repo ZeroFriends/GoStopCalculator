@@ -103,7 +103,7 @@ private fun NewGame(event: (MainEvent) -> Unit) {
                 text = stringResource(id = R.string.guide),
                 color = colorResource(id = R.color.orangey_red),
                 fontSize = 14.sp,
-                onButtonClicked = { event(MainEvent.ShowGuide) }
+                onClick = { event(MainEvent.ShowGuide) }
             )
         }
         Spacer(modifier = Modifier.padding(18.dp))
