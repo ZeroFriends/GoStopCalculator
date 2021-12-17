@@ -22,6 +22,7 @@ import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.dialog.NameEditDialog
+import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
 
 private sealed interface PlayerClickEvent {
     object Back : PlayerClickEvent
@@ -77,6 +78,7 @@ private fun PlayerScreen(
 ) {
 
     Scaffold(
+        modifier = TabKeyboardDownModifier(),
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(

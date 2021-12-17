@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
 
 
 @Composable
@@ -134,7 +135,9 @@ fun DescriptionBox(modifier: Modifier = Modifier, @StringRes mainText: Int, @Str
             .fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 36.dp, horizontal = 14.dp),
+            modifier = Modifier
+                .padding(vertical = 36.dp, horizontal = 14.dp)
+                .then(TabKeyboardDownModifier()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

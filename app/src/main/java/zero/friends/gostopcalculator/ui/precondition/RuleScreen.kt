@@ -28,6 +28,7 @@ import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
+import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
 
 
 sealed class RuleClickEvent {
@@ -85,6 +86,7 @@ private fun RuleScreen(
     onUpdateRule: (Rule) -> Unit = {},
 ) {
     Scaffold(
+        modifier = TabKeyboardDownModifier(),
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(

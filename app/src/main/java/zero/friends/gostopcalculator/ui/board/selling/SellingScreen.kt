@@ -1,7 +1,5 @@
 package zero.friends.gostopcalculator.ui.board.selling
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -12,7 +10,6 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -27,6 +24,7 @@ import zero.friends.domain.model.Gamer
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
 import zero.friends.gostopcalculator.ui.common.*
+import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
 import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 
 private sealed interface SellingEvent {
@@ -64,6 +62,7 @@ private fun SellingScreen(
     event: (SellingEvent) -> Unit = {}
 ) {
     Scaffold(
+        modifier = TabKeyboardDownModifier(),
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(
@@ -125,10 +124,6 @@ private fun GamerPickItem(
     gamer: Gamer = Gamer(),
     onUpdateScore: (Int) -> Unit = {}
 ) {
-    val interactionSource = remember {
-        MutableInteractionSource()
-    }
-    val focused by interactionSource.collectIsFocusedAsState()
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -169,7 +164,7 @@ private fun GamerPickItem(
         NumberTextField(
             modifier = Modifier.weight(1f),
             endText = stringResource(R.string.page),
-            interactionSource = interactionSource
+            unFocusDeleteMode = true
         ) {
             onUpdateScore(it)
         }
