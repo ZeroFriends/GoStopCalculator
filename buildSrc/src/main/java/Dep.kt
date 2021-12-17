@@ -13,6 +13,7 @@ object Dep {
 
     object AndroidX {
         const val core = "androidx.core:core-ktx:1.6.0"
+        const val startUp = "androidx.startup:startup-runtime:1.1.0"
 
         object Activity {
             private const val version = "1.4.0-alpha02"

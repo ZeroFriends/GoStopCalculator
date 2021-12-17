@@ -58,6 +58,7 @@ dependencies {
     implementation(Dep.lottie)
 
     implementation(Dep.AndroidX.core)
+    implementation(Dep.AndroidX.startUp)
     implementation(Dep.AndroidX.fragment)
     implementation(Dep.AndroidX.constraintCompose)
     implementation(Dep.AndroidX.Activity.activity)
