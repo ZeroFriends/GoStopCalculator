@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 import zero.friends.data.entity.GamerEntity
-import zero.friends.domain.model.Gamer
 
 @Dao
 interface GamerDao : BaseDao<GamerEntity> {
@@ -18,5 +17,8 @@ interface GamerDao : BaseDao<GamerEntity> {
     suspend fun deleteGamer(roundId: Long, playerId: Long)
 
     @Query("SELECT * FROM GamerEntity where gameId = :gameId")
-    fun observeGamers(gameId: Long): Flow<List<Gamer>>
+    fun observeGamers(gameId: Long): Flow<List<GamerEntity>>
+
+    @Query("UPDATE GamerEntity SET optional = :options WHERE id = :gamerId")
+    fun updateOption(gamerId: Long, options: String)
 }

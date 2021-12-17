@@ -2,7 +2,10 @@ package zero.friends.gostopcalculator.ui.common
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -99,8 +102,11 @@ fun NumberTextField(
     val focus by interactionSource.collectIsFocusedAsState()
     var inputText by remember { mutableStateOf(TextFieldValue("")) }
 
-    if (unFocusDeleteMode && !focus) {
-        inputText = TextFieldValue("")
+    LaunchedEffect(focus) {
+        if (unFocusDeleteMode && !focus) {
+            inputText = TextFieldValue("")
+            onValueChane(0)
+        }
     }
 
     Box(
@@ -134,7 +140,7 @@ fun NumberTextField(
             modifier = Modifier.padding(end = 3.dp),
             interactionSource = interactionSource,
             placeholder = {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterEnd) {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                     Text(text = "0", textAlign = TextAlign.End)
                 }
             }

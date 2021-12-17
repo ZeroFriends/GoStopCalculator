@@ -125,8 +125,9 @@ fun Navigator(onBackPressed: () -> Unit) {
                 PrepareScreen(
                     createPrepareViewModel(gameId = gameId),
                     onComplete = { skipSelling, roundId ->
-                        if (skipSelling) navController.navigate(Navigate.Board.Score.route())
-                        else {
+                        if (skipSelling) {
+                            navController.navigate(Navigate.Board.Score.route())
+                        } else {
                             navController.putLong(Const.RoundId, roundId)
                             navController.navigate(Navigate.Board.Selling.route())
                         }
@@ -137,11 +138,18 @@ fun Navigator(onBackPressed: () -> Unit) {
 
             composable(Navigate.Board.Selling.route()) {
                 val roundId = navController.getLong(Const.RoundId)
-                SellingScreen(createSellingViewModel(roundId = roundId))
+                SellingScreen(
+                    createSellingViewModel(roundId = roundId),
+                    onBack = { navController.navigateUp() },
+                    onNext = { navController.navigate(Navigate.Board.Score.route()) }
+                )
             }
 
             composable(Navigate.Board.Score.route()) {
-                ScoreScreen()
+                ScoreScreen(onBack = {
+                    navController.popBackStack()
+                    navController.navigate(Navigate.Board.Main.route())
+                })
             }
 
         }

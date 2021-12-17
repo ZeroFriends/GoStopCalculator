@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.board.selling
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -30,6 +31,7 @@ import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 private sealed interface SellingEvent {
     object Back : SellingEvent
     object Next : SellingEvent
+    class OnChangeSeller(val gamer: Gamer, val count: Int) : SellingEvent
 }
 
 @Composable
@@ -45,12 +47,23 @@ fun SellingScreen(
     onBack: () -> Unit = {},
     onNext: () -> Unit = {}
 ) {
+
+    BackHandler(true) {
+        onBack()
+    }
+
     val uiState by sellingViewModel.uiState().collectAsState()
     val scaffoldState = rememberScaffoldState()
     SellingScreen(scaffoldState = scaffoldState, uiState = uiState, event = { event ->
         when (event) {
             SellingEvent.Back -> onBack()
-            SellingEvent.Next -> onNext()
+            SellingEvent.Next -> {
+                sellingViewModel.complete()
+                onNext()
+            }
+            is SellingEvent.OnChangeSeller -> {
+                sellingViewModel.onSaveSeller(event.gamer, event.count)
+            }
         }
     })
 }
@@ -74,7 +87,7 @@ private fun SellingScreen(
     ) {
         GoStopButtonBackground(
             buttonString = R.string.complete,
-            buttonEnabled = false,//todo picked player>3 && 누군가 입력을 받앗을 때
+            buttonEnabled = uiState.seller != null,
             onClick = { event(SellingEvent.Next) },
             contents = {
                 Column {
@@ -108,10 +121,14 @@ private fun GamerList(uiState: SellingUiState, modifier: Modifier = Modifier, ev
         }
         Spacer(modifier = Modifier.padding(9.dp))
         LazyColumn(contentPadding = PaddingValues(2.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            itemsIndexed(uiState.gamers) { index: Int, gamer: Gamer ->
+            itemsIndexed(
+                key = { _, item -> item.id },
+                items = uiState.gamers
+            ) { index: Int, gamer: Gamer ->
                 GamerPickItem(
                     index = index,
                     gamer = gamer,
+                    onUpdateScore = { event(SellingEvent.OnChangeSeller(gamer = gamer, count = it)) }
                 )
             }
         }

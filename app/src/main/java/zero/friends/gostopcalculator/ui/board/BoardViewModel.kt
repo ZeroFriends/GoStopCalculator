@@ -38,6 +38,8 @@ class BoardViewModel @AssistedInject constructor(
     fun dialogState() = _dialogState.asStateFlow()
 
     init {
+        val gameId = gameRepository.getCurrentGameId() ?: gameId
+
         viewModelScope.launch {
             observePlayerResultsUseCase(gameId).onEach { playerList ->
                 _uiState.update { it.copy(playerResults = playerList) }

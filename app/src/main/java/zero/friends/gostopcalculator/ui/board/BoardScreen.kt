@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
+import zero.friends.domain.model.Optional
 import zero.friends.domain.model.PlayerResult
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
@@ -310,7 +311,13 @@ private fun GamerItem(index: Int, gamer: Gamer) {
                 modifier = Modifier.align(Alignment.CenterVertically),
                 verticalArrangement = Arrangement.Center
             ) {
-                if (gamer.optional != null) Text(text = gamer.optional.toString(), fontSize = 8.sp)
+                if (!gamer.optional.contains(Optional.None)) {
+                    Row {
+                        gamer.optional.forEach {
+                            Text(text = it.korean, fontSize = 8.sp)
+                        }
+                    }
+                }
                 Text(
                     text = gamer.name,
                     fontSize = 14.sp,
@@ -354,8 +361,20 @@ fun GamerItemPreview() {
 private fun RoundBoxPreview() {
     RoundBox(
         gamers = listOf(
-            Gamer(name = "조재영", account = 10, optional = "광팜"),
-            Gamer(name = "송준영", account = -10, optional = "승자")
+            Gamer(name = "조재영", account = 10, optional = listOf(Optional.Sell)),
+            Gamer(name = "송준영", account = -10, optional = listOf(Optional.Winner)),
+            Gamer(
+                name = "송준영",
+                account = -100000,
+                optional = listOf(
+                    Optional.Winner,
+                    Optional.President,
+                    Optional.FiveShine,
+                    Optional.FirstFuck,
+                    Optional.ThreeFuck,
+                    Optional.FirstDdakdak,
+                )
+            )
         )
     )
 }

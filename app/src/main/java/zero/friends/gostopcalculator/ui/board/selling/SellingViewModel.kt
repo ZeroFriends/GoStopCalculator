@@ -12,17 +12,20 @@ import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.repository.GamerRepository
+import zero.friends.domain.usecase.SellingUseCase
 import zero.friends.gostopcalculator.di.factory.SellingViewModelFactory
 import zero.friends.gostopcalculator.util.viewModelFactory
 
 data class SellingUiState(
     val game: Game = Game(),
-    val gamers: List<Gamer> = emptyList()
+    val gamers: List<Gamer> = emptyList(),
+    val seller: Gamer? = null
 )
 
 class SellingViewModel @AssistedInject constructor(
     @Assisted private val roundId: Long,
-    private val gamerRepository: GamerRepository
+    private val gamerRepository: GamerRepository,
+    private val sellingUseCase: SellingUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SellingUiState())
     fun uiState() = _uiState.asStateFlow()
@@ -30,8 +33,25 @@ class SellingViewModel @AssistedInject constructor(
     init {
         viewModelScope.launch {
             _uiState.update {
-                it.copy(gamers = gamerRepository.getRoundGamers(roundId))
+                val gamers = gamerRepository.getRoundGamers(roundId)
+                it.copy(gamers = gamers)
             }
+        }
+    }
+
+    fun onSaveSeller(seller: Gamer, count: Int) {
+        _uiState.update {
+            val hasSeller = count != 0
+            val target = if (hasSeller) seller else null
+            it.copy(seller = target)
+        }
+    }
+
+    fun complete() {
+        viewModelScope.launch {
+            val seller = uiState().value.seller
+            check(seller != null) { "광판 사람은 무조건 존재해야 함" }
+            sellingUseCase.invoke(seller)
         }
     }
 

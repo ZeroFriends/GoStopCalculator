@@ -7,5 +7,5 @@ data class Gamer(
     val playerId: Long = 0,
     val gameId: Long = 0,
     val account: Int = 0,
-    val optional: String? = null,
+    val optional: List<Optional> = listOf(Optional.None)
 )

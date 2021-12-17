@@ -6,6 +6,7 @@ import androidx.room.ForeignKey.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import zero.friends.domain.model.Gamer
+import zero.friends.domain.model.Optional
 
 @Entity(
     foreignKeys = [
@@ -35,7 +36,7 @@ data class GamerEntity(
 //    val calculate: List<Target> todo 계산결과 집어넣기
 ) {
     companion object {
-        fun GamerEntity.toGamer() = Gamer(id, name, roundId, playerId, gameId, account, optional)
+        fun GamerEntity.toGamer() = Gamer(id, name, roundId, playerId, gameId, account, Optional.findOptional(optional))
     }
 }
 
