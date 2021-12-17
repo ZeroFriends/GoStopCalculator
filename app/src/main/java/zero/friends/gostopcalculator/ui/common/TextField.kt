@@ -1,6 +1,7 @@
 package zero.friends.gostopcalculator.ui.common
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,10 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -97,20 +95,25 @@ fun NumberTextField(
     modifier: Modifier = Modifier,
     endText: String,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    unFocusDeleteMode: Boolean = false,
     onValueChane: (Int) -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val inputText = remember {
-        mutableStateOf(TextFieldValue("0"))
+    val focus by interactionSource.collectIsFocusedAsState()
+    var inputText by remember { mutableStateOf(TextFieldValue("0")) }
+
+    if (unFocusDeleteMode && !focus) {
+        inputText = TextFieldValue("0")
     }
+
     Box(
         modifier = modifier
     ) {
         TextField(
-            value = inputText.value,
+            value = inputText,
             onValueChange = {
                 if (Regex("[0-9]+").matches(it.text)) {
-                    inputText.value = it
+                    inputText = it
                     onValueChane(it.text.toInt())
                 }
             },
