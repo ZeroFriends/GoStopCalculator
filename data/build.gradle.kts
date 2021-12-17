@@ -12,6 +12,7 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(project(":shared"))
     implementation(Dep.Dagger.hiltAndroid)
     kapt(Dep.Dagger.hiltCompiler)
 

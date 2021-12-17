@@ -1,30 +1,34 @@
 package zero.friends.data.repository
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import zero.friends.data.entity.PlayerEntity
 import zero.friends.data.entity.PlayerEntity.Companion.toPlayer
 import zero.friends.data.source.dao.PlayerDao
 import zero.friends.domain.model.Player
 import zero.friends.domain.repository.PlayerRepository
+import zero.friends.shared.IoDispatcher
 import javax.inject.Inject
 
 class PlayerRepositoryImpl @Inject constructor(
     private val playerDao: PlayerDao,
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) : PlayerRepository {
     private val playerIdCache = mutableMapOf<Long, Int>()
 
     override suspend fun addAutoGeneratePlayer(gameId: Long) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val previousId = playerIdCache[gameId] ?: 0
-            val nextId = previousId + 1
-            playerIdCache[gameId] = nextId
+        withContext(dispatcher) {
+            launch {
+                val previousId = playerIdCache[gameId] ?: 0
+                val nextId = previousId + 1
+                playerIdCache[gameId] = nextId
 
-            val playerName = String.format(PLAYER_FORMAT, nextId)
-            val player = PlayerEntity(name = playerName, gameId = gameId)
-            playerDao.insert(player)
+                val playerName = String.format(PLAYER_FORMAT, nextId)
+                val player = PlayerEntity(name = playerName, gameId = gameId)
+                playerDao.insert(player)
+            }
         }
     }
 
@@ -41,8 +45,8 @@ class PlayerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deletePlayer(gameId: Long, player: Player) {
-        CoroutineScope(Dispatchers.IO).launch {
-            playerDao.deletePlayer(gameId, player.name)
+        withContext(dispatcher) {
+            launch { playerDao.deletePlayer(gameId, player.name) }
         }
     }
 

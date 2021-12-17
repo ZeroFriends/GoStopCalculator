@@ -1,8 +1,5 @@
 package zero.friends.domain.usecase
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import zero.friends.domain.model.Rule
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.RuleRepository
@@ -12,10 +9,8 @@ class AddNewRuleUseCase @Inject constructor(
     private val gameRepository: GameRepository,
     private val ruleRepository: RuleRepository,
 ) {
-    operator fun invoke(ruleName: String, rules: List<Rule>) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val gameId = requireNotNull(gameRepository.getCurrentGameId())
-            ruleRepository.addNewRule(gameId, ruleName, rules)
-        }
+    suspend operator fun invoke(ruleName: String, rules: List<Rule>) {
+        val gameId = requireNotNull(gameRepository.getCurrentGameId())
+        ruleRepository.addNewRule(gameId, ruleName, rules)
     }
 }

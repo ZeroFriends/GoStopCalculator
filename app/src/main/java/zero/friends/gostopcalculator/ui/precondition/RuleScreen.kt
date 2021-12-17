@@ -23,8 +23,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
@@ -43,7 +41,7 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (Game) ->
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val uiState by ruleViewModel.getUiState().collectAsState()
-
+    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         ruleViewModel.updateRule()
     }
@@ -62,7 +60,7 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (Game) ->
                     val ruleName =
                         if (ruleClickEvent.ruleName.isNotEmpty()) ruleClickEvent.ruleName
                         else uiState.currentTime
-                    CoroutineScope(Dispatchers.Main).launch {
+                    scope.launch {
                         val game = ruleViewModel.startGame(ruleName)
                         onNext(game)
                     }

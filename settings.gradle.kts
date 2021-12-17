@@ -9,3 +9,4 @@ rootProject.name = "GoStopCalculator"
 include(":app")
 include(":data")
 include(":domain")
+include(":shared")

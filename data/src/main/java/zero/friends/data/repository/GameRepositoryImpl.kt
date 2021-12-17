@@ -1,19 +1,23 @@
 package zero.friends.data.repository
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import zero.friends.data.entity.GameEntity
 import zero.friends.data.entity.GameEntity.Companion.toGame
 import zero.friends.data.source.dao.GameDao
 import zero.friends.domain.model.Game
 import zero.friends.domain.repository.GameRepository
+import zero.friends.shared.IoDispatcher
 import javax.inject.Inject
 
-class GameRepositoryImpl @Inject constructor(private val gameDao: GameDao) : GameRepository {
+class GameRepositoryImpl @Inject constructor(
+    private val gameDao: GameDao,
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
+) : GameRepository {
     private var cacheGameId: Long? = null
 
     override suspend fun newGame(name: String, createdAt: String): Long {
@@ -25,9 +29,11 @@ class GameRepositoryImpl @Inject constructor(private val gameDao: GameDao) : Gam
     }
 
     override suspend fun deleteGame(gameId: Long) {
-        CoroutineScope(Dispatchers.IO).launch {
-            gameDao.delete(GameEntity(id = gameId))
-            cacheGameId = null
+        withContext(dispatcher) {
+            launch {
+                gameDao.delete(GameEntity(id = gameId))
+                cacheGameId = null
+            }
         }
     }
 
