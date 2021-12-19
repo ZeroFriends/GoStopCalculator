@@ -131,7 +131,7 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: (Ga
                     .fillMaxSize()
                     .padding(vertical = 10.dp)
             ) {
-                items(games) { game ->
+                items(items = games, key = { it.id }) { game ->
                     GameLog(game, onClick = { onClick(game) }, onClickMore = { onClickMore(game) })
                 }
             }

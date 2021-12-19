@@ -136,7 +136,7 @@ private fun PlayerLazyColumn(
                 )
             }
         }
-        itemsIndexed(players) { index, player ->
+        itemsIndexed(items = players, key = { _, player -> player.id }) { index, player ->
             PlayerItem(index, player, clickEvent)
         }
 

@@ -134,7 +134,7 @@ private fun PlayerPickList(
         )
         Spacer(modifier = Modifier.padding(9.dp))
         LazyColumn(contentPadding = PaddingValues(2.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            itemsIndexed(uiState.players) { index: Int, player: Player ->
+            itemsIndexed(items = uiState.players, key = { _, player -> player.id }) { index: Int, player: Player ->
                 PlayerPickItem(
                     index = index,
                     player = player,
