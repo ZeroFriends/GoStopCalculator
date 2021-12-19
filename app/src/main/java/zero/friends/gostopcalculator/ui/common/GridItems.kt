@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator.util
+package zero.friends.gostopcalculator.ui.common
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text

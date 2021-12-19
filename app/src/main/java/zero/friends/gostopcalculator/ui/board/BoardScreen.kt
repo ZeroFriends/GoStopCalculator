@@ -31,7 +31,6 @@ import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.dialog.DeleteDialog
-import zero.friends.gostopcalculator.util.GridItems
 import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 
 private sealed interface BoardEvent {
@@ -312,11 +311,10 @@ private fun GamerItem(index: Int, gamer: Gamer) {
                 verticalArrangement = Arrangement.Center
             ) {
                 if (!gamer.optional.contains(Optional.None)) {
-                    Row {
-                        gamer.optional.forEach {
-                            Text(text = it.korean, fontSize = 8.sp)
-                        }
-                    }
+                    Text(
+                        text = gamer.optional.joinToString(" ") { it.korean },
+                        fontSize = 8.sp,
+                    )
                 }
                 Text(
                     text = gamer.name,
@@ -372,7 +370,7 @@ private fun RoundBoxPreview() {
                     Optional.FiveShine,
                     Optional.FirstFuck,
                     Optional.ThreeFuck,
-                    Optional.FirstDdakdak,
+                    Optional.FirstDdadak,
                 )
             )
         )
