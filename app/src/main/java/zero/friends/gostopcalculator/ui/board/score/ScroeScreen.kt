@@ -2,11 +2,15 @@ package zero.friends.gostopcalculator.ui.board.score
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
+
 
 @Composable
-fun ScoreScreen(onBack: () -> Unit) {
-
+fun ScoreScreen(scoreViewModel: ScoreViewModel = hiltViewModel(), onBack: (gameId: Long) -> Unit) {
+    val uiState by scoreViewModel.uiState().collectAsState()
     BackHandler(true) {
-        onBack()
+        onBack(uiState.game.id)
     }
 }

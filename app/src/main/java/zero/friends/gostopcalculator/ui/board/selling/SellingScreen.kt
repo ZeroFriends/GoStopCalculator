@@ -20,13 +20,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import zero.friends.domain.model.Gamer
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
-import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 
 private sealed interface SellingEvent {
     object Back : SellingEvent
@@ -35,17 +32,10 @@ private sealed interface SellingEvent {
 }
 
 @Composable
-fun createSellingViewModel(roundId: Long): SellingViewModel {
-    val entryPoint = getEntryPointFromActivity<EntryPoint>()
-    val factory = entryPoint.sellingFactory()
-    return viewModel(factory = SellingViewModel.provideFactory(sellingViewModelFactory = factory, roundId = roundId))
-}
-
-@Composable
 fun SellingScreen(
     sellingViewModel: SellingViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
-    onNext: () -> Unit = {}
+    onNext: (gameId: Long) -> Unit = {}
 ) {
 
     BackHandler(true) {
@@ -59,7 +49,7 @@ fun SellingScreen(
             SellingEvent.Back -> onBack()
             SellingEvent.Next -> {
                 sellingViewModel.complete()
-                onNext()
+                onNext(uiState.game.id)
             }
             is SellingEvent.OnChangeSeller -> {
                 sellingViewModel.onSaveSeller(event.gamer, event.count)

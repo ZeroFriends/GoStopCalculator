@@ -13,4 +13,7 @@ interface RoundDao : BaseDao<RoundEntity> {
 
     @Query("DELETE FROM RoundEntity WHERE id = :roundId")
     suspend fun deleteRound(roundId: Long)
+
+    @Query("SELECT * FROM RoundEntity WHERE id = :roundId")
+    suspend fun getRound(roundId: Long): RoundEntity
 }

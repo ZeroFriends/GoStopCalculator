@@ -1,10 +1,8 @@
 package zero.friends.gostopcalculator.ui.board.prepare
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -17,8 +15,7 @@ import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.repository.RoundRepository
 import zero.friends.domain.usecase.AddGamerUseCase
-import zero.friends.gostopcalculator.di.factory.PrePareViewModelFactory
-import zero.friends.gostopcalculator.util.viewModelFactory
+import javax.inject.Inject
 
 data class PrepareUiState(
     val game: Game = Game(),
@@ -26,8 +23,8 @@ data class PrepareUiState(
     val gamer: List<Gamer> = emptyList()
 )
 
-class PrepareViewModel @AssistedInject constructor(
-    @Assisted private val gameId: Long,
+@HiltViewModel
+class PrepareViewModel @Inject constructor(
     private val gameRepository: GameRepository,
     private val playerRepository: PlayerRepository,
     private val roundRepository: RoundRepository,
@@ -41,15 +38,16 @@ class PrepareViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
+            val game = requireNotNull(gameRepository.getCurrentGame())
             _uiState.update {
                 it.copy(
-                    game = gameRepository.getGame(gameId = gameId),
-                    players = playerRepository.getPlayers(gameId)
+                    game = game,
+                    players = playerRepository.getPlayers(gameId = game.id)
                 )
             }
 
             _roundId.update {
-                roundRepository.createNewRound(gameId)
+                roundRepository.createNewRound(game.id)
             }
         }
     }
@@ -77,10 +75,4 @@ class PrepareViewModel @AssistedInject constructor(
 
     }
 
-    companion object {
-        fun provideFactory(
-            prePareViewModelFactory: PrePareViewModelFactory,
-            gameId: Long
-        ): ViewModelProvider.Factory = viewModelFactory { prePareViewModelFactory.createPrepareViewModel(gameId) }
-    }
 }

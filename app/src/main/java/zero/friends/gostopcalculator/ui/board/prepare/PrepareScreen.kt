@@ -25,15 +25,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.DescriptionBox
 import zero.friends.gostopcalculator.ui.common.GoStopButtonBackground
-import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 
 private sealed interface PrepareEvent {
     object Back : PrepareEvent
@@ -42,16 +39,9 @@ private sealed interface PrepareEvent {
 }
 
 @Composable
-fun createPrepareViewModel(gameId: Long): PrepareViewModel {
-    val entryPoint = getEntryPointFromActivity<EntryPoint>()
-    val factory = entryPoint.prepareFactory()
-    return viewModel(factory = PrepareViewModel.provideFactory(prePareViewModelFactory = factory, gameId = gameId))
-}
-
-@Composable
 fun PrepareScreen(
     prepareViewModel: PrepareViewModel = hiltViewModel(),
-    onComplete: (skipSelling: Boolean, roundId: Long) -> Unit = { _, _ -> },
+    onComplete: (skipSelling: Boolean) -> Unit = { },
     onBack: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -73,7 +63,7 @@ fun PrepareScreen(
                     onBack()
                 }
                 PrepareEvent.Complete -> {
-                    onComplete(uiState.gamer.count() != 4, prepareViewModel.roundId().value)
+                    onComplete(uiState.gamer.count() != 4)
                 }
                 is PrepareEvent.OnClickPlayer -> {
                     prepareViewModel.onClickPlayer(event.isCheck, event.player) {

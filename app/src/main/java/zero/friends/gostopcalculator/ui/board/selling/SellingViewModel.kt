@@ -1,20 +1,18 @@
 package zero.friends.gostopcalculator.ui.board.selling
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
-import zero.friends.domain.repository.GamerRepository
+import zero.friends.domain.repository.GameRepository
+import zero.friends.domain.usecase.GetRoundGamerUseCase
 import zero.friends.domain.usecase.SellingUseCase
-import zero.friends.gostopcalculator.di.factory.SellingViewModelFactory
-import zero.friends.gostopcalculator.util.viewModelFactory
+import javax.inject.Inject
 
 data class SellingUiState(
     val game: Game = Game(),
@@ -22,9 +20,10 @@ data class SellingUiState(
     val seller: Gamer? = null
 )
 
-class SellingViewModel @AssistedInject constructor(
-    @Assisted private val roundId: Long,
-    private val gamerRepository: GamerRepository,
+@HiltViewModel
+class SellingViewModel @Inject constructor(
+    private val gameRepository: GameRepository,
+    private val getRoundGamerUseCase: GetRoundGamerUseCase,
     private val sellingUseCase: SellingUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SellingUiState())
@@ -32,8 +31,9 @@ class SellingViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
+            gameRepository.getCurrentGame()
             _uiState.update {
-                val gamers = gamerRepository.getRoundGamers(roundId)
+                val gamers = getRoundGamerUseCase()
                 it.copy(gamers = gamers)
             }
         }
@@ -55,10 +55,4 @@ class SellingViewModel @AssistedInject constructor(
         }
     }
 
-    companion object {
-        fun provideFactory(
-            sellingViewModelFactory: SellingViewModelFactory,
-            roundId: Long
-        ): ViewModelProvider.Factory = viewModelFactory { sellingViewModelFactory.createSellingViewModel(roundId) }
-    }
 }

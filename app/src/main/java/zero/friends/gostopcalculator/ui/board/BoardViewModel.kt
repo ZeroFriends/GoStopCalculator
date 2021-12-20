@@ -84,9 +84,9 @@ class BoardViewModel @AssistedInject constructor(
 
     companion object {
         fun provideFactory(
-            BoardViewModelFactory: BoardViewModelFactory,
+            boardViewModelFactory: BoardViewModelFactory,
             gameId: Long
-        ): ViewModelProvider.Factory = viewModelFactory { BoardViewModelFactory.createBoardViewModel(gameId) }
+        ): ViewModelProvider.Factory = viewModelFactory { boardViewModelFactory.createBoardViewModel(gameId) }
     }
 }
 
