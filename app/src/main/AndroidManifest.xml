@@ -7,9 +7,9 @@
     <application
         android:name=".GoStopApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/song"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/song"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.GoStopCalculator">
         <activity
