@@ -37,9 +37,7 @@ fun NameEditDialog(
     }
 
     val editPlayer = {
-        val player = dialogState.editPlayer
-        requireNotNull(player)
-        viewModel.editPlayer(player, player.copy(name = editPlayerName.value.text))
+        viewModel.editPlayer(editPlayerName.value.text)
     }
 
     AlertDialog(
@@ -59,7 +57,7 @@ fun NameEditDialog(
                 Spacer(modifier = Modifier.padding(bottom = 40.dp))
                 GoStopOutLinedTextField(
                     text = editPlayerName.value,
-                    hint = "",
+                    hint = dialogState.originalPlayer.name,
                     color = colorResource(id = R.color.black),
                     onValueChange = {
                         editPlayerName.value = it

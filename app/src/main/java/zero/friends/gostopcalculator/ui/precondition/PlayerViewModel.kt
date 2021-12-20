@@ -25,6 +25,7 @@ data class PlayerUiState(
 
 data class DialogState(
     val openDialog: Boolean = false,
+    val originalPlayer: Player = Player(),
     val editPlayer: Player? = null,
     val error: Throwable? = null,
 )
@@ -88,7 +89,7 @@ class PlayerViewModel @Inject constructor(
 
     fun openDialog(player: Player) {
         _dialogState.update {
-            it.copy(openDialog = true, editPlayer = player)
+            it.copy(openDialog = true, originalPlayer = player, editPlayer = null)
         }
     }
 
@@ -98,8 +99,10 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
-    fun editPlayer(originalPlayer: Player, editPlayer: Player) {
+    fun editPlayer(name: String) {
         viewModelScope.launch(editNameExceptionHandler) {
+            val originalPlayer = _dialogState.value.originalPlayer
+            val editPlayer = if (name.isEmpty()) originalPlayer else originalPlayer.copy(name = name)
             editPlayerUseCase(originalPlayer, editPlayer)
             closeDialog()
         }

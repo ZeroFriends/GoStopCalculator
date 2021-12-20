@@ -63,7 +63,7 @@ fun GoStopOutLinedTextField(
                 focusedBorderColor = color,
                 cursorColor = colorResource(id = R.color.nero)
             ),
-            placeholder = { Text(text = hint, color = color) },
+            placeholder = { Text(text = hint, color = colorResource(id = R.color.gray).copy(alpha = 0.9f)) },
             textStyle = TextStyle(fontSize = 16.sp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = {
