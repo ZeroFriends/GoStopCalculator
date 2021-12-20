@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator.ui.main
+package zero.friends.gostopcalculator.ui.history
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,16 +24,16 @@ import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.dialog.DeleteDialog
 
-private sealed class MainEvent {
-    object StartGame : MainEvent()
-    object ShowGuide : MainEvent()
-    class ShowGame(val game: Game) : MainEvent()
-    class ShowMore(val game: Game) : MainEvent()
+private sealed class HistoryEvent {
+    object StartGame : HistoryEvent()
+    object ShowGuide : HistoryEvent()
+    class ShowGame(val game: Game) : HistoryEvent()
+    class ShowMore(val game: Game) : HistoryEvent()
 }
 
 @Composable
-fun MainScreen(
-    viewModel: MainViewModel = hiltViewModel(),
+fun HistoryScreen(
+    viewModel: HistoryViewModel = hiltViewModel(),
     onStartGame: () -> Unit = {},
     onShowGame: (Game) -> Unit = {}
 ) {
@@ -52,18 +52,18 @@ fun MainScreen(
         )
     }
 
-    MainScreen(uiState) { event ->
+    HistoryScreen(uiState) { event ->
         when (event) {
-            is MainEvent.ShowGame -> {
+            is HistoryEvent.ShowGame -> {
                 onShowGame(event.game)
             }
-            MainEvent.ShowGuide -> {
+            HistoryEvent.ShowGuide -> {
                 //TODO on Show guide
             }
-            MainEvent.StartGame -> {
+            HistoryEvent.StartGame -> {
                 onStartGame()
             }
-            is MainEvent.ShowMore -> {
+            is HistoryEvent.ShowMore -> {
                 viewModel.openDialog(event.game.id)
             }
         }
@@ -71,7 +71,7 @@ fun MainScreen(
 }
 
 @Composable
-private fun MainScreen(uiState: MainUiState, event: (MainEvent) -> Unit = {}) {
+private fun HistoryScreen(uiState: HistoryUiState, event: (HistoryEvent) -> Unit = {}) {
     Column {
         NewGame(event)
 
@@ -83,13 +83,13 @@ private fun MainScreen(uiState: MainUiState, event: (MainEvent) -> Unit = {}) {
 
         History(
             uiState.games,
-            onClick = { event(MainEvent.ShowGame(it)) },
-            onClickMore = { event(MainEvent.ShowMore(it)) })
+            onClick = { event(HistoryEvent.ShowGame(it)) },
+            onClickMore = { event(HistoryEvent.ShowMore(it)) })
     }
 }
 
 @Composable
-private fun NewGame(event: (MainEvent) -> Unit) {
+private fun NewGame(event: (HistoryEvent) -> Unit) {
     Column(Modifier.padding(16.dp)) {
         SubTitleText(stringResource(R.string.new_game))
         Spacer(modifier = Modifier.height(4.dp))
@@ -103,11 +103,11 @@ private fun NewGame(event: (MainEvent) -> Unit) {
                 text = stringResource(id = R.string.guide),
                 color = colorResource(id = R.color.orangey_red),
                 fontSize = 14.sp,
-                onClick = { event(MainEvent.ShowGuide) }
+                onClick = { event(HistoryEvent.ShowGuide) }
             )
         }
         Spacer(modifier = Modifier.padding(18.dp))
-        GoStopButton(stringResource(id = R.string.start), onClick = { event(MainEvent.StartGame) })
+        GoStopButton(stringResource(id = R.string.start), onClick = { event(HistoryEvent.StartGame) })
     }
 }
 
@@ -194,17 +194,17 @@ private fun GameLog(game: Game, onClick: () -> Unit = {}, onClickMore: () -> Uni
 }
 
 
-@Preview("MainPreview", showBackground = true)
+@Preview("HistoryPreview", showBackground = true)
 @Composable
-private fun MainPreview() {
-    MainScreen(MainUiState())
+private fun HistoryPreview() {
+    HistoryScreen(HistoryUiState())
 }
 
-@Preview("MainPreviewWithItem", showBackground = true)
+@Preview("HistoryPreviewWithItem", showBackground = true)
 @Composable
-private fun MainPreviewWithItem() {
-    MainScreen(
-        MainUiState(
+private fun HistoryPreviewWithItem() {
+    HistoryScreen(
+        HistoryUiState(
             games = listOf(
                 Game(1, "첫 번째 게임", "2021.11.22"),
                 Game(2, "두 번째 게임", "2021.11.23"),

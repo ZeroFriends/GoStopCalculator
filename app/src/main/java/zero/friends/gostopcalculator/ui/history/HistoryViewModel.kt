@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator.ui.main
+package zero.friends.gostopcalculator.ui.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +9,7 @@ import zero.friends.domain.model.Game
 import zero.friends.domain.repository.GameRepository
 import javax.inject.Inject
 
-data class MainUiState(
+data class HistoryUiState(
     val games: List<Game> = emptyList(),
 )
 
@@ -19,8 +19,8 @@ data class MoreDialogState(
 )
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val gameRepository: GameRepository) : ViewModel() {
-    private val _uiState = MutableStateFlow(MainUiState())
+class HistoryViewModel @Inject constructor(private val gameRepository: GameRepository) : ViewModel() {
+    private val _uiState = MutableStateFlow(HistoryUiState())
     fun getUiState() = _uiState.asStateFlow()
 
     private val _dialogState = MutableStateFlow(MoreDialogState())
