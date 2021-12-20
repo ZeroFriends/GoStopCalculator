@@ -22,6 +22,7 @@
     <string name="edit_name">이름 수정하기</string>
     <string name="created_at">생성일자</string>
     <string name="playing">진행중</string>
+    <string name="playing_game">게임 진행중</string>
     <string name="income_history">수익현황 👏</string>
     <string name="calculate_history">정산내역 ></string>
     <string name="game_history">진행내역 🤝</string>

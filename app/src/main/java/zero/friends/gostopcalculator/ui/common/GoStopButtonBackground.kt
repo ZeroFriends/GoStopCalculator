@@ -1,6 +1,5 @@
 package zero.friends.gostopcalculator.ui.common
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +15,7 @@ import zero.friends.gostopcalculator.R
 
 @Composable
 fun GoStopButtonBackground(
-    @StringRes buttonString: Int,
+    buttonString: String,
     buttonEnabled: Boolean = true,
     onClick: () -> Unit = {},
     contents: @Composable BoxScope.() -> Unit = {}
@@ -37,7 +36,7 @@ fun GoStopButtonBackground(
         }
 
         GoStopButton(
-            text = stringResource(buttonString),
+            text = buttonString,
             modifier = Modifier
                 .padding(top = 10.dp)
                 .constrainAs(button) {
@@ -52,5 +51,5 @@ fun GoStopButtonBackground(
 @Preview
 @Composable
 private fun GoStopButtonBackGroundPreview() {
-    GoStopButtonBackground(R.string.start_game)
+    GoStopButtonBackground(stringResource(id = R.string.start_game))
 }

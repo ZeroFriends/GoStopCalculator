@@ -14,6 +14,7 @@ import javax.inject.Inject
 data class ScoreUiState(
     val game: Game = Game(),
     val playerResults: List<PlayerResult> = emptyList(),
+    val buttonText: String = ""
 )
 
 @HiltViewModel

@@ -92,12 +92,15 @@ private fun PrepareScreen(
         }
     ) {
         GoStopButtonBackground(
-            buttonString = R.string.complete,
+            buttonString = stringResource(id = R.string.complete),
             buttonEnabled = uiState.gamer.size >= 2,
             onClick = { event(PrepareEvent.Complete) },
             contents = {
                 Column {
-                    DescriptionBox(mainText = R.string.start, subText = R.string.start_description)
+                    DescriptionBox(
+                        mainText = stringResource(id = R.string.start),
+                        subText = stringResource(id = R.string.start_description)
+                    )
                     Spacer(modifier = Modifier.padding(22.dp))
                     PlayerPickList(uiState = uiState, event = event)
                 }

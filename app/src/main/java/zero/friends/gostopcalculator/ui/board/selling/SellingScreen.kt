@@ -69,19 +69,22 @@ private fun SellingScreen(
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(
-                text = uiState.game.name,
+                text = stringResource(id = R.string.playing_game),
                 onBack = { event(SellingEvent.Back) },
                 isRed = false,
             )
         }
     ) {
         GoStopButtonBackground(
-            buttonString = R.string.complete,
+            buttonString = stringResource(id = R.string.complete),
             buttonEnabled = uiState.seller != null,
             onClick = { event(SellingEvent.Next) },
             contents = {
                 Column {
-                    DescriptionBox(mainText = R.string.sell_shine, subText = R.string.sell_shine_description)
+                    DescriptionBox(
+                        mainText = stringResource(id = R.string.sell_shine),
+                        subText = stringResource(id = R.string.sell_shine_description)
+                    )
                     Spacer(modifier = Modifier.padding(22.dp))
                     GamerList(uiState = uiState, event = event)
                 }

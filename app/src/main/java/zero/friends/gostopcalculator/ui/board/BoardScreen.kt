@@ -120,7 +120,7 @@ private fun BoardScreen(
         }
     ) {
         GoStopButtonBackground(
-            buttonString = R.string.start_game,
+            buttonString = stringResource(id = R.string.start_game),
             onClick = { event(BoardEvent.StartGame) },
             contents = {
                 Column {
