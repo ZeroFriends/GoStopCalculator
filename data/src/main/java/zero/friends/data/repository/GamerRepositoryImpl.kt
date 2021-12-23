@@ -11,6 +11,7 @@ import zero.friends.domain.model.*
 import zero.friends.domain.repository.GamerRepository
 import zero.friends.shared.IoDispatcher
 import javax.inject.Inject
+import kotlin.reflect.KClass
 
 class GamerRepositoryImpl @Inject constructor(
     private val gamerDao: GamerDao,
@@ -66,6 +67,16 @@ class GamerRepositoryImpl @Inject constructor(
                         }
                     }
                 }
+        }
+    }
+
+    override suspend fun clearOption(id: Long, optionClass: KClass<out ScoreOption>) {
+        withContext(dispatcher) {
+            when (optionClass) {
+                ScoreOption::class -> gamerDao.updateScoreOption(id, null)
+                LoserOption::class -> gamerDao.updateLoserOption(id, null)
+                WinnerOption::class -> gamerDao.updateWinnerOption(id, null)
+            }
         }
     }
 

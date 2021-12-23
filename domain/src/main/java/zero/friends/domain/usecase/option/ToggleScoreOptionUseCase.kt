@@ -17,6 +17,11 @@ class ToggleScoreOptionUseCase @Inject constructor(
         } else {
             cacheGamer.scoreOption + option
         }
-        gamerRepository.updateOption(cacheGamer.id, toggledList)
+        if (toggledList.isEmpty()) {
+            gamerRepository.clearOption(cacheGamer.id, option::class)
+        } else {
+            gamerRepository.updateOption(cacheGamer.id, toggledList)
+        }
+
     }
 }

@@ -20,7 +20,7 @@ data class RoundEntity(
     val gameId: Long = 0
 ) {
     companion object {
-        fun RoundEntity.toRound() = Round(id, /*gamers.map { it.toGamer() },*/ gameId)
+        fun RoundEntity.toRound() = Round(id, gameId)
     }
 }
 
