@@ -16,6 +16,10 @@ class GamerRepositoryImpl @Inject constructor(
     private val gamerDao: GamerDao,
     @IoDispatcher private val dispatcher: CoroutineDispatcher
 ) : GamerRepository {
+    override suspend fun getGamer(gamerId: Long): Gamer {
+        return gamerDao.getGamer(gamerId).toGamer()
+    }
+
     override suspend fun getAllGamer(gameId: Long, playerId: Long): List<Gamer> {
         return gamerDao.getAllGamer(gameId, playerId).map { it.toGamer() }
     }
@@ -47,6 +51,7 @@ class GamerRepositoryImpl @Inject constructor(
 
     override suspend fun updateOption(id: Long, options: List<Option>) {
         withContext(dispatcher) {
+            //todo options가 empty일때 안없어짐
             options.groupBy { it::class }
                 .forEach { map ->
                     when (map.key) {

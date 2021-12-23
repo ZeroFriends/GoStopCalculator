@@ -6,6 +6,7 @@ import zero.friends.domain.model.Option
 import zero.friends.domain.model.Player
 
 interface GamerRepository {
+    suspend fun getGamer(gamerId: Long): Gamer
     suspend fun getAllGamer(gameId: Long, playerId: Long): List<Gamer>
     suspend fun getRoundGamers(roundId: Long): List<Gamer>
     fun observeGamers(gameId: Long): Flow<List<Gamer>>

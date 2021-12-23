@@ -114,7 +114,7 @@ fun GamerList(uiState: ScoreUiState, event: (ScoreEvent) -> Unit = {}) {
 }
 
 @Composable
-fun ScoringGamerItem(index: Int, gamer: Gamer, event: (ScoreEvent) -> Unit) {
+fun ScoringGamerItem(index: Int, gamer: Gamer, event: (ScoreEvent) -> Unit = {}) {
     val color = colorResource(id = if (gamer.winnerOption.isNotEmpty()) R.color.gray else R.color.nero)
 
     Row(
