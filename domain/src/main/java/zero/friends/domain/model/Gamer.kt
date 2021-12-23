@@ -7,5 +7,7 @@ data class Gamer(
     val playerId: Long = 0,
     val gameId: Long = 0,
     val account: Int = 0,
-    val optional: List<Optional> = listOf(Optional.None)
+    val winnerOption: List<WinnerOption> = emptyList(),
+    val scoreOption: List<ScoreOption> = emptyList(),
+    val loserOption: List<LoserOption> = emptyList()
 )

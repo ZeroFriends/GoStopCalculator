@@ -23,10 +23,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import zero.friends.domain.model.Game
-import zero.friends.domain.model.Gamer
-import zero.friends.domain.model.Optional
-import zero.friends.domain.model.PlayerResult
+import zero.friends.domain.model.*
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
 import zero.friends.gostopcalculator.ui.common.*
@@ -310,10 +307,10 @@ private fun GamerItem(index: Int, gamer: Gamer) {
                 modifier = Modifier.align(Alignment.CenterVertically),
                 verticalArrangement = Arrangement.Center
             ) {
-                if (!gamer.optional.contains(Optional.None)) {
+                if (gamer.winnerOption.isNotEmpty()) {
                     Text(
-                        text = gamer.optional.joinToString(" ") { it.korean },
-                        fontSize = 8.sp,
+                        text = gamer.winnerOption.joinToString(" ") { it.korean },
+                        fontSize = 8.sp
                     )
                 }
                 Text(
@@ -321,6 +318,12 @@ private fun GamerItem(index: Int, gamer: Gamer) {
                     fontSize = 14.sp,
                     color = colorResource(id = R.color.nero),
                 )
+                if (gamer.scoreOption.isNotEmpty() || gamer.loserOption.isNotEmpty()) {
+                    Text(
+                        text = gamer.scoreOption.joinToString(" ") { it.korean } + gamer.loserOption.joinToString(" ") { it.korean },
+                        fontSize = 8.sp,
+                    )
+                }
             }
 
         }
@@ -359,18 +362,17 @@ fun GamerItemPreview() {
 private fun RoundBoxPreview() {
     RoundBox(
         gamers = listOf(
-            Gamer(name = "조재영", account = 10, optional = listOf(Optional.Sell)),
-            Gamer(name = "송준영", account = -10, optional = listOf(Optional.Winner)),
+            Gamer(name = "조재영", account = 10, winnerOption = listOf(WinnerOption.Winner)),
+            Gamer(name = "송준영", account = -10, winnerOption = listOf(WinnerOption.Sell)),
             Gamer(
                 name = "송준영",
                 account = -100000,
-                optional = listOf(
-                    Optional.Winner,
-                    Optional.President,
-                    Optional.FiveShine,
-                    Optional.FirstFuck,
-                    Optional.ThreeFuck,
-                    Optional.FirstDdadak,
+                scoreOption = listOf(
+                    ScoreOption.FirstDdadak,
+                    ScoreOption.FirstFuck,
+                    ScoreOption.FiveShine,
+                    ScoreOption.President,
+                    ScoreOption.ThreeFuck
                 )
             )
         )

@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
-import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.usecase.GetRoundGamerUseCase
 import zero.friends.domain.usecase.SellingUseCase
 import javax.inject.Inject
@@ -22,7 +21,6 @@ data class SellingUiState(
 
 @HiltViewModel
 class SellingViewModel @Inject constructor(
-    private val gameRepository: GameRepository,
     private val getRoundGamerUseCase: GetRoundGamerUseCase,
     private val sellingUseCase: SellingUseCase
 ) : ViewModel() {
@@ -31,7 +29,6 @@ class SellingViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            gameRepository.getCurrentGame()
             _uiState.update {
                 val gamers = getRoundGamerUseCase()
                 it.copy(gamers = gamers)

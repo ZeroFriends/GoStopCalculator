@@ -19,6 +19,12 @@ interface GamerDao : BaseDao<GamerEntity> {
     @Query("SELECT * FROM GamerEntity where gameId = :gameId")
     fun observeGamers(gameId: Long): Flow<List<GamerEntity>>
 
-    @Query("UPDATE GamerEntity SET optional = :options WHERE id = :gamerId")
-    fun updateOption(gamerId: Long, options: String)
+    @Query("UPDATE GamerEntity SET winnerOption = :options WHERE id = :gamerId")
+    fun updateWinnerOption(gamerId: Long, options: String)
+
+    @Query("UPDATE GamerEntity SET scoreOption = :options WHERE id = :gamerId")
+    fun updateScoreOption(gamerId: Long, options: String)
+
+    @Query("UPDATE GamerEntity SET loserOption = :options WHERE id = :gamerId")
+    fun updateLoserOption(gamerId: Long, options: String)
 }

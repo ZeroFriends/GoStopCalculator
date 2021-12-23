@@ -96,6 +96,8 @@ fun NumberTextField(
     endText: String,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     unFocusDeleteMode: Boolean = false,
+    isEnable: Boolean = true,
+    hintColor: Color = colorResource(id = R.color.nero),
     onValueChane: (Int) -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -123,9 +125,10 @@ fun NumberTextField(
                     onValueChane(0)
                 }
             },
+            enabled = isEnable,
             singleLine = true,
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = colorResource(id = R.color.white),
+                backgroundColor = colorResource(id = android.R.color.transparent),
                 cursorColor = colorResource(id = R.color.black),
                 focusedIndicatorColor = colorResource(id = R.color.orangey_red)
             ),
@@ -141,14 +144,15 @@ fun NumberTextField(
             interactionSource = interactionSource,
             placeholder = {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                    Text(text = "0", textAlign = TextAlign.End)
+                    Text(text = "0", textAlign = TextAlign.End, color = hintColor)
                 }
             }
         )
         Text(
             text = endText,
             textAlign = TextAlign.Center,
-            modifier = Modifier.align(Alignment.CenterEnd)
+            modifier = Modifier.align(Alignment.CenterEnd),
+            color = hintColor
         )
     }
 }

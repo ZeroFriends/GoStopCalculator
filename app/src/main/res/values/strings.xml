@@ -50,6 +50,7 @@
     <string name="sell_shine_description">4인 플레이경우 한명이 필수로 광을 팔아야 플레이가 가능합니다. 광을 판 플레이어를 선택해주세요.</string>
     <string name="can_celling">광팔 수 있는 패</string>
     <string name="page">장</string>
+    <string name="score_guide">점수 계산 법</string>
 
 
 </resources>

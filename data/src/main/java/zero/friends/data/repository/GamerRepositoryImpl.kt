@@ -7,9 +7,7 @@ import kotlinx.coroutines.withContext
 import zero.friends.data.entity.GamerEntity
 import zero.friends.data.entity.GamerEntity.Companion.toGamer
 import zero.friends.data.source.dao.GamerDao
-import zero.friends.domain.model.Gamer
-import zero.friends.domain.model.Optional
-import zero.friends.domain.model.Player
+import zero.friends.domain.model.*
 import zero.friends.domain.repository.GamerRepository
 import zero.friends.shared.IoDispatcher
 import javax.inject.Inject
@@ -47,9 +45,22 @@ class GamerRepositoryImpl @Inject constructor(
         gamerDao.deleteGamer(roundId, player.id)
     }
 
-    override suspend fun updateOption(id: Long, optional: List<Optional>) {
+    override suspend fun updateOption(id: Long, options: List<Option>) {
         withContext(dispatcher) {
-            gamerDao.updateOption(id, optional.joinToString(","))
+            options.groupBy { it::class }
+                .forEach { map ->
+                    when (map.key) {
+                        WinnerOption::class -> {
+                            gamerDao.updateWinnerOption(id, map.value.joinToString(","))
+                        }
+                        ScoreOption::class -> {
+                            gamerDao.updateScoreOption(id, map.value.joinToString(","))
+                        }
+                        LoserOption::class -> {
+                            gamerDao.updateLoserOption(id, map.value.joinToString(","))
+                        }
+                    }
+                }
         }
     }
 
