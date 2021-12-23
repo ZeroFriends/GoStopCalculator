@@ -8,7 +8,7 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
-import zero.friends.domain.usecase.AddAutoGeneratePlayerUseCase
+import zero.friends.domain.usecase.player.AddAutoGeneratePlayerUseCase
 
 class AddPlayerUseCaseTest {
 

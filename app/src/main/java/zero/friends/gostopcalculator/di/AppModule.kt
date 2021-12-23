@@ -7,10 +7,10 @@ import dagger.hilt.android.components.ActivityRetainedComponent
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.repository.RuleRepository
-import zero.friends.domain.usecase.AddAutoGeneratePlayerUseCase
-import zero.friends.domain.usecase.DeletePlayerUseCase
-import zero.friends.domain.usecase.EditPlayerUseCase
-import zero.friends.domain.usecase.GetDefaultRuleUseCase
+import zero.friends.domain.usecase.player.AddAutoGeneratePlayerUseCase
+import zero.friends.domain.usecase.player.DeletePlayerUseCase
+import zero.friends.domain.usecase.player.EditPlayerUseCase
+import zero.friends.domain.usecase.rule.GetDefaultRuleUseCase
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)

@@ -1,4 +1,4 @@
-package zero.friends.domain.usecase
+package zero.friends.domain.usecase.player
 
 import zero.friends.domain.model.Player
 import zero.friends.domain.repository.GameRepository

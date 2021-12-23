@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.update
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
 import zero.friends.domain.repository.GameRepository
-import zero.friends.domain.usecase.AddNewRuleUseCase
-import zero.friends.domain.usecase.GetDefaultRuleUseCase
+import zero.friends.domain.usecase.rule.AddNewRuleUseCase
+import zero.friends.domain.usecase.rule.GetDefaultRuleUseCase
 import zero.friends.gostopcalculator.util.TimeUtil
 import javax.inject.Inject
 

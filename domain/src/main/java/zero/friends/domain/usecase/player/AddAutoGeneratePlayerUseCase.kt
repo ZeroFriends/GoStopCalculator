@@ -1,15 +1,16 @@
-package zero.friends.domain.usecase
+package zero.friends.domain.usecase.player
 
-import zero.friends.domain.model.Player
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
 
-class DeletePlayerUseCase(
+
+class AddAutoGeneratePlayerUseCase(
     private val gameRepository: GameRepository,
     private val playerRepository: PlayerRepository,
 ) {
-    suspend operator fun invoke(player: Player) {
+    suspend operator fun invoke() {
         val gameId = requireNotNull(gameRepository.getCurrentGameId())
-        playerRepository.deletePlayer(gameId, player)
+        playerRepository.addAutoGeneratePlayer(gameId)
     }
+
 }

@@ -13,7 +13,7 @@ import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.repository.GameRepository
-import zero.friends.domain.usecase.GetRoundGamerUseCase
+import zero.friends.domain.usecase.gamer.GetRoundGamerUseCase
 import javax.inject.Inject
 
 data class ScoreUiState(

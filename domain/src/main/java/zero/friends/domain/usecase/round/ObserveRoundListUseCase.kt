@@ -1,4 +1,4 @@
-package zero.friends.domain.usecase
+package zero.friends.domain.usecase.round
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

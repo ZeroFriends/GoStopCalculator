@@ -14,7 +14,7 @@ import zero.friends.domain.model.Player
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.repository.RoundRepository
-import zero.friends.domain.usecase.AddGamerUseCase
+import zero.friends.domain.usecase.gamer.AddGamerUseCase
 import javax.inject.Inject
 
 data class PrepareUiState(

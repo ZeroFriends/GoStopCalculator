@@ -13,7 +13,7 @@ import zero.friends.domain.model.PlayerResult
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.RoundRepository
 import zero.friends.domain.usecase.ObservePlayerResultsUseCase
-import zero.friends.domain.usecase.ObserveRoundListUseCase
+import zero.friends.domain.usecase.round.ObserveRoundListUseCase
 import zero.friends.gostopcalculator.di.factory.BoardViewModelFactory
 import zero.friends.gostopcalculator.util.viewModelFactory
 

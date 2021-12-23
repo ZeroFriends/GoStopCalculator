@@ -1,4 +1,4 @@
-package zero.friends.domain.usecase
+package zero.friends.domain.usecase.gamer
 
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.Player

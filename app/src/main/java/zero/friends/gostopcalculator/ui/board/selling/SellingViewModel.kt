@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
-import zero.friends.domain.usecase.GetRoundGamerUseCase
-import zero.friends.domain.usecase.SellingUseCase
+import zero.friends.domain.usecase.gamer.GetRoundGamerUseCase
+import zero.friends.domain.usecase.option.SellingUseCase
 import javax.inject.Inject
 
 data class SellingUiState(
