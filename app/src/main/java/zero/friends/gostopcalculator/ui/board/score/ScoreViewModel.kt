@@ -37,6 +37,9 @@ class ScoreViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ScoreUiState())
     fun uiState() = _uiState.asStateFlow()
 
+    private val _complete = MutableSharedFlow<Unit>()
+    fun complete() = _complete.asSharedFlow()
+
     init {
         viewModelScope.launch {
             val gamers = getRoundGamerUseCase()
@@ -79,15 +82,17 @@ class ScoreViewModel @Inject constructor(
     fun onNext() {
         viewModelScope.launch {
             _uiState.update {
+
+                when (it.phase) {
+                    is Winner -> updateWinnerUseCase.invoke(requireNotNull(_uiState.value.winner))
+                    is Loser -> viewModelScope.launch { _complete.emit(Unit) }
+                }
+
                 it.copy(
                     phase = when (it.phase) {
                         is Scoring -> Winner(false)
-                        is Winner -> {
-                            updateWinnerUseCase.invoke(requireNotNull(_uiState.value.winner))
-                            Loser()
-                        }
-                        is Loser -> Loser()
-                        else -> throw IllegalStateException("")
+                        is Winner -> Loser()
+                        else -> throw IllegalStateException("없는 페이즈 입니다. ${it.phase}")
                     }
                 )
             }

@@ -32,12 +32,17 @@ sealed interface ScoreEvent {
     object Back : ScoreEvent
     class SelectScore(val gamer: Gamer, val option: ScoreOption) : ScoreEvent
     class SelectLoser(val gamer: Gamer, val option: LoserOption) : ScoreEvent
-    class OnNext() : ScoreEvent
+    object OnNext : ScoreEvent
+    object Complete : ScoreEvent
     class OnUpdateWinnerPoint(val gamer: Gamer, val point: Int) : ScoreEvent
 }
 
 @Composable
-fun ScoreScreen(scoreViewModel: ScoreViewModel = hiltViewModel(), onBack: (gameId: Long) -> Unit) {
+fun ScoreScreen(
+    scoreViewModel: ScoreViewModel = hiltViewModel(),
+    onBack: (gameId: Long) -> Unit,
+    onComplete: () -> Unit = {}
+) {
     val scaffoldState = rememberScaffoldState()
     val uiState by scoreViewModel.uiState().collectAsState()
     BackHandler(true) {
@@ -51,9 +56,10 @@ fun ScoreScreen(scoreViewModel: ScoreViewModel = hiltViewModel(), onBack: (gameI
             when (event) {
                 ScoreEvent.Back -> onBack(uiState.game.id)
                 is ScoreEvent.SelectScore -> scoreViewModel.selectScore(event.gamer, event.option)
-                is ScoreEvent.OnNext -> scoreViewModel.onNext()
+                ScoreEvent.OnNext -> scoreViewModel.onNext()
                 is ScoreEvent.OnUpdateWinnerPoint -> scoreViewModel.updateWinner(event.gamer, event.point)
                 is ScoreEvent.SelectLoser -> scoreViewModel.selectLoser(event.gamer, event.option)
+                ScoreEvent.Complete -> onComplete()
             }
         }
     )
@@ -80,7 +86,13 @@ private fun ScoreScreen(
         GoStopButtonBackground(
             buttonString = uiState.phase.getButtonText(),
             buttonEnabled = uiState.phase.getEnableNext(),
-            onClick = { scoreEvent(ScoreEvent.OnNext()) }
+            onClick = {
+                if (uiState.phase is Loser) {
+                    scoreEvent(ScoreEvent.Complete)
+                } else {
+                    scoreEvent(ScoreEvent.OnNext)
+                }
+            }
         ) {
             Column {
                 DescriptionBox(mainText = uiState.phase.getMainText(), subText = uiState.phase.getSubText())

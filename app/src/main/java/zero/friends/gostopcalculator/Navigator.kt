@@ -13,6 +13,7 @@ import zero.friends.gostopcalculator.ui.board.BoardScreen
 import zero.friends.gostopcalculator.ui.board.createBoardViewModel
 import zero.friends.gostopcalculator.ui.board.prepare.PrepareScreen
 import zero.friends.gostopcalculator.ui.board.score.ScoreScreen
+import zero.friends.gostopcalculator.ui.board.score.end.EndScreen
 import zero.friends.gostopcalculator.ui.board.selling.SellingScreen
 import zero.friends.gostopcalculator.ui.history.HistoryScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
@@ -39,8 +40,6 @@ sealed interface Navigate {
         object Prepare : Board
         object Selling : Board
         object Score : Board
-        object Winner : Board
-        object Loser : Board
         object End : Board
 
         sealed interface Setting : Board {
@@ -143,6 +142,20 @@ fun Navigator(onBackPressed: () -> Unit) {
                         navController.popBackStack()
                         navController.putLong(Const.GameId, it)
                         navController.navigate(Navigate.Board.Main.route())
+                    },
+                    onComplete = {
+                        navController.navigate(Navigate.Board.End.route())
+                    }
+                )
+            }
+
+            composable(Navigate.Board.End.route()) {
+                EndScreen(
+                    onBack = {
+
+                    },
+                    onComplete = {
+
                     }
                 )
             }
