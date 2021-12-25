@@ -89,7 +89,7 @@ class ScoreViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 phase = Winner(point != 0),
-                winner = if (point != 0) gamer else null
+                winner = if (point != 0) gamer.copy(account = point) else null
             )
         }
     }

@@ -83,4 +83,10 @@ class GamerRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateAccount(gamer: Gamer, account: Int) {
+        withContext(dispatcher) {
+            gamerDao.updateAccount(gamer.id, account)
+        }
+    }
+
 }

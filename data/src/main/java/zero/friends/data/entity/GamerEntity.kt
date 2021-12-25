@@ -5,6 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import timber.log.Timber
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.SellerOption
 import zero.friends.domain.model.WinnerOption
@@ -53,6 +54,19 @@ data class GamerEntity(
             findOptional(scoreOption),
             findOptional(loserOption)
         )
+
+        fun Gamer.toGamerEntity() = GamerEntity(
+            id = id,
+            roundId = roundId,
+            playerId = playerId,
+            name = name,
+            gameId = gameId,
+            account = account,
+            winnerOption = this.winnerOption?.name,
+            sellerOption = this.sellerOption?.name,
+            scoreOption = if (this.scoreOption.isEmpty()) null else this.scoreOption.joinToString(","),
+            loserOption = if (this.loserOption.isEmpty()) null else this.loserOption.joinToString(",")
+        ).also { Timber.tag("🔥zero:toGamerEntity").d("$it") }
     }
 }
 

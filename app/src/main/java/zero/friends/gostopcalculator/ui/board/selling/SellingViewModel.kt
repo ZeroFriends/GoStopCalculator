@@ -39,7 +39,7 @@ class SellingViewModel @Inject constructor(
     fun onSaveSeller(seller: Gamer, count: Int) {
         _uiState.update {
             val hasSeller = count != 0
-            val target = if (hasSeller) seller else null
+            val target = if (hasSeller) seller.copy(account = count) else null
             it.copy(seller = target)
         }
     }

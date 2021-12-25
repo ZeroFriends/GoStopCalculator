@@ -16,4 +16,5 @@ interface GamerRepository {
     suspend fun deleteGamer(roundId: Long, player: Player)
     suspend fun updateOption(id: Long, options: List<Option>)
     suspend fun clearOption(id: Long, kClass: KClass<out ScoreOption>)
+    suspend fun updateAccount(gamer: Gamer, account: Int)
 }

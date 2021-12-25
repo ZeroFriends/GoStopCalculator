@@ -10,5 +10,6 @@ class UpdateWinnerUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(winner: Gamer) {
         gamerRepository.updateOption(winner.id, listOf(WinnerOption.Winner))
+        gamerRepository.updateAccount(winner, winner.account)
     }
 }

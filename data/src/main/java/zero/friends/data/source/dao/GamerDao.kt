@@ -33,4 +33,7 @@ interface GamerDao : BaseDao<GamerEntity> {
 
     @Query("SELECT * FROM GamerEntity WHERE id = :gamerId")
     suspend fun getGamer(gamerId: Long): GamerEntity
+
+    @Query("UPDATE GamerEntity SET account = :account WHERE id = :gamerId")
+    suspend fun updateAccount(gamerId: Long, account: Int)
 }

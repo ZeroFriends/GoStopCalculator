@@ -10,5 +10,6 @@ class SellingUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(seller: Gamer) {
         gamerRepository.updateOption(seller.id, listOf(SellerOption.Sell))
+        gamerRepository.updateAccount(seller, seller.account)
     }
 }
