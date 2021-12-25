@@ -92,6 +92,7 @@ fun GoStopOutLinedTextField(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NumberTextField(
+    text: String = "",
     modifier: Modifier = Modifier,
     endText: String,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -106,7 +107,7 @@ fun NumberTextField(
 
     LaunchedEffect(focus) {
         if (unFocusDeleteMode && !focus) {
-            inputText = TextFieldValue("")
+            inputText = TextFieldValue(text)
             onValueChane(0)
         }
     }

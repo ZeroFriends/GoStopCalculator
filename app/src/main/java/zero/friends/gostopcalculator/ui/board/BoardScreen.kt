@@ -307,9 +307,9 @@ private fun GamerItem(index: Int, gamer: Gamer) {
                 modifier = Modifier.align(Alignment.CenterVertically),
                 verticalArrangement = Arrangement.Center
             ) {
-                if (gamer.winnerOption.isNotEmpty()) {
+                if (gamer.isWinner()) {
                     Text(
-                        text = gamer.winnerOption.joinToString(" ") { it.korean },
+                        text = gamer.winnerOption?.korean ?: "" + " " + gamer.sellerOption?.korean,
                         fontSize = 8.sp
                     )
                 }
@@ -362,8 +362,10 @@ fun GamerItemPreview() {
 private fun RoundBoxPreview() {
     RoundBox(
         gamers = listOf(
-            Gamer(name = "조재영", account = 10, winnerOption = listOf(WinnerOption.Winner)),
-            Gamer(name = "송준영", account = -10, winnerOption = listOf(WinnerOption.Sell)),
+            Gamer(name = "조재영", account = 10, winnerOption = WinnerOption.Winner),
+            Gamer(
+                name = "송준영", account = -10, sellerOption = SellerOption.Sell
+            ),
             Gamer(
                 name = "송준영",
                 account = -100000,

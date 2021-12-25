@@ -6,6 +6,8 @@ import androidx.room.ForeignKey.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import zero.friends.domain.model.Gamer
+import zero.friends.domain.model.SellerOption
+import zero.friends.domain.model.WinnerOption
 import zero.friends.domain.model.findOptional
 
 @Entity(
@@ -33,6 +35,7 @@ data class GamerEntity(
     val gameId: Long,
     val account: Int = 0,
     val winnerOption: String? = null,
+    val sellerOption: String? = null,
     val scoreOption: String? = null,
     val loserOption: String? = null
 //    val calculate: List<Target> todo 계산결과 집어넣기
@@ -45,7 +48,8 @@ data class GamerEntity(
             playerId,
             gameId,
             account,
-            findOptional(winnerOption),
+            findOptional<WinnerOption>(winnerOption).firstOrNull(),
+            findOptional<SellerOption>(sellerOption).firstOrNull(),
             findOptional(scoreOption),
             findOptional(loserOption)
         )

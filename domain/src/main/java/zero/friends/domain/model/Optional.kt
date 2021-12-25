@@ -14,10 +14,12 @@ inline fun <reified T : Enum<out T>> findOptional(values: String?): List<T> {
     }
 }
 
-
 enum class WinnerOption(override val korean: String) : Option {
-    Sell("광팜"),
     Winner("승자");
+}
+
+enum class SellerOption(override val korean: String) : Option {
+    Sell("광팜"),
 }
 
 enum class ScoreOption(override val korean: String) : Option {

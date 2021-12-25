@@ -28,6 +28,9 @@ interface GamerDao : BaseDao<GamerEntity> {
     @Query("UPDATE GamerEntity SET loserOption = :options WHERE id = :gamerId")
     fun updateLoserOption(gamerId: Long, options: String?)
 
+    @Query("UPDATE GamerEntity SET sellerOption = :options WHERE id = :gamerId")
+    fun updateSellerOption(gamerId: Long, options: String?)
+
     @Query("SELECT * FROM GamerEntity WHERE id = :gamerId")
     suspend fun getGamer(gamerId: Long): GamerEntity
 }

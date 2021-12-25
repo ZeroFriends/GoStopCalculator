@@ -51,6 +51,7 @@
     <string name="can_celling">광팔 수 있는 패</string>
     <string name="page">장</string>
     <string name="score_guide">점수 계산 법</string>
+    <string name="point">점</string>
 
 
 </resources>

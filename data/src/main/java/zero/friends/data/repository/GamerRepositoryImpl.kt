@@ -52,12 +52,14 @@ class GamerRepositoryImpl @Inject constructor(
 
     override suspend fun updateOption(id: Long, options: List<Option>) {
         withContext(dispatcher) {
-            //todo options가 empty일때 안없어짐
             options.groupBy { it::class }
                 .forEach { map ->
                     when (map.key) {
                         WinnerOption::class -> {
                             gamerDao.updateWinnerOption(id, map.value.joinToString(","))
+                        }
+                        SellerOption::class -> {
+                            gamerDao.updateSellerOption(id, map.value.joinToString(","))
                         }
                         ScoreOption::class -> {
                             gamerDao.updateScoreOption(id, map.value.joinToString(","))
@@ -76,6 +78,7 @@ class GamerRepositoryImpl @Inject constructor(
                 ScoreOption::class -> gamerDao.updateScoreOption(id, null)
                 LoserOption::class -> gamerDao.updateLoserOption(id, null)
                 WinnerOption::class -> gamerDao.updateWinnerOption(id, null)
+                SellerOption::class -> gamerDao.updateSellerOption(id, null)
             }
         }
     }

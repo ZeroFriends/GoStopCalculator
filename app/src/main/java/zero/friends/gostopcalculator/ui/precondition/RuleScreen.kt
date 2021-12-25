@@ -182,7 +182,7 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) 
             }
         }
 
-        NumberTextField(modifier = Modifier.weight(1f), stringResource(R.string.won)) {
+        NumberTextField(modifier = Modifier.weight(1f), endText = stringResource(R.string.won)) {
             onUpdateScore(it)
         }
     }

@@ -7,7 +7,10 @@ data class Gamer(
     val playerId: Long = 0,
     val gameId: Long = 0,
     val account: Int = 0,
-    val winnerOption: List<WinnerOption> = emptyList(),
+    val winnerOption: WinnerOption? = null,
+    val sellerOption: SellerOption? = null,
     val scoreOption: List<ScoreOption> = emptyList(),
     val loserOption: List<LoserOption> = emptyList()
-)
+) {
+    fun isWinner() = winnerOption != null || sellerOption != null
+}
