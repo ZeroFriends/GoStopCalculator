@@ -7,7 +7,7 @@ interface Phase {
     fun getSubText(): String
 }
 
-class Scoring() : Phase {
+class Scoring : Phase {
 
     override fun getButtonText(): String = "다음 (1/3)"
 
@@ -30,10 +30,10 @@ class Winner(private val enable: Boolean = false) : Phase {
 
 }
 
-class Loser(private val enable: Boolean) : Phase {
+class Loser : Phase {
     override fun getButtonText(): String = "다음 (3/3)"
 
-    override fun getEnableNext(): Boolean = enable
+    override fun getEnableNext(): Boolean = true
 
     override fun getMainText(): String = "패자 점수기록"
 

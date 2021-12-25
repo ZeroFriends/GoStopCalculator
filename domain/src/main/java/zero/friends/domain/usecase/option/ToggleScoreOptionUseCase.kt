@@ -6,7 +6,8 @@ import zero.friends.domain.repository.GamerRepository
 import javax.inject.Inject
 
 class ToggleScoreOptionUseCase @Inject constructor(
-    private val gamerRepository: GamerRepository
+    private val gamerRepository: GamerRepository,
+    private val updateOptionsUseCase: UpdateOptionsUseCase
 ) {
     suspend operator fun invoke(gamer: Gamer, option: ScoreOption) {
         val roundGamers = gamerRepository.getRoundGamers(gamer.roundId)
@@ -22,7 +23,7 @@ class ToggleScoreOptionUseCase @Inject constructor(
         option: ScoreOption
     ) {
         val removedOption = duplicate.scoreOption - option
-        updateOptions(removedOption, duplicate, option)
+        updateOptionsUseCase(duplicate.id, removedOption, option::class)
     }
 
     private suspend fun toggle(gamer: Gamer, option: ScoreOption) {
@@ -33,18 +34,7 @@ class ToggleScoreOptionUseCase @Inject constructor(
         } else {
             cacheGamer.scoreOption + option
         }
-        updateOptions(toggledList, cacheGamer, option)
+        updateOptionsUseCase(cacheGamer.id, toggledList, option::class)
     }
 
-    private suspend fun updateOptions(
-        removedOption: List<ScoreOption>,
-        duplicate: Gamer,
-        option: ScoreOption
-    ) {
-        if (removedOption.isEmpty()) {
-            gamerRepository.clearOption(duplicate.id, option::class)
-        } else {
-            gamerRepository.updateOption(duplicate.id, removedOption)
-        }
-    }
 }

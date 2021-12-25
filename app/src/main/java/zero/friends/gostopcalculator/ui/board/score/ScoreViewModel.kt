@@ -7,9 +7,11 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
+import zero.friends.domain.model.LoserOption
 import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.usecase.gamer.GetRoundGamerUseCase
+import zero.friends.domain.usecase.option.ToggleLoserOptionUseCase
 import zero.friends.domain.usecase.option.ToggleScoreOptionUseCase
 import zero.friends.domain.usecase.option.UpdateWinnerUseCase
 import zero.friends.domain.usecase.round.ObserveRoundGamerUseCase
@@ -28,6 +30,7 @@ class ScoreViewModel @Inject constructor(
     private val gameRepository: GameRepository,
     private val getRoundGamerUseCase: GetRoundGamerUseCase,
     private val toggleScoreOptionUseCase: ToggleScoreOptionUseCase,
+    private val toggleLoserOptionUseCase: ToggleLoserOptionUseCase,
     private val observeRoundGamerUseCase: ObserveRoundGamerUseCase,
     private val updateWinnerUseCase: UpdateWinnerUseCase
 ) : ViewModel() {
@@ -67,6 +70,12 @@ class ScoreViewModel @Inject constructor(
         }
     }
 
+    fun selectLoser(gamer: Gamer, option: LoserOption) {
+        viewModelScope.launch {
+            toggleLoserOptionUseCase(gamer, option)
+        }
+    }
+
     fun onNext() {
         viewModelScope.launch {
             _uiState.update {
@@ -75,9 +84,9 @@ class ScoreViewModel @Inject constructor(
                         is Scoring -> Winner(false)
                         is Winner -> {
                             updateWinnerUseCase.invoke(requireNotNull(_uiState.value.winner))
-                            Loser(false)
+                            Loser()
                         }
-                        is Loser -> Loser(false)
+                        is Loser -> Loser()
                         else -> throw IllegalStateException("")
                     }
                 )

@@ -53,7 +53,7 @@ fun ScoreScreen(scoreViewModel: ScoreViewModel = hiltViewModel(), onBack: (gameI
                 is ScoreEvent.SelectScore -> scoreViewModel.selectScore(event.gamer, event.option)
                 is ScoreEvent.OnNext -> scoreViewModel.onNext()
                 is ScoreEvent.OnUpdateWinnerPoint -> scoreViewModel.updateWinner(event.gamer, event.point)
-                is ScoreEvent.SelectLoser -> TODO()
+                is ScoreEvent.SelectLoser -> scoreViewModel.selectLoser(event.gamer, event.option)
             }
         }
     )

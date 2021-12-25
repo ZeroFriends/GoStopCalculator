@@ -72,7 +72,7 @@ class GamerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun clearOption(id: Long, optionClass: KClass<out ScoreOption>) {
+    override suspend fun clearOption(id: Long, optionClass: KClass<out Option>) {
         withContext(dispatcher) {
             when (optionClass) {
                 ScoreOption::class -> gamerDao.updateScoreOption(id, null)
