@@ -10,6 +10,7 @@ import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.LoserOption
 import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.repository.GameRepository
+import zero.friends.domain.usecase.CalculateGameResultUseCase
 import zero.friends.domain.usecase.gamer.GetRoundGamerUseCase
 import zero.friends.domain.usecase.option.ToggleLoserOptionUseCase
 import zero.friends.domain.usecase.option.ToggleScoreOptionUseCase
@@ -21,7 +22,7 @@ data class ScoreUiState(
     val game: Game = Game(),
     val playerResults: List<Gamer> = emptyList(),
     val phase: Phase = Scoring(),
-    val seller: Gamer? = null,//todo 판매자, 승자 정보 어떻게 가지고 올건지???
+    val seller: Gamer? = null,
     val winner: Gamer? = null
 )
 
@@ -32,13 +33,11 @@ class ScoreViewModel @Inject constructor(
     private val toggleScoreOptionUseCase: ToggleScoreOptionUseCase,
     private val toggleLoserOptionUseCase: ToggleLoserOptionUseCase,
     private val observeRoundGamerUseCase: ObserveRoundGamerUseCase,
-    private val updateWinnerUseCase: UpdateWinnerUseCase
+    private val updateWinnerUseCase: UpdateWinnerUseCase,
+    private val calculateGameResultUseCase: CalculateGameResultUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ScoreUiState())
     fun uiState() = _uiState.asStateFlow()
-
-    private val _complete = MutableSharedFlow<Unit>()
-    fun complete() = _complete.asSharedFlow()
 
     init {
         viewModelScope.launch {
@@ -82,16 +81,13 @@ class ScoreViewModel @Inject constructor(
     fun onNext() {
         viewModelScope.launch {
             _uiState.update {
-
-                when (it.phase) {
-                    is Winner -> updateWinnerUseCase.invoke(requireNotNull(_uiState.value.winner))
-                    is Loser -> viewModelScope.launch { _complete.emit(Unit) }
-                }
-
                 it.copy(
                     phase = when (it.phase) {
                         is Scoring -> Winner(false)
-                        is Winner -> Loser()
+                        is Winner -> {
+                            updateWinnerUseCase.invoke(requireNotNull(_uiState.value.winner))
+                            Loser()
+                        }
                         else -> throw IllegalStateException("없는 페이즈 입니다. ${it.phase}")
                     }
                 )
@@ -105,6 +101,12 @@ class ScoreViewModel @Inject constructor(
                 phase = Winner(point != 0),
                 winner = if (point != 0) gamer.copy(account = point) else null
             )
+        }
+    }
+
+    fun calculateGameResult() {
+        viewModelScope.launch {
+            calculateGameResultUseCase.invoke(uiState().value.playerResults)
         }
     }
 

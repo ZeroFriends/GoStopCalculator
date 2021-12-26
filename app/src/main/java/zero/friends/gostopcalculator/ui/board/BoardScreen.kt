@@ -29,6 +29,7 @@ import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.dialog.DeleteDialog
 import zero.friends.gostopcalculator.util.getEntryPointFromActivity
+import zero.friends.gostopcalculator.util.getMoneyColor
 
 private sealed interface BoardEvent {
     object Back : BoardEvent
@@ -170,44 +171,6 @@ private fun IncomeHistory(
 }
 
 @Composable
-private fun PlayerItem(index: Int, playerResult: PlayerResult) {
-    val moneyColor by remember(playerResult.account) {
-        derivedStateOf { getMoneyColor(playerResult.account) }
-    }
-    Row(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = (index + 1).toString(),
-                modifier = Modifier
-                    .align(Alignment.CenterVertically),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.orangey_red)
-            )
-            Spacer(modifier = Modifier.padding(4.dp))
-            Text(
-                text = playerResult.name,
-                fontSize = 14.sp,
-                color = colorResource(id = R.color.nero),
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
-        }
-
-        Text(
-            text = String.format(stringResource(id = R.string.price), playerResult.account),
-            textAlign = TextAlign.Center,
-            fontSize = 12.sp,
-            modifier = Modifier.align(Alignment.CenterVertically),
-            color = colorResource(id = moneyColor)
-        )
-    }
-}
-
-@Composable
 private fun GameHistory(modifier: Modifier = Modifier, uiState: BoardUiState, event: (BoardEvent) -> Unit = {}) {
     Column(modifier = modifier) {
         Text(
@@ -287,7 +250,7 @@ private fun GamerItem(index: Int, gamer: Gamer) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         val moneyColor by remember(gamer.account) {
-            derivedStateOf { getMoneyColor(gamer.account) }
+            derivedStateOf { gamer.account.getMoneyColor() }
         }
 
         Row(
@@ -337,19 +300,6 @@ private fun GamerItem(index: Int, gamer: Gamer) {
         )
     }
 }
-
-private fun getMoneyColor(account: Int) = when {
-    account > 0 -> {
-        R.color.orangey_red
-    }
-    account < 0 -> {
-        R.color.blue
-    }
-    else -> {
-        R.color.nero
-    }
-}
-
 
 @Preview
 @Composable

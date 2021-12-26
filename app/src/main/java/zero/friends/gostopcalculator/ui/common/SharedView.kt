@@ -6,6 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,8 +22,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import zero.friends.domain.model.PlayerResult
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
+import zero.friends.gostopcalculator.util.getMoneyColor
 
 
 @Composable
@@ -155,6 +160,50 @@ fun DescriptionBox(modifier: Modifier = Modifier, mainText: String, subText: Str
             )
         }
     }
+}
+
+@Composable
+fun PlayerItem(index: Int, playerResult: PlayerResult) {
+    val moneyColor by remember(playerResult.account) {
+        derivedStateOf { playerResult.account.getMoneyColor() }
+    }
+    Row(
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = (index + 1).toString(),
+                modifier = Modifier
+                    .align(Alignment.CenterVertically),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(id = R.color.orangey_red)
+            )
+            Spacer(modifier = Modifier.padding(4.dp))
+            Text(
+                text = playerResult.name,
+                fontSize = 14.sp,
+                color = colorResource(id = R.color.nero),
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+        }
+
+        Text(
+            text = String.format(stringResource(id = R.string.price), playerResult.account),
+            textAlign = TextAlign.Center,
+            fontSize = 12.sp,
+            modifier = Modifier.align(Alignment.CenterVertically),
+            color = colorResource(id = moneyColor)
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PlayerItemPreview() {
+    PlayerItem(index = 0, playerResult = PlayerResult("zero.dev", 1000))
 }
 
 @Preview

@@ -59,7 +59,10 @@ fun ScoreScreen(
                 ScoreEvent.OnNext -> scoreViewModel.onNext()
                 is ScoreEvent.OnUpdateWinnerPoint -> scoreViewModel.updateWinner(event.gamer, event.point)
                 is ScoreEvent.SelectLoser -> scoreViewModel.selectLoser(event.gamer, event.option)
-                ScoreEvent.Complete -> onComplete()
+                ScoreEvent.Complete -> {
+                    scoreViewModel.calculateGameResult()
+                    onComplete()
+                }
             }
         }
     )
