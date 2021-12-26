@@ -18,7 +18,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,13 +26,16 @@ import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.ui.common.*
+import zero.friends.gostopcalculator.ui.common.AprilBackground
+import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
+import zero.friends.gostopcalculator.ui.common.NumberTextField
+import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
 
 
 sealed class RuleClickEvent {
     object Back : RuleClickEvent()
-    class Complete(val ruleName: String) : RuleClickEvent()
+    object Complete : RuleClickEvent()
     object Helper : RuleClickEvent()
 }
 
@@ -58,11 +60,8 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (Game) ->
             when (ruleClickEvent) {
                 RuleClickEvent.Back -> onBack()
                 is RuleClickEvent.Complete -> {
-                    val ruleName =
-                        if (ruleClickEvent.ruleName.isNotEmpty()) ruleClickEvent.ruleName
-                        else uiState.currentTime
                     scope.launch {
-                        val game = ruleViewModel.startGame(ruleName)
+                        val game = ruleViewModel.startGame()
                         onNext(game)
                     }
 
@@ -96,25 +95,14 @@ private fun RuleScreen(
             )
         }
     ) {
-        val ruleName = remember {
-            mutableStateOf(TextFieldValue(uiState.ruleName))
-        }
         AprilBackground(
             title = stringResource(R.string.rule_title),
             subTitle = stringResource(id = R.string.rule_subtitle),
             buttonText = stringResource(id = R.string.complete),
             buttonEnabled = uiState.enableComplete,
-            onClick = { clickEvent(RuleClickEvent.Complete(ruleName.value.text)) }
+            onClick = { clickEvent(RuleClickEvent.Complete) }
         ) {
-            Column {
-                TitleOutlinedTextField(
-                    title = stringResource(R.string.rule_name),
-                    text = ruleName.value,
-                    hint = uiState.currentTime
-                ) { ruleName.value = it }
-
-                RuleLazyColumn(uiState.rules, clickEvent, onUpdateRule)
-            }
+            RuleLazyColumn(uiState.rules, clickEvent, onUpdateRule)
         }
     }
 }
@@ -164,7 +152,7 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) 
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
-                        text = rule.title,
+                        text = rule.name,
                         fontSize = 16.sp,
                         color = colorResource(id = R.color.nero)
                     )

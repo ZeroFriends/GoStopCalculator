@@ -15,7 +15,7 @@ class GetDefaultRuleUseCase(
 
         val canSellShine = playerRepository.getPlayers(gameId).size > 3
         val rules = ruleRepository.getDefaultRule().toMutableList()
-        val sellShineRule = rules.find { it.title == "광팔기" }
+        val sellShineRule = rules.find { it.name == "광팔기" }
 
         if (!canSellShine) rules.remove(sellShineRule)
         return rules.toList()

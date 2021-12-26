@@ -9,8 +9,8 @@ class AddNewRuleUseCase @Inject constructor(
     private val gameRepository: GameRepository,
     private val ruleRepository: RuleRepository,
 ) {
-    suspend operator fun invoke(ruleName: String, rules: List<Rule>) {
+    suspend operator fun invoke(rules: List<Rule>) {
         val gameId = requireNotNull(gameRepository.getCurrentGameId())
-        ruleRepository.addNewRule(gameId, ruleName, rules)
+        ruleRepository.addNewRule(gameId, rules)
     }
 }

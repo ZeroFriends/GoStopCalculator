@@ -22,13 +22,12 @@ class RuleRepositoryImpl @Inject constructor(
             val json = AssetUtil.loadAsset(context, "rule.json")
             Json.decodeFromString<List<Rule>>(json)
         }
-            .getOrDefault(ruleApi.getDefaultRule())
-            .map { Rule(it.title, it.isEssential, it.script, 0) }
+            .recoverCatching { ruleApi.getDefaultRule() }
+            .getOrThrow()
     }
 
-    override suspend fun addNewRule(gameId: Long, ruleName: String, rules: List<Rule>) {
+    override suspend fun addNewRule(gameId: Long, rules: List<Rule>) {
         val entity = RuleEntity(
-            ruleName = ruleName,
             rules = rules,
             gameId = gameId
         )

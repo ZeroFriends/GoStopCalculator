@@ -38,11 +38,11 @@ class RuleViewModel @Inject constructor(
     }
 
     fun updateRuleScore(targetRule: Rule) {
-        getUiState().value.rules.find { it.title == targetRule.title }?.score = targetRule.score
+        getUiState().value.rules.find { it.name == targetRule.name }?.score = targetRule.score
     }
 
-    suspend fun startGame(ruleName: String): Game {
-        addNewRuleUseCase(ruleName = ruleName, rules = getUiState().value.rules)
+    suspend fun startGame(): Game {
+        addNewRuleUseCase(rules = getUiState().value.rules)
         return requireNotNull(gameRepository.getCurrentGame())
     }
 

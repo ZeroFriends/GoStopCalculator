@@ -20,7 +20,6 @@ import zero.friends.domain.model.Rule
 )
 data class RuleEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val ruleName: String = "",
     val rules: List<Rule>,
     val gameId: Long = 0,
 )
