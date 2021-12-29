@@ -14,7 +14,6 @@ import zero.friends.gostopcalculator.ui.board.createBoardViewModel
 import zero.friends.gostopcalculator.ui.board.prepare.PrepareScreen
 import zero.friends.gostopcalculator.ui.board.score.ScoreScreen
 import zero.friends.gostopcalculator.ui.board.score.end.EndScreen
-import zero.friends.gostopcalculator.ui.board.selling.SellingScreen
 import zero.friends.gostopcalculator.ui.history.HistoryScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
@@ -38,7 +37,6 @@ sealed interface Navigate {
     sealed interface Board : Navigate {
         object Main : Board
         object Prepare : Board
-        object Selling : Board
         object Score : Board
         object End : Board
 
@@ -118,30 +116,17 @@ fun Navigator(onBackPressed: () -> Unit) {
 
             composable(Navigate.Board.Prepare.route()) {
                 PrepareScreen(
-                    onComplete = { skipSelling ->
-                        if (skipSelling) {
-                            navController.navigate(Navigate.Board.Score.route())
-                        } else {
-                            navController.navigate(Navigate.Board.Selling.route())
-                        }
+                    onComplete = {
+                        navController.navigate(Navigate.Board.Score.route())
                     },
                     onBack = { navController.navigateUp() }
-                )
-            }
-
-            composable(Navigate.Board.Selling.route()) {
-                SellingScreen(
-                    onBack = { navController.navigateUp() },
-                    onNext = { navController.navigate(Navigate.Board.Score.route()) }
                 )
             }
 
             composable(Navigate.Board.Score.route()) {
                 ScoreScreen(
                     onBack = {
-                        navController.popBackStack()
-                        navController.putLong(Const.GameId, it)
-                        navController.navigate(Navigate.Board.Main.route())
+                        navController.navigateUp()
                     },
                     onComplete = {
                         navController.navigate(Navigate.Board.End.route())
@@ -152,7 +137,9 @@ fun Navigator(onBackPressed: () -> Unit) {
             composable(Navigate.Board.End.route()) {
                 EndScreen(
                     onBack = {
-
+                        navController.popBackStack()
+                        navController.putLong(Const.GameId, it)
+                        navController.navigate(Navigate.Board.Main.route())
                     },
                     onComplete = {
 

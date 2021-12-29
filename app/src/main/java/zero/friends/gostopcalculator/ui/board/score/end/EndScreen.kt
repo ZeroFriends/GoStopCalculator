@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.board.score.end
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -31,9 +32,16 @@ import zero.friends.gostopcalculator.ui.common.GoStopButtonBackground
 import zero.friends.gostopcalculator.ui.common.PlayerItem
 
 @Composable
-fun EndScreen(endViewModel: EndViewModel = hiltViewModel(), onBack: () -> Unit = {}, onComplete: () -> Unit = {}) {
+fun EndScreen(
+    endViewModel: EndViewModel = hiltViewModel(),
+    onBack: (gameId: Long) -> Unit = {},
+    onComplete: () -> Unit = {}
+) {
     val uiState by endViewModel.endUiState().collectAsState()
     val scaffoldState = rememberScaffoldState()
+    BackHandler {
+        onBack(uiState.game.id)
+    }
     EndScreen(scaffoldState = scaffoldState, uiState = uiState)
 }
 
@@ -108,7 +116,7 @@ private fun Preview() {
     EndScreen(
         scaffoldState = rememberScaffoldState(),
         uiState = EndUiState(
-            listOf(
+            players = listOf(
                 PlayerResult("zero", 1000),
                 PlayerResult("하이", -1000),
                 PlayerResult("재영", +1000),

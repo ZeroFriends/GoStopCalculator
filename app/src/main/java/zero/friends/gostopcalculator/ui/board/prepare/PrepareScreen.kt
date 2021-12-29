@@ -41,7 +41,7 @@ private sealed interface PrepareEvent {
 @Composable
 fun PrepareScreen(
     prepareViewModel: PrepareViewModel = hiltViewModel(),
-    onComplete: (skipSelling: Boolean) -> Unit = { },
+    onComplete: () -> Unit = { },
     onBack: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -63,7 +63,7 @@ fun PrepareScreen(
                     onBack()
                 }
                 PrepareEvent.Complete -> {
-                    onComplete(uiState.gamer.count() != 4)
+                    onComplete()
                 }
                 is PrepareEvent.OnClickPlayer -> {
                     prepareViewModel.onClickPlayer(event.isCheck, event.player) {

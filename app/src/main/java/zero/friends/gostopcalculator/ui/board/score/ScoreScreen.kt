@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -23,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import zero.friends.domain.model.*
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
@@ -30,23 +32,31 @@ import zero.friends.gostopcalculator.ui.common.*
 
 sealed interface ScoreEvent {
     object Back : ScoreEvent
+    object OnNext : ScoreEvent
     class SelectScore(val gamer: Gamer, val option: ScoreOption) : ScoreEvent
     class SelectLoser(val gamer: Gamer, val option: LoserOption) : ScoreEvent
-    object OnNext : ScoreEvent
     object Complete : ScoreEvent
     class OnUpdateWinnerPoint(val gamer: Gamer, val point: Int) : ScoreEvent
+    class OnUpdateSellerPoint(val gamer: Gamer, val count: Int) : ScoreEvent
 }
 
 @Composable
 fun ScoreScreen(
     scoreViewModel: ScoreViewModel = hiltViewModel(),
-    onBack: (gameId: Long) -> Unit,
+    onBack: (gameId: Long?) -> Unit,
     onComplete: () -> Unit = {}
 ) {
     val scaffoldState = rememberScaffoldState()
     val uiState by scoreViewModel.uiState().collectAsState()
+
+    LaunchedEffect(key1 = Unit) {
+        scoreViewModel.escapeEvent().collectLatest {
+            onBack(uiState.game.id)
+        }
+    }
+
     BackHandler(true) {
-        onBack(uiState.game.id)
+        scoreViewModel.onBack()
     }
 
     ScoreScreen(
@@ -54,7 +64,7 @@ fun ScoreScreen(
         uiState = uiState,
         scoreEvent = { event ->
             when (event) {
-                ScoreEvent.Back -> onBack(uiState.game.id)
+                ScoreEvent.Back -> scoreViewModel.onBack()
                 is ScoreEvent.SelectScore -> scoreViewModel.selectScore(event.gamer, event.option)
                 ScoreEvent.OnNext -> scoreViewModel.onNext()
                 is ScoreEvent.OnUpdateWinnerPoint -> scoreViewModel.updateWinner(event.gamer, event.point)
@@ -62,6 +72,9 @@ fun ScoreScreen(
                 ScoreEvent.Complete -> {
                     scoreViewModel.calculateGameResult()
                     onComplete()
+                }
+                is ScoreEvent.OnUpdateSellerPoint -> {
+                    scoreViewModel.updateSeller(event.gamer, event.count)
                 }
             }
         }
@@ -125,19 +138,50 @@ fun GamerList(uiState: ScoreUiState, event: (ScoreEvent) -> Unit = {}) {
             RoundedCornerText(stringResource(id = R.string.score_guide), onClick = {})
         }
         Spacer(modifier = Modifier.padding(9.dp))
-        LazyColumn(contentPadding = PaddingValues(2.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            itemsIndexed(uiState.playerResults) { index, item ->
-                ScoringGamerItem(index = index, gamer = item, uiState = uiState, event = event)
-            }
 
+        LazyColumn(contentPadding = PaddingValues(2.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+
+            itemsIndexed(uiState.playerResults) { index, gamer ->
+                when (uiState.phase) {
+                    is Selling -> WinnerItem(index, gamer, isSeller = true, isEnable = true, event)
+                    is Scoring -> {
+                        if (gamer.id == uiState.seller?.id) WinnerItem(
+                            index,
+                            uiState.seller,
+                            isSeller = true,
+                            isEnable = false
+                        )
+                        else ScoringItem(index, gamer, uiState.phase, event)
+                    }
+                    is Winner -> {
+                        if (gamer.id == uiState.seller?.id) WinnerItem(
+                            index, uiState.seller,
+                            isSeller = true,
+                            isEnable = false
+                        )
+                        else WinnerItem(index, gamer, isSeller = false, isEnable = true, event = event)
+                    }
+                    is Loser -> {
+                        when (gamer.id) {
+                            uiState.seller?.id -> WinnerItem(index, uiState.seller, isSeller = true, isEnable = false)
+                            uiState.winner?.id -> WinnerItem(index, uiState.winner, isSeller = false, isEnable = false)
+                            else -> ScoringItem(index, gamer, uiState.phase, event)
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
-fun ScoringGamerItem(index: Int, gamer: Gamer, uiState: ScoreUiState, event: (ScoreEvent) -> Unit = {}) {
-    val color = colorResource(id = if (gamer.isWinner()) R.color.gray else R.color.nero)
-
+fun WinnerItem(
+    index: Int,
+    gamer: Gamer,
+    isSeller: Boolean,
+    isEnable: Boolean,
+    event: (ScoreEvent) -> Unit = {}
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -151,97 +195,117 @@ fun ScoringGamerItem(index: Int, gamer: Gamer, uiState: ScoreUiState, event: (Sc
                 text = (index + 1).toString(),
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .padding(16.dp),
+                    .padding(10.dp),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = colorResource(id = if (gamer.isWinner()) R.color.gray else R.color.orangey_red)
+                color = colorResource(id = if (isEnable) R.color.orangey_red else R.color.gray)
             )
-            Column {
-                Row {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .padding(end = 6.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                        ) {
-                            Text(
-                                text = gamer.name,
-                                fontSize = 16.sp,
-                                color = color
-                            )
-                            if (gamer.isWinner()) {
-                                val option = when {
-                                    gamer.winnerOption != null -> requireNotNull(gamer.winnerOption)
-                                    gamer.sellerOption != null -> requireNotNull(gamer.sellerOption)
-                                    else -> throw IllegalStateException("Not Supported Option")
-                                }.korean
-                                Spacer(modifier = Modifier.padding(3.dp))
-                                OptionBox(option, colorResource(id = R.color.gray))
-                            }
-                        }
-                    }
-                }
-                if (!gamer.isWinner()) {
-                    when (uiState.phase) {
-                        is Scoring -> ToggleRow(phase = uiState.phase, gamer = gamer, event = event)
-                        is Loser -> ToggleRow(phase = uiState.phase, gamer = gamer, event = event)
-                    }
-                }
-            }
-        }
-        if (gamer.isWinner()) {
-            NumberTextField(
-                text = gamer.account.toString(),
-                modifier = Modifier.weight(1f),
-                endText = stringResource(
-                    if (gamer.sellerOption != null) R.string.page
-                    else R.string.point
-                ),
-                isEnable = false,
-                unFocusDeleteMode = true,
-                hintColor = colorResource(id = R.color.gray)
-            )
-        }
-        if (!gamer.isWinner() && uiState.phase is Winner) {
-            NumberTextField(
-                modifier = Modifier.weight(1f),
-                endText = stringResource(R.string.point),
-                isEnable = true,
-                unFocusDeleteMode = true,
-                hintColor = colorResource(id = R.color.nero)
+            Column(
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(end = 6.dp)
             ) {
-                event(ScoreEvent.OnUpdateWinnerPoint(gamer, it))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = gamer.name,
+                        fontSize = 16.sp,
+                        color = colorResource(id = if (isEnable) R.color.nero else R.color.gray)
+                    )
+                    if (!isEnable) {
+                        Spacer(modifier = Modifier.padding(3.dp))
+                        val optionName = if (isSeller) gamer.sellerOption else gamer.winnerOption
+                        OptionBox(requireNotNull(optionName?.korean), colorResource(id = R.color.gray))
+                    }
+                }
             }
+
+        }
+
+        NumberTextField(
+            text = if (isEnable) "" else gamer.account.toString(),
+            modifier = Modifier.weight(1f),
+            endText = stringResource(if (isSeller) R.string.page else R.string.point),
+            isEnable = isEnable,
+            unFocusDeleteMode = true,
+            hintColor = colorResource(id = if (isEnable) R.color.nero else R.color.gray)
+        ) {
+            event(
+                if (isSeller) ScoreEvent.OnUpdateSellerPoint(gamer, it)
+                else ScoreEvent.OnUpdateWinnerPoint(gamer, it)
+            )
+
         }
 
     }
+
 }
 
 @Composable
+fun ScoringItem(index: Int, gamer: Gamer, toggleable: Phase.Toggleable, event: (ScoreEvent) -> Unit = {}) {
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = (index + 1).toString(),
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(10.dp),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = colorResource(id = R.color.orangey_red)
+            )
+            Text(
+                text = gamer.name,
+                fontSize = 16.sp,
+                color = colorResource(id = R.color.nero)
+            )
+        }
+        ToggleRow(modifier = Modifier.padding(start = 10.dp), toggleable = toggleable, gamer = gamer, event = event)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun WinnerItemPreview() {
+    WinnerItem(index = 0, gamer = Gamer(name = "zero"), isSeller = true, isEnable = true)
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ScoringItemPreview() {
+    ScoringItem(index = 0, gamer = Gamer(name = "zero"), toggleable = Scoring)
+}
+
+
+@Composable
 private fun ToggleRow(
-    phase: Phase,
+    modifier: Modifier = Modifier,
+    toggleable: Phase.Toggleable,
     gamer: Gamer,
     event: (ScoreEvent) -> Unit
 ) {
-    val options = when (phase) {
-        is Scoring -> ScoreOption.values()
-        is Loser -> LoserOption.values()
-        else -> throw Exception()
+    val options = when (toggleable) {
+        Scoring -> ScoreOption.values()
+        Loser -> LoserOption.values()
     }
-    Spacer(modifier = Modifier.padding(5.dp))
-    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+
+    LazyRow(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         items(options, key = { it.ordinal }) { option ->
             OptionBox(
                 text = option.korean,
                 color = colorResource(id = R.color.non_click),
-                isSelected = (if (phase is Scoring) gamer.scoreOption else gamer.loserOption).contains(option),
+                isSelected = when (toggleable) {
+                    Loser -> gamer.loserOption
+                    Scoring -> gamer.scoreOption
+                }.contains(option),
                 onClick = {
                     event(
-                        if (phase is Scoring) ScoreEvent.SelectScore(gamer, option as ScoreOption)
-                        else ScoreEvent.SelectLoser(gamer, option as LoserOption)
+                        when (toggleable) {
+                            Loser -> ScoreEvent.SelectLoser(gamer, option as LoserOption)
+                            Scoring -> ScoreEvent.SelectScore(gamer, option as ScoreOption)
+                        }
                     )
                 }
             )
@@ -263,19 +327,6 @@ private fun OptionBox(text: String, color: Color, isSelected: Boolean = false, o
             color = if (isSelected) colorResource(id = R.color.white) else color
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ItemPreview() {
-    ScoringGamerItem(
-        index = 0,
-        gamer = Gamer(
-            name = "zero.dev",
-            scoreOption = listOf(ScoreOption.President, ScoreOption.FiveShine)
-        ),
-        uiState = ScoreUiState(phase = Scoring())
-    )
 }
 
 @Preview

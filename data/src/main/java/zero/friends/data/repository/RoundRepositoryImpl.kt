@@ -36,7 +36,7 @@ class RoundRepositoryImpl @Inject constructor(private val roundDao: RoundDao) : 
 
     override fun observeRound(roundId: Long): Flow<List<Gamer>> {
         return roundDao.observeRoundGamers(roundId).map { roundGamers ->
-            roundGamers.gamers.map { it.toGamer() }
+            roundGamers.gamers.mapNotNull { it.toGamer() }
         }
     }
 

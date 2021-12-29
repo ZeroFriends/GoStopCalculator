@@ -22,4 +22,8 @@ data class RuleEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val rules: List<Rule>,
     val gameId: Long = 0,
-)
+) {
+    companion object {
+        fun RuleEntity.toRule(): List<Rule> = rules
+    }
+}

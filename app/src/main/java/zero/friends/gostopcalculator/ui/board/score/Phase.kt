@@ -1,13 +1,28 @@
 package zero.friends.gostopcalculator.ui.board.score
 
-interface Phase {
+sealed interface Phase {
     fun getButtonText(): String
     fun getEnableNext(): Boolean
     fun getMainText(): String
     fun getSubText(): String
+
+    sealed interface Toggleable : Phase
+    sealed interface Editable : Phase
 }
 
-class Scoring : Phase {
+
+class Selling(private val enable: Boolean) : Phase.Editable {
+    override fun getButtonText(): String = "다음"
+
+    override fun getEnableNext(): Boolean = enable
+
+    override fun getMainText(): String = "광팔기"
+
+    override fun getSubText(): String = "4인 플레이경우 한명이 필수로 광을 팔아야 플레이가 가능합니다. 광을 판 플레이어를 선택해주세요."
+
+}
+
+object Scoring : Phase.Toggleable {
 
     override fun getButtonText(): String = "다음 (1/3)"
 
@@ -19,7 +34,7 @@ class Scoring : Phase {
 
 }
 
-class Winner(private val enable: Boolean = false) : Phase {
+class Winner(private val enable: Boolean = false) : Phase.Editable {
     override fun getButtonText(): String = "다음 (2/3)"
 
     override fun getEnableNext(): Boolean = enable
@@ -30,7 +45,7 @@ class Winner(private val enable: Boolean = false) : Phase {
 
 }
 
-class Loser : Phase {
+object Loser : Phase.Toggleable {
     override fun getButtonText(): String = "다음 (3/3)"
 
     override fun getEnableNext(): Boolean = true
