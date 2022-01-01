@@ -5,7 +5,6 @@ import zero.friends.domain.model.LoserOption
 import zero.friends.domain.model.Rule
 import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.repository.GameRepository
-import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.repository.RuleRepository
 import zero.friends.domain.usecase.gamer.GetRoundGamerUseCase
 import zero.friends.domain.util.Const
@@ -14,8 +13,8 @@ import javax.inject.Inject
 class CalculateGameResultUseCase @Inject constructor(
     private val gameRepository: GameRepository,
     private val ruleRepository: RuleRepository,
-    private val gamerRepository: GamerRepository,
     private val roundGamerUseCase: GetRoundGamerUseCase,
+    private val updateAccountUseCase: UpdateAccountUseCase
 ) {
     private lateinit var rules: List<Rule>
     private lateinit var roundGamers: List<Gamer>
@@ -40,8 +39,10 @@ class CalculateGameResultUseCase @Inject constructor(
         if (seller != null) {//광판사람 업데이트
             val gamers = roundGamers - seller
             val account = sellScore * seller.score
-            gamerRepository.addAccount(seller, account * gamers.size)
-            gamers.forEach { gamerRepository.addAccount(it, -account) }
+            gamers.forEach {
+                updateAccountUseCase(seller, it, account)
+                updateAccountUseCase(it, seller, -account)
+            }
         }
     }
 
@@ -58,26 +59,26 @@ class CalculateGameResultUseCase @Inject constructor(
             val remainLoser = losers - goBakGamer
             remainLoser.forEach { loser ->
                 val account = getLoserAccount(loser, winnerScore, gameScore)
-                gamerRepository.addAccount(goBakGamer, account)
-                gamerRepository.addAccount(winner, -1 * account)
+                updateAccountUseCase(goBakGamer, winner, account)
+                updateAccountUseCase(winner, goBakGamer, -1 * account)
             }
             val account = getLoserAccount(goBakGamer, winnerScore, gameScore)
-            gamerRepository.addAccount(goBakGamer, account)
-            gamerRepository.addAccount(winner, -1 * account)
+            updateAccountUseCase(goBakGamer, winner, account)
+            updateAccountUseCase(winner, goBakGamer, -1 * account)
         } else {
             losers.forEach { loser ->
                 val account = getLoserAccount(loser, winnerScore, gameScore)
-                gamerRepository.addAccount(loser, account)
-                gamerRepository.addAccount(winner, account * -1)
+                updateAccountUseCase(loser, winner, account * -1)
+                updateAccountUseCase(winner, loser, account)
             }
         }
     }
 
     private fun getLoserAccount(loser: Gamer, winnerScore: Int, gameScore: Int): Int {
         return if (loser.loserOption.isNotEmpty()) {
-            -loser.loserOption.map { winnerScore * 2 * gameScore }.sum() //패자 점수 2배
+            loser.loserOption.map { winnerScore * 2 * gameScore }.sum() //패자 점수 2배
         } else {
-            -winnerScore * gameScore
+            winnerScore * gameScore
         }
     }
 
@@ -102,8 +103,8 @@ class CalculateGameResultUseCase @Inject constructor(
                     }
                 }
                 (gamers - gamer).forEach {
-                    gamerRepository.addAccount(gamer, account)
-                    gamerRepository.addAccount(it, -account)
+                    updateAccountUseCase(gamer, it, account)
+                    updateAccountUseCase(it, gamer, -account)
                 }
             }
         }

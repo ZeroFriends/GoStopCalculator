@@ -19,4 +19,5 @@ interface GamerRepository {
     suspend fun addAccount(gamer: Gamer, account: Int)
     suspend fun findWinner(roundId: Long): Gamer
     suspend fun findSeller(roundId: Long): Gamer?
+    suspend fun updateTarget(gamer: Gamer, account: Int, target: Gamer)
 }

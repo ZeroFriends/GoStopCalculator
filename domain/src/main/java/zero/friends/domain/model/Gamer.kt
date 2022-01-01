@@ -1,5 +1,7 @@
 package zero.friends.domain.model
 
+import kotlinx.serialization.Serializable
+
 data class Gamer(
     val id: Long = 0,
     val name: String = "",
@@ -11,7 +13,14 @@ data class Gamer(
     val winnerOption: WinnerOption? = null,
     val sellerOption: SellerOption? = null,
     val scoreOption: List<ScoreOption> = emptyList(),
-    val loserOption: List<LoserOption> = emptyList()
+    val loserOption: List<LoserOption> = emptyList(),
+    val calculate: List<Target> = emptyList()
 ) {
     fun isWinner() = winnerOption != null || sellerOption != null
 }
+
+@Serializable
+data class Target(
+    val playerId: Long = 0,
+    var account: Int = 0
+)

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 import zero.friends.data.entity.GamerEntity
+import zero.friends.domain.model.Target
 
 @Dao
 interface GamerDao : BaseDao<GamerEntity> {
@@ -49,4 +50,6 @@ interface GamerDao : BaseDao<GamerEntity> {
     @Query("SELECT * FROM GamerEntity WHERE gameId = :gameId")
     fun getGamers(gameId: Long): List<GamerEntity>
 
+    @Query("UPDATE GamerEntity SET target = :target WHERE id = :gamerId ")
+    suspend fun updateTarget(gamerId: Long, target: List<Target>)
 }

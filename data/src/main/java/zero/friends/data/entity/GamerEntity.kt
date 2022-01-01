@@ -5,11 +5,8 @@ import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import timber.log.Timber
-import zero.friends.domain.model.Gamer
-import zero.friends.domain.model.SellerOption
-import zero.friends.domain.model.WinnerOption
-import zero.friends.domain.model.findOptional
+import zero.friends.domain.model.*
+import zero.friends.domain.model.Target
 
 @Entity(
     foreignKeys = [
@@ -39,8 +36,8 @@ data class GamerEntity(
     val winnerOption: String? = null,
     val sellerOption: String? = null,
     val scoreOption: String? = null,
-    val loserOption: String? = null
-//    val calculate: List<Target> todo 계산결과 집어넣기
+    val loserOption: String? = null,
+    val target: List<Target> = emptyList()
 ) {
     companion object {
         fun GamerEntity.toGamer() = Gamer(
@@ -54,7 +51,8 @@ data class GamerEntity(
             findOptional<WinnerOption>(winnerOption).firstOrNull(),
             findOptional<SellerOption>(sellerOption).firstOrNull(),
             findOptional(scoreOption),
-            findOptional(loserOption)
+            findOptional(loserOption),
+            target
         )
 
         fun Gamer.toGamerEntity() = GamerEntity(
@@ -68,11 +66,6 @@ data class GamerEntity(
             sellerOption = this.sellerOption?.name,
             scoreOption = if (this.scoreOption.isEmpty()) null else this.scoreOption.joinToString(","),
             loserOption = if (this.loserOption.isEmpty()) null else this.loserOption.joinToString(",")
-        ).also { Timber.tag("🔥zero:toGamerEntity").d("$it") }
+        )
     }
 }
-
-data class Target(
-    val playerId: Long = 0,
-    val account: Int = 0
-)

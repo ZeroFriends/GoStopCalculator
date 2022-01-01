@@ -8,6 +8,7 @@ import zero.friends.data.entity.GamerEntity
 import zero.friends.data.entity.GamerEntity.Companion.toGamer
 import zero.friends.data.source.dao.GamerDao
 import zero.friends.domain.model.*
+import zero.friends.domain.model.Target
 import zero.friends.domain.repository.GamerRepository
 import zero.friends.shared.IoDispatcher
 import javax.inject.Inject
@@ -105,6 +106,21 @@ class GamerRepositoryImpl @Inject constructor(
 
     override suspend fun findSeller(roundId: Long): Gamer? = withContext(dispatcher) {
         gamerDao.findSeller(roundId)?.toGamer()
+    }
+
+    override suspend fun updateTarget(gamer: Gamer, account: Int, target: Gamer) {
+        withContext(dispatcher) {
+            val targetMap = gamerDao.getGamer(gamer.id).target.associateBy { it.playerId }.toMutableMap()
+
+            val targetGamer = targetMap[target.id]
+            if (targetGamer == null) {
+                targetMap[target.id] = Target(target.id, account)
+            } else {
+                targetGamer.account += account
+            }
+
+            gamerDao.updateTarget(gamer.id, targetMap.map { it.value })
+        }
     }
 
 }
