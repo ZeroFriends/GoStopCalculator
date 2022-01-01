@@ -20,4 +20,5 @@ interface GamerRepository {
     suspend fun findWinner(roundId: Long): Gamer
     suspend fun findSeller(roundId: Long): Gamer?
     suspend fun updateTarget(gamer: Gamer, account: Int, target: Gamer)
+    fun observeRoundGamers(roundId: Long): Flow<List<Gamer>>
 }

@@ -4,9 +4,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
@@ -24,12 +21,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import zero.friends.domain.model.PlayerResult
+import zero.friends.domain.model.Gamer
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
-import zero.friends.gostopcalculator.ui.common.ContentsCard
 import zero.friends.gostopcalculator.ui.common.GoStopButtonBackground
-import zero.friends.gostopcalculator.ui.common.PlayerItem
+import zero.friends.gostopcalculator.ui.common.RoundBox
 
 @Composable
 fun EndScreen(
@@ -57,30 +53,7 @@ private fun EndScreen(scaffoldState: ScaffoldState, uiState: EndUiState, onClick
             onClick = { onClick() }
         ) {
             FinishScreen(Modifier.align(Alignment.Center))
-            ContentsCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 28.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 21.dp, horizontal = 18.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.sum_score),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    LazyVerticalGrid(cells = GridCells.Fixed(2)) {
-                        itemsIndexed(uiState.players) { index, item ->
-                            PlayerItem(index = index, playerResult = item)
-                        }
-                    }
-                }
-            }
-
+            RoundBox(modifier = Modifier.align(Alignment.BottomCenter), gamers = uiState.gamers)
         }
     }
 }
@@ -116,13 +89,13 @@ private fun Preview() {
     EndScreen(
         scaffoldState = rememberScaffoldState(),
         uiState = EndUiState(
-            players = listOf(
-                PlayerResult("zero", 1000),
-                PlayerResult("하이", -1000),
-                PlayerResult("재영", +1000),
-                PlayerResult("준영", -1000),
-                PlayerResult("준영", -500),
-                PlayerResult("준영", -12300),
+            gamers = listOf(
+                Gamer(name = "zero", account = 1000),
+                Gamer(name = "하이", account = -1000),
+                Gamer(name = "재영", account = +1000),
+                Gamer(name = "준영", account = -1000),
+                Gamer(name = "준영", account = -500),
+                Gamer(name = "준영", account = -12300),
             )
         )
     )

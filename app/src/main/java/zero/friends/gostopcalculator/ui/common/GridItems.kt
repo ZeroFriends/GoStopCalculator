@@ -1,22 +1,29 @@
 package zero.friends.gostopcalculator.ui.common
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import zero.friends.domain.model.Gamer
 
 @Composable
 fun <T> GridItems(
     data: List<T>,
     nColumns: Int,
-    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Center,
     itemContent: @Composable BoxScope.(index: Int, item: T) -> Unit,
 ) {
     val rows = if (data.count() == 0) 0 else 1 + (data.count() - 1) / nColumns
-    (0..rows).forEach { rowIndex ->
-        Row(modifier = Modifier.padding(vertical = 5.dp), horizontalArrangement = horizontalArrangement) {
+    (0 until rows).forEach { rowIndex ->
+        Row(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(5.dp),
+            horizontalArrangement = horizontalArrangement,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             for (columnIndex in 0 until nColumns) {
                 val itemIndex = rowIndex * nColumns + columnIndex
                 if (itemIndex < data.count()) {
@@ -35,9 +42,16 @@ fun <T> GridItems(
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true)
 private fun gridItemPreview() {
-    GridItems(listOf("hello", "world", "zero", "world", "zzzz"), 2) { index, s ->
-        Text(s)
+    GridItems(
+        listOf(
+            Gamer(name = "zero"),
+            Gamer(name = "dev"),
+            Gamer(name = "hello"),
+            Gamer(name = "world")
+        ), 2
+    ) { index, s ->
+        GamerItem(index = index, gamer = s)
     }
 }

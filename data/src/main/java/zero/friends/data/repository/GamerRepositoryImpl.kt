@@ -123,4 +123,10 @@ class GamerRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun observeRoundGamers(roundId: Long): Flow<List<Gamer>> {
+        return gamerDao.observeRoundGamers(roundId).map { gamerEntities ->
+            gamerEntities.map { it.toGamer() }
+        }
+    }
+
 }

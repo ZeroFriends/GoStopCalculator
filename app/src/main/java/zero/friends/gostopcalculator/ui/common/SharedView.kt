@@ -86,7 +86,11 @@ fun CenterTextTopBar(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ContentsCard(onClick: (() -> Unit)? = null, modifier: Modifier = Modifier, boxContents: @Composable () -> Unit) {
+fun ContentsCard(
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    boxContents: @Composable() (BoxScope.() -> Unit)
+) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(18.dp),
@@ -95,7 +99,7 @@ fun ContentsCard(onClick: (() -> Unit)? = null, modifier: Modifier = Modifier, b
         onClick = onClick ?: {},
         enabled = onClick != null
     ) {
-        Surface {
+        Box(contentAlignment = Alignment.Center) {
             boxContents()
         }
     }
@@ -231,5 +235,7 @@ private fun CenterTextTopBarPreview() {
 @Preview
 @Composable
 private fun ContentsCardPreview() {
-    ContentsCard(boxContents = {})
+    ContentsCard(boxContents = {
+        Text(text = "card")
+    })
 }
