@@ -5,27 +5,12 @@
     "script": "필수 항목입니다."
   },
   {
-    "name": "첫 뻑",
-    "isEssential": false,
-    "script": ""
-  },
-  {
-    "name": "쓰리 뻑",
+    "name": "뻑",
     "isEssential": false,
     "script": ""
   },
   {
     "name": "첫 따닥",
-    "isEssential": false,
-    "script": ""
-  },
-  {
-    "name": "총 통",
-    "isEssential": false,
-    "script": ""
-  },
-  {
-    "name": "5광",
     "isEssential": false,
     "script": ""
   },
