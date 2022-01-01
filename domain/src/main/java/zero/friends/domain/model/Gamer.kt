@@ -6,6 +6,7 @@ data class Gamer(
     val roundId: Long = 0,
     val playerId: Long = 0,
     val gameId: Long = 0,
+    val score: Int = 0,
     val account: Int = 0,
     val winnerOption: WinnerOption? = null,
     val sellerOption: SellerOption? = null,

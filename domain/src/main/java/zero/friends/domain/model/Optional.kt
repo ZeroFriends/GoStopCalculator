@@ -1,5 +1,7 @@
 package zero.friends.domain.model
 
+import zero.friends.domain.util.Const
+
 interface Option {
     val korean: String
 }
@@ -15,24 +17,23 @@ inline fun <reified T : Enum<out T>> findOptional(values: String?): List<T> {
 }
 
 enum class WinnerOption(override val korean: String) : Option {
-    Winner("승자");
+    Winner(Const.Rule.Winner);
 }
 
 enum class SellerOption(override val korean: String) : Option {
-    Sell("광팜"),
+    Seller(Const.Rule.Seller),
 }
 
 enum class ScoreOption(override val korean: String) : Option {
-    President("총통"),
-    FiveShine("5광"),
-    FirstFuck("첫 뻑"),
-    ThreeFuck("쓰리 뻑"),
-    FirstDdadak("첫 따닥");
+    FirstFuck(Const.Rule.FirstFuck),
+    SecondFuck(Const.Rule.SecondFuck),
+    ThreeFuck(Const.Rule.ThreeFuck),
+    FirstDdadak(Const.Rule.FirstDdadak);
 }
 
 enum class LoserOption(override val korean: String) : Option {
-    PeaBak("피 박"),
-    LightBak("광 박"),
-    MongBak("멍 박"),
-    GoBack("고 박");
+    PeaBak(Const.Rule.PeaBak),
+    LightBak(Const.Rule.LightBak),
+    MongBak(Const.Rule.MongBak),
+    GoBak(Const.Rule.GoBak);
 }

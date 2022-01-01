@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.*
 import zero.friends.domain.repository.GameRepository
-import zero.friends.domain.usecase.CalculateGameResultUseCase
+import zero.friends.domain.usecase.calculate.CalculateGameResultUseCase
 import zero.friends.domain.usecase.gamer.GetRoundGamerUseCase
 import zero.friends.domain.usecase.option.SellingUseCase
 import zero.friends.domain.usecase.option.ToggleLoserOptionUseCase
@@ -119,7 +119,7 @@ class ScoreViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 phase = Winner(point != 0),
-                winner = if (point != 0) gamer.copy(account = point, winnerOption = WinnerOption.Winner) else null,
+                winner = if (point != 0) gamer.copy(score = point, winnerOption = WinnerOption.Winner) else null,
             )
         }
     }
@@ -127,7 +127,7 @@ class ScoreViewModel @Inject constructor(
     fun updateSeller(seller: Gamer, count: Int) {
         _uiState.update {
             val hasSeller = count != 0
-            val target = if (hasSeller) seller.copy(account = count, sellerOption = SellerOption.Sell) else null
+            val target = if (hasSeller) seller.copy(score = count, sellerOption = SellerOption.Seller) else null
             it.copy(
                 phase = Selling(count != 0),
                 seller = target
@@ -139,7 +139,10 @@ class ScoreViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value.seller?.let { sellingUseCase.invoke(it) }
             updateWinnerUseCase.invoke(requireNotNull(_uiState.value.winner))
-            calculateGameResultUseCase.invoke()
+            calculateGameResultUseCase.invoke(
+                seller = uiState().value.seller,
+                winner = requireNotNull(uiState().value.winner)
+            )
         }
     }
 

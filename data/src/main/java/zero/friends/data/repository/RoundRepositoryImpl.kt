@@ -2,6 +2,7 @@ package zero.friends.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import zero.friends.data.entity.GamerEntity.Companion.toGamer
 import zero.friends.data.entity.RoundEntity
 import zero.friends.data.entity.RoundEntity.Companion.toRound
@@ -35,8 +36,8 @@ class RoundRepositoryImpl @Inject constructor(private val roundDao: RoundDao) : 
     }
 
     override fun observeRound(roundId: Long): Flow<List<Gamer>> {
-        return roundDao.observeRoundGamers(roundId).map { roundGamers ->
-            roundGamers.gamers.mapNotNull { it.toGamer() }
+        return roundDao.observeRoundGamers(roundId).mapNotNull { roundGamers ->
+            roundGamers?.gamers?.map { it.toGamer() }
         }
     }
 

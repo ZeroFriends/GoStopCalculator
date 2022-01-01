@@ -155,7 +155,8 @@ fun GamerList(uiState: ScoreUiState, event: (ScoreEvent) -> Unit = {}) {
                     }
                     is Winner -> {
                         if (gamer.id == uiState.seller?.id) WinnerItem(
-                            index, uiState.seller,
+                            index,
+                            uiState.seller,
                             isSeller = true,
                             isEnable = false
                         )
@@ -225,7 +226,7 @@ fun WinnerItem(
         }
 
         NumberTextField(
-            text = if (isEnable) "" else gamer.account.toString(),
+            text = if (isEnable) "" else gamer.score.toString(),
             modifier = Modifier.weight(1f),
             endText = stringResource(if (isSeller) R.string.page else R.string.point),
             isEnable = isEnable,
@@ -265,19 +266,6 @@ fun ScoringItem(index: Int, gamer: Gamer, toggleable: Phase.Toggleable, event: (
         ToggleRow(modifier = Modifier.padding(start = 10.dp), toggleable = toggleable, gamer = gamer, event = event)
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-private fun WinnerItemPreview() {
-    WinnerItem(index = 0, gamer = Gamer(name = "zero"), isSeller = true, isEnable = true)
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun ScoringItemPreview() {
-    ScoringItem(index = 0, gamer = Gamer(name = "zero"), toggleable = Scoring)
-}
-
 
 @Composable
 private fun ToggleRow(
@@ -329,19 +317,31 @@ private fun OptionBox(text: String, color: Color, isSelected: Boolean = false, o
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+private fun WinnerItemPreview() {
+    WinnerItem(index = 0, gamer = Gamer(name = "zero"), isSeller = true, isEnable = true)
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ScoringItemPreview() {
+    ScoringItem(index = 0, gamer = Gamer(name = "zero"), toggleable = Scoring)
+}
+
 @Preview
 @Composable
 private fun Preview() {
     ScoreScreen(
         uiState = ScoreUiState(
             playerResults = listOf(
-                Gamer(id = 0, name = "zero.dev", sellerOption = SellerOption.Sell),
+                Gamer(id = 0, name = "zero.dev", sellerOption = SellerOption.Seller),
                 Gamer(
                     id = 1,
                     name = "dev",
-                    scoreOption = listOf(ScoreOption.ThreeFuck, ScoreOption.FiveShine, ScoreOption.FirstDdadak)
+                    scoreOption = listOf(ScoreOption.FirstFuck, ScoreOption.FirstDdadak)
                 ),
-                Gamer(id = 2, name = "zero", loserOption = listOf(LoserOption.GoBack, LoserOption.MongBak)),
+                Gamer(id = 2, name = "zero", loserOption = listOf(LoserOption.GoBak, LoserOption.MongBak)),
                 Gamer(id = 3, name = "winner", winnerOption = WinnerOption.Winner)
             )
         )

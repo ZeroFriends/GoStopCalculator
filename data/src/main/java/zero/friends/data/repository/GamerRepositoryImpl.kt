@@ -21,10 +21,6 @@ class GamerRepositoryImpl @Inject constructor(
         return gamerDao.getGamer(gamerId).toGamer()
     }
 
-    override suspend fun getAllGamer(gameId: Long, playerId: Long): List<Gamer> {
-        return gamerDao.getAllGamer(gameId, playerId).map { it.toGamer() }
-    }
-
     override suspend fun getRoundGamers(roundId: Long): List<Gamer> {
         return gamerDao.getRoundGamers(roundId).map { it.toGamer() }
     }
@@ -87,6 +83,28 @@ class GamerRepositoryImpl @Inject constructor(
         withContext(dispatcher) {
             gamerDao.updateAccount(gamer.id, account)
         }
+    }
+
+    override suspend fun addAccount(gamer: Gamer, account: Int) {
+        withContext(dispatcher) {
+            val currentGamer = gamerDao.getGamer(gamer.id)
+            gamerDao.updateAccount(currentGamer.id, currentGamer.account + account)
+        }
+    }
+
+    override suspend fun updateScore(gamer: Gamer, score: Int) {
+        withContext(dispatcher) {
+            gamerDao.updateScore(gamer.id, score)
+        }
+    }
+
+    override suspend fun findWinner(roundId: Long): Gamer =
+        withContext(dispatcher) {
+            gamerDao.findWinner(roundId).toGamer()
+        }
+
+    override suspend fun findSeller(roundId: Long): Gamer? = withContext(dispatcher) {
+        gamerDao.findSeller(roundId)?.toGamer()
     }
 
 }

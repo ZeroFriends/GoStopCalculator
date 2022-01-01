@@ -314,7 +314,7 @@ private fun RoundBoxPreview() {
         gamers = listOf(
             Gamer(name = "조재영", account = 10, winnerOption = WinnerOption.Winner),
             Gamer(
-                name = "송준영", account = -10, sellerOption = SellerOption.Sell
+                name = "송준영", account = -10, sellerOption = SellerOption.Seller
             ),
             Gamer(
                 name = "송준영",
@@ -322,9 +322,6 @@ private fun RoundBoxPreview() {
                 scoreOption = listOf(
                     ScoreOption.FirstDdadak,
                     ScoreOption.FirstFuck,
-                    ScoreOption.FiveShine,
-                    ScoreOption.President,
-                    ScoreOption.ThreeFuck
                 )
             )
         )

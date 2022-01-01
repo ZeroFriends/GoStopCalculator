@@ -9,7 +9,7 @@ class SellingUseCase @Inject constructor(
     private val gamerRepository: GamerRepository
 ) {
     suspend operator fun invoke(seller: Gamer) {
-        gamerRepository.updateOption(seller.id, listOf(SellerOption.Sell))
-        gamerRepository.updateAccount(seller, seller.account)
+        gamerRepository.updateOption(seller.id, listOf(SellerOption.Seller))
+        gamerRepository.updateScore(seller, seller.score)
     }
 }

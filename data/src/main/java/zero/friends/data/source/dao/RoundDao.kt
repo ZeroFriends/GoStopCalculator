@@ -19,5 +19,5 @@ interface RoundDao : BaseDao<RoundEntity> {
     suspend fun getRound(roundId: Long): RoundEntity
 
     @Query("SELECT * FROM RoundEntity WHERE id = :roundId")
-    fun observeRoundGamers(roundId: Long): Flow<RoundGamers>
+    fun observeRoundGamers(roundId: Long): Flow<RoundGamers?>
 }
