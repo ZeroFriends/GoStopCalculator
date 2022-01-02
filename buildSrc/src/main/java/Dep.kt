@@ -55,6 +55,10 @@ object Dep {
         const val themeAdapter = "com.google.android.material:compose-theme-adapter:$version"
     }
 
+    object Accompanist {
+        const val systemController = "com.google.accompanist:accompanist-systemuicontroller:0.22.0-rc"
+    }
+
     object Kotlin {
         private const val version = "1.5.31"
         private const val coroutineVersion = "1.5.1"

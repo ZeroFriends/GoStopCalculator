@@ -10,7 +10,6 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import zero.friends.domain.util.Const
 import zero.friends.domain.util.Const.RoundId
-import zero.friends.gostopcalculator.theme.GoStopTheme
 import zero.friends.gostopcalculator.ui.board.BoardScreen
 import zero.friends.gostopcalculator.ui.board.createBoardViewModel
 import zero.friends.gostopcalculator.ui.board.detail.DetailScreen
@@ -57,116 +56,115 @@ sealed interface Navigate {
 
 @Composable
 fun Navigator(onBackPressed: () -> Unit) {
-    GoStopTheme {
-        val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = Navigate.Splash.route()) {
-            composable(Navigate.Splash.route()) {
-                SplashScreen()
-                LaunchedEffect(true) {
-                    delay(1200)
-                    navController.navigate(Navigate.History.route()) {
-                        popUpTo(Navigate.Splash.route())
-                    }
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = Navigate.Splash.route()) {
+        composable(Navigate.Splash.route()) {
+            SplashScreen()
+            LaunchedEffect(true) {
+                delay(1200)
+                navController.navigate(Navigate.History.route()) {
+                    popUpTo(Navigate.Splash.route())
                 }
             }
-            composable(Navigate.History.route()) {
-                HistoryScreen(
-                    onStartGame = {
-                        navController.navigate(Navigate.Precondition.Player.route())
-                    },
-                    onShowGame = {
-                        navController.putLong(Const.GameId, it.id)
-                        navController.navigate(Navigate.Board.Main.route())
-                    }
-                )
-
-                BackHandler(true) {
-                    onBackPressed()
-                }
-            }
-
-            //PreCondition
-            composable(Navigate.Precondition.Player.route()) {
-                PlayerScreen(
-                    onNext = { navController.navigate(Navigate.Precondition.Rule.route()) },
-                    onBack = { navController.navigateUp() }
-                )
-            }
-
-            composable(Navigate.Precondition.Rule.route()) {
-                RuleScreen(
-                    onNext = {
-                        navController.putLong(Const.GameId, it.id)
-                        navController.navigate(Navigate.Board.Main.route())
-                    },
-                    onBack = { navController.navigateUp() },
-                )
-            }
-
-            //Board
-            composable(Navigate.Board.Main.route()) {
-                val gameId = navController.getLong(Const.GameId)
-                BoardScreen(
-                    createBoardViewModel(gameId),
-                    onNext = {
-                        navController.navigate(Navigate.Board.Prepare.route())
-                    },
-                    onBack = {
-                        navController.popBackStack()
-                        navController.navigate(Navigate.History.route())
-                    },
-                    openDetailScreen = {
-                        navController.putLong(RoundId, it)
-                        navController.navigate(Navigate.Board.Detail.route())
-                    },
-                    openCalculated = {
-                        //todo 계산화면 만들기 ( Detail 재활용 )
-                    }
-                )
-            }
-
-            composable(Navigate.Board.Prepare.route()) {
-                PrepareScreen(
-                    onComplete = {
-                        navController.navigate(Navigate.Board.Score.route())
-                    },
-                    onBack = { navController.navigateUp() }
-                )
-            }
-
-            composable(Navigate.Board.Score.route()) {
-                ScoreScreen(
-                    onBack = {
-                        navController.navigateUp()
-                    },
-                    onComplete = {
-                        navController.navigate(Navigate.Board.End.route())
-                    }
-                )
-            }
-
-            composable(Navigate.Board.End.route()) {
-                EndScreen(
-                    onBack = {
-                        navController.popBackStack()
-                        navController.putLong(Const.GameId, it)
-                        navController.navigate(Navigate.Board.Main.route())
-                    },
-                    onComplete = {
-                        navController.popBackStack()
-                        navController.putLong(Const.GameId, it)
-                        navController.navigate(Navigate.Board.Main.route())
-                    }
-                )
-            }
-
-            composable(Navigate.Board.Detail.route()) {
-                val roundId = navController.getLong(RoundId)
-                DetailScreen(createDetailViewModel(roundId = roundId), onBack = { navController.navigateUp() })
-            }
-
         }
+        composable(Navigate.History.route()) {
+            HistoryScreen(
+                onStartGame = {
+                    navController.navigate(Navigate.Precondition.Player.route())
+                },
+                onShowGame = {
+                    navController.putLong(Const.GameId, it.id)
+                    navController.navigate(Navigate.Board.Main.route())
+                }
+            )
+
+            BackHandler(true) {
+                onBackPressed()
+            }
+        }
+
+        //PreCondition
+        composable(Navigate.Precondition.Player.route()) {
+            PlayerScreen(
+                onNext = { navController.navigate(Navigate.Precondition.Rule.route()) },
+                onBack = { navController.navigateUp() }
+            )
+        }
+
+        composable(Navigate.Precondition.Rule.route()) {
+            RuleScreen(
+                onNext = {
+                    navController.putLong(Const.GameId, it.id)
+                    navController.navigate(Navigate.Board.Main.route())
+                },
+                onBack = { navController.navigateUp() },
+            )
+        }
+
+        //Board
+        composable(Navigate.Board.Main.route()) {
+            val gameId = navController.getLong(Const.GameId)
+            BoardScreen(
+                createBoardViewModel(gameId),
+                onNext = {
+                    navController.navigate(Navigate.Board.Prepare.route())
+                },
+                onBack = {
+                    navController.popBackStack()
+                    navController.navigate(Navigate.History.route())
+                },
+                openDetailScreen = {
+                    navController.putLong(RoundId, it)
+                    navController.navigate(Navigate.Board.Detail.route())
+                },
+                openCalculated = {
+                    //todo 계산화면 만들기 ( Detail 재활용 )
+                }
+            )
+        }
+
+        composable(Navigate.Board.Prepare.route()) {
+            PrepareScreen(
+                onComplete = {
+                    navController.navigate(Navigate.Board.Score.route())
+                },
+                onBack = { navController.navigateUp() }
+            )
+        }
+
+        composable(Navigate.Board.Score.route()) {
+            ScoreScreen(
+                onBack = {
+                    navController.navigateUp()
+                },
+                onComplete = {
+                    navController.navigate(Navigate.Board.End.route())
+                }
+            )
+        }
+
+        composable(Navigate.Board.End.route()) {
+            EndScreen(
+                onBack = {
+                    navController.popBackStack()
+                    navController.putLong(Const.GameId, it)
+                    navController.navigate(Navigate.Board.Main.route())
+                },
+                onComplete = {
+                    navController.popBackStack()
+                    navController.putLong(Const.GameId, it)
+                    navController.navigate(Navigate.Board.Main.route())
+                }
+            )
+        }
+
+        composable(Navigate.Board.Detail.route()) {
+            val roundId = navController.getLong(RoundId)
+            DetailScreen(createDetailViewModel(roundId = roundId), onBack = { navController.navigateUp() })
+        }
+
     }
+
 }
 
 private fun NavHostController.putLong(key: String, value: Long) {

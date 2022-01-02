@@ -57,6 +57,8 @@ dependencies {
     implementation(Dep.Compose.themeAdapter)
     implementation(Dep.lottie)
 
+    implementation(Dep.Accompanist.systemController)
+
     implementation(Dep.AndroidX.core)
     implementation(Dep.AndroidX.startUp)
     implementation(Dep.AndroidX.fragment)
