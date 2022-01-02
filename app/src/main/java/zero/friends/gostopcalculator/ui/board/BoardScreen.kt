@@ -34,7 +34,7 @@ private sealed interface BoardEvent {
     object Back : BoardEvent
     object StartGame : BoardEvent
     object OpenDropDown : BoardEvent
-    object Detail : BoardEvent
+    class Detail(val roundId: Long) : BoardEvent
     class More(val roundId: Long) : BoardEvent
 }
 
@@ -46,7 +46,12 @@ fun createBoardViewModel(gameId: Long): BoardViewModel {
 }
 
 @Composable
-fun BoardScreen(boardViewModel: BoardViewModel, onNext: (gameId: Long) -> Unit = {}, onBack: () -> Unit = {}) {
+fun BoardScreen(
+    boardViewModel: BoardViewModel,
+    onNext: (gameId: Long) -> Unit = {},
+    onBack: () -> Unit = {},
+    openDetailScreen: (roundId: Long) -> Unit = {}
+) {
     val scaffoldState = rememberScaffoldState()
     val uiState by boardViewModel.getUiState().collectAsState()
     val dialogState by boardViewModel.dialogState().collectAsState()
@@ -62,7 +67,9 @@ fun BoardScreen(boardViewModel: BoardViewModel, onNext: (gameId: Long) -> Unit =
             BoardEvent.Back -> onBack()
             BoardEvent.StartGame -> onNext(uiState.game.id)
             BoardEvent.OpenDropDown -> boardViewModel.openDropDown()
-            BoardEvent.Detail -> {}
+            is BoardEvent.Detail -> {
+                openDetailScreen(event.roundId)
+            }
             is BoardEvent.More -> {
                 boardViewModel.openDialog(event.roundId)
             }
@@ -190,8 +197,9 @@ private fun GameHistory(modifier: Modifier = Modifier, uiState: BoardUiState, ev
                     RoundBox(
                         index = index,
                         gamers = gamer,
-                        onClickDetail = { event(BoardEvent.Detail) }
-                    ) { event(BoardEvent.More(roundId)) }
+                        onClickDetail = { event(BoardEvent.Detail(roundId)) },
+                        onClickMore = { event(BoardEvent.More(roundId)) }
+                    )
                 }
             }
         }

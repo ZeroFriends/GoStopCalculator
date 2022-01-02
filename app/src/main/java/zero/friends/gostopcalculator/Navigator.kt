@@ -9,9 +9,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import zero.friends.domain.util.Const
+import zero.friends.domain.util.Const.RoundId
 import zero.friends.gostopcalculator.theme.GoStopTheme
 import zero.friends.gostopcalculator.ui.board.BoardScreen
 import zero.friends.gostopcalculator.ui.board.createBoardViewModel
+import zero.friends.gostopcalculator.ui.board.detail.DetailScreen
+import zero.friends.gostopcalculator.ui.board.detail.createDetailViewModel
 import zero.friends.gostopcalculator.ui.board.prepare.PrepareScreen
 import zero.friends.gostopcalculator.ui.board.score.ScoreScreen
 import zero.friends.gostopcalculator.ui.board.score.end.EndScreen
@@ -111,6 +114,10 @@ fun Navigator(onBackPressed: () -> Unit) {
                     onBack = {
                         navController.popBackStack()
                         navController.navigate(Navigate.History.route())
+                    },
+                    openDetailScreen = {
+                        navController.putLong(RoundId, it)
+                        navController.navigate(Navigate.Board.Detail.route())
                     }
                 )
             }
@@ -148,6 +155,11 @@ fun Navigator(onBackPressed: () -> Unit) {
                         navController.navigate(Navigate.Board.Main.route())
                     }
                 )
+            }
+
+            composable(Navigate.Board.Detail.route()) {
+                val roundId = navController.getLong(RoundId)
+                DetailScreen(createDetailViewModel(roundId = roundId), onBack = { navController.navigateUp() })
             }
 
         }
