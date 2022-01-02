@@ -29,7 +29,6 @@ class EndViewModel @Inject constructor(
             _endUiState.update { it.copy(game = requireNotNull(gameRepository.getCurrentGame())) }
             observeRoundGamerUseCase()
                 .onEach { gamers ->
-                    //todo 이전결과 + 총결과 combine 을 잘 해보자...
                     _endUiState.update { it.copy(gamers = gamers) }
                 }.launchIn(viewModelScope)
         }

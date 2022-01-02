@@ -37,7 +37,7 @@ fun CenterTextTopBar(
     actionIcon: Painter = painterResource(id = R.drawable.ic_topbar_close)
 ) {
     val modifier = Modifier
-        .defaultMinSize(60.dp, 60.dp)//todo title Center 방법이 있다면 변경해보자...
+        .defaultMinSize(60.dp, 60.dp)
         .background(Color.Transparent)
 
     val iconColor = if (isRed) R.color.white else R.color.black
