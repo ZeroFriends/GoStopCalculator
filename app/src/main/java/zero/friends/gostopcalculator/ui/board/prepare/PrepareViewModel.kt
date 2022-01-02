@@ -34,7 +34,6 @@ class PrepareViewModel @Inject constructor(
     fun uiState() = _uiState.asStateFlow()
 
     private val _roundId = MutableStateFlow(0L)
-    fun roundId() = _roundId.asStateFlow()
 
     init {
         viewModelScope.launch {

@@ -326,7 +326,7 @@ private fun WinnerItemPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun ScoringItemPreview() {
-    ScoringItem(index = 0, gamer = Gamer(name = "zero"), toggleable = Scoring)
+    ScoringItem(index = 0, gamer = Gamer(name = "zero"), toggleable = Loser)
 }
 
 @Preview

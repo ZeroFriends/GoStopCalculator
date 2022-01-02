@@ -2,7 +2,7 @@ package zero.friends.domain.model
 
 import zero.friends.domain.util.Const
 
-interface Option {
+sealed interface Option {
     val korean: String
 }
 

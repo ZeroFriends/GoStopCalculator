@@ -9,21 +9,17 @@ class ToggleScoreOptionUseCase @Inject constructor(
     private val gamerRepository: GamerRepository,
     private val updateOptionsUseCase: UpdateOptionsUseCase
 ) {
+    private val fucks = listOf(ScoreOption.FirstFuck, ScoreOption.SecondFuck, ScoreOption.ThreeFuck)
+
     suspend operator fun invoke(gamer: Gamer, option: ScoreOption) {
-        val roundGamers = gamerRepository.getRoundGamers(gamer.roundId)
-        val duplicated = roundGamers.firstOrNull { it.scoreOption.contains(option) }
-        if (duplicated != null && gamer != duplicated) {
-            removeDuplicate(duplicated, option)
+        if (fucks.contains(option) && !gamer.scoreOption.contains(option)) {
+            clearFucks(gamer, option)
         }
         toggle(gamer, option)
     }
 
-    private suspend fun removeDuplicate(
-        duplicate: Gamer,
-        option: ScoreOption
-    ) {
-        val removedOption = duplicate.scoreOption - option
-        updateOptionsUseCase(duplicate.id, removedOption, option::class)
+    private suspend fun clearFucks(duplicateFucks: Gamer, option: ScoreOption) {
+        updateOptionsUseCase(duplicateFucks.id, duplicateFucks.scoreOption - fucks, option::class)
     }
 
     private suspend fun toggle(gamer: Gamer, option: ScoreOption) {
