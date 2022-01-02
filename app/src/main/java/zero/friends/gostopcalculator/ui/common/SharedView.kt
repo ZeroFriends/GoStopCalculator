@@ -79,7 +79,7 @@ fun CenterTextTopBar(
         modifier = Modifier.fillMaxWidth(),
         backgroundColor = if (isRed) colorResource(id = R.color.orangey_red) else colorResource(id = R.color.white),
         contentColor = if (isRed) colorResource(id = R.color.white) else colorResource(id = R.color.black),
-        elevation = 0.dp
+        elevation = 1.dp
     )
 }
 
