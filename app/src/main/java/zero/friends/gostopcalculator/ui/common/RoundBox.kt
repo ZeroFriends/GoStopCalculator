@@ -12,6 +12,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -106,25 +107,24 @@ fun GamerItem(index: Int, gamer: Gamer) {
             Spacer(modifier = Modifier.padding(4.dp))
             Column(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                if (gamer.isWinner()) {
-                    Text(
-                        text = gamer.winnerOption?.korean ?: "" + " " + gamer.sellerOption?.korean,
-                        fontSize = 8.sp
-                    )
-                }
+                Text(
+                    text = gamer.winnerOption?.korean ?: "" + " " + gamer.sellerOption?.korean,
+                    fontSize = 8.sp,
+                    modifier = Modifier.alpha(if (gamer.isWinner()) 1f else 0f)
+                )
                 Text(
                     text = gamer.name,
                     fontSize = 14.sp,
                     color = colorResource(id = R.color.nero),
                 )
-                if (gamer.scoreOption.isNotEmpty() || gamer.loserOption.isNotEmpty()) {
-                    Text(
-                        text = gamer.scoreOption.joinToString(" ") { it.korean } + gamer.loserOption.joinToString(" ") { it.korean },
-                        fontSize = 8.sp,
-                    )
-                }
+                Text(
+                    modifier = Modifier.alpha(if (gamer.scoreOption.isNotEmpty() || gamer.loserOption.isNotEmpty()) 1f else 0f),
+                    text = gamer.scoreOption.joinToString(" ") { it.korean } + gamer.loserOption.joinToString(" ") { it.korean },
+                    fontSize = 8.sp,
+                )
             }
 
         }
