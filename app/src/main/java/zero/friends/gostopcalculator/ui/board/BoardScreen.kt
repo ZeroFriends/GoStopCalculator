@@ -7,7 +7,10 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.*
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -34,7 +36,6 @@ import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 private sealed interface BoardEvent {
     object Back : BoardEvent
     object StartGame : BoardEvent
-    object OpenDropDown : BoardEvent
     class Detail(val roundId: Long) : BoardEvent
     class More(val roundId: Long) : BoardEvent
     object OpenCalculated : BoardEvent
@@ -69,7 +70,6 @@ fun BoardScreen(
         when (event) {
             BoardEvent.Back -> onBack()
             BoardEvent.StartGame -> onNext(uiState.game.id)
-            BoardEvent.OpenDropDown -> boardViewModel.openDropDown()
             is BoardEvent.Detail -> {
                 openDetailScreen(event.roundId)
             }
@@ -92,20 +92,6 @@ fun BoardScreen(
         )
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize(Alignment.TopEnd)
-    ) {
-        DropdownMenu(
-            expanded = uiState.showMoreDropDown,
-            onDismissRequest = { boardViewModel.closeDropDown() },
-            offset = DpOffset(16.dp, 16.dp)
-        ) {
-            Text(text = "dropDown1")
-            Text(text = "dropDown2")
-        }
-    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -121,9 +107,7 @@ private fun BoardScreen(
             CenterTextTopBar(
                 text = uiState.game.name,
                 onBack = { event(BoardEvent.Back) },
-                isRed = false,
-                onAction = { event(BoardEvent.OpenDropDown) },
-                actionIcon = painterResource(id = R.drawable.ic_more_black)
+                isRed = false
             )
         }
     ) {

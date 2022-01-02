@@ -21,7 +21,6 @@ data class BoardUiState(
     val game: Game = Game(),
     val gameHistories: Map<Long, List<Gamer>> = emptyMap(),
     val playerResults: List<PlayerResult> = emptyList(),
-    val showMoreDropDown: Boolean = false
 )
 
 class BoardViewModel @AssistedInject constructor(
@@ -64,14 +63,6 @@ class BoardViewModel @AssistedInject constructor(
         viewModelScope.launch {
             roundRepository.deleteRound(requireNotNull(_dialogState.value))
         }
-    }
-
-    fun closeDropDown() {
-        _uiState.update { it.copy(showMoreDropDown = false) }
-    }
-
-    fun openDropDown() {
-        _uiState.update { it.copy(showMoreDropDown = true) }
     }
 
     fun closeDialog() {
