@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator.ui.common
+package zero.friends.gostopcalculator.ui.common.background
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.ui.common.GoStopButton
 
 @Composable
 @Preview

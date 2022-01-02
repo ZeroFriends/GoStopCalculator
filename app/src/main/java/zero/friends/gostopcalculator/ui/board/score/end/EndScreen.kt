@@ -24,8 +24,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.domain.model.Gamer
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
-import zero.friends.gostopcalculator.ui.common.GoStopButtonBackground
 import zero.friends.gostopcalculator.ui.common.RoundBox
+import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
 
 @Composable
 fun EndScreen(

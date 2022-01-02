@@ -114,7 +114,7 @@ class GamerRepositoryImpl @Inject constructor(
 
             val targetGamer = targetMap[target.id]
             if (targetGamer == null) {
-                targetMap[target.id] = Target(target.id, account)
+                targetMap[target.id] = Target(target.id, target.name, account)
             } else {
                 targetGamer.account += account
             }

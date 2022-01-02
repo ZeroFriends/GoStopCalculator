@@ -118,6 +118,9 @@ fun Navigator(onBackPressed: () -> Unit) {
                     openDetailScreen = {
                         navController.putLong(RoundId, it)
                         navController.navigate(Navigate.Board.Detail.route())
+                    },
+                    openCalculated = {
+                        //todo 계산화면 만들기 ( Detail 재활용 )
                     }
                 )
             }

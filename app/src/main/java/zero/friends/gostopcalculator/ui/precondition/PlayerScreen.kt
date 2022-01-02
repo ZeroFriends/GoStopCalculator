@@ -20,7 +20,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.ui.common.*
+import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
+import zero.friends.gostopcalculator.ui.common.GoStopExtraButton
+import zero.friends.gostopcalculator.ui.common.RoundedCornerText
+import zero.friends.gostopcalculator.ui.common.TitleOutlinedTextField
+import zero.friends.gostopcalculator.ui.common.background.AprilBackground
 import zero.friends.gostopcalculator.ui.dialog.NameEditDialog
 import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
 

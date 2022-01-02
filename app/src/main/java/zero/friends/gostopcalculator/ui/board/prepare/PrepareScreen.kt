@@ -30,7 +30,7 @@ import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.DescriptionBox
-import zero.friends.gostopcalculator.ui.common.GoStopButtonBackground
+import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
 
 private sealed interface PrepareEvent {
     object Back : PrepareEvent

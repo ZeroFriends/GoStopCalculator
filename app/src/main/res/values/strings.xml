@@ -30,6 +30,7 @@
     <string name="empty_game_log">게임을 진행한 내역이 없습니다.</string>
     <string name="info_game_start">하단에 게임시작 버튼을 눌러 게임을 진행해주세요.</string>
     <string name="detail"><![CDATA[상세보기 >]]></string>
+    <string name="detail_text">상세보기</string>
     <string name="round">%s 라운드"</string>
     <string name="start_description">2인 이상 4인까지 게임을 플레이할 수 있으며,\n4인 플레이를 할 경우 1명은 광을 반드시 팔아야 합니다.</string>
     <string name="complete">완료</string>

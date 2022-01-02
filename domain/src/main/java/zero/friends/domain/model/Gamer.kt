@@ -22,5 +22,6 @@ data class Gamer(
 @Serializable
 data class Target(
     val playerId: Long = 0,
+    val name: String = "",
     var account: Int = 0
 )

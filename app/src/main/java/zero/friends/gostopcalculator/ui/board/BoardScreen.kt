@@ -27,6 +27,7 @@ import zero.friends.domain.model.PlayerResult
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
 import zero.friends.gostopcalculator.ui.common.*
+import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
 import zero.friends.gostopcalculator.ui.dialog.DeleteDialog
 import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 
@@ -36,6 +37,7 @@ private sealed interface BoardEvent {
     object OpenDropDown : BoardEvent
     class Detail(val roundId: Long) : BoardEvent
     class More(val roundId: Long) : BoardEvent
+    object OpenCalculated : BoardEvent
 }
 
 @Composable
@@ -50,7 +52,8 @@ fun BoardScreen(
     boardViewModel: BoardViewModel,
     onNext: (gameId: Long) -> Unit = {},
     onBack: () -> Unit = {},
-    openDetailScreen: (roundId: Long) -> Unit = {}
+    openDetailScreen: (roundId: Long) -> Unit = {},
+    openCalculated: () -> Unit = {}
 ) {
     val scaffoldState = rememberScaffoldState()
     val uiState by boardViewModel.getUiState().collectAsState()
@@ -73,6 +76,7 @@ fun BoardScreen(
             is BoardEvent.More -> {
                 boardViewModel.openDialog(event.roundId)
             }
+            BoardEvent.OpenCalculated -> openCalculated()
         }
     }
 
@@ -128,7 +132,10 @@ private fun BoardScreen(
             onClick = { event(BoardEvent.StartGame) },
             contents = {
                 Column {
-                    IncomeHistory(players = uiState.playerResults)
+                    IncomeHistory(
+                        players = uiState.playerResults,
+                        onClickCalculated = { event(BoardEvent.OpenCalculated) }
+                    )
                     Spacer(modifier = Modifier.padding(9.dp))
                     GameHistory(uiState = uiState, event = event)
                 }
@@ -141,7 +148,8 @@ private fun BoardScreen(
 @Composable
 private fun IncomeHistory(
     modifier: Modifier = Modifier,
-    players: List<PlayerResult> = emptyList()
+    players: List<PlayerResult> = emptyList(),
+    onClickCalculated: () -> Unit = {}
 ) {
     ContentsCard(
         modifier = modifier
@@ -164,7 +172,10 @@ private fun IncomeHistory(
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    RoundedCornerText(text = stringResource(id = R.string.calculate_history))
+                    RoundedCornerText(
+                        text = stringResource(id = R.string.calculate_history),
+                        onClick = onClickCalculated
+                    )
                 }
                 LazyVerticalGrid(cells = GridCells.Fixed(2)) {
                     itemsIndexed(players) { index: Int, item: PlayerResult ->

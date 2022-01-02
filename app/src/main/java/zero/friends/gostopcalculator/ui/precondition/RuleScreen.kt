@@ -26,10 +26,10 @@ import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.ui.common.AprilBackground
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.NumberTextField
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
+import zero.friends.gostopcalculator.ui.common.background.AprilBackground
 import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
 
 

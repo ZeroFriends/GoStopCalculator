@@ -27,7 +27,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import zero.friends.domain.model.*
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.ui.common.*
+import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
+import zero.friends.gostopcalculator.ui.common.DescriptionBox
+import zero.friends.gostopcalculator.ui.common.NumberTextField
+import zero.friends.gostopcalculator.ui.common.RoundedCornerText
+import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
 
 
 sealed interface ScoreEvent {
