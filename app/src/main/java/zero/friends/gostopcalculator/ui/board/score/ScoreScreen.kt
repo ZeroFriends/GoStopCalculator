@@ -36,6 +36,7 @@ import zero.friends.gostopcalculator.ui.common.DescriptionBox
 import zero.friends.gostopcalculator.ui.common.NumberTextField
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
+import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
 
 
 sealed interface ScoreEvent {
@@ -136,7 +137,7 @@ private fun ScoreScreen(
 ) {
 
     Scaffold(
-        modifier = Modifier,
+        modifier = TabKeyboardDownModifier(),
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(
