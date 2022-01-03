@@ -59,12 +59,12 @@ class CalculateGameResultUseCase @Inject constructor(
             val remainLoser = losers - goBakGamer
             remainLoser.forEach { loser ->
                 val account = getLoserAccount(loser, winnerScore, gameScore)
-                updateAccountUseCase(goBakGamer, winner, account)
-                updateAccountUseCase(winner, goBakGamer, -1 * account)
+                updateAccountUseCase(goBakGamer, winner, -1 * account)
+                updateAccountUseCase(winner, goBakGamer, account)
             }
             val account = getLoserAccount(goBakGamer, winnerScore, gameScore)
-            updateAccountUseCase(goBakGamer, winner, account)
-            updateAccountUseCase(winner, goBakGamer, -1 * account)
+            updateAccountUseCase(goBakGamer, winner, -1 * account)
+            updateAccountUseCase(winner, goBakGamer, account)
         } else {
             losers.forEach { loser ->
                 val account = getLoserAccount(loser, winnerScore, gameScore)
