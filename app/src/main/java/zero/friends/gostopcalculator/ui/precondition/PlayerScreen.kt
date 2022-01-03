@@ -22,7 +22,6 @@ import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.GoStopExtraButton
-import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.ui.common.TitleOutlinedTextField
 import zero.friends.gostopcalculator.ui.common.background.AprilBackground
 import zero.friends.gostopcalculator.ui.dialog.NameEditDialog
@@ -32,7 +31,6 @@ private sealed interface PlayerClickEvent {
     object Back : PlayerClickEvent
     object AddPlayer : PlayerClickEvent
     class DeletePlayer(val player: Player) : PlayerClickEvent
-    object LoadPlayer : PlayerClickEvent
     class EditPlayer(val player: Player) : PlayerClickEvent
     class Next(val groupName: String) : PlayerClickEvent
 }
@@ -59,7 +57,6 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Uni
                 onBack()
             }
             is PlayerClickEvent.DeletePlayer -> viewModel.deletePlayer(clickEvent.player)
-            PlayerClickEvent.LoadPlayer -> TODO()
             is PlayerClickEvent.Next -> {
                 viewModel.editGameName(clickEvent.groupName)
                 onNext()
@@ -127,7 +124,7 @@ private fun PlayerLazyColumn(
 ) {
     LazyColumn(contentPadding = PaddingValues(top = 30.dp, bottom = 12.dp)) {
         item {
-            PlayerBlock(modifier = Modifier.padding(bottom = 10.dp)) { clickEvent(PlayerClickEvent.LoadPlayer) }
+            Text(text = stringResource(id = R.string.player), fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
 
         if (players.isEmpty()) {
@@ -151,22 +148,6 @@ private fun PlayerLazyColumn(
                 onClick = { clickEvent(PlayerClickEvent.AddPlayer) }
             )
         }
-    }
-}
-
-@Composable
-private fun PlayerBlock(modifier: Modifier = Modifier, onLoadButtonClicked: () -> Unit) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = stringResource(id = R.string.player), fontSize = 16.sp, fontWeight = FontWeight.Bold)
-        RoundedCornerText(
-            stringResource(id = R.string.load),
-            colorResource(id = R.color.orangey_red),
-            fontSize = 14.sp
-        ) { onLoadButtonClicked() }
     }
 }
 
