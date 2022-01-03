@@ -2,6 +2,8 @@ package zero.friends.gostopcalculator.ui.board.score
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,11 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import zero.friends.domain.model.*
@@ -42,6 +46,7 @@ sealed interface ScoreEvent {
     object Complete : ScoreEvent
     class OnUpdateWinnerPoint(val gamer: Gamer, val point: Int) : ScoreEvent
     class OnUpdateSellerPoint(val gamer: Gamer, val count: Int) : ScoreEvent
+    object OnClickSubButton : ScoreEvent
 }
 
 @Composable
@@ -52,6 +57,7 @@ fun ScoreScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
     val uiState by scoreViewModel.uiState().collectAsState()
+    val dialogState by scoreViewModel.dialogState().collectAsState()
 
     LaunchedEffect(key1 = Unit) {
         scoreViewModel.escapeEvent().collectLatest {
@@ -61,6 +67,10 @@ fun ScoreScreen(
 
     BackHandler(true) {
         scoreViewModel.onBack()
+    }
+
+    if (dialogState.openDialog) {
+        ExtraActionDialog(onClose = { scoreViewModel.closeDialog() }, phase = uiState.phase)
     }
 
     ScoreScreen(
@@ -80,9 +90,42 @@ fun ScoreScreen(
                 is ScoreEvent.OnUpdateSellerPoint -> {
                     scoreViewModel.updateSeller(event.gamer, event.count)
                 }
+                ScoreEvent.OnClickSubButton -> scoreViewModel.openDialog()
             }
         }
     )
+}
+
+@Composable
+private fun ExtraActionDialog(
+    onClose: () -> Unit = {},
+    phase: Phase
+) {
+    Dialog(
+        onDismissRequest = onClose,
+    ) {
+        Column(
+            modifier = Modifier
+                .background(colorResource(id = R.color.white))
+                .padding(12.dp)
+        ) {
+            Image(
+                painter = painterResource(id = if (phase is Selling) R.drawable.selling_info else R.drawable.ic_onodofu),
+                contentDescription = null
+            )
+            Spacer(modifier = Modifier.padding(13.dp))
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth(), onClick = onClose
+            ) {
+                Text(
+                    text = stringResource(id = android.R.string.ok),
+                    color = colorResource(id = R.color.white),
+                    fontSize = 16.sp
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -139,7 +182,9 @@ fun GamerList(uiState: ScoreUiState, event: (ScoreEvent) -> Unit = {}) {
                 color = colorResource(id = R.color.nero),
                 fontWeight = FontWeight.Bold
             )
-            RoundedCornerText(stringResource(id = R.string.score_guide), onClick = {})
+            RoundedCornerText(uiState.phase.extraButtonText(), onClick = {
+                event(ScoreEvent.OnClickSubButton)
+            })
         }
         Spacer(modifier = Modifier.padding(9.dp))
 
