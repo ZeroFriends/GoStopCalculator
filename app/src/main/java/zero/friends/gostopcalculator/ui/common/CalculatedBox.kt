@@ -34,7 +34,6 @@ fun CalculatedBox(index: Int, gamer: Gamer) {
                     }
                 )
                 Spacer(modifier = Modifier.padding(3.dp))
-
             }
         }
     }
