@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator.ui.board.detail
+package zero.friends.gostopcalculator.ui.board.result
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

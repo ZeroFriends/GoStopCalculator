@@ -10,11 +10,12 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import zero.friends.domain.util.Const
 import zero.friends.domain.util.Const.RoundId
-import zero.friends.gostopcalculator.ui.board.BoardScreen
-import zero.friends.gostopcalculator.ui.board.createBoardViewModel
-import zero.friends.gostopcalculator.ui.board.detail.DetailScreen
-import zero.friends.gostopcalculator.ui.board.detail.createDetailViewModel
+import zero.friends.gostopcalculator.ui.board.main.BoardScreen
+import zero.friends.gostopcalculator.ui.board.main.createBoardViewModel
 import zero.friends.gostopcalculator.ui.board.prepare.PrepareScreen
+import zero.friends.gostopcalculator.ui.board.result.CalculateScreen
+import zero.friends.gostopcalculator.ui.board.result.DetailScreen
+import zero.friends.gostopcalculator.ui.board.result.createDetailViewModel
 import zero.friends.gostopcalculator.ui.board.score.ScoreScreen
 import zero.friends.gostopcalculator.ui.board.score.end.EndScreen
 import zero.friends.gostopcalculator.ui.history.HistoryScreen
@@ -33,7 +34,6 @@ sealed interface Navigate {
 
     sealed interface Precondition : Navigate {
         object Player : Precondition
-        object Load : Precondition
         object Rule : Precondition
     }
 
@@ -42,12 +42,6 @@ sealed interface Navigate {
         object Prepare : Board
         object Score : Board
         object End : Board
-
-        sealed interface Setting : Board {
-            object Rule : Setting
-            object AddRule : Setting
-            object Player : Setting
-        }
 
         object Detail : Board
         object Calculate : Board
@@ -118,7 +112,7 @@ fun Navigator(onBackPressed: () -> Unit) {
                     navController.navigate(Navigate.Board.Detail.route())
                 },
                 openCalculated = {
-                    //todo 계산화면 만들기 ( Detail 재활용 )
+                    navController.navigate(Navigate.Board.Calculate.route())
                 }
             )
         }
@@ -161,6 +155,10 @@ fun Navigator(onBackPressed: () -> Unit) {
         composable(Navigate.Board.Detail.route()) {
             val roundId = navController.getLong(RoundId)
             DetailScreen(createDetailViewModel(roundId = roundId), onBack = { navController.navigateUp() })
+        }
+
+        composable(Navigate.Board.Calculate.route()) {
+            CalculateScreen(onBack = { navController.navigateUp() })
         }
 
     }

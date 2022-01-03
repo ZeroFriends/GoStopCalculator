@@ -1,7 +1,7 @@
 package zero.friends.gostopcalculator.di.factory
 
-import zero.friends.gostopcalculator.ui.board.BoardViewModel
-import zero.friends.gostopcalculator.ui.board.detail.DetailViewModel
+import zero.friends.gostopcalculator.ui.board.main.BoardViewModel
+import zero.friends.gostopcalculator.ui.board.result.DetailViewModel
 
 @dagger.assisted.AssistedFactory
 fun interface BoardViewModelFactory {
