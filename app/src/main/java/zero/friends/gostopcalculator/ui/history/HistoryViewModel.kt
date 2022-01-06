@@ -13,18 +13,10 @@ data class HistoryUiState(
     val games: List<Game> = emptyList(),
 )
 
-data class MoreDialogState(
-    val openDialog: Boolean = false,
-    val gameId: Long? = null
-)
-
 @HiltViewModel
 class HistoryViewModel @Inject constructor(private val gameRepository: GameRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(HistoryUiState())
     fun getUiState() = _uiState.asStateFlow()
-
-    private val _dialogState = MutableStateFlow(MoreDialogState())
-    fun getDialogState() = _dialogState.asStateFlow()
 
     init {
         gameRepository.observeGameList().onEach { gameList ->
@@ -40,11 +32,4 @@ class HistoryViewModel @Inject constructor(private val gameRepository: GameRepos
         }
     }
 
-    fun openDialog(gameId: Long) {
-        _dialogState.update { MoreDialogState(openDialog = true, gameId = gameId) }
-    }
-
-    fun closeDialog() {
-        _dialogState.update { MoreDialogState(openDialog = false, null) }
-    }
 }

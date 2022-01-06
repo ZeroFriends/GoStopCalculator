@@ -6,9 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -38,16 +36,17 @@ fun HistoryScreen(
     onShowGame: (Game) -> Unit = {}
 ) {
     val uiState by viewModel.getUiState().collectAsState()
-    val dialogState by viewModel.getDialogState().collectAsState()
+    var dialogGameId by remember {
+        mutableStateOf<Long?>(null)
+    }
 
-    if (dialogState.openDialog) {
+    val value = dialogGameId
+    if (value != null) {
         DeleteDialog(
-            onDismiss = { viewModel.closeDialog() },
+            onDismiss = { dialogGameId = null },
             onClick = {
-                val gameId = dialogState.gameId
-                requireNotNull(gameId)
-                viewModel.deleteGame(gameId)
-                viewModel.closeDialog()
+                viewModel.deleteGame(value)
+                dialogGameId = null
             }
         )
     }
@@ -64,7 +63,7 @@ fun HistoryScreen(
                 onStartGame()
             }
             is HistoryEvent.ShowMore -> {
-                viewModel.openDialog(event.game.id)
+                dialogGameId = event.game.id
             }
         }
     }
