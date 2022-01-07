@@ -46,7 +46,7 @@ fun EndScreen(
 private fun EndScreen(scaffoldState: ScaffoldState, uiState: EndUiState, onClick: () -> Unit = {}) {
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = { CenterTextTopBar(text = stringResource(id = R.string.end_game)) }
+        topBar = { CenterTextTopBar(text = stringResource(id = R.string.end_game), isRed = false) }
     ) {
         GoStopButtonBackground(
             buttonString = stringResource(id = R.string.save),
