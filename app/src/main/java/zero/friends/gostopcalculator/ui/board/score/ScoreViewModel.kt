@@ -13,6 +13,7 @@ import zero.friends.domain.usecase.option.SellingUseCase
 import zero.friends.domain.usecase.option.ToggleLoserOptionUseCase
 import zero.friends.domain.usecase.option.ToggleScoreOptionUseCase
 import zero.friends.domain.usecase.option.UpdateWinnerUseCase
+import zero.friends.domain.usecase.round.DeleteRoundUseCase
 import zero.friends.domain.usecase.round.ObserveRoundGamerUseCase
 import javax.inject.Inject
 
@@ -38,7 +39,8 @@ class ScoreViewModel @Inject constructor(
     private val observeRoundGamerUseCase: ObserveRoundGamerUseCase,
     private val updateWinnerUseCase: UpdateWinnerUseCase,
     private val calculateGameResultUseCase: CalculateGameResultUseCase,
-    private val sellingUseCase: SellingUseCase
+    private val sellingUseCase: SellingUseCase,
+    private val deleteRoundUseCase: DeleteRoundUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ScoreUiState())
     fun uiState() = _uiState.asStateFlow()
@@ -159,6 +161,12 @@ class ScoreViewModel @Inject constructor(
                 seller = uiState().value.seller,
                 winner = requireNotNull(uiState().value.winner)
             )
+        }
+    }
+
+    fun deleteRound() {
+        viewModelScope.launch {
+            deleteRoundUseCase()
         }
     }
 

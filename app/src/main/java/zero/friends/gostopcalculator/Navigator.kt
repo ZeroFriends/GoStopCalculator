@@ -133,6 +133,11 @@ fun Navigator(onBackPressed: () -> Unit) {
                 },
                 onComplete = {
                     navController.navigate(Navigate.Board.End.route())
+                },
+                Exit = {
+                    navController.popBackStack()
+                    navController.putLong(Const.GameId, it)
+                    navController.navigate(Navigate.Board.Main.route())
                 }
             )
         }

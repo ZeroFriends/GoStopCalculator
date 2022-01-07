@@ -48,12 +48,14 @@ sealed interface ScoreEvent {
     class OnUpdateWinnerPoint(val gamer: Gamer, val point: Int) : ScoreEvent
     class OnUpdateSellerPoint(val gamer: Gamer, val count: Int) : ScoreEvent
     object OnClickSubButton : ScoreEvent
+    object Exit : ScoreEvent
 }
 
 @Composable
 fun ScoreScreen(
     scoreViewModel: ScoreViewModel = hiltViewModel(),
     onBack: (gameId: Long?) -> Unit,
+    Exit: (gameId: Long) -> Unit,
     onComplete: () -> Unit = {}
 ) {
     val scaffoldState = rememberScaffoldState()
@@ -92,6 +94,10 @@ fun ScoreScreen(
                     scoreViewModel.updateSeller(event.gamer, event.count)
                 }
                 ScoreEvent.OnClickSubButton -> scoreViewModel.openDialog()
+                ScoreEvent.Exit -> {
+                    scoreViewModel.deleteRound()
+                    Exit(uiState.game.id)
+                }
             }
         }
     )
@@ -143,6 +149,7 @@ private fun ScoreScreen(
             CenterTextTopBar(
                 text = uiState.game.name,
                 onBack = { scoreEvent(ScoreEvent.Back) },
+                onAction = { scoreEvent(ScoreEvent.Exit) },
                 isRed = false
             )
         }

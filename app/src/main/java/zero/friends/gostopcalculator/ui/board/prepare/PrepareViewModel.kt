@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.Player
@@ -68,7 +67,6 @@ class PrepareViewModel @Inject constructor(
                 }
             }.onFailure {
                 failCallback()
-                Timber.tag("🔥zero:onClickPlayer").e("$it")
             }
         }
 
