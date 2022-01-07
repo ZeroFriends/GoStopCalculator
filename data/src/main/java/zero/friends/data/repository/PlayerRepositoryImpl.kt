@@ -20,15 +20,13 @@ class PlayerRepositoryImpl @Inject constructor(
 
     override suspend fun addAutoGeneratePlayer(gameId: Long) {
         withContext(dispatcher) {
-            launch {
-                val previousId = playerIdCache[gameId] ?: 0
-                val nextId = previousId + 1
-                playerIdCache[gameId] = nextId
+            val previousId = playerIdCache[gameId] ?: 0
+            val nextId = previousId + 1
+            playerIdCache[gameId] = nextId
 
-                val playerName = String.format(PLAYER_FORMAT, nextId)
-                val player = PlayerEntity(name = playerName, gameId = gameId)
-                playerDao.insert(player)
-            }
+            val playerName = String.format(PLAYER_FORMAT, nextId)
+            val player = PlayerEntity(name = playerName, gameId = gameId)
+            playerDao.insert(player)
         }
     }
 

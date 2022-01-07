@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.precondition
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -18,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.flow.collect
 import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
@@ -37,10 +40,19 @@ private sealed interface PlayerClickEvent {
 
 @Composable
 fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Unit, onBack: () -> Unit) {
+    val context = LocalContext.current
+
     val scaffoldState = rememberScaffoldState()
     val uiState by viewModel.getUiState().collectAsState()
+
     var openDialog by remember {
         mutableStateOf<Pair<Boolean, Player?>>(false to null)
+    }
+
+    LaunchedEffect(true) {
+        viewModel.error().collect {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
     }
 
     BackHandler(true) {

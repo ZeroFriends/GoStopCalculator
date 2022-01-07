@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import zero.friends.domain.model.Player
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
@@ -32,6 +33,9 @@ class PlayerViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(PlayerUiState())
     fun getUiState() = _uiState.asStateFlow()
 
+    private val _error = MutableSharedFlow<String>()
+    fun error() = _error.asSharedFlow()
+
     init {
         viewModelScope.launch {
             val gameId = gameRepository.newGame(_uiState.value.currentTime, _uiState.value.currentTime)
@@ -52,7 +56,12 @@ class PlayerViewModel @Inject constructor(
 
     fun addPlayer() {
         viewModelScope.launch {
-            addAutoGeneratePlayerUseCase()
+            kotlin.runCatching {
+                addAutoGeneratePlayerUseCase()
+            }.onFailure {
+                _error.emit(it.message ?: "ㅋㅅㅋ")
+                Timber.tag("🔥zero:addPlayer").e("$it")
+            }
         }
     }
 
