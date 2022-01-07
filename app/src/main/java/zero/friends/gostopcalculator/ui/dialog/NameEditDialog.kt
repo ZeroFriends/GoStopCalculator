@@ -36,12 +36,15 @@ fun NameEditDialog(
     }
 
     val editPlayer = {
-        viewModel.editPlayer(player, editPlayerName.value.text)
-        onClose()
+        viewModel.editPlayer(player, editPlayerName.value.text, onSuccess = onClose)
+        viewModel.clearState()
     }
 
     AlertDialog(
-        onDismissRequest = { onClose() },
+        onDismissRequest = {
+            viewModel.clearState()
+            onClose()
+        },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth()
@@ -72,7 +75,7 @@ fun NameEditDialog(
         confirmButton = {
             GoStopButton(
                 text = stringResource(R.string.edit),
-                modifier = Modifier.padding(horizontal = 12.dp),
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
                 onClick = editPlayer
             )
         },

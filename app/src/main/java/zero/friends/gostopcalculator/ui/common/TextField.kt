@@ -34,10 +34,10 @@ import zero.friends.gostopcalculator.R
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun GoStopOutLinedTextField(
+    modifier: Modifier = Modifier,
     text: TextFieldValue,
     hint: String,
     color: Color = colorResource(id = R.color.gray),
-    modifier: Modifier = Modifier,
     onValueChange: (TextFieldValue) -> Unit,
     error: String? = null,
     showKeyboard: Boolean = false,
@@ -168,7 +168,7 @@ fun TitleOutlinedTextField(
 ) {
     Column(modifier = modifier) {
         Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 4.dp))
-        GoStopOutLinedTextField(text, hint, onValueChange = onValueChange)
+        GoStopOutLinedTextField(text = text, hint = hint, onValueChange = onValueChange)
     }
 }
 
@@ -181,7 +181,7 @@ private fun TitleOutlinedTextField() {
 @Preview(showBackground = true)
 @Composable
 private fun GoStopOutLinedTextFieldPreView() {
-    GoStopOutLinedTextField(TextFieldValue("ZeroWorld!!"), "hint", onValueChange = {})
+    GoStopOutLinedTextField(text = TextFieldValue("ZeroWorld!!"), hint = "hint", onValueChange = {})
 }
 
 @Preview
