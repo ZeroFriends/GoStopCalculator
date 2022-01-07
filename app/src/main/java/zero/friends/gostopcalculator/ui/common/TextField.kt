@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.common
 
+import android.widget.Toast
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
@@ -101,6 +103,7 @@ fun NumberTextField(
     hintColor: Color = colorResource(id = R.color.nero),
     onValueChane: (Int) -> Unit = {}
 ) {
+    val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val focus by interactionSource.collectIsFocusedAsState()
     var inputText by remember { mutableStateOf(TextFieldValue("")) }
@@ -119,8 +122,15 @@ fun NumberTextField(
             value = inputText,
             onValueChange = {
                 if (Regex("[0-9]+").matches(it.text)) {
-                    inputText = it
-                    onValueChane(it.text.toInt())
+                    val longValue = it.text.toLong()
+                    if (endText == context.getString(R.string.won) && longValue > 1_000_000) {
+                        Toast.makeText(context, context.getString(R.string.over_score_alert), Toast.LENGTH_SHORT).show()
+                    } else if (endText == context.getString(R.string.point) && longValue > 8_519_680) {
+                        Toast.makeText(context, context.getString(R.string.over_point_alert), Toast.LENGTH_SHORT).show()
+                    } else {
+                        inputText = it
+                        onValueChane(it.text.toInt())
+                    }
                 } else if (it.text.isBlank()) {
                     inputText = it
                     onValueChane(0)
