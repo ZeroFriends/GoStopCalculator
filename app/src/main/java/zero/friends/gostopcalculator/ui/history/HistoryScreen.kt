@@ -75,7 +75,7 @@ private fun HistoryScreen(uiState: HistoryUiState, event: (HistoryEvent) -> Unit
         NewGame(event)
 
         Divider(
-            color = colorResource(id = R.color.gray),
+            color = colorResource(id = R.color.light_gray),
             thickness = 10.dp,
             modifier = Modifier.padding(vertical = 16.dp)
         )

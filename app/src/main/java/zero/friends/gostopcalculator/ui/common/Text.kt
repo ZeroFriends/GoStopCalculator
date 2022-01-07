@@ -32,6 +32,7 @@ fun SubTitleText(text: String) {
         text = text,
         fontSize = 12.sp,
         fontWeight = FontWeight.Bold,
+        color = colorResource(id = R.color.dark_gray)
     )
 }
 
