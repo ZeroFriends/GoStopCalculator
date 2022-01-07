@@ -121,12 +121,15 @@ fun NumberTextField(
         TextField(
             value = inputText,
             onValueChange = {
+                //하드코딩 ㅋㅋ 혹시나 스펙추가되면 다 뜯어고치자...그럴일은 없겠지만
                 if (Regex("[0-9]+").matches(it.text)) {
                     val longValue = it.text.toLong()
                     if (endText == context.getString(R.string.won) && longValue > 1_000_000) {
                         Toast.makeText(context, context.getString(R.string.over_score_alert), Toast.LENGTH_SHORT).show()
                     } else if (endText == context.getString(R.string.point) && longValue > 8_519_680) {
                         Toast.makeText(context, context.getString(R.string.over_point_alert), Toast.LENGTH_SHORT).show()
+                    } else if (endText == context.getString(R.string.page) && longValue > 12) {
+                        Toast.makeText(context, context.getString(R.string.over_page_alert), Toast.LENGTH_SHORT).show()
                     } else {
                         inputText = it
                         onValueChane(it.text.toInt())
