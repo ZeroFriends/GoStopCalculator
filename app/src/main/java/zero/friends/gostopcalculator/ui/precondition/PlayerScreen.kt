@@ -39,7 +39,9 @@ private sealed interface PlayerClickEvent {
 fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Unit, onBack: () -> Unit) {
     val scaffoldState = rememberScaffoldState()
     val uiState by viewModel.getUiState().collectAsState()
-    val dialogState by viewModel.getDialogState().collectAsState()
+    var openDialog by remember {
+        mutableStateOf<Pair<Boolean, Player?>>(false to null)
+    }
 
     BackHandler(true) {
         viewModel.clearGame()
@@ -61,13 +63,18 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Uni
                 viewModel.editGameName(clickEvent.groupName)
                 onNext()
             }
-            is PlayerClickEvent.EditPlayer -> viewModel.openDialog(player = clickEvent.player)
+            is PlayerClickEvent.EditPlayer -> {
+                openDialog = true to clickEvent.player
+            }
 
         }
     }
 
-    if (dialogState.openDialog) {
-        NameEditDialog()
+    if (openDialog.first) {
+        NameEditDialog(
+            player = requireNotNull(openDialog.second),
+            onClose = { openDialog = false to null }
+        )
     }
 }
 

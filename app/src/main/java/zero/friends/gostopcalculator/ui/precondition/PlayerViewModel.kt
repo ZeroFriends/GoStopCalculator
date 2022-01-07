@@ -3,7 +3,6 @@ package zero.friends.gostopcalculator.ui.precondition
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Player
@@ -11,10 +10,8 @@ import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.usecase.player.AddAutoGeneratePlayerUseCase
 import zero.friends.domain.usecase.player.DeletePlayerUseCase
-import zero.friends.domain.usecase.player.EditPlayerUseCase
 import zero.friends.gostopcalculator.util.TimeUtil
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 
 data class PlayerUiState(
@@ -23,12 +20,6 @@ data class PlayerUiState(
     val currentTime: String = TimeUtil.getCurrentTime(),
 )
 
-data class DialogState(
-    val openDialog: Boolean = false,
-    val originalPlayer: Player = Player(),
-    val editPlayer: Player? = null,
-    val error: Throwable? = null,
-)
 
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
@@ -36,19 +27,10 @@ class PlayerViewModel @Inject constructor(
     private val addAutoGeneratePlayerUseCase: AddAutoGeneratePlayerUseCase,
     private val deletePlayerUseCase: DeletePlayerUseCase,
     private val playerRepository: PlayerRepository,
-    private val editPlayerUseCase: EditPlayerUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PlayerUiState())
     fun getUiState() = _uiState.asStateFlow()
-
-    private val _dialogState = MutableStateFlow(DialogState())
-    fun getDialogState() = _dialogState.asStateFlow()
-
-    private val editNameExceptionHandler =
-        CoroutineExceptionHandler { _: CoroutineContext, throwable: Throwable ->
-            _dialogState.update { it.copy(openDialog = true, error = throwable) }
-        }
 
     init {
         viewModelScope.launch {
@@ -84,27 +66,6 @@ class PlayerViewModel @Inject constructor(
         viewModelScope.launch {
             val gameId = requireNotNull(gameRepository.getCurrentGameId())
             gameRepository.deleteGame(gameId)
-        }
-    }
-
-    fun openDialog(player: Player) {
-        _dialogState.update {
-            it.copy(openDialog = true, originalPlayer = player, editPlayer = null)
-        }
-    }
-
-    fun closeDialog() {
-        _dialogState.update {
-            it.copy(openDialog = false, error = null)
-        }
-    }
-
-    fun editPlayer(name: String) {
-        viewModelScope.launch(editNameExceptionHandler) {
-            val originalPlayer = _dialogState.value.originalPlayer
-            val editPlayer = if (name.isEmpty()) originalPlayer else originalPlayer.copy(name = name)
-            editPlayerUseCase(originalPlayer, editPlayer)
-            closeDialog()
         }
     }
 

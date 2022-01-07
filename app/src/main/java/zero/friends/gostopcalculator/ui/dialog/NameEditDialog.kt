@@ -18,30 +18,30 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.GoStopButton
 import zero.friends.gostopcalculator.ui.common.GoStopOutLinedTextField
-import zero.friends.gostopcalculator.ui.precondition.PlayerViewModel
 
 @Composable
 fun NameEditDialog(
-    viewModel: PlayerViewModel = hiltViewModel(),
+    viewModel: NameEditDialogViewModel = hiltViewModel(),
+    player: Player,
+    onClose: () -> Unit = {}
 ) {
     val dialogState by viewModel.getDialogState().collectAsState()
     val editPlayerName = remember {
         val playerName = dialogState.editPlayer?.name ?: ""
         mutableStateOf(TextFieldValue(playerName, selection = TextRange(playerName.length)))
     }
-    if (!dialogState.openDialog) {
-        viewModel.closeDialog()
-    }
 
     val editPlayer = {
-        viewModel.editPlayer(editPlayerName.value.text)
+        viewModel.editPlayer(player, editPlayerName.value.text)
+        onClose()
     }
 
     AlertDialog(
-        onDismissRequest = { viewModel.closeDialog() },
+        onDismissRequest = { onClose() },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth()
@@ -57,7 +57,7 @@ fun NameEditDialog(
                 Spacer(modifier = Modifier.padding(bottom = 40.dp))
                 GoStopOutLinedTextField(
                     text = editPlayerName.value,
-                    hint = dialogState.originalPlayer.name,
+                    hint = player.name,
                     color = colorResource(id = R.color.black),
                     onValueChange = {
                         editPlayerName.value = it
