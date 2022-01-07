@@ -12,10 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,7 +57,9 @@ fun ScoreScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
     val uiState by scoreViewModel.uiState().collectAsState()
-    val dialogState by scoreViewModel.dialogState().collectAsState()
+    var openDialog by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(key1 = Unit) {
         scoreViewModel.escapeEvent().collectLatest {
@@ -69,11 +68,11 @@ fun ScoreScreen(
     }
 
     BackHandler(true) {
-        scoreViewModel.onBack()
+        scoreViewModel.onBackPhase()
     }
 
-    if (dialogState.openDialog) {
-        ExtraActionDialog(onClose = { scoreViewModel.closeDialog() }, phase = uiState.phase)
+    if (openDialog) {
+        ExtraActionDialog(onClose = { openDialog = false }, phase = uiState.phase)
     }
 
     ScoreScreen(
@@ -81,9 +80,9 @@ fun ScoreScreen(
         uiState = uiState,
         scoreEvent = { event ->
             when (event) {
-                ScoreEvent.Back -> scoreViewModel.onBack()
+                ScoreEvent.OnNext -> scoreViewModel.onNextPhase()
+                ScoreEvent.Back -> scoreViewModel.onBackPhase()
                 is ScoreEvent.SelectScore -> scoreViewModel.selectScore(event.gamer, event.option)
-                ScoreEvent.OnNext -> scoreViewModel.onNext()
                 is ScoreEvent.OnUpdateWinnerPoint -> scoreViewModel.updateWinner(event.gamer, event.point)
                 is ScoreEvent.SelectLoser -> scoreViewModel.selectLoser(event.gamer, event.option)
                 ScoreEvent.Complete -> {
@@ -93,7 +92,7 @@ fun ScoreScreen(
                 is ScoreEvent.OnUpdateSellerPoint -> {
                     scoreViewModel.updateSeller(event.gamer, event.count)
                 }
-                ScoreEvent.OnClickSubButton -> scoreViewModel.openDialog()
+                ScoreEvent.OnClickSubButton -> openDialog = true
                 ScoreEvent.Exit -> {
                     scoreViewModel.deleteRound()
                     Exit(uiState.game.id)
@@ -200,12 +199,12 @@ fun GamerList(uiState: ScoreUiState, event: (ScoreEvent) -> Unit = {}) {
 
             itemsIndexed(uiState.playerResults) { index, gamer ->
                 when (uiState.phase) {
-                    is Selling -> WinnerItem(index, gamer, isSeller = true, isEnable = true, event)
+                    is Selling -> WinnerItem(index, gamer, isSellPhase = true, isEnable = true, event)
                     is Scoring -> {
                         if (gamer.id == uiState.seller?.id) WinnerItem(
                             index,
                             uiState.seller,
-                            isSeller = true,
+                            isSellPhase = true,
                             isEnable = false
                         )
                         else ScoringItem(index, gamer, uiState.phase, event)
@@ -214,15 +213,25 @@ fun GamerList(uiState: ScoreUiState, event: (ScoreEvent) -> Unit = {}) {
                         if (gamer.id == uiState.seller?.id) WinnerItem(
                             index,
                             uiState.seller,
-                            isSeller = true,
+                            isSellPhase = true,
                             isEnable = false
                         )
-                        else WinnerItem(index, gamer, isSeller = false, isEnable = true, event = event)
+                        else WinnerItem(index, gamer, isSellPhase = false, isEnable = true, event = event)
                     }
                     is Loser -> {
                         when (gamer.id) {
-                            uiState.seller?.id -> WinnerItem(index, uiState.seller, isSeller = true, isEnable = false)
-                            uiState.winner?.id -> WinnerItem(index, uiState.winner, isSeller = false, isEnable = false)
+                            uiState.seller?.id -> WinnerItem(
+                                index,
+                                uiState.seller,
+                                isSellPhase = true,
+                                isEnable = false
+                            )
+                            uiState.winner?.id -> WinnerItem(
+                                index,
+                                uiState.winner,
+                                isSellPhase = false,
+                                isEnable = false
+                            )
                             else -> ScoringItem(index, gamer, uiState.phase, event)
                         }
                     }
@@ -236,7 +245,7 @@ fun GamerList(uiState: ScoreUiState, event: (ScoreEvent) -> Unit = {}) {
 fun WinnerItem(
     index: Int,
     gamer: Gamer,
-    isSeller: Boolean,
+    isSellPhase: Boolean,
     isEnable: Boolean,
     event: (ScoreEvent) -> Unit = {}
 ) {
@@ -274,7 +283,7 @@ fun WinnerItem(
                     )
                     if (!isEnable) {
                         Spacer(modifier = Modifier.padding(3.dp))
-                        val optionName = if (isSeller) gamer.sellerOption else gamer.winnerOption
+                        val optionName = if (isSellPhase) gamer.sellerOption else gamer.winnerOption
                         OptionBox(requireNotNull(optionName?.korean), colorResource(id = R.color.gray))
                     }
                 }
@@ -285,13 +294,13 @@ fun WinnerItem(
         NumberTextField(
             text = if (isEnable) "" else gamer.score.toString(),
             modifier = Modifier.weight(1f),
-            endText = stringResource(if (isSeller) R.string.page else R.string.point),
+            endText = stringResource(if (isSellPhase) R.string.page else R.string.point),
             isEnable = isEnable,
             unFocusDeleteMode = true,
             hintColor = colorResource(id = if (isEnable) R.color.nero else R.color.gray)
         ) {
             event(
-                if (isSeller) ScoreEvent.OnUpdateSellerPoint(gamer, it)
+                if (isSellPhase) ScoreEvent.OnUpdateSellerPoint(gamer, it)
                 else ScoreEvent.OnUpdateWinnerPoint(gamer, it)
             )
 
@@ -377,7 +386,7 @@ private fun OptionBox(text: String, color: Color, isSelected: Boolean = false, o
 @Preview(showBackground = true)
 @Composable
 private fun WinnerItemPreview() {
-    WinnerItem(index = 0, gamer = Gamer(name = "zero"), isSeller = true, isEnable = true)
+    WinnerItem(index = 0, gamer = Gamer(name = "zero"), isSellPhase = true, isEnable = true)
 }
 
 @Preview(showBackground = true)

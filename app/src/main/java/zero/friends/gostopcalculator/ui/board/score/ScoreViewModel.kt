@@ -25,11 +25,6 @@ data class ScoreUiState(
     val winner: Gamer? = null
 )
 
-data class DialogUiState(
-    val openDialog: Boolean = false
-)
-
-
 @HiltViewModel
 class ScoreViewModel @Inject constructor(
     private val gameRepository: GameRepository,
@@ -44,9 +39,6 @@ class ScoreViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ScoreUiState())
     fun uiState() = _uiState.asStateFlow()
-
-    private val _dialogState = MutableStateFlow(DialogUiState())
-    fun dialogState() = _dialogState.asStateFlow()
 
     private val _escapeEvent = MutableSharedFlow<Unit>()
     fun escapeEvent() = _escapeEvent.asSharedFlow()
@@ -76,14 +68,6 @@ class ScoreViewModel @Inject constructor(
 
     }
 
-    fun openDialog() {
-        _dialogState.update { it.copy(openDialog = true) }
-    }
-
-    fun closeDialog() {
-        _dialogState.update { it.copy(openDialog = false) }
-    }
-
     fun selectScore(gamer: Gamer, option: ScoreOption) {
         viewModelScope.launch {
             toggleScoreOptionUseCase(gamer, option)
@@ -96,7 +80,7 @@ class ScoreViewModel @Inject constructor(
         }
     }
 
-    fun onNext() {
+    fun onNextPhase() {
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -112,7 +96,7 @@ class ScoreViewModel @Inject constructor(
     }
 
 
-    fun onBack() {
+    fun onBackPhase() {
         viewModelScope.launch {
             if (uiState().value.phase is Selling) {
                 _escapeEvent.emit(Unit)
