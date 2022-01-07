@@ -2,8 +2,10 @@ package zero.friends.gostopcalculator.ui.dialog
 
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import zero.friends.gostopcalculator.R
 
@@ -21,8 +23,11 @@ fun DeleteDialog(
             }
         },
         dismissButton = {
-            Button(onClick = onDismiss) {
-                Text(text = stringResource(R.string.cancel))
+            Button(
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.gray))
+            ) {
+                Text(text = stringResource(R.string.cancel), color = colorResource(id = R.color.white))
             }
         }
     )
