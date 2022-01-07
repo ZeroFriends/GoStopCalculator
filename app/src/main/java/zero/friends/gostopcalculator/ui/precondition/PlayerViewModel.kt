@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import zero.friends.domain.model.Player
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.PlayerRepository
@@ -59,8 +58,7 @@ class PlayerViewModel @Inject constructor(
             kotlin.runCatching {
                 addAutoGeneratePlayerUseCase()
             }.onFailure {
-                _error.emit(it.message ?: "ㅋㅅㅋ")
-                Timber.tag("🔥zero:addPlayer").e("$it")
+                _error.emit(it.message.orEmpty())
             }
         }
     }
