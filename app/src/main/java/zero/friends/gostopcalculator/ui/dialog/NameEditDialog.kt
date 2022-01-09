@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.dialog
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -29,6 +31,7 @@ fun NameEditDialog(
     player: Player,
     onClose: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val dialogState by viewModel.getDialogState().collectAsState()
     val editPlayerName = remember {
         val playerName = dialogState.editPlayer?.name ?: ""
@@ -63,7 +66,13 @@ fun NameEditDialog(
                     hint = player.name,
                     color = colorResource(id = R.color.black),
                     onValueChange = {
-                        editPlayerName.value = it
+                        if (it.text.length < 8) editPlayerName.value = it
+                        else Toast.makeText(
+                            context,
+                            context.getString(R.string.over_player_name_alert),
+                            Toast.LENGTH_SHORT
+                        ).show()
+
                     },
                     error = dialogState.error?.message,
                     showKeyboard = true,

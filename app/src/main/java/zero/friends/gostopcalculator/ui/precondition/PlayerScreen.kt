@@ -96,6 +96,7 @@ private fun PlayerScreen(
     uiState: PlayerUiState,
     clickEvent: (PlayerClickEvent) -> Unit,
 ) {
+    val context = LocalContext.current
 
     Scaffold(
         modifier = TabKeyboardDownModifier(),
@@ -122,8 +123,16 @@ private fun PlayerScreen(
                 TitleOutlinedTextField(
                     title = stringResource(id = R.string.group_name),
                     text = gameName.value,
-                    hint = uiState.currentTime
-                ) { gameName.value = it }
+                    hint = uiState.currentTime,
+                    onValueChange = {
+                        if (it.text.length <= 15) gameName.value = it
+                        else Toast.makeText(
+                            context,
+                            context.getString(R.string.over_game_name_alert),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                )
 
                 PlayerLazyColumn(
                     players = uiState.players,
