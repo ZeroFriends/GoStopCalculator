@@ -58,9 +58,7 @@ class ScoreViewModel @Inject constructor(
             observeRoundGamerUseCase()
                 .onEach { roundGamers ->
                     _uiState.update {
-                        it.copy(
-                            playerResults = roundGamers
-                        )
+                        it.copy(playerResults = roundGamers)
                     }
                 }.launchIn(this)
 
@@ -137,7 +135,7 @@ class ScoreViewModel @Inject constructor(
             val hasSeller = count != 0
             val target = if (hasSeller) seller.copy(score = count, sellerOption = SellerOption.Seller) else null
             it.copy(
-                phase = Selling(count != 0),
+                phase = Selling(hasSeller),
                 seller = target
             )
         }

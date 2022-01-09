@@ -108,9 +108,11 @@ fun NumberTextField(
     val focus by interactionSource.collectIsFocusedAsState()
     var inputText by remember { mutableStateOf(TextFieldValue("")) }
 
+    //todo focus 를 밖으로 던져서 데이터를 뷰모델에서 관리하자... (뷰는 최대한 수동적으로)
+    // -> + 승리자쪽도 바꿔야 함...
     LaunchedEffect(focus) {
         if (unFocusDeleteMode && !focus) {
-            inputText = TextFieldValue(text)
+            inputText = TextFieldValue(if (isEnable) "" else text)
             onValueChane(0)
         }
     }

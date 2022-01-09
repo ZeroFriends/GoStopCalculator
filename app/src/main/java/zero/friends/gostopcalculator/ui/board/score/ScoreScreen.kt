@@ -323,14 +323,14 @@ fun WinnerItem(
             endText = stringResource(if (isSeller) R.string.page else R.string.point),
             isEnable = isEnable,
             unFocusDeleteMode = true,
-            hintColor = colorResource(id = if (isEnable) R.color.nero else R.color.gray)
-        ) {
-            event(
-                if (isSeller) ScoreEvent.OnUpdateSellerPoint(gamer, it)
-                else ScoreEvent.OnUpdateWinnerPoint(gamer, it)
-            )
-
-        }
+            hintColor = colorResource(id = if (isEnable) R.color.nero else R.color.gray),
+            onValueChane = {
+                event(
+                    if (isSeller) ScoreEvent.OnUpdateSellerPoint(gamer, it)
+                    else ScoreEvent.OnUpdateWinnerPoint(gamer, it)
+                )
+            }
+        )
 
     }
 
