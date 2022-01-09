@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.history
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -73,7 +74,7 @@ fun HistoryScreen(
 
 @Composable
 private fun HistoryScreen(uiState: HistoryUiState, event: (HistoryEvent) -> Unit = {}) {
-    Column {
+    Column(modifier = Modifier.background(color = colorResource(id = R.color.white))) {
         NewGame(event)
 
         Divider(
