@@ -63,6 +63,8 @@
     <string name="over_score_alert">1,000,000점을 초과할 수 없습니다.</string>
     <string name="over_point_alert">고스톱에서 날 수 있는 최대 점수는 8,519,680점입니다.</string>
     <string name="over_page_alert">13장을 초과할 수 없습니다.</string>
+    <string name="three_fuck_title">쓰리 뻑이 있습니다.</string>
+    <string name="three_fuck_text">쓰리 뻑 플레이어를 승리 처리 하시겠습니까?</string>
 
 
 </resources>

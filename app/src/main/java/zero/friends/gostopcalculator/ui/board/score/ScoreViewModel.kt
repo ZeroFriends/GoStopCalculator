@@ -22,7 +22,8 @@ data class ScoreUiState(
     val playerResults: List<Gamer> = emptyList(),
     val phase: Phase = Selling(false),
     val seller: Gamer? = null,
-    val winner: Gamer? = null
+    val winner: Gamer? = null,
+    val threeFuckGamer: Gamer? = null
 )
 
 @HiltViewModel
@@ -63,14 +64,19 @@ class ScoreViewModel @Inject constructor(
                     }
                 }.launchIn(this)
 
-
         }
 
     }
 
-    fun selectScore(gamer: Gamer, option: ScoreOption) {
+    fun selectScore(gamer: Gamer, option: ScoreOption, checkThreeFuck: (Boolean) -> Unit = {}) {
         viewModelScope.launch {
-            toggleScoreOptionUseCase(gamer, option)
+            toggleScoreOptionUseCase(
+                gamer = gamer,
+                option = option,
+                checkThreeFuck = checkThreeFuck.also {
+                    _uiState.update { it.copy(threeFuckGamer = gamer.copy(scoreOption = listOf(ScoreOption.ThreeFuck))) }
+                }
+            )
         }
     }
 
@@ -140,10 +146,11 @@ class ScoreViewModel @Inject constructor(
     fun calculateGameResult() {
         viewModelScope.launch {
             _uiState.value.seller?.let { sellingUseCase.invoke(it) }
-            updateWinnerUseCase.invoke(requireNotNull(_uiState.value.winner))
+            val winner = _uiState.value.winner
+            if (winner != null) updateWinnerUseCase.invoke(winner)
             calculateGameResultUseCase.invoke(
                 seller = uiState().value.seller,
-                winner = requireNotNull(uiState().value.winner)
+                winner = uiState().value.winner
             )
         }
     }

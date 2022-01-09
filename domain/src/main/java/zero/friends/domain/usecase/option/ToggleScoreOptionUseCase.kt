@@ -11,10 +11,14 @@ class ToggleScoreOptionUseCase @Inject constructor(
 ) {
     private val fucks = listOf(ScoreOption.FirstFuck, ScoreOption.SecondFuck, ScoreOption.ThreeFuck)
 
-    suspend operator fun invoke(gamer: Gamer, option: ScoreOption) {
-        if (fucks.contains(option) && !gamer.scoreOption.contains(option)) {
-            clearFucks(gamer, option)
+    suspend operator fun invoke(gamer: Gamer, option: ScoreOption, checkThreeFuck: (Boolean) -> Unit) {
+        if (!gamer.scoreOption.contains(option)) {
+            checkThreeFuck(option == ScoreOption.ThreeFuck)
+            if (fucks.contains(option)) {
+                clearFucks(gamer, option)
+            }
         }
+
         toggle(gamer, option)
     }
 

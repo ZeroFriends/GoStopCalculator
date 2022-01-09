@@ -19,7 +19,7 @@ class CalculateGameResultUseCase @Inject constructor(
     private lateinit var rules: List<Rule>
     private lateinit var roundGamers: List<Gamer>
 
-    suspend operator fun invoke(seller: Gamer?, winner: Gamer) {
+    suspend operator fun invoke(seller: Gamer?, winner: Gamer?) {
         rules = ruleRepository.getRules(requireNotNull(gameRepository.getCurrentGameId()))
         roundGamers = roundGamerUseCase()
 
@@ -27,7 +27,7 @@ class CalculateGameResultUseCase @Inject constructor(
         calculateSellAccount(seller)
 
         //2 패자 계산
-        calculateLoserAccount(seller, winner)
+        if (winner != null) calculateLoserAccount(seller, winner)
 
         //3 점수옵션 계산
         calculateScoreAccount(seller)

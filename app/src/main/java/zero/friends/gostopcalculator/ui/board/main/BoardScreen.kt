@@ -30,7 +30,7 @@ import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
-import zero.friends.gostopcalculator.ui.dialog.DeleteDialog
+import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 
 private sealed interface BoardEvent {
@@ -84,14 +84,16 @@ fun BoardScreen(
     }
 
     if (dialogState != null) {
-        DeleteDialog(
+        BasicDialog(
             onDismiss = {
                 boardViewModel.closeDialog()
             },
             onClick = {
                 boardViewModel.deleteRound()
                 boardViewModel.closeDialog()
-            }
+            },
+            confirmText = stringResource(R.string.delete),
+            titleText = stringResource(R.string.delete_dialog_title)
         )
     }
 

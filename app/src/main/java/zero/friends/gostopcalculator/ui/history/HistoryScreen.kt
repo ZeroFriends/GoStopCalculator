@@ -20,7 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.domain.model.Game
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
-import zero.friends.gostopcalculator.ui.dialog.DeleteDialog
+import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 
 private sealed class HistoryEvent {
     object StartGame : HistoryEvent()
@@ -42,12 +42,14 @@ fun HistoryScreen(
 
     val value = dialogGameId
     if (value != null) {
-        DeleteDialog(
+        BasicDialog(
             onDismiss = { dialogGameId = null },
             onClick = {
                 viewModel.deleteGame(value)
                 dialogGameId = null
-            }
+            },
+            confirmText = stringResource(R.string.delete),
+            titleText = stringResource(R.string.delete_dialog_title)
         )
     }
 

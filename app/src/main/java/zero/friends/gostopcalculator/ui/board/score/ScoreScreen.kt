@@ -33,6 +33,7 @@ import zero.friends.gostopcalculator.ui.common.DescriptionBox
 import zero.friends.gostopcalculator.ui.common.NumberTextField
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
+import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
 
 
@@ -60,6 +61,9 @@ fun ScoreScreen(
     var openDialog by remember {
         mutableStateOf(false)
     }
+    var threeFuckDialog by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(key1 = Unit) {
         scoreViewModel.escapeEvent().collectLatest {
@@ -75,6 +79,23 @@ fun ScoreScreen(
         ExtraActionDialog(onClose = { openDialog = false }, phase = uiState.phase)
     }
 
+    if (threeFuckDialog) {
+        BasicDialog(
+            confirmText = stringResource(id = android.R.string.ok),
+            titleText = stringResource(id = R.string.three_fuck_title),
+            text = stringResource(id = R.string.three_fuck_text),
+            onDismiss = {
+                threeFuckDialog = false
+                scoreViewModel.selectScore(requireNotNull(uiState.threeFuckGamer), ScoreOption.ThreeFuck)
+            },
+            onClick = {
+                threeFuckDialog = false
+                scoreViewModel.calculateGameResult()
+                onComplete()
+            }
+        )
+    }
+
     ScoreScreen(
         scaffoldState = scaffoldState,
         uiState = uiState,
@@ -82,7 +103,11 @@ fun ScoreScreen(
             when (event) {
                 ScoreEvent.OnNext -> scoreViewModel.onNextPhase()
                 ScoreEvent.Back -> scoreViewModel.onBackPhase()
-                is ScoreEvent.SelectScore -> scoreViewModel.selectScore(event.gamer, event.option)
+                is ScoreEvent.SelectScore -> {
+                    scoreViewModel.selectScore(event.gamer, event.option) {
+                        threeFuckDialog = it
+                    }
+                }
                 is ScoreEvent.OnUpdateWinnerPoint -> scoreViewModel.updateWinner(event.gamer, event.point)
                 is ScoreEvent.SelectLoser -> scoreViewModel.selectLoser(event.gamer, event.option)
                 ScoreEvent.Complete -> {
@@ -200,12 +225,12 @@ fun GamerList(uiState: ScoreUiState, event: (ScoreEvent) -> Unit = {}) {
 
             itemsIndexed(uiState.playerResults) { index, gamer ->
                 when (uiState.phase) {
-                    is Selling -> WinnerItem(index, gamer, isSellPhase = true, isEnable = true, event)
+                    is Selling -> WinnerItem(index, gamer, isSeller = true, isEnable = true, event)
                     is Scoring -> {
                         if (gamer.id == uiState.seller?.id) WinnerItem(
                             index,
                             uiState.seller,
-                            isSellPhase = true,
+                            isSeller = true,
                             isEnable = false
                         )
                         else ScoringItem(index, gamer, uiState.phase, event)
@@ -214,23 +239,23 @@ fun GamerList(uiState: ScoreUiState, event: (ScoreEvent) -> Unit = {}) {
                         if (gamer.id == uiState.seller?.id) WinnerItem(
                             index,
                             uiState.seller,
-                            isSellPhase = true,
+                            isSeller = true,
                             isEnable = false
                         )
-                        else WinnerItem(index, gamer, isSellPhase = false, isEnable = true, event = event)
+                        else WinnerItem(index, gamer, isSeller = false, isEnable = true, event = event)
                     }
                     is Loser -> {
                         when (gamer.id) {
                             uiState.seller?.id -> WinnerItem(
                                 index,
                                 uiState.seller,
-                                isSellPhase = true,
+                                isSeller = true,
                                 isEnable = false
                             )
                             uiState.winner?.id -> WinnerItem(
                                 index,
                                 uiState.winner,
-                                isSellPhase = false,
+                                isSeller = false,
                                 isEnable = false
                             )
                             else -> ScoringItem(index, gamer, uiState.phase, event)
@@ -246,7 +271,7 @@ fun GamerList(uiState: ScoreUiState, event: (ScoreEvent) -> Unit = {}) {
 fun WinnerItem(
     index: Int,
     gamer: Gamer,
-    isSellPhase: Boolean,
+    isSeller: Boolean,
     isEnable: Boolean,
     event: (ScoreEvent) -> Unit = {}
 ) {
@@ -284,7 +309,7 @@ fun WinnerItem(
                     )
                     if (!isEnable) {
                         Spacer(modifier = Modifier.padding(3.dp))
-                        val optionName = if (isSellPhase) gamer.sellerOption else gamer.winnerOption
+                        val optionName = if (isSeller) gamer.sellerOption else gamer.winnerOption
                         OptionBox(requireNotNull(optionName?.korean), colorResource(id = R.color.gray))
                     }
                 }
@@ -295,13 +320,13 @@ fun WinnerItem(
         NumberTextField(
             text = if (isEnable) "" else gamer.score.toString(),
             modifier = Modifier.weight(1f),
-            endText = stringResource(if (isSellPhase) R.string.page else R.string.point),
+            endText = stringResource(if (isSeller) R.string.page else R.string.point),
             isEnable = isEnable,
             unFocusDeleteMode = true,
             hintColor = colorResource(id = if (isEnable) R.color.nero else R.color.gray)
         ) {
             event(
-                if (isSellPhase) ScoreEvent.OnUpdateSellerPoint(gamer, it)
+                if (isSeller) ScoreEvent.OnUpdateSellerPoint(gamer, it)
                 else ScoreEvent.OnUpdateWinnerPoint(gamer, it)
             )
 
@@ -387,7 +412,7 @@ private fun OptionBox(text: String, color: Color, isSelected: Boolean = false, o
 @Preview(showBackground = true)
 @Composable
 private fun WinnerItemPreview() {
-    WinnerItem(index = 0, gamer = Gamer(name = "zero"), isSellPhase = true, isEnable = true)
+    WinnerItem(index = 0, gamer = Gamer(name = "zero"), isSeller = true, isEnable = true)
 }
 
 @Preview(showBackground = true)

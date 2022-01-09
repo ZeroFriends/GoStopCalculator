@@ -12,22 +12,24 @@ import androidx.compose.ui.unit.dp
 import zero.friends.gostopcalculator.R
 
 @Composable
-fun DeleteDialog(
+fun BasicDialog(
     onDismiss: () -> Unit = {},
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    confirmText: String,
+    titleText: String,
+    text: String? = null
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(R.string.delete_dialog_title)) },
+        title = { Text(text = titleText) },
+        text = { if (text != null) Text(text = text) },
         confirmButton = {
             Text(
                 modifier = Modifier
                     .clickable { onClick() }
                     .padding(10.dp),
-                text = stringResource(R.string.delete),
-                color = colorResource(
-                    id = R.color.orangey_red
-                )
+                text = confirmText,
+                color = colorResource(id = R.color.orangey_red)
             )
         },
         dismissButton = {
