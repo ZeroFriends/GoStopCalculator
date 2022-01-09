@@ -61,10 +61,12 @@ private fun RuleLogScreen(
             )
             Spacer(modifier = Modifier.padding(8.dp))
             ContentsCard {
-                Column(modifier = Modifier.padding(vertical = 24.dp, horizontal = 8.dp)) {
-                    GridItems(data = uiState.rule, nColumns = 2) { index, rule ->
-                        RuleLogItem(index = index, rule = rule)
-                    }
+                GridItems(
+                    modifier = Modifier.padding(vertical = 26.dp, horizontal = 18.dp),
+                    data = uiState.rule,
+                    nColumns = 2
+                ) { index, rule ->
+                    RuleLogItem(index = index, rule = rule)
                 }
             }
         }
@@ -74,7 +76,7 @@ private fun RuleLogScreen(
 @Composable
 fun RuleLogItem(index: Int = 0, rule: Rule = Rule()) {
     Row(
-        modifier = Modifier.padding(horizontal = 8.dp),
+        modifier = Modifier.padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
