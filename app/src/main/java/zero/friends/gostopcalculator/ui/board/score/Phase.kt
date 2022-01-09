@@ -35,7 +35,7 @@ object Scoring : Phase.Toggleable {
 
     override fun getSubText(): String = "운이 좋네요!\n해당하는 곳에 체크를 해주세요."
 
-    override fun extraButtonText(): String = "점수 계산 법"
+    override fun extraButtonText(): String = "고스톱 설명서"
 }
 
 class Winner(private val enable: Boolean = false) : Phase.Editable {
@@ -47,7 +47,7 @@ class Winner(private val enable: Boolean = false) : Phase.Editable {
 
     override fun getSubText(): String = "이긴 플레이어 선택하고,\n몇점을 내었는지 계산 후 점수를 적어주세요."
 
-    override fun extraButtonText(): String = "점수 계산 법"
+    override fun extraButtonText(): String = "고스톱 설명서"
 }
 
 object Loser : Phase.Toggleable {
@@ -59,5 +59,5 @@ object Loser : Phase.Toggleable {
 
     override fun getSubText(): String = "게임에서 패배한 플레이어들의 박 여부를 체크해주세요."
 
-    override fun extraButtonText(): String = "점수 계산 법"
+    override fun extraButtonText(): String = "고스톱 설명서"
 }

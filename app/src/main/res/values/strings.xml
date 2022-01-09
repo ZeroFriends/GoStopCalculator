@@ -53,7 +53,6 @@
     <string name="sell_shine_description">4인 플레이경우 한명이 필수로 광을 팔아야 플레이가 가능합니다. 광을 판 플레이어를 선택해주세요.</string>
     <string name="can_celling">광팔 수 있는 패</string>
     <string name="page">장</string>
-    <string name="score_guide">점수 계산 법</string>
     <string name="point">점</string>
     <string name="save">저장</string>
     <string name="end_game">게임종료</string>
@@ -63,8 +62,8 @@
     <string name="over_score_alert">1,000,000점을 초과할 수 없습니다.</string>
     <string name="over_point_alert">고스톱에서 날 수 있는 최대 점수는 8,519,680점입니다.</string>
     <string name="over_page_alert">13장을 초과할 수 없습니다.</string>
-    <string name="three_fuck_title">쓰리 뻑이 있습니다.</string>
-    <string name="three_fuck_text">쓰리 뻑 플레이어를 승리 처리 하시겠습니까?</string>
+    <string name="three_fuck_title">삼연 뻑이 있습니다.</string>
+    <string name="three_fuck_text">삼연 뻑 플레이어를 승리 처리 하시겠습니까?</string>
 
 
 </resources>

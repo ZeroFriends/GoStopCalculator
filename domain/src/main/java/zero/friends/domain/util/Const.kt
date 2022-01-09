@@ -9,9 +9,9 @@ object Const {
         const val Seller = "광팜"
 
         const val Fuck = "뻑"
-        const val FirstFuck = "1 뻑"
-        const val SecondFuck = "2 뻑"
-        const val ThreeFuck = "3 뻑"
+        const val FirstFuck = "첫 뻑"
+        const val SecondFuck = "연 뻑"
+        const val ThreeFuck = "삼연 뻑"
         const val FirstDdadak = "첫 따닥"
 
         const val PeaBak = "피 박"
