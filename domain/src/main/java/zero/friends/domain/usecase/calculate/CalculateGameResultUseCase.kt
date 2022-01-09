@@ -24,7 +24,7 @@ class CalculateGameResultUseCase @Inject constructor(
         roundGamers = roundGamerUseCase()
 
         //1 광팜 계산
-        calculateSellAccount(seller)
+        if (seller != null) calculateSellAccount(seller)
 
         //2 패자 계산
         if (winner != null) calculateLoserAccount(seller, winner)
@@ -33,16 +33,14 @@ class CalculateGameResultUseCase @Inject constructor(
         calculateScoreAccount(seller)
     }
 
-    private suspend fun calculateSellAccount(seller: Gamer?) {
+    private suspend fun calculateSellAccount(seller: Gamer) {
         //광팔기
-        val sellScore = rules.first { it.name == Const.Rule.Sell }.score
-        if (seller != null) {//광판사람 업데이트
-            val gamers = roundGamers - seller
-            val account = sellScore * seller.score
-            gamers.forEach {
-                updateAccountUseCase(seller, it, account)
-                updateAccountUseCase(it, seller, -account)
-            }
+        val sellScore = rules.firstOrNull { it.name == Const.Rule.Sell }?.score ?: 0
+        val gamers = roundGamers - seller
+        val account = sellScore * seller.score
+        gamers.forEach {
+            updateAccountUseCase(seller, it, account)
+            updateAccountUseCase(it, seller, -account)
         }
     }
 
