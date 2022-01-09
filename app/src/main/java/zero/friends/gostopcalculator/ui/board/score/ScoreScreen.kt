@@ -149,6 +149,7 @@ private fun ScoreScreen(
                 text = uiState.game.name,
                 onBack = { scoreEvent(ScoreEvent.Back) },
                 onAction = { scoreEvent(ScoreEvent.Exit) },
+                actionIcon = painterResource(id = R.drawable.ic_topbar_close),
                 isRed = false
             )
         }

@@ -39,6 +39,7 @@ private sealed interface BoardEvent {
     class Detail(val roundId: Long) : BoardEvent
     class More(val roundId: Long) : BoardEvent
     object OpenCalculated : BoardEvent
+    object OpenRule : BoardEvent
 }
 
 @Composable
@@ -54,7 +55,8 @@ fun BoardScreen(
     onNext: (gameId: Long) -> Unit = {},
     onBack: () -> Unit = {},
     openDetailScreen: (roundId: Long) -> Unit = {},
-    openCalculated: () -> Unit = {}
+    openCalculated: () -> Unit = {},
+    openRule: () -> Unit = {}
 ) {
     val scaffoldState = rememberScaffoldState()
     val uiState by boardViewModel.getUiState().collectAsState()
@@ -77,6 +79,7 @@ fun BoardScreen(
                 boardViewModel.openDialog(event.roundId)
             }
             BoardEvent.OpenCalculated -> openCalculated()
+            BoardEvent.OpenRule -> openRule()
         }
     }
 
@@ -107,7 +110,9 @@ private fun BoardScreen(
             CenterTextTopBar(
                 text = uiState.game.name,
                 onBack = { event(BoardEvent.Back) },
-                isRed = false
+                isRed = false,
+                actionText = stringResource(id = R.string.rule_title_text),
+                onAction = { event(BoardEvent.OpenRule) }
             )
         }
     ) {

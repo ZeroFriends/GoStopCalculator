@@ -91,7 +91,6 @@ private fun RuleScreen(
             CenterTextTopBar(
                 text = String.format(stringResource(id = R.string.game_setting_title), 2),
                 onBack = { clickEvent(RuleClickEvent.Back) },
-                onAction = null
             )
         }
     ) {

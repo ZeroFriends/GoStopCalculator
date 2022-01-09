@@ -2,6 +2,7 @@ package zero.friends.gostopcalculator.ui.common
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -34,7 +35,8 @@ fun CenterTextTopBar(
     isRed: Boolean = true,
     onBack: () -> Unit = {},
     onAction: (() -> Unit)? = null,
-    actionIcon: Painter = painterResource(id = R.drawable.ic_topbar_close)
+    actionIcon: Painter? = null,
+    actionText: String? = null
 ) {
     val modifier = Modifier
         .defaultMinSize(60.dp, 60.dp)
@@ -66,12 +68,22 @@ fun CenterTextTopBar(
         actions = {
             Box(modifier = modifier, contentAlignment = Alignment.Center) {
                 if (onAction != null) {
-                    IconButton(onClick = onAction) {
-                        Icon(
-                            painter = actionIcon,
-                            contentDescription = "Close",
-                            tint = colorResource(id = iconColor)
-                        )
+                    if (actionIcon != null) {
+                        IconButton(onClick = onAction) {
+                            Icon(
+                                painter = actionIcon,
+                                contentDescription = "Close",
+                                tint = colorResource(id = iconColor)
+                            )
+                        }
+                    } else if (actionText != null) {
+                        Surface(
+                            modifier = Modifier
+                                .padding(end = 16.dp)
+                                .clickable(onClick = onAction)
+                        ) {
+                            Text(text = actionText, fontSize = 14.sp, color = colorResource(id = R.color.orangey_red))
+                        }
                     }
                 }
             }

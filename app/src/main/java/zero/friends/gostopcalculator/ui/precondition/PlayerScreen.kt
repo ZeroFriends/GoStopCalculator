@@ -104,7 +104,6 @@ private fun PlayerScreen(
             CenterTextTopBar(
                 text = String.format(stringResource(id = R.string.game_setting_title), 1),
                 onBack = { clickEvent.invoke(PlayerClickEvent.Back) },
-                onAction = null
             )
         }
     ) {

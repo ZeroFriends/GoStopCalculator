@@ -18,8 +18,9 @@ import androidx.compose.ui.unit.sp
 import zero.friends.gostopcalculator.R
 
 @Composable
-fun TitleText(text: String) {
+fun TitleText(modifier: Modifier = Modifier, text: String) {
     Text(
+        modifier = modifier,
         text = text,
         fontWeight = FontWeight.Bold,
         fontSize = 24.sp

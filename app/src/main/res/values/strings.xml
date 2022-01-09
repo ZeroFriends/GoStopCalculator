@@ -43,6 +43,7 @@
     <string name="won">원</string>
     <string name="rule_name">규칙이름</string>
     <string name="rule_title">게임규칙 💡</string>
+    <string name="rule_title_text">게임규칙</string>
     <string name="rule_subtitle">게임 플레이 시 적용될 금액입니다.\n과도한 금액이 나오지 않게 주의해 주세요 :)</string>
     <string name="delete_dialog_title">삭제하시겠습니까?</string>
     <string name="delete">삭제</string>

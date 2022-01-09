@@ -16,6 +16,7 @@ import zero.friends.gostopcalculator.ui.board.prepare.PrepareScreen
 import zero.friends.gostopcalculator.ui.board.result.CalculateScreen
 import zero.friends.gostopcalculator.ui.board.result.DetailScreen
 import zero.friends.gostopcalculator.ui.board.result.createDetailViewModel
+import zero.friends.gostopcalculator.ui.board.rule.RuleLogScreen
 import zero.friends.gostopcalculator.ui.board.score.ScoreScreen
 import zero.friends.gostopcalculator.ui.board.score.end.EndScreen
 import zero.friends.gostopcalculator.ui.history.HistoryScreen
@@ -43,6 +44,7 @@ sealed interface Navigate {
         object Score : Board
         object End : Board
 
+        object Rule : Board
         object Detail : Board
         object Calculate : Board
     }
@@ -113,6 +115,9 @@ fun Navigator(onBackPressed: () -> Unit) {
                 },
                 openCalculated = {
                     navController.navigate(Navigate.Board.Calculate.route())
+                },
+                openRule = {
+                    navController.navigate(Navigate.Board.Rule.route())
                 }
             )
         }
@@ -164,6 +169,10 @@ fun Navigator(onBackPressed: () -> Unit) {
 
         composable(Navigate.Board.Calculate.route()) {
             CalculateScreen(onBack = { navController.navigateUp() })
+        }
+
+        composable(Navigate.Board.Rule.route()) {
+            RuleLogScreen(onBack = { navController.navigateUp() })
         }
 
     }

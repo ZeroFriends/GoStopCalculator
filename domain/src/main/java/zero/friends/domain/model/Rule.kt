@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Rule(
-    val name: String,
-    val isEssential: Boolean,
-    val script: String,
+    val name: String = "",
+    val isEssential: Boolean = false,
+    val script: String = "",
     var score: Int = 0,
 )
