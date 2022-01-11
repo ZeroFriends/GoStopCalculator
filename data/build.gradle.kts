@@ -3,7 +3,7 @@ plugins {
     kotlin("android")
     kotlin("kapt")
     id("dagger.hilt.android.plugin")
-
+    id("kotlinx-serialization")
 }
 
 android {
@@ -12,13 +12,21 @@ android {
 
 dependencies {
     implementation(project(":domain"))
-    implementation(Dependencies.Dagger.hiltAndroid)
-    implementation(Dependencies.Square.retrofit)
-    kapt(Dependencies.Dagger.hiltCompiler)
+    implementation(project(":shared"))
+    implementation(Dep.Dagger.hiltAndroid)
+    kapt(Dep.Dagger.hiltCompiler)
 
-    implementation(Dependencies.Kotlin.coroutineCore)
-    api(Dependencies.AndroidX.Room.room)
-    implementation(Dependencies.AndroidX.Room.roomKtx)
-    kapt(Dependencies.AndroidX.Room.roomCompiler)
+    implementation(Dep.Kotlin.coroutineCore)
+    implementation(Dep.Kotlin.serialization)
+
+    api(Dep.AndroidX.Room.room)
+    implementation(Dep.AndroidX.Room.roomKtx)
+    kapt(Dep.AndroidX.Room.roomCompiler)
+
+    api(Dep.Square.retrofit)
+    implementation(Dep.Square.okhttp3_logging)
+    implementation(Dep.Square.serialization)
+
+    implementation(Dep.timber)
 
 }

@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="zero.friends.gostopcalculator">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:name=".GoStopApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.GoStopCalculator">
-        <activity android:name=".splash.SplashActivity">
+        <activity
+            android:name="zero.friends.gostopcalculator.ui.splash.SplashActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -18,9 +22,16 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".main.MainActivity">
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="zero.friends.gostopcalculator.initailizer.TimberInitializer"
+                android:value="androidx.startup" />
+        </provider>
 
-        </activity>
     </application>
 
 </manifest>

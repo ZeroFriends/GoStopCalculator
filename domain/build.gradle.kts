@@ -2,12 +2,25 @@ plugins {
     id("kotlin")
     kotlin("kapt")
     id("java-library")
+    id("kotlinx-serialization")
 }
 
+repositories {
+    mavenCentral()
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+}
 dependencies {
-    project(":data")
-    implementation(Dependencies.inject)
-    implementation(Dependencies.Kotlin.coroutineCore)
+    implementation(Dep.inject)
+    implementation(Dep.Kotlin.coroutineCore)
+
+    implementation(Dep.Kotlin.serialization)
+    implementation(Dep.Square.serialization)
 }
 
 java {

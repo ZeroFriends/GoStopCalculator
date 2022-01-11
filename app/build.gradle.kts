@@ -38,7 +38,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = Dependencies.Compose.version
+        kotlinCompilerExtensionVersion = Dep.Compose.version
     }
 
     buildFeatures {
@@ -49,36 +49,37 @@ android {
 dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
+    implementation(project(":shared"))
 
-    implementation(Dependencies.Compose.ui)
-    implementation(Dependencies.Compose.tooling)
-    implementation(Dependencies.Compose.material)
-    implementation(Dependencies.Compose.themeAdapter)
+    implementation(Dep.Compose.ui)
+    implementation(Dep.Compose.tooling)
+    implementation(Dep.Compose.material)
+    implementation(Dep.Compose.themeAdapter)
+    implementation(Dep.lottie)
 
+    implementation(Dep.Accompanist.systemController)
 
-    implementation(Dependencies.AndroidX.core)
-    implementation(Dependencies.AndroidX.appcompat)
-    implementation(Dependencies.AndroidX.fragment)
-    implementation(Dependencies.AndroidX.Activity.activity)
-    implementation(Dependencies.AndroidX.Activity.compose)
-    implementation(Dependencies.AndroidX.Lifecycle.viewModel)
+    implementation(Dep.AndroidX.core)
+    implementation(Dep.AndroidX.startUp)
+    implementation(Dep.AndroidX.fragment)
+    implementation(Dep.AndroidX.constraintCompose)
+    implementation(Dep.AndroidX.Activity.activity)
+    implementation(Dep.AndroidX.Activity.compose)
+    implementation(Dep.AndroidX.Lifecycle.viewModel)
+    implementation(Dep.AndroidX.Lifecycle.composeViewModel)
 
-    implementation(Dependencies.Navigation.ui)
-    implementation(Dependencies.Navigation.fragment)
-    implementation(Dependencies.Navigation.compose)
+    implementation(Dep.Navigation.ui)
+    implementation(Dep.Navigation.fragment)
+    implementation(Dep.Navigation.compose)
 
-    androidTestImplementation(Dependencies.Test.junit)
-    androidTestImplementation(Dependencies.Test.espresso)
+    implementation(Dep.Kotlin.coroutineCore)
+    implementation(Dep.Kotlin.coroutineAndroid)
 
-    implementation(Dependencies.Kotlin.coroutineCore)
-    implementation(Dependencies.Kotlin.coroutineAndroid)
+    implementation(Dep.Dagger.hiltAndroid)
+    implementation(Dep.Dagger.hiltLifeCycleViewModel)
+    implementation(Dep.Dagger.navigationCompose)
+    kapt(Dep.Dagger.hiltCompiler)
 
-    implementation(Dependencies.Dagger.hiltAndroid)
-    implementation(Dependencies.Dagger.hiltLifeCycleViewModel)
-    kapt(Dependencies.Dagger.hiltCompiler)
-
-    implementation(Dependencies.Image.glide)
-    implementation(Dependencies.Image.glideCompiler)
-
-    implementation(Dependencies.timber)
+    implementation(Dep.timber)
+    implementation(Dep.Kotlin.reflect)
 }
