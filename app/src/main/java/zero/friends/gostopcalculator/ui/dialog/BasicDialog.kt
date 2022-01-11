@@ -22,7 +22,9 @@ fun BasicDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = titleText) },
-        text = { if (text != null) Text(text = text) },
+        text = text?.let {
+            { Text(text = it) }
+        },
         confirmButton = {
             Text(
                 modifier = Modifier
