@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
@@ -47,6 +48,9 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (Game) ->
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         ruleViewModel.updateRule()
+        ruleViewModel.toast().collect {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
     }
 
     BackHandler(true) {
@@ -69,8 +73,8 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (Game) ->
                 RuleClickEvent.Helper -> Toast.makeText(context, "아직 기능구현 안됨", Toast.LENGTH_SHORT).show()
             }
         },
-        onUpdateRule = {
-            ruleViewModel.updateRuleScore(it)
+        onUpdateRule = { rule, score ->
+            ruleViewModel.updateRuleScore(rule, score)
             ruleViewModel.checkButtonState()
         })
 
@@ -82,7 +86,7 @@ private fun RuleScreen(
     scaffoldState: ScaffoldState,
     uiState: RuleUiState,
     clickEvent: (RuleClickEvent) -> Unit = {},
-    onUpdateRule: (Rule) -> Unit = {},
+    onUpdateRule: (rule: Rule, score: Long) -> Unit = { _, _ -> }
 ) {
     Scaffold(
         modifier = TabKeyboardDownModifier(),
@@ -107,14 +111,21 @@ private fun RuleScreen(
 }
 
 @Composable
-private fun RuleLazyColumn(rules: List<Rule>, clickEvent: (RuleClickEvent) -> Unit, onUpdateRule: (Rule) -> Unit = {}) {
+private fun RuleLazyColumn(
+    rules: List<Rule>,
+    clickEvent: (RuleClickEvent) -> Unit,
+    onUpdateRule: (rule: Rule, score: Long) -> Unit = { _, _ -> }
+) {
     LazyColumn(contentPadding = PaddingValues(top = 35.dp, bottom = 12.dp)) {
         item {
             AmountSettingBlock { clickEvent(RuleClickEvent.Helper) }
         }
-        itemsIndexed(rules) { index, rule ->
+        itemsIndexed(
+            items = rules,
+            key = { _, item -> item.name }
+        ) { index, rule ->
             RuleItem(index = index, rule) {
-                onUpdateRule(rule.copy(score = it))
+                onUpdateRule(rule, it)
             }
         }
 
@@ -122,7 +133,7 @@ private fun RuleLazyColumn(rules: List<Rule>, clickEvent: (RuleClickEvent) -> Un
 }
 
 @Composable
-private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) {
+private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {}) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -169,7 +180,11 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) 
             }
         }
 
-        NumberTextField(modifier = Modifier.weight(1f), endText = stringResource(R.string.won)) {
+        NumberTextField(
+            text = rule.score.toString(),
+            modifier = Modifier.weight(1f),
+            endText = stringResource(R.string.won)
+        ) {
             onUpdateScore(it)
         }
     }

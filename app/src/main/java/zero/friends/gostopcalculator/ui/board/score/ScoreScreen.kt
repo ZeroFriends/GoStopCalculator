@@ -43,8 +43,8 @@ sealed interface ScoreEvent {
     class SelectScore(val gamer: Gamer, val option: ScoreOption) : ScoreEvent
     class SelectLoser(val gamer: Gamer, val option: LoserOption) : ScoreEvent
     object Complete : ScoreEvent
-    class OnUpdateWinnerPoint(val gamer: Gamer, val point: Int) : ScoreEvent
-    class OnUpdateSellerPoint(val gamer: Gamer, val count: Int) : ScoreEvent
+    class OnUpdateWinnerPoint(val gamer: Gamer, val point: Long) : ScoreEvent
+    class OnUpdateSellerPoint(val gamer: Gamer, val count: Long) : ScoreEvent
     object OnClickSubButton : ScoreEvent
     object Exit : ScoreEvent
 }
@@ -318,11 +318,10 @@ fun WinnerItem(
         }
 
         NumberTextField(
-            text = if (isEnable) "" else gamer.score.toString(),
             modifier = Modifier.weight(1f),
+            text = if (isEnable) "" else gamer.score.toString(),
             endText = stringResource(if (isSeller) R.string.page else R.string.point),
             isEnable = isEnable,
-            unFocusDeleteMode = true,
             hintColor = colorResource(id = if (isEnable) R.color.nero else R.color.gray),
             onValueChane = {
                 event(

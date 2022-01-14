@@ -1,16 +1,20 @@
 package zero.friends.gostopcalculator.ui.precondition
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.usecase.rule.AddNewRuleUseCase
 import zero.friends.domain.usecase.rule.GetDefaultRuleUseCase
+import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.util.TimeUtil
+import zero.friends.gostopcalculator.util.separateComma
 import javax.inject.Inject
 
 data class RuleUiState(
@@ -22,6 +26,7 @@ data class RuleUiState(
 
 @HiltViewModel
 class RuleViewModel @Inject constructor(
+    @ApplicationContext val context: Context,
     private val getDefaultRuleUseCase: GetDefaultRuleUseCase,
     private val addNewRuleUseCase: AddNewRuleUseCase,
     private val gameRepository: GameRepository
@@ -30,6 +35,9 @@ class RuleViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RuleUiState())
     fun getUiState() = _uiState.asStateFlow()
 
+    private val _toast = MutableSharedFlow<String?>()
+    fun toast() = _toast.asSharedFlow()
+
     suspend fun updateRule() {
         _uiState.update {
             val rules = getDefaultRuleUseCase.invoke()
@@ -37,8 +45,27 @@ class RuleViewModel @Inject constructor(
         }
     }
 
-    fun updateRuleScore(targetRule: Rule) {
-        getUiState().value.rules.find { it.name == targetRule.name }?.score = targetRule.score
+    fun updateRuleScore(targetRule: Rule, score: Long) {
+        viewModelScope.launch {
+            runCatching {
+                require(score <= MAXIMUM_SCORE) {
+                    context.getString(R.string.over_score_alert, MAXIMUM_SCORE.separateComma())
+                }
+            }.onFailure {
+                _toast.emit(it.message)
+            }.onSuccess {
+                _uiState.update { state ->
+                    val newRule = state.rules.map {
+                        if (it.name == targetRule.name) {
+                            it.copy(score = score.toInt())
+                        } else {
+                            it
+                        }
+                    }
+                    state.copy(rules = newRule)
+                }
+            }
+        }
     }
 
     suspend fun startGame(): Game {
@@ -51,6 +78,10 @@ class RuleViewModel @Inject constructor(
         _uiState.update {
             it.copy(enableComplete = verify)
         }
+    }
+
+    companion object {
+        const val MAXIMUM_SCORE = 1_000_000
     }
 
 }

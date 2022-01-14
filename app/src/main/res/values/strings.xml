@@ -59,7 +59,7 @@
     <string name="sum_score">누적금액 👍</string>
     <string name="congratulation">수고하셨습니다!</string>
     <string name="end_description">하단에 저장하기 버튼을 누르고 다음게임을 진행해주세요.</string>
-    <string name="over_score_alert">1,000,000점을 초과할 수 없습니다.</string>
+    <string name="over_score_alert">%s점을 초과할 수 없습니다.</string>
     <string name="over_point_alert">고스톱에서 날 수 있는 최대 점수는 8,519,680점입니다.</string>
     <string name="over_page_alert">13장을 초과할 수 없습니다.</string>
     <string name="three_fuck_title">삼연 뻑이 있습니다.</string>

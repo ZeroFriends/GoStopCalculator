@@ -1,11 +1,16 @@
 package zero.friends.gostopcalculator.ui.board.score
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import zero.friends.domain.model.*
+import zero.friends.domain.model.Game
+import zero.friends.domain.model.Gamer
+import zero.friends.domain.model.LoserOption
+import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.usecase.calculate.CalculateGameResultUseCase
 import zero.friends.domain.usecase.gamer.GetRoundGamerUseCase
@@ -43,6 +48,9 @@ class ScoreViewModel @Inject constructor(
 
     private val _escapeEvent = MutableSharedFlow<Unit>()
     fun escapeEvent() = _escapeEvent.asSharedFlow()
+
+    private val _sellShines = mutableStateOf(emptyList<Gamer>())
+    val sellShines by _sellShines
 
     init {
         viewModelScope.launch {
@@ -121,22 +129,22 @@ class ScoreViewModel @Inject constructor(
         }
     }
 
-    fun updateWinner(gamer: Gamer, point: Int) {
+    fun updateWinner(gamer: Gamer, point: Long) {
         _uiState.update {
             it.copy(
-                phase = Winner(point != 0),
-                winner = if (point != 0) gamer.copy(score = point, winnerOption = WinnerOption.Winner) else null,
+//                phase = Winner(point != 0),
+//                winner = if (point != 0) gamer.copy(score = point, winnerOption = WinnerOption.Winner) else null,
             )
         }
     }
 
-    fun updateSeller(seller: Gamer, count: Int) {
+    fun updateSeller(seller: Gamer, count: Long) {
         _uiState.update {
-            val hasSeller = count != 0
-            val target = if (hasSeller) seller.copy(score = count, sellerOption = SellerOption.Seller) else null
+//            val hasSeller = count != 0
+//            val target = if (hasSeller) seller.copy(score = count, sellerOption = SellerOption.Seller) else null
             it.copy(
-                phase = Selling(hasSeller),
-                seller = target
+//                phase = Selling(hasSeller),
+//                seller = target
             )
         }
     }
