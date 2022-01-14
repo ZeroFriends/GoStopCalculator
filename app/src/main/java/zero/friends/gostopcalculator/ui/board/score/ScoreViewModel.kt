@@ -100,7 +100,7 @@ class ScoreViewModel @Inject constructor(
                         is Selling -> Scoring
                         is Scoring -> Winner(false)
                         is Winner -> Loser
-                        else -> throw IllegalStateException("없는 페이즈 입니다. ${it.phase}")
+                        else -> throw IllegalStateException("${context.getString(R.string.error_msg_phase_not_exist)} ${it.phase}")
                     }
                 )
             }
@@ -121,7 +121,7 @@ class ScoreViewModel @Inject constructor(
                             is Scoring -> Selling(true)
                             is Winner -> Scoring
                             Loser -> Winner(true)
-                            else -> throw IllegalStateException("없는 페이즈 입니다. ${state.phase}")
+                            else -> throw IllegalStateException("${context.getString(R.string.error_msg_phase_not_exist)} ${state.phase}")
                         },
                         playerResults = when (state.phase) {
                             is Scoring -> state.playerResults.map {
@@ -140,7 +140,7 @@ class ScoreViewModel @Inject constructor(
                                     it.copy(score = 0)
                                 }
                             }
-                            else -> throw IllegalStateException("없는 페이즈 입니다. ${state.phase}")
+                            else -> throw IllegalStateException("${context.getString(R.string.error_msg_phase_not_exist)} ${state.phase}")
                         }
                     )
                 }

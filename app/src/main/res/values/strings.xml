@@ -66,6 +66,7 @@
     <string name="three_fuck_text">삼연 뻑 플레이어를 승리 처리 하시겠습니까?</string>
     <string name="over_game_name_alert">16자를 초과할 수 없습니다.</string>
     <string name="over_player_name_alert">8자를 초과할 수 없습니다.</string>
+    <string name="error_msg_phase_not_exist">없는 페이즈 입니다.</string>
 
 
 </resources>
