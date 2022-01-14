@@ -22,7 +22,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.sample
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
@@ -48,9 +50,11 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (Game) ->
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         ruleViewModel.updateRule()
-        ruleViewModel.toast().collect {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-        }
+        ruleViewModel.toast()
+            .sample(2000L)
+            .onEach {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            }.launchIn(this)
     }
 
     BackHandler(true) {

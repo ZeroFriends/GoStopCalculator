@@ -1,16 +1,14 @@
 package zero.friends.gostopcalculator.ui.board.score
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import zero.friends.domain.model.Game
-import zero.friends.domain.model.Gamer
-import zero.friends.domain.model.LoserOption
-import zero.friends.domain.model.ScoreOption
+import timber.log.Timber
+import zero.friends.domain.model.*
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.usecase.calculate.CalculateGameResultUseCase
 import zero.friends.domain.usecase.gamer.GetRoundGamerUseCase
@@ -20,6 +18,8 @@ import zero.friends.domain.usecase.option.ToggleScoreOptionUseCase
 import zero.friends.domain.usecase.option.UpdateWinnerUseCase
 import zero.friends.domain.usecase.round.DeleteRoundUseCase
 import zero.friends.domain.usecase.round.ObserveRoundGamerUseCase
+import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.util.separateComma
 import javax.inject.Inject
 
 data class ScoreUiState(
@@ -33,6 +33,7 @@ data class ScoreUiState(
 
 @HiltViewModel
 class ScoreViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val gameRepository: GameRepository,
     private val getRoundGamerUseCase: GetRoundGamerUseCase,
     private val toggleScoreOptionUseCase: ToggleScoreOptionUseCase,
@@ -49,8 +50,8 @@ class ScoreViewModel @Inject constructor(
     private val _escapeEvent = MutableSharedFlow<Unit>()
     fun escapeEvent() = _escapeEvent.asSharedFlow()
 
-    private val _sellShines = mutableStateOf(emptyList<Gamer>())
-    val sellShines by _sellShines
+    private val _toast = MutableSharedFlow<String?>()
+    fun toast() = _toast.asSharedFlow()
 
     init {
         viewModelScope.launch {
@@ -93,6 +94,7 @@ class ScoreViewModel @Inject constructor(
     }
 
     fun onNextPhase() {
+        Timber.tag("🔥zero:onNextPhase").d("${uiState().value.playerResults}")
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -115,14 +117,45 @@ class ScoreViewModel @Inject constructor(
             } else if (uiState().value.phase is Scoring && uiState().value.playerResults.size != 4) {
                 _escapeEvent.emit(Unit)
             } else {
-                _uiState.update {
-                    it.copy(
-                        phase = when (it.phase) {
-                            is Scoring -> Selling(true)
+                _uiState.update { state ->
+                    state.copy(
+                        phase = when (state.phase) {
+                            is Scoring -> Selling(false)
                             is Winner -> Scoring
                             is Loser -> Winner()
-                            else -> throw IllegalStateException("없는 페이즈 입니다. ${it.phase}")
+                            else -> throw IllegalStateException("없는 페이즈 입니다. ${state.phase}")
+                        },
+                        playerResults = state.playerResults.map { it.copy(score = 0) }
+                    )
+                }
+            }
+        }
+    }
+
+    fun updateSeller(seller: Gamer, count: Long) {
+        viewModelScope.launch {
+            runCatching {
+                require(count <= MAX_SELL_COUNT) {
+                    context.getString(R.string.over_page_alert, MAX_SELL_COUNT)
+                }
+            }.onFailure {
+                _toast.emit(it.message)
+            }.onSuccess {
+                _uiState.update { state ->
+                    val newGamers = state.playerResults.map {
+                        if (it.name == seller.name) {
+                            it.copy(score = count.toInt())
+                        } else {
+                            it.copy(score = 0)
                         }
+                    }
+                    state.copy(
+                        phase = Selling(newGamers.any { it.score != 0 }),
+                        seller = if (count != 0L) seller.copy(
+                            score = count.toInt(),
+                            sellerOption = SellerOption.Seller
+                        ) else null,
+                        playerResults = newGamers
                     )
                 }
             }
@@ -130,30 +163,43 @@ class ScoreViewModel @Inject constructor(
     }
 
     fun updateWinner(gamer: Gamer, point: Long) {
-        _uiState.update {
-            it.copy(
-//                phase = Winner(point != 0),
-//                winner = if (point != 0) gamer.copy(score = point, winnerOption = WinnerOption.Winner) else null,
-            )
-        }
-    }
-
-    fun updateSeller(seller: Gamer, count: Long) {
-        _uiState.update {
-//            val hasSeller = count != 0
-//            val target = if (hasSeller) seller.copy(score = count, sellerOption = SellerOption.Seller) else null
-            it.copy(
-//                phase = Selling(hasSeller),
-//                seller = target
-            )
+        viewModelScope.launch {
+            runCatching {
+                require(point <= MAX_POINT) {
+                    context.getString(R.string.over_point_alert, MAX_POINT.separateComma())
+                }
+            }.onFailure {
+                _toast.emit(it.message)
+            }.onSuccess {
+                _uiState.update { state ->
+                    val newGamers = state.playerResults.map {
+                        if (it.name == gamer.name) {
+                            it.copy(score = point.toInt())
+                        } else {
+                            it.copy(score = 0)
+                        }
+                    }
+                    state.copy(
+                        phase = Winner(newGamers.any { it.score != 0 }),
+                        winner = if (point != 0L) gamer.copy(
+                            score = point.toInt(),
+                            winnerOption = WinnerOption.Winner
+                        ) else null,
+                        playerResults = newGamers
+                    )
+                }
+            }
         }
     }
 
     fun calculateGameResult() {
         viewModelScope.launch {
-            _uiState.value.seller?.let { sellingUseCase.invoke(it) }
+            val seller = _uiState.value.seller
+            if (seller != null) sellingUseCase.invoke(seller)
+
             val winner = _uiState.value.winner
             if (winner != null) updateWinnerUseCase.invoke(winner)
+
             calculateGameResultUseCase.invoke(
                 seller = uiState().value.seller,
                 winner = uiState().value.winner
@@ -167,4 +213,8 @@ class ScoreViewModel @Inject constructor(
         }
     }
 
+    companion object {
+        private const val MAX_SELL_COUNT = 12
+        private const val MAX_POINT = 8_519_680
+    }
 }

@@ -1,6 +1,5 @@
 package zero.friends.gostopcalculator.ui.common
 
-import android.widget.Toast
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
@@ -92,11 +90,6 @@ fun GoStopOutLinedTextField(
     }
 }
 
-data class UnFocusDeleteState(
-    val hasFocus: Boolean = false,
-    val data: Int = 0
-)
-
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NumberTextField(
@@ -108,26 +101,14 @@ fun NumberTextField(
     hintColor: Color = colorResource(id = R.color.nero),
     onValueChane: (Long) -> Unit = {}
 ) {
-    val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    //todo focus 를 밖으로 던져서 데이터를 뷰모델에서 관리하자... (뷰는 최대한 수동적으로)
-    // -> + 승리자쪽도 바꿔야 함...
 
     Box(modifier = modifier) {
         TextField(
-            value = text,
+            value = if (text == "0") "" else text,
             onValueChange = {
-                //하드코딩 ㅋㅋ 혹시나 스펙추가되면 다 뜯어고치자...그럴일은 없겠지만
                 if (Regex("[0-9]+").matches(it)) {
-                    val longValue = it.toLong()
-                    if (endText == context.getString(R.string.point) && longValue > 8_519_680) {
-                        Toast.makeText(context, context.getString(R.string.over_point_alert), Toast.LENGTH_SHORT).show()
-                    } else if (endText == context.getString(R.string.page) && longValue > 12) {
-                        Toast.makeText(context, context.getString(R.string.over_page_alert), Toast.LENGTH_SHORT).show()
-                    } else {
-                        onValueChane(it.toLong())
-                    }
+                    onValueChane(it.toLong())
                 } else if (it.isBlank()) {
                     onValueChane(0)
                 }
