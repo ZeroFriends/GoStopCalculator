@@ -79,10 +79,9 @@ class ScoreViewModel @Inject constructor(
             toggleScoreOptionUseCase(
                 gamer = gamer,
                 option = option,
-                checkThreeFuck = checkThreeFuck.also {
-                    _uiState.update { it.copy(threeFuckGamer = gamer.copy(scoreOption = listOf(ScoreOption.ThreeFuck))) }
-                }
+                checkThreeFuck = checkThreeFuck
             )
+            _uiState.update { it.copy(threeFuckGamer = gamer.copy(scoreOption = listOf(ScoreOption.ThreeFuck))) }
         }
     }
 

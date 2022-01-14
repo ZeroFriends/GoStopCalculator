@@ -57,7 +57,7 @@ fun ScoreScreen(
     scoreViewModel: ScoreViewModel = hiltViewModel(),
     onBack: (gameId: Long?) -> Unit,
     Exit: (gameId: Long) -> Unit,
-    onComplete: () -> Unit = {}
+    onComplete: (threeFuckEnding: Boolean) -> Unit = {}
 ) {
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
@@ -101,7 +101,7 @@ fun ScoreScreen(
             onClick = {
                 threeFuckDialog = false
                 scoreViewModel.calculateGameResult()
-                onComplete()
+                onComplete(true)
             }
         )
     }
@@ -122,7 +122,7 @@ fun ScoreScreen(
                 is ScoreEvent.SelectLoser -> scoreViewModel.selectLoser(event.gamer, event.option)
                 ScoreEvent.Complete -> {
                     scoreViewModel.calculateGameResult()
-                    onComplete()
+                    onComplete(false)
                 }
                 is ScoreEvent.OnUpdateSellerPoint -> {
                     scoreViewModel.updateSeller(event.gamer, event.count)

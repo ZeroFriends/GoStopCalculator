@@ -136,7 +136,8 @@ fun Navigator(onBackPressed: () -> Unit) {
                 onBack = {
                     navController.navigateUp()
                 },
-                onComplete = {
+                onComplete = { threeFuckEnding ->
+                    navController.putBoolean(Const.FuckEnding, threeFuckEnding)
                     navController.navigate(Navigate.Board.End.route())
                 },
                 Exit = {
@@ -149,7 +150,13 @@ fun Navigator(onBackPressed: () -> Unit) {
 
         composable(Navigate.Board.End.route()) {
             EndScreen(
-                onBack = { navController.navigateUp() },
+                onBack = {
+                    if (navController.getBoolean(Const.FuckEnding)) {
+                        navController.popBackStack(Navigate.Board.Prepare.route(), false)
+                    } else {
+                        navController.navigateUp()
+                    }
+                },
                 onComplete = {
                     navController.popBackStack()
                     navController.putLong(Const.GameId, it)
@@ -182,3 +189,12 @@ private fun NavHostController.putLong(key: String, value: Long) {
 private fun NavHostController.getLong(key: String): Long {
     return requireNotNull(previousBackStackEntry?.arguments?.getLong(key))
 }
+
+private fun NavHostController.putBoolean(key: String, value: Boolean) {
+    currentBackStackEntry?.arguments?.putBoolean(key, value)
+}
+
+private fun NavHostController.getBoolean(key: String): Boolean {
+    return requireNotNull(previousBackStackEntry?.arguments?.getBoolean(key))
+}
+
