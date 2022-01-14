@@ -7,7 +7,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import zero.friends.domain.model.*
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.usecase.calculate.CalculateGameResultUseCase
@@ -94,7 +93,6 @@ class ScoreViewModel @Inject constructor(
     }
 
     fun onNextPhase() {
-        Timber.tag("🔥zero:onNextPhase").d("${uiState().value.playerResults}")
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
@@ -120,17 +118,36 @@ class ScoreViewModel @Inject constructor(
                 _uiState.update { state ->
                     state.copy(
                         phase = when (state.phase) {
-                            is Scoring -> Selling(false)
+                            is Scoring -> Selling(true)
                             is Winner -> Scoring
-                            is Loser -> Winner()
+                            Loser -> Winner(true)
                             else -> throw IllegalStateException("없는 페이즈 입니다. ${state.phase}")
                         },
-                        playerResults = state.playerResults.map { it.copy(score = 0) }
+                        playerResults = when (state.phase) {
+                            is Scoring -> state.playerResults.map {
+                                if (state.seller?.id == it.id) {
+                                    it.copy(score = state.seller.score)
+                                } else {
+                                    it.copy(score = 0)
+                                }
+
+                            }
+                            is Winner -> state.playerResults
+                            Loser -> state.playerResults.map {
+                                if (state.winner?.id == it.id) {
+                                    it.copy(score = state.winner.score)
+                                } else {
+                                    it.copy(score = 0)
+                                }
+                            }
+                            else -> throw IllegalStateException("없는 페이즈 입니다. ${state.phase}")
+                        }
                     )
                 }
             }
         }
     }
+
 
     fun updateSeller(seller: Gamer, count: Long) {
         viewModelScope.launch {
