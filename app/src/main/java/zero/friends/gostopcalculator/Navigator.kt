@@ -149,11 +149,7 @@ fun Navigator(onBackPressed: () -> Unit) {
 
         composable(Navigate.Board.End.route()) {
             EndScreen(
-                onBack = {
-                    navController.popBackStack()
-                    navController.putLong(Const.GameId, it)
-                    navController.navigate(Navigate.Board.Main.route())
-                },
+                onBack = { navController.navigateUp() },
                 onComplete = {
                     navController.popBackStack()
                     navController.putLong(Const.GameId, it)

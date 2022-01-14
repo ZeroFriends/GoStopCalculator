@@ -30,23 +30,39 @@ import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
 @Composable
 fun EndScreen(
     endViewModel: EndViewModel = hiltViewModel(),
-    onBack: (gameId: Long) -> Unit = {},
+    onBack: () -> Unit = {},
     onComplete: (gameId: Long) -> Unit = {}
 ) {
     val uiState by endViewModel.endUiState().collectAsState()
     val scaffoldState = rememberScaffoldState()
     BackHandler {
-        onBack(uiState.game.id)
+        onBack()
     }
-    EndScreen(scaffoldState = scaffoldState, uiState = uiState, onClick = { onComplete(uiState.game.id) })
+    EndScreen(
+        scaffoldState = scaffoldState,
+        uiState = uiState,
+        onClick = { onComplete(uiState.game.id) },
+        onBack = onBack
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun EndScreen(scaffoldState: ScaffoldState, uiState: EndUiState, onClick: () -> Unit = {}) {
+private fun EndScreen(
+    scaffoldState: ScaffoldState,
+    uiState: EndUiState,
+    onClick: () -> Unit = {},
+    onBack: () -> Unit = {}
+) {
     Scaffold(
         scaffoldState = scaffoldState,
-        topBar = { CenterTextTopBar(text = stringResource(id = R.string.end_game), isRed = false) }
+        topBar = {
+            CenterTextTopBar(
+                text = stringResource(id = R.string.end_game),
+                isRed = false,
+                onBack = onBack
+            )
+        }
     ) {
         GoStopButtonBackground(
             buttonString = stringResource(id = R.string.save),
