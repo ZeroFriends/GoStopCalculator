@@ -57,7 +57,7 @@ fun ScoreScreen(
     scoreViewModel: ScoreViewModel = hiltViewModel(),
     onBack: (gameId: Long?) -> Unit,
     Exit: (gameId: Long) -> Unit,
-    onComplete: (threeFuckEnding: Boolean) -> Unit = {}
+    onComplete: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
@@ -66,6 +66,9 @@ fun ScoreScreen(
         mutableStateOf(false)
     }
     var threeFuckDialog by remember {
+        mutableStateOf(false)
+    }
+    var completeDialog by remember {
         mutableStateOf(false)
     }
 
@@ -89,6 +92,20 @@ fun ScoreScreen(
         ExtraActionDialog(onClose = { openDialog = false }, phase = uiState.phase)
     }
 
+    if (completeDialog) {
+        BasicDialog(
+            confirmText = stringResource(id = android.R.string.ok),
+            titleText = stringResource(R.string.dialog_text_complete),
+            onClick = {
+                scoreViewModel.calculateGameResult()
+                onComplete()
+            },
+            onDismiss = {
+                completeDialog = false
+            }
+        )
+    }
+
     if (threeFuckDialog) {
         BasicDialog(
             confirmText = stringResource(id = android.R.string.ok),
@@ -101,7 +118,7 @@ fun ScoreScreen(
             onClick = {
                 threeFuckDialog = false
                 scoreViewModel.calculateGameResult()
-                onComplete(true)
+                onComplete()
             }
         )
     }
@@ -121,8 +138,7 @@ fun ScoreScreen(
                 is ScoreEvent.OnUpdateWinnerPoint -> scoreViewModel.updateWinner(event.gamer, event.point)
                 is ScoreEvent.SelectLoser -> scoreViewModel.selectLoser(event.gamer, event.option)
                 ScoreEvent.Complete -> {
-                    scoreViewModel.calculateGameResult()
-                    onComplete(false)
+                    completeDialog = true
                 }
                 is ScoreEvent.OnUpdateSellerPoint -> {
                     scoreViewModel.updateSeller(event.gamer, event.count)

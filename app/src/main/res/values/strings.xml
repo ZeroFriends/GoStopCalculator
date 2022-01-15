@@ -71,6 +71,7 @@
     <string name="help_ddaddak">"따닥 : 바닥에 같은 월의 패가 2장 깔려 있을 때, 이를 먹으려고 패를 내려놓고 더미에서 뒤집었을 때 같은 월이 나와서 4장이 한꺼번에 나온 경우, 이를 따닥이라고 한다. "</string>
     <string name="help_ddaddak_sub">뻑과는 달리 연속으로 따딱을 했다고 돈을 추가로 받지는 않는다.</string>
     <string name="help_selling">광팔기 : 4인 고스톱을 치는 경우, 세 명을 제외한 나머지는 게임에서 빠져야 하는데 이를 광팔이라고 한다.</string>
+    <string name="dialog_text_complete">해당 라운드의 금액 계산을 하시겠습니까?</string>
 
 
 </resources>

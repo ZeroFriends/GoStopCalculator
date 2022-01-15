@@ -136,8 +136,7 @@ fun Navigator(onBackPressed: () -> Unit) {
                 onBack = {
                     navController.navigateUp()
                 },
-                onComplete = { threeFuckEnding ->
-                    navController.putBoolean(Const.FuckEnding, threeFuckEnding)
+                onComplete = {
                     navController.navigate(Navigate.Board.End.route())
                 },
                 Exit = {
@@ -150,11 +149,6 @@ fun Navigator(onBackPressed: () -> Unit) {
 
         composable(Navigate.Board.End.route()) {
             EndScreen(
-                onBack = {
-                    navController.popBackStack()
-                    navController.putLong(Const.GameId, it)
-                    navController.navigate(Navigate.Board.Main.route())
-                },
                 onComplete = {
                     navController.popBackStack()
                     navController.putLong(Const.GameId, it)
