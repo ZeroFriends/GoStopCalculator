@@ -58,6 +58,8 @@ dependencies {
     implementation(Dep.lottie)
 
     implementation(Dep.Accompanist.systemController)
+    implementation(Dep.Accompanist.pager)
+    implementation(Dep.Accompanist.pagerIndicator)
 
     implementation(Dep.AndroidX.core)
     implementation(Dep.AndroidX.startUp)

@@ -3,8 +3,6 @@ package zero.friends.gostopcalculator.ui.board.score
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -62,7 +59,7 @@ fun ScoreScreen(
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val uiState by scoreViewModel.uiState().collectAsState()
-    var openDialog by remember {
+    var openExtraDialog by remember {
         mutableStateOf(false)
     }
     var threeFuckDialog by remember {
@@ -88,8 +85,13 @@ fun ScoreScreen(
         scoreViewModel.onBackPhase()
     }
 
-    if (openDialog) {
-        ExtraActionDialog(onClose = { openDialog = false }, phase = uiState.phase)
+    if (openExtraDialog) {
+        when (uiState.phase) {
+            is Selling -> ExtraActionDialog { openExtraDialog = false }
+            else -> {
+                //todo 설명서 페이지
+            }
+        }
     }
 
     if (completeDialog) {
@@ -143,7 +145,7 @@ fun ScoreScreen(
                 is ScoreEvent.OnUpdateSellerPoint -> {
                     scoreViewModel.updateSeller(event.gamer, event.count)
                 }
-                ScoreEvent.OnClickSubButton -> openDialog = true
+                ScoreEvent.OnClickSubButton -> openExtraDialog = true
                 ScoreEvent.Exit -> {
                     scoreViewModel.deleteRound()
                     Exit(uiState.game.id)
@@ -151,38 +153,6 @@ fun ScoreScreen(
             }
         }
     )
-}
-
-@Composable
-private fun ExtraActionDialog(
-    onClose: () -> Unit = {},
-    phase: Phase
-) {
-    Dialog(
-        onDismissRequest = onClose,
-    ) {
-        Column(
-            modifier = Modifier
-                .background(colorResource(id = R.color.white))
-                .padding(12.dp)
-        ) {
-            Image(
-                painter = painterResource(id = if (phase is Selling) R.drawable.selling_info else R.drawable.ic_onodofu),
-                contentDescription = null
-            )
-            Spacer(modifier = Modifier.padding(13.dp))
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth(), onClick = onClose
-            ) {
-                Text(
-                    text = stringResource(id = android.R.string.ok),
-                    color = colorResource(id = R.color.white),
-                    fontSize = 16.sp
-                )
-            }
-        }
-    }
 }
 
 @Composable
