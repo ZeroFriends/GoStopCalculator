@@ -33,7 +33,7 @@ import zero.friends.gostopcalculator.util.getMoneyColor
 fun CenterTextTopBar(
     text: String,
     isRed: Boolean = true,
-    onBack: () -> Unit = {},
+    onBack: (() -> Unit)? = null,
     onAction: (() -> Unit)? = null,
     actionIcon: Painter? = null,
     actionText: String? = null
@@ -56,12 +56,14 @@ fun CenterTextTopBar(
         },
         navigationIcon = {
             Box(modifier = modifier, contentAlignment = Alignment.Center) {
-                IconButton(onClick = { onBack() }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_topbar_back),
-                        contentDescription = "Back",
-                        tint = colorResource(id = iconColor)
-                    )
+                if (onBack != null) {
+                    IconButton(onClick = { onBack() }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_topbar_back),
+                            contentDescription = "Back",
+                            tint = colorResource(id = iconColor)
+                        )
+                    }
                 }
             }
         },
