@@ -19,7 +19,7 @@ import androidx.compose.ui.window.Dialog
 import zero.friends.gostopcalculator.R
 
 @Composable
-fun ExtraActionDialog(onClose: () -> Unit = {}) {
+fun SellingInfoDialog(onClose: () -> Unit = {}) {
     Dialog(onDismissRequest = onClose) {
         Column(
             modifier = Modifier

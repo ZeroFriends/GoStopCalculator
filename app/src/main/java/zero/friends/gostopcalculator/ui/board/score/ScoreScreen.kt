@@ -87,7 +87,7 @@ fun ScoreScreen(
 
     if (openExtraDialog) {
         when (uiState.phase) {
-            is Selling -> ExtraActionDialog { openExtraDialog = false }
+            is Selling -> SellingInfoDialog { openExtraDialog = false }
             else -> {
                 //todo 설명서 페이지
             }
