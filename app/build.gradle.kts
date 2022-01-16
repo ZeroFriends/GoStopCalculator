@@ -84,4 +84,6 @@ dependencies {
 
     implementation(Dep.timber)
     implementation(Dep.Kotlin.reflect)
+
+    implementation(Dep.admob)
 }

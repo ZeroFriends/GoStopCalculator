@@ -95,4 +95,5 @@ object Dep {
     const val lottie = "com.airbnb.android:lottie-compose:4.2.2"
     const val timber = "com.jakewharton.timber:timber:4.7.1"
     const val inject = "javax.inject:javax.inject:1"
+    const val admob = "com.google.android.gms:play-services-ads:20.5.0"
 }
