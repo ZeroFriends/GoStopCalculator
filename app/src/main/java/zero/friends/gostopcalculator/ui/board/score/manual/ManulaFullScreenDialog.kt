@@ -159,9 +159,9 @@ private fun ManualGrids(manuals: List<Manual>, focusIndex: Int, onClick: (index:
     GridItems(data = manuals, nColumns = 3) { index, manual ->
         Box(
             modifier = Modifier
+                .clickable { onClick(index) }
                 .border(1.dp, color = colorResource(id = R.color.line))
-                .padding(vertical = 12.dp)
-                .clickable { onClick(index) },
+                .padding(vertical = 12.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
