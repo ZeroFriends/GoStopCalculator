@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +25,7 @@ import zero.friends.domain.model.Game
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
+import zero.friends.gostopcalculator.ui.history.guide.GuideFullScreenDialog
 
 private sealed class HistoryEvent {
     object StartGame : HistoryEvent()
@@ -40,6 +44,9 @@ fun HistoryScreen(
     var dialogGameId by remember {
         mutableStateOf<Long?>(null)
     }
+    var showGuide by remember {
+        mutableStateOf(uiState.isFirstStart)
+    }
 
     val value = dialogGameId
     if (value != null) {
@@ -54,13 +61,17 @@ fun HistoryScreen(
         )
     }
 
+    if (showGuide) {
+        GuideFullScreenDialog(onDismiss = { showGuide = false })
+    }
+
     HistoryScreen(uiState) { event ->
         when (event) {
             is HistoryEvent.ShowGame -> {
                 onShowGame(event.game)
             }
             HistoryEvent.ShowGuide -> {
-                //TODO on Show guide
+                showGuide = true
             }
             HistoryEvent.StartGame -> {
                 onStartGame()
@@ -77,11 +88,7 @@ private fun HistoryScreen(uiState: HistoryUiState, event: (HistoryEvent) -> Unit
     Column(modifier = Modifier.background(color = colorResource(id = R.color.white))) {
         NewGame(event)
 
-        Divider(
-            color = colorResource(id = R.color.light_gray),
-            thickness = 10.dp,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
+        GoStopDivider(Modifier.padding(vertical = 16.dp))
 
         History(
             uiState.games,

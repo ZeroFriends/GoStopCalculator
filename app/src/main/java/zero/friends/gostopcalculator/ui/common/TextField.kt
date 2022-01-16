@@ -1,8 +1,6 @@
 package zero.friends.gostopcalculator.ui.common
 
-import android.widget.Toast
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,14 +9,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
@@ -94,50 +93,23 @@ fun GoStopOutLinedTextField(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NumberTextField(
-    text: String = "",
     modifier: Modifier = Modifier,
+    text: String = "",
     endText: String,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    unFocusDeleteMode: Boolean = false,
     isEnable: Boolean = true,
     hintColor: Color = colorResource(id = R.color.nero),
-    onValueChane: (Int) -> Unit = {}
+    onValueChane: (Long) -> Unit = {}
 ) {
-    val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
-    val focus by interactionSource.collectIsFocusedAsState()
-    var inputText by remember { mutableStateOf(TextFieldValue("")) }
 
-    //todo focus 를 밖으로 던져서 데이터를 뷰모델에서 관리하자... (뷰는 최대한 수동적으로)
-    // -> + 승리자쪽도 바꿔야 함...
-    LaunchedEffect(focus) {
-        if (unFocusDeleteMode && !focus) {
-            inputText = TextFieldValue(if (isEnable) "" else text)
-            onValueChane(0)
-        }
-    }
-
-    Box(
-        modifier = modifier
-    ) {
+    Box(modifier = modifier) {
         TextField(
-            value = inputText,
+            value = if (text == "0") "" else text,
             onValueChange = {
-                //하드코딩 ㅋㅋ 혹시나 스펙추가되면 다 뜯어고치자...그럴일은 없겠지만
-                if (Regex("[0-9]+").matches(it.text)) {
-                    val longValue = it.text.toLong()
-                    if (endText == context.getString(R.string.won) && longValue > 1_000_000) {
-                        Toast.makeText(context, context.getString(R.string.over_score_alert), Toast.LENGTH_SHORT).show()
-                    } else if (endText == context.getString(R.string.point) && longValue > 8_519_680) {
-                        Toast.makeText(context, context.getString(R.string.over_point_alert), Toast.LENGTH_SHORT).show()
-                    } else if (endText == context.getString(R.string.page) && longValue > 12) {
-                        Toast.makeText(context, context.getString(R.string.over_page_alert), Toast.LENGTH_SHORT).show()
-                    } else {
-                        inputText = it
-                        onValueChane(it.text.toInt())
-                    }
-                } else if (it.text.isBlank()) {
-                    inputText = it
+                if (Regex("[0-9]+").matches(it)) {
+                    onValueChane(it.toLong())
+                } else if (it.isBlank()) {
                     onValueChane(0)
                 }
             },

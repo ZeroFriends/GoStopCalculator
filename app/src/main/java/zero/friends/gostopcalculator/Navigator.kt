@@ -149,11 +149,6 @@ fun Navigator(onBackPressed: () -> Unit) {
 
         composable(Navigate.Board.End.route()) {
             EndScreen(
-                onBack = {
-                    navController.popBackStack()
-                    navController.putLong(Const.GameId, it)
-                    navController.navigate(Navigate.Board.Main.route())
-                },
                 onComplete = {
                     navController.popBackStack()
                     navController.putLong(Const.GameId, it)
@@ -186,3 +181,12 @@ private fun NavHostController.putLong(key: String, value: Long) {
 private fun NavHostController.getLong(key: String): Long {
     return requireNotNull(previousBackStackEntry?.arguments?.getLong(key))
 }
+
+private fun NavHostController.putBoolean(key: String, value: Boolean) {
+    currentBackStackEntry?.arguments?.putBoolean(key, value)
+}
+
+private fun NavHostController.getBoolean(key: String): Boolean {
+    return requireNotNull(previousBackStackEntry?.arguments?.getBoolean(key))
+}
+

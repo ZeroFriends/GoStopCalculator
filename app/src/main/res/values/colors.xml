@@ -10,5 +10,7 @@
     <color name="dark_gray">#424242</color>
     <color name="blue">#2962ff</color>
     <color name="non_click">#757575</color>
+    <color name="line">#eeeeee</color>
+    <color name="manual_background">#fafafa</color>
 
 </resources>

@@ -3,13 +3,15 @@ package zero.friends.gostopcalculator.ui.precondition
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Scaffold
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +23,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
@@ -45,12 +50,25 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (Game) ->
     val scaffoldState = rememberScaffoldState()
     val uiState by ruleViewModel.getUiState().collectAsState()
     val scope = rememberCoroutineScope()
+
+    var openDialog by remember {
+        mutableStateOf(false)
+    }
+
     LaunchedEffect(Unit) {
         ruleViewModel.updateRule()
+        ruleViewModel.toast()
+            .onEach {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            }.launchIn(this)
     }
 
     BackHandler(true) {
         onBack()
+    }
+
+    if (openDialog) {
+        RuleHelpDialog(onClose = { openDialog = false })
     }
 
     RuleScreen(
@@ -66,11 +84,11 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (Game) ->
                     }
 
                 }
-                RuleClickEvent.Helper -> Toast.makeText(context, "아직 기능구현 안됨", Toast.LENGTH_SHORT).show()
+                RuleClickEvent.Helper -> openDialog = true
             }
         },
-        onUpdateRule = {
-            ruleViewModel.updateRuleScore(it)
+        onUpdateRule = { rule, score ->
+            ruleViewModel.updateRuleScore(rule, score)
             ruleViewModel.checkButtonState()
         })
 
@@ -78,11 +96,66 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (Game) ->
 }
 
 @Composable
+private fun RuleHelpDialog(
+    onClose: () -> Unit = {},
+    scrollState: ScrollState = rememberScrollState()
+) {
+    Dialog(
+        onDismissRequest = onClose,
+    ) {
+        Column(
+            modifier = Modifier
+                .background(colorResource(id = R.color.white))
+
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 18.dp), contentAlignment = Alignment.TopCenter
+            ) {
+                Text(text = stringResource(id = R.string.help), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            }
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 18.dp)
+                    .scrollable(scrollState, orientation = Orientation.Vertical)
+            ) {
+                Spacer(modifier = Modifier.padding(10.dp))
+                Text(text = stringResource(id = R.string.help_score), fontSize = 14.sp)
+                Spacer(modifier = Modifier.padding(3.dp))
+                Text(text = stringResource(id = R.string.help_fuck), fontSize = 14.sp)
+                Spacer(modifier = Modifier.padding(3.dp))
+                Text(text = stringResource(id = R.string.help_ddaddak), fontSize = 14.sp)
+                Text(
+                    text = stringResource(id = R.string.help_ddaddak_sub), fontSize = 10.sp, color = colorResource(
+                        id = R.color.gray
+                    )
+                )
+                Spacer(modifier = Modifier.padding(3.dp))
+                Text(text = stringResource(id = R.string.help_selling), fontSize = 14.sp)
+            }
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 18.dp),
+                onClick = onClose
+            ) {
+                Text(
+                    text = stringResource(id = android.R.string.ok),
+                    color = colorResource(id = R.color.white),
+                    fontSize = 16.sp
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun RuleScreen(
     scaffoldState: ScaffoldState,
     uiState: RuleUiState,
     clickEvent: (RuleClickEvent) -> Unit = {},
-    onUpdateRule: (Rule) -> Unit = {},
+    onUpdateRule: (rule: Rule, score: Long) -> Unit = { _, _ -> }
 ) {
     Scaffold(
         modifier = TabKeyboardDownModifier(),
@@ -107,14 +180,21 @@ private fun RuleScreen(
 }
 
 @Composable
-private fun RuleLazyColumn(rules: List<Rule>, clickEvent: (RuleClickEvent) -> Unit, onUpdateRule: (Rule) -> Unit = {}) {
+private fun RuleLazyColumn(
+    rules: List<Rule>,
+    clickEvent: (RuleClickEvent) -> Unit,
+    onUpdateRule: (rule: Rule, score: Long) -> Unit = { _, _ -> }
+) {
     LazyColumn(contentPadding = PaddingValues(top = 35.dp, bottom = 12.dp)) {
         item {
             AmountSettingBlock { clickEvent(RuleClickEvent.Helper) }
         }
-        itemsIndexed(rules) { index, rule ->
+        itemsIndexed(
+            items = rules,
+            key = { _, item -> item.name }
+        ) { index, rule ->
             RuleItem(index = index, rule) {
-                onUpdateRule(rule.copy(score = it))
+                onUpdateRule(rule, it)
             }
         }
 
@@ -122,7 +202,7 @@ private fun RuleLazyColumn(rules: List<Rule>, clickEvent: (RuleClickEvent) -> Un
 }
 
 @Composable
-private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) {
+private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {}) {
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -169,7 +249,11 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Int) -> Unit = {}) 
             }
         }
 
-        NumberTextField(modifier = Modifier.weight(1f), endText = stringResource(R.string.won)) {
+        NumberTextField(
+            text = rule.score.toString(),
+            modifier = Modifier.weight(1f),
+            endText = stringResource(R.string.won)
+        ) {
             onUpdateScore(it)
         }
     }
@@ -186,8 +270,9 @@ private fun AmountSettingBlock(modifier: Modifier = Modifier, onHelperClick: () 
         RoundedCornerText(
             stringResource(R.string.help),
             colorResource(id = R.color.orangey_red),
-            fontSize = 14.sp
-        ) { onHelperClick() }
+            fontSize = 14.sp,
+            onClick = onHelperClick
+        )
     }
 }
 

@@ -51,7 +51,6 @@
     <string name="fail_over_gamer">5인이상 게임을 진행할 수 없습니다.</string>
     <string name="sell_shine">광팔기</string>
     <string name="sell_shine_description">4인 플레이경우 한명이 필수로 광을 팔아야 플레이가 가능합니다. 광을 판 플레이어를 선택해주세요.</string>
-    <string name="can_celling">광팔 수 있는 패</string>
     <string name="page">장</string>
     <string name="point">점</string>
     <string name="save">저장</string>
@@ -59,13 +58,22 @@
     <string name="sum_score">누적금액 👍</string>
     <string name="congratulation">수고하셨습니다!</string>
     <string name="end_description">하단에 저장하기 버튼을 누르고 다음게임을 진행해주세요.</string>
-    <string name="over_score_alert">1,000,000점을 초과할 수 없습니다.</string>
-    <string name="over_point_alert">고스톱에서 날 수 있는 최대 점수는 8,519,680점입니다.</string>
-    <string name="over_page_alert">13장을 초과할 수 없습니다.</string>
+    <string name="over_score_alert">%s점을 초과할 수 없습니다.</string>
+    <string name="over_point_alert">고스톱에서 날 수 있는 최대 점수는 %s점입니다.</string>
+    <string name="over_page_alert">%d장을 초과할 수 없습니다.</string>
     <string name="three_fuck_title">삼연 뻑이 있습니다.</string>
     <string name="three_fuck_text">삼연 뻑 플레이어를 승리 처리 하시겠습니까?</string>
     <string name="over_game_name_alert">16자를 초과할 수 없습니다.</string>
     <string name="over_player_name_alert">8자를 초과할 수 없습니다.</string>
+    <string name="error_msg_phase_not_exist">없는 페이즈 입니다.</string>
+    <string name="help_score">점 당 : 게임이 끝나면 점수를 계산해 그에 해당하는 금액을 승자에게 지불.  (승자점수x 점 당)</string>
+    <string name="help_fuck">뻑 : 게임이 시작되고 처음 패에서 뻑이 났으면 첫뻑이라 하며, 설정된 금액을 다른 사람에게서 받는다. 연속으로 뻑이 났으면 연뻑이라 하며, 추가로 약속된 금액의 2배, 뻑이 3번 나는 경우 삼연뻑이라 하며, 설정 금액의 4배를 받고 게임승리.</string>
+    <string name="help_ddaddak">"따닥 : 바닥에 같은 월의 패가 2장 깔려 있을 때, 이를 먹으려고 패를 내려놓고 더미에서 뒤집었을 때 같은 월이 나와서 4장이 한꺼번에 나온 경우, 이를 따닥이라고 한다. "</string>
+    <string name="help_ddaddak_sub">뻑과는 달리 연속으로 따딱을 했다고 돈을 추가로 받지는 않는다.</string>
+    <string name="help_selling">광팔기 : 4인 고스톱을 치는 경우, 세 명을 제외한 나머지는 게임에서 빠져야 하는데 이를 광팔이라고 한다.</string>
+    <string name="dialog_text_complete">해당 라운드의 금액 계산을 하시겠습니까?</string>
+    <string name="manual_title">점수 계산 법</string>
+    <string name="manual">고스톱 설명서</string>
 
 
 </resources>

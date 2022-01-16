@@ -1,9 +1,8 @@
 package zero.friends.gostopcalculator.ui.board.score
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,11 +23,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import zero.friends.domain.model.*
 import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.ui.board.score.manual.ManualFullScreenDialog
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.DescriptionBox
 import zero.friends.gostopcalculator.ui.common.NumberTextField
@@ -43,8 +44,8 @@ sealed interface ScoreEvent {
     class SelectScore(val gamer: Gamer, val option: ScoreOption) : ScoreEvent
     class SelectLoser(val gamer: Gamer, val option: LoserOption) : ScoreEvent
     object Complete : ScoreEvent
-    class OnUpdateWinnerPoint(val gamer: Gamer, val point: Int) : ScoreEvent
-    class OnUpdateSellerPoint(val gamer: Gamer, val count: Int) : ScoreEvent
+    class OnUpdateWinnerPoint(val gamer: Gamer, val point: Long) : ScoreEvent
+    class OnUpdateSellerPoint(val gamer: Gamer, val count: Long) : ScoreEvent
     object OnClickSubButton : ScoreEvent
     object Exit : ScoreEvent
 }
@@ -56,27 +57,56 @@ fun ScoreScreen(
     Exit: (gameId: Long) -> Unit,
     onComplete: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val uiState by scoreViewModel.uiState().collectAsState()
-    var openDialog by remember {
+    var openExtraDialog by remember {
         mutableStateOf(false)
     }
     var threeFuckDialog by remember {
         mutableStateOf(false)
     }
+    var completeDialog by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(key1 = Unit) {
-        scoreViewModel.escapeEvent().collectLatest {
-            onBack(uiState.game.id)
-        }
+        scoreViewModel.escapeEvent()
+            .onEach {
+                onBack(uiState.game.id)
+            }.launchIn(this)
+
+        scoreViewModel.toast()
+            .onEach {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            }.launchIn(this)
     }
 
     BackHandler(true) {
         scoreViewModel.onBackPhase()
     }
 
-    if (openDialog) {
-        ExtraActionDialog(onClose = { openDialog = false }, phase = uiState.phase)
+    if (openExtraDialog) {
+        when (uiState.phase) {
+            is Selling -> SellingInfoDialog { openExtraDialog = false }
+            else -> {
+                ManualFullScreenDialog { openExtraDialog = false }
+            }
+        }
+    }
+
+    if (completeDialog) {
+        BasicDialog(
+            confirmText = stringResource(id = android.R.string.ok),
+            titleText = stringResource(R.string.dialog_text_complete),
+            onClick = {
+                scoreViewModel.calculateGameResult()
+                onComplete()
+            },
+            onDismiss = {
+                completeDialog = false
+            }
+        )
     }
 
     if (threeFuckDialog) {
@@ -111,13 +141,12 @@ fun ScoreScreen(
                 is ScoreEvent.OnUpdateWinnerPoint -> scoreViewModel.updateWinner(event.gamer, event.point)
                 is ScoreEvent.SelectLoser -> scoreViewModel.selectLoser(event.gamer, event.option)
                 ScoreEvent.Complete -> {
-                    scoreViewModel.calculateGameResult()
-                    onComplete()
+                    completeDialog = true
                 }
                 is ScoreEvent.OnUpdateSellerPoint -> {
                     scoreViewModel.updateSeller(event.gamer, event.count)
                 }
-                ScoreEvent.OnClickSubButton -> openDialog = true
+                ScoreEvent.OnClickSubButton -> openExtraDialog = true
                 ScoreEvent.Exit -> {
                     scoreViewModel.deleteRound()
                     Exit(uiState.game.id)
@@ -125,38 +154,6 @@ fun ScoreScreen(
             }
         }
     )
-}
-
-@Composable
-private fun ExtraActionDialog(
-    onClose: () -> Unit = {},
-    phase: Phase
-) {
-    Dialog(
-        onDismissRequest = onClose,
-    ) {
-        Column(
-            modifier = Modifier
-                .background(colorResource(id = R.color.white))
-                .padding(12.dp)
-        ) {
-            Image(
-                painter = painterResource(id = if (phase is Selling) R.drawable.selling_info else R.drawable.ic_onodofu),
-                contentDescription = null
-            )
-            Spacer(modifier = Modifier.padding(13.dp))
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth(), onClick = onClose
-            ) {
-                Text(
-                    text = stringResource(id = android.R.string.ok),
-                    color = colorResource(id = R.color.white),
-                    fontSize = 16.sp
-                )
-            }
-        }
-    }
 }
 
 @Composable
@@ -223,7 +220,10 @@ fun GamerList(uiState: ScoreUiState, event: (ScoreEvent) -> Unit = {}) {
 
         LazyColumn(contentPadding = PaddingValues(2.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
-            itemsIndexed(uiState.playerResults) { index, gamer ->
+            itemsIndexed(
+                items = uiState.playerResults,
+                key = { _, item -> item.id }
+            ) { index, gamer ->
                 when (uiState.phase) {
                     is Selling -> WinnerItem(index, gamer, isSeller = true, isEnable = true, event)
                     is Scoring -> {
@@ -318,11 +318,10 @@ fun WinnerItem(
         }
 
         NumberTextField(
-            text = if (isEnable) "" else gamer.score.toString(),
             modifier = Modifier.weight(1f),
+            text = gamer.score.toString(),
             endText = stringResource(if (isSeller) R.string.page else R.string.point),
             isEnable = isEnable,
-            unFocusDeleteMode = true,
             hintColor = colorResource(id = if (isEnable) R.color.nero else R.color.gray),
             onValueChane = {
                 event(

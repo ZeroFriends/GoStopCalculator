@@ -3,6 +3,7 @@ package zero.friends.domain.util
 object Const {
     const val GameId = "gameId"
     const val RoundId = "roundId"
+    const val FuckEnding = "fuckEnding"
 
     object Rule {
         const val Winner = "승자"

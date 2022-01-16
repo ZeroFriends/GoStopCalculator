@@ -30,4 +30,8 @@ interface RepositoryModule {
     @Binds
     @Singleton
     fun provideRoundRepository(roundRepository: RoundRepositoryImpl): RoundRepository
+
+    @Binds
+    @Singleton
+    fun bindsManualRepository(manualRepository: ManualRepositoryImpl): ManualRepository
 }
