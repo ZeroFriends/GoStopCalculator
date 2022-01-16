@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator.ui.splash
+package zero.friends.gostopcalculator.ui
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -8,7 +8,7 @@ import zero.friends.gostopcalculator.Navigator
 import zero.friends.gostopcalculator.theme.GoStopTheme
 
 @AndroidEntryPoint
-class SplashActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
