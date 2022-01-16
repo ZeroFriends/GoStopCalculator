@@ -22,7 +22,7 @@ import zero.friends.domain.model.Game
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
-import zero.friends.gostopcalculator.ui.history.guide.GuideScreen
+import zero.friends.gostopcalculator.ui.history.guide.GuideFullScreenDialog
 
 private sealed class HistoryEvent {
     object StartGame : HistoryEvent()
@@ -59,7 +59,7 @@ fun HistoryScreen(
     }
 
     if (showGuide) {
-        GuideScreen(onDismiss = { showGuide = false })
+        GuideFullScreenDialog(onDismiss = { showGuide = false })
     }
 
     HistoryScreen(uiState) { event ->
