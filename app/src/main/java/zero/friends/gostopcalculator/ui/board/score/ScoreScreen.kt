@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import zero.friends.domain.model.*
 import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.ui.board.score.manual.ManualFullScreenDialog
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.DescriptionBox
 import zero.friends.gostopcalculator.ui.common.NumberTextField
@@ -89,7 +90,7 @@ fun ScoreScreen(
         when (uiState.phase) {
             is Selling -> SellingInfoDialog { openExtraDialog = false }
             else -> {
-                //todo 설명서 페이지
+                ManualFullScreenDialog { openExtraDialog = false }
             }
         }
     }
