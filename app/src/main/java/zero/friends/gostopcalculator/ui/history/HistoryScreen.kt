@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.domain.model.Game
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.ui.history.guide.GuideScreen
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
+import zero.friends.gostopcalculator.ui.history.guide.GuideScreen
 
 private sealed class HistoryEvent {
     object StartGame : HistoryEvent()
@@ -42,7 +42,7 @@ fun HistoryScreen(
         mutableStateOf<Long?>(null)
     }
     var showGuide by remember {
-        mutableStateOf(false)
+        mutableStateOf(uiState.isFirstStart)
     }
 
     val value = dialogGameId

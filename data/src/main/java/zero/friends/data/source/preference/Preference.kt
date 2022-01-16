@@ -9,19 +9,19 @@ import javax.inject.Inject
 class Preference @Inject constructor(@ApplicationContext context: Context) : AppPreference {
     private val preferences = context.getSharedPreferences(APP_PREFERENCE, MODE_PRIVATE)
 
-    override fun insertLastPlayerId(id: Long) {
+    override fun setFirstStart() {
         with(preferences.edit()) {
-            putLong(LAST_PLAYER_ID, id)
+            putBoolean(IS_FIRST_START, false)
             commit()
         }
     }
 
-    override fun getLastInsertedPlayerId(): Long {
-        return preferences.getLong(LAST_PLAYER_ID, 0)
+    override fun isFistStart(): Boolean {
+        return preferences.getBoolean(IS_FIRST_START, true)
     }
 
     companion object {
         private const val APP_PREFERENCE = "app_preference"
-        private const val LAST_PLAYER_ID = "last_player_id"
+        private const val IS_FIRST_START = "IS_FIRST_START"
     }
 }
