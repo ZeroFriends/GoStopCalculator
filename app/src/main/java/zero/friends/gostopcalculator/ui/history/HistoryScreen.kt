@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,11 +88,7 @@ private fun HistoryScreen(uiState: HistoryUiState, event: (HistoryEvent) -> Unit
     Column(modifier = Modifier.background(color = colorResource(id = R.color.white))) {
         NewGame(event)
 
-        Divider(
-            color = colorResource(id = R.color.light_gray),
-            thickness = 10.dp,
-            modifier = Modifier.padding(vertical = 16.dp)
-        )
+        GoStopDivider(Modifier.padding(vertical = 16.dp))
 
         History(
             uiState.games,
