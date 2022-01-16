@@ -52,6 +52,7 @@ class BoardViewModel @AssistedInject constructor(
         }
 
         gameRepository.observeGame(gameId)
+            .filterNotNull()
             .onEach { game ->
                 _uiState.update {
                     it.copy(game = game)
