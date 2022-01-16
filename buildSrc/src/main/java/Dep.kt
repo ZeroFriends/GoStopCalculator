@@ -57,6 +57,8 @@ object Dep {
 
     object Accompanist {
         const val systemController = "com.google.accompanist:accompanist-systemuicontroller:0.22.0-rc"
+        const val pager = "com.google.accompanist:accompanist-pager:0.22.0-rc"
+        const val pagerIndicator = "com.google.accompanist:accompanist-pager-indicators:0.22.0-rc"
     }
 
     object Kotlin {

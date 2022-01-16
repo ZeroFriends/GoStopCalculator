@@ -151,7 +151,7 @@ private fun PlayerPickItem(index: Int, player: Player, isCheck: Boolean = true, 
         modifier = modifier
             .fillMaxWidth()
             .clickable { onClick(!isCheck) }
-            .padding(18.dp),
+            .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
