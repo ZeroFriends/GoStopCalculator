@@ -111,7 +111,8 @@ private fun RuleHelpDialog(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 18.dp), contentAlignment = Alignment.TopCenter
+                    .padding(top = 18.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Text(text = stringResource(id = R.string.help), fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
@@ -137,7 +138,7 @@ private fun RuleHelpDialog(
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 18.dp),
+                    .padding(18.dp),
                 onClick = onClose
             ) {
                 Text(
