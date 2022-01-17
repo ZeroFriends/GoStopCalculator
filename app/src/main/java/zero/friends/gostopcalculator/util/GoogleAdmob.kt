@@ -16,7 +16,7 @@ class GoogleAdmob @Inject constructor(@ActivityContext private val context: Cont
     fun loadAds(endAdsCallback: () -> Unit) {
         InterstitialAd.load(
             context,
-            TestAdUnitId,
+            AdUnitId,
             AdRequest.Builder().build(),
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -41,7 +41,7 @@ class GoogleAdmob @Inject constructor(@ActivityContext private val context: Cont
     }
 
     companion object {
-        private const val RealAdUnitId = "ca-app-pub-1663298612263181/4159961076"
+        private const val AdUnitId = "ca-app-pub-1663298612263181/4159961076"
         private const val TestAdUnitId = "ca-app-pub-3940256099942544/1033173712"
     }
 }

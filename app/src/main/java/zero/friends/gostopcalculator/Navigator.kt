@@ -67,8 +67,7 @@ fun Navigator(onBackPressed: () -> Unit, showAds: (endAds) -> (Unit)) {
         composable(Navigate.History.route()) {
             HistoryScreen(
                 onStartGame = {
-                    showAds { navController.navigate(Navigate.Precondition.Player.route()) }
-
+                    navController.navigate(Navigate.Precondition.Player.route())
                 },
                 onShowGame = {
                     navController.putLong(Const.GameId, it.id)
@@ -116,7 +115,9 @@ fun Navigator(onBackPressed: () -> Unit, showAds: (endAds) -> (Unit)) {
                     navController.navigate(Navigate.Board.Detail.route())
                 },
                 openCalculated = {
-                    navController.navigate(Navigate.Board.Calculate.route())
+                    showAds {
+                        navController.navigate(Navigate.Board.Calculate.route())
+                    }
                 },
                 openRule = {
                     navController.navigate(Navigate.Board.Rule.route())
@@ -152,9 +153,11 @@ fun Navigator(onBackPressed: () -> Unit, showAds: (endAds) -> (Unit)) {
         composable(Navigate.Board.End.route()) {
             EndScreen(
                 onComplete = {
-                    navController.popBackStack()
-                    navController.putLong(Const.GameId, it)
-                    navController.navigate(Navigate.Board.Main.route())
+                    showAds {
+                        navController.popBackStack()
+                        navController.putLong(Const.GameId, it)
+                        navController.navigate(Navigate.Board.Main.route())
+                    }
                 }
             )
         }
