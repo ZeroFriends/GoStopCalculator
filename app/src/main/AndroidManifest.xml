@@ -32,6 +32,10 @@
                 android:value="androidx.startup" />
         </provider>
 
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-1663298612263181~6018153448" />
+
     </application>
 
 </manifest>

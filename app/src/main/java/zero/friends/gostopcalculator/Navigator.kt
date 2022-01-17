@@ -49,9 +49,10 @@ sealed interface Navigate {
         object Calculate : Board
     }
 }
+typealias endAds = () -> Unit
 
 @Composable
-fun Navigator(onBackPressed: () -> Unit) {
+fun Navigator(onBackPressed: () -> Unit, showAds: (endAds) -> (Unit)) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Navigate.Splash.route()) {
         composable(Navigate.Splash.route()) {
@@ -114,7 +115,9 @@ fun Navigator(onBackPressed: () -> Unit) {
                     navController.navigate(Navigate.Board.Detail.route())
                 },
                 openCalculated = {
-                    navController.navigate(Navigate.Board.Calculate.route())
+                    showAds {
+                        navController.navigate(Navigate.Board.Calculate.route())
+                    }
                 },
                 openRule = {
                     navController.navigate(Navigate.Board.Rule.route())
@@ -150,9 +153,11 @@ fun Navigator(onBackPressed: () -> Unit) {
         composable(Navigate.Board.End.route()) {
             EndScreen(
                 onComplete = {
-                    navController.popBackStack()
-                    navController.putLong(Const.GameId, it)
-                    navController.navigate(Navigate.Board.Main.route())
+                    showAds {
+                        navController.popBackStack()
+                        navController.putLong(Const.GameId, it)
+                        navController.navigate(Navigate.Board.Main.route())
+                    }
                 }
             )
         }

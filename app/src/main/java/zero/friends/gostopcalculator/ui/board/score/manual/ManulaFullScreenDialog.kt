@@ -104,13 +104,14 @@ fun ImageManual(script: List<Script>, imageRes: List<Int>) {
                 modifier = Modifier
                     .padding(16.dp)
                     .background(color = colorResource(id = R.color.white), shape = RoundedCornerShape(4.dp))
-                    .shadow(1.dp, shape = RoundedCornerShape(1.dp)),
+                    .shadow(1.dp, shape = RoundedCornerShape(1.dp))
+                    .size(156.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.padding(10.dp))
                 Image(painter = painterResource(id = imageRes[index]), contentDescription = null)
-                Spacer(modifier = Modifier.padding(15.dp))
+                Spacer(modifier = Modifier.padding(7.dp))
                 Text(
                     text = item.header,
                     fontSize = 14.sp,
@@ -122,7 +123,7 @@ fun ImageManual(script: List<Script>, imageRes: List<Int>) {
                     fontSize = 8.sp,
                     color = colorResource(id = R.color.nero)
                 )
-
+                Spacer(modifier = Modifier.padding(4.dp))
             }
         }
     }
@@ -159,9 +160,9 @@ private fun ManualGrids(manuals: List<Manual>, focusIndex: Int, onClick: (index:
     GridItems(data = manuals, nColumns = 3) { index, manual ->
         Box(
             modifier = Modifier
+                .clickable { onClick(index) }
                 .border(1.dp, color = colorResource(id = R.color.line))
-                .padding(vertical = 12.dp)
-                .clickable { onClick(index) },
+                .padding(vertical = 12.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
