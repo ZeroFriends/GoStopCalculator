@@ -49,9 +49,10 @@ sealed interface Navigate {
         object Calculate : Board
     }
 }
+typealias endAds = () -> Unit
 
 @Composable
-fun Navigator(onBackPressed: () -> Unit) {
+fun Navigator(onBackPressed: () -> Unit, showAds: (endAds) -> (Unit)) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Navigate.Splash.route()) {
         composable(Navigate.Splash.route()) {
@@ -66,7 +67,8 @@ fun Navigator(onBackPressed: () -> Unit) {
         composable(Navigate.History.route()) {
             HistoryScreen(
                 onStartGame = {
-                    navController.navigate(Navigate.Precondition.Player.route())
+                    showAds { navController.navigate(Navigate.Precondition.Player.route()) }
+
                 },
                 onShowGame = {
                     navController.putLong(Const.GameId, it.id)
