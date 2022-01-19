@@ -25,7 +25,11 @@ class MainActivity : AppCompatActivity() {
                         finish()
                     },
                     showAds = { endAds ->
-                        googleAdmob.loadAds(endAds)
+                        googleAdmob.loadAds(
+                            adCallback = {
+                                endAds()
+                            },
+                        )
                     },
                     entryPoint = getEntryPointFromActivity(),
                 )
