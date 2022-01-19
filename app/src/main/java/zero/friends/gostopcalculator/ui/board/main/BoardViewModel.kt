@@ -30,9 +30,6 @@ class BoardViewModel @AssistedInject constructor(
     private val _uiState = MutableStateFlow(BoardUiState(Game(gameId)))
     fun getUiState() = _uiState.asStateFlow()
 
-    private val _dialogState = MutableStateFlow<Long?>(null)
-    fun dialogState() = _dialogState.asStateFlow()
-
     @dagger.assisted.AssistedFactory
     fun interface Factory {
         fun create(gameId: Long): BoardViewModel
@@ -61,18 +58,10 @@ class BoardViewModel @AssistedInject constructor(
             }.launchIn(viewModelScope)
     }
 
-    fun deleteRound() {
+    fun deleteRound(roundId: Long) {
         viewModelScope.launch {
-            roundRepository.deleteRound(requireNotNull(_dialogState.value))
+            roundRepository.deleteRound(roundId)
         }
-    }
-
-    fun closeDialog() {
-        _dialogState.update { null }
-    }
-
-    fun openDialog(roundId: Long) {
-        _dialogState.update { roundId }
     }
 
 }

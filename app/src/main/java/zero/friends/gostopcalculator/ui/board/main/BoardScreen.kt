@@ -11,9 +11,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -50,7 +48,9 @@ fun BoardScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
     val uiState by boardViewModel.getUiState().collectAsState()
-    val dialogState by boardViewModel.dialogState().collectAsState()
+    var openDialog by remember {
+        mutableStateOf<Long?>(null)
+    }
 
     BackHandler(true) {
         onBack()
@@ -66,21 +66,23 @@ fun BoardScreen(
                 openDetailScreen(event.roundId)
             }
             is BoardEvent.More -> {
-                boardViewModel.openDialog(event.roundId)
+                openDialog = event.roundId
             }
             BoardEvent.OpenCalculated -> openCalculated()
             BoardEvent.OpenRule -> openRule()
         }
     }
 
-    if (dialogState != null) {
+    if (openDialog != null) {
         BasicDialog(
             onDismiss = {
-                boardViewModel.closeDialog()
+                openDialog = null
             },
             onClick = {
-                boardViewModel.deleteRound()
-                boardViewModel.closeDialog()
+                val roundId = openDialog
+                requireNotNull(roundId)
+                boardViewModel.deleteRound(roundId)
+                openDialog = null
             },
             confirmText = stringResource(R.string.delete),
             titleText = stringResource(R.string.delete_dialog_title)
