@@ -20,9 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import zero.friends.domain.model.Game
-import zero.friends.domain.model.Gamer
-import zero.friends.domain.model.PlayerResult
+import zero.friends.domain.model.*
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
@@ -212,7 +210,11 @@ private fun BoardScreenPreview() {
                 2L to listOf(
                     Gamer(name = "world"),
                     Gamer(name = "Asdasdas"),
-                    Gamer(name = "zerowolrd"),
+                    Gamer(
+                        name = "zerowolrd",
+                        sellerOption = SellerOption.Seller,
+                        scoreOption = listOf(ScoreOption.FirstFuck)
+                    ),
                     Gamer(name = "zzzzz")
                 ),
                 3L to listOf(
