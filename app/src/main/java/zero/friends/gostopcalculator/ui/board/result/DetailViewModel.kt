@@ -1,7 +1,6 @@
 package zero.friends.gostopcalculator.ui.board.result
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -13,8 +12,6 @@ import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.GamerRepository
-import zero.friends.gostopcalculator.di.factory.DetailViewModelFactory
-import zero.friends.gostopcalculator.util.viewModelFactory
 
 data class DetailUiState(
     val game: Game = Game(),
@@ -29,6 +26,11 @@ class DetailViewModel @AssistedInject constructor(
     private val _uiState = MutableStateFlow(DetailUiState())
     fun uiState() = _uiState.asStateFlow()
 
+    @dagger.assisted.AssistedFactory
+    fun interface Factory {
+        fun create(roundId: Long): DetailViewModel
+    }
+
     init {
         viewModelScope.launch {
             _uiState.update {
@@ -38,12 +40,5 @@ class DetailViewModel @AssistedInject constructor(
                 )
             }
         }
-    }
-
-    companion object {
-        fun provideFactory(
-            detailViewModelFactory: DetailViewModelFactory,
-            roundId: Long
-        ): ViewModelProvider.Factory = viewModelFactory { detailViewModelFactory.createDetailViewModel(roundId) }
     }
 }

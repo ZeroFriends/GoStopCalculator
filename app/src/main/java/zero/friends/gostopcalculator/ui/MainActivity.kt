@@ -7,6 +7,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import zero.friends.gostopcalculator.Navigator
 import zero.friends.gostopcalculator.theme.GoStopTheme
 import zero.friends.gostopcalculator.util.GoogleAdmob
+import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
                     showAds = { endAds ->
                         googleAdmob.loadAds(endAds)
                     },
+                    entryPoint = getEntryPointFromActivity(),
                 )
             }
         }
