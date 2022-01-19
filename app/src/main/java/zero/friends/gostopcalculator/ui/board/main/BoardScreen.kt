@@ -22,16 +22,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.PlayerResult
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
-import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 
 private sealed interface BoardEvent {
     object Back : BoardEvent
@@ -40,13 +37,6 @@ private sealed interface BoardEvent {
     class More(val roundId: Long) : BoardEvent
     object OpenCalculated : BoardEvent
     object OpenRule : BoardEvent
-}
-
-@Composable
-fun createBoardViewModel(gameId: Long): BoardViewModel {
-    val entryPoint = getEntryPointFromActivity<EntryPoint>()
-    val factory = entryPoint.boardFactory()
-    return viewModel(factory = BoardViewModel.provideFactory(boardViewModelFactory = factory, gameId = gameId))
 }
 
 @Composable

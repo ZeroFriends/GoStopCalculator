@@ -3,6 +3,7 @@ package zero.friends.gostopcalculator
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,12 +11,11 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import zero.friends.domain.util.Const
 import zero.friends.domain.util.Const.RoundId
+import zero.friends.gostopcalculator.di.AssistedViewModelEntryPoint
 import zero.friends.gostopcalculator.ui.board.main.BoardScreen
-import zero.friends.gostopcalculator.ui.board.main.createBoardViewModel
 import zero.friends.gostopcalculator.ui.board.prepare.PrepareScreen
 import zero.friends.gostopcalculator.ui.board.result.CalculateScreen
 import zero.friends.gostopcalculator.ui.board.result.DetailScreen
-import zero.friends.gostopcalculator.ui.board.result.createDetailViewModel
 import zero.friends.gostopcalculator.ui.board.rule.RuleLogScreen
 import zero.friends.gostopcalculator.ui.board.score.ScoreScreen
 import zero.friends.gostopcalculator.ui.board.score.end.EndScreen
@@ -23,6 +23,7 @@ import zero.friends.gostopcalculator.ui.history.HistoryScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
 import zero.friends.gostopcalculator.ui.splash.SplashScreen
+import zero.friends.gostopcalculator.util.viewModelFactory
 
 sealed interface Navigate {
     fun route() = findRoute()
@@ -52,7 +53,11 @@ sealed interface Navigate {
 typealias endAds = () -> Unit
 
 @Composable
-fun Navigator(onBackPressed: () -> Unit, showAds: (endAds) -> (Unit)) {
+fun Navigator(
+    onBackPressed: () -> Unit,
+    showAds: (endAds) -> Unit,
+    entryPoint: AssistedViewModelEntryPoint
+) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Navigate.Splash.route()) {
         composable(Navigate.Splash.route()) {
@@ -102,7 +107,7 @@ fun Navigator(onBackPressed: () -> Unit, showAds: (endAds) -> (Unit)) {
         composable(Navigate.Board.Main.route()) {
             val gameId = navController.getLong(Const.GameId)
             BoardScreen(
-                createBoardViewModel(gameId),
+                viewModel(factory = viewModelFactory { entryPoint.boardFactory().create(gameId = gameId) }),
                 onNext = {
                     navController.navigate(Navigate.Board.Prepare.route())
                 },
@@ -164,7 +169,10 @@ fun Navigator(onBackPressed: () -> Unit, showAds: (endAds) -> (Unit)) {
 
         composable(Navigate.Board.Detail.route()) {
             val roundId = navController.getLong(RoundId)
-            DetailScreen(createDetailViewModel(roundId = roundId), onBack = { navController.navigateUp() })
+            DetailScreen(
+                viewModel(factory = viewModelFactory { entryPoint.detailFactory().create(roundId) }),
+                onBack = { navController.navigateUp() }
+            )
         }
 
         composable(Navigate.Board.Calculate.route()) {

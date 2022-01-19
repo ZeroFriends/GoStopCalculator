@@ -7,17 +7,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.di.entrypoint.EntryPoint
-import zero.friends.gostopcalculator.util.getEntryPointFromActivity
-
-@Composable
-fun createDetailViewModel(roundId: Long): DetailViewModel {
-    val entryPoint = getEntryPointFromActivity<EntryPoint>()
-    val factory = entryPoint.detailFactory()
-    return viewModel(factory = DetailViewModel.provideFactory(factory, roundId))
-}
 
 @Composable
 fun DetailScreen(detailViewModel: DetailViewModel = hiltViewModel(), onBack: () -> Unit = {}) {
