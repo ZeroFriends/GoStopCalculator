@@ -1,4 +1,4 @@
-package zero.friends.gostopcalculator.util
+package zero.friends.gostopcalculator
 
 import android.app.Activity
 import android.content.Context

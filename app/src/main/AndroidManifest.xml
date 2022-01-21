@@ -30,6 +30,10 @@
             <meta-data
                 android:name="zero.friends.gostopcalculator.initailizer.TimberInitializer"
                 android:value="androidx.startup" />
+
+            <meta-data
+                android:name="zero.friends.gostopcalculator.initailizer.MobileAdsInitializer"
+                android:value="androidx.startup" />
         </provider>
 
         <meta-data
