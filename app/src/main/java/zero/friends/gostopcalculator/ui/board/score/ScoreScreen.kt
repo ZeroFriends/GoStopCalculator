@@ -70,7 +70,7 @@ fun ScoreScreen(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(Unit) {
         scoreViewModel.escapeEvent()
             .onEach {
                 onBack(uiState.game.id)
@@ -227,37 +227,22 @@ fun GamerList(uiState: ScoreUiState, event: (ScoreEvent) -> Unit = {}) {
                 when (uiState.phase) {
                     is Selling -> WinnerItem(index, gamer, isSeller = true, isEnable = true, event)
                     is Scoring -> {
-                        if (gamer.id == uiState.seller?.id) WinnerItem(
-                            index,
-                            uiState.seller,
-                            isSeller = true,
-                            isEnable = false
-                        )
-                        else ScoringItem(index, gamer, uiState.phase, event)
+                        if (gamer.id == uiState.seller?.id)
+                            WinnerItem(index, uiState.seller, isSeller = true, isEnable = false)
+                        else
+                            ScoringItem(index, gamer, uiState.phase, event)
                     }
                     is Winner -> {
-                        if (gamer.id == uiState.seller?.id) WinnerItem(
-                            index,
-                            uiState.seller,
-                            isSeller = true,
-                            isEnable = false
-                        )
-                        else WinnerItem(index, gamer, isSeller = false, isEnable = true, event = event)
+                        if (gamer.id == uiState.seller?.id)
+                            WinnerItem(index, uiState.seller, isSeller = true, isEnable = false)
+                        else
+                            WinnerItem(index, gamer, isSeller = false, isEnable = true, event = event)
+
                     }
                     is Loser -> {
                         when (gamer.id) {
-                            uiState.seller?.id -> WinnerItem(
-                                index,
-                                uiState.seller,
-                                isSeller = true,
-                                isEnable = false
-                            )
-                            uiState.winner?.id -> WinnerItem(
-                                index,
-                                uiState.winner,
-                                isSeller = false,
-                                isEnable = false
-                            )
+                            uiState.seller?.id -> WinnerItem(index, uiState.seller, isSeller = true, isEnable = false)
+                            uiState.winner?.id -> WinnerItem(index, uiState.winner, isSeller = false, isEnable = false)
                             else -> ScoringItem(index, gamer, uiState.phase, event)
                         }
                     }

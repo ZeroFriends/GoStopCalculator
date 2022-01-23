@@ -55,6 +55,7 @@ fun RoundBox(
             GridItems(data = gamers, nColumns = 2) { index, gamer ->
                 GamerItem(index = index, gamer = gamer)
             }
+            Spacer(modifier = Modifier.padding(4.dp))
 
             if (onClickDetail != null) {
                 Box(

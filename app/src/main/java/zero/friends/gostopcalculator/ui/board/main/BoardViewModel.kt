@@ -1,7 +1,6 @@
 package zero.friends.gostopcalculator.ui.board.main
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -14,8 +13,6 @@ import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.RoundRepository
 import zero.friends.domain.usecase.ObservePlayerResultsUseCase
 import zero.friends.domain.usecase.round.ObserveRoundListUseCase
-import zero.friends.gostopcalculator.di.factory.BoardViewModelFactory
-import zero.friends.gostopcalculator.util.viewModelFactory
 
 data class BoardUiState(
     val game: Game = Game(),
@@ -33,11 +30,12 @@ class BoardViewModel @AssistedInject constructor(
     private val _uiState = MutableStateFlow(BoardUiState(Game(gameId)))
     fun getUiState() = _uiState.asStateFlow()
 
-    private val _dialogState = MutableStateFlow<Long?>(null)
-    fun dialogState() = _dialogState.asStateFlow()
+    @dagger.assisted.AssistedFactory
+    fun interface Factory {
+        fun create(gameId: Long): BoardViewModel
+    }
 
     init {
-
         viewModelScope.launch {
             observePlayerResultsUseCase(gameId).onEach { playerList ->
                 _uiState.update { it.copy(playerResults = playerList) }
@@ -60,26 +58,12 @@ class BoardViewModel @AssistedInject constructor(
             }.launchIn(viewModelScope)
     }
 
-    fun deleteRound() {
+    fun deleteRound(roundId: Long) {
         viewModelScope.launch {
-            roundRepository.deleteRound(requireNotNull(_dialogState.value))
+            roundRepository.deleteRound(roundId)
         }
     }
 
-    fun closeDialog() {
-        _dialogState.update { null }
-    }
-
-    fun openDialog(roundId: Long) {
-        _dialogState.update { roundId }
-    }
-
-    companion object {
-        fun provideFactory(
-            boardViewModelFactory: BoardViewModelFactory,
-            gameId: Long
-        ): ViewModelProvider.Factory = viewModelFactory { boardViewModelFactory.createBoardViewModel(gameId) }
-    }
 }
 
 
