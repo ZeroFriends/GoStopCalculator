@@ -18,9 +18,15 @@ sealed interface AdCallback {
 }
 
 class GoogleAdmob @Inject constructor(@ActivityContext private val context: Context) {
-    private var mInterstitialAd: InterstitialAd? = null
+    private var interstitialAd: InterstitialAd? = null
 
-    fun loadAds(adCallback: (AdCallback) -> Unit) {
+    private lateinit var adCallback: (AdCallback) -> Unit
+
+    init {
+        reload()
+    }
+
+    private fun reload() {
         InterstitialAd.load(
             context,
             AdUnitId,
@@ -29,20 +35,25 @@ class GoogleAdmob @Inject constructor(@ActivityContext private val context: Cont
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     Timber.tag("🔥zero:onAdFailedToLoad").e("$adError")
                     adCallback(AdCallback.OnError)
-                    mInterstitialAd = null
+                    interstitialAd = null
                 }
 
                 override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                    mInterstitialAd = interstitialAd
+                    this@GoogleAdmob.interstitialAd = interstitialAd
                 }
             }
         )
+    }
 
-        mInterstitialAd?.let {
-            it.fullScreenContentCallback = object : FullScreenContentCallback() {
+    fun showAd(adCallback: (AdCallback) -> Unit) {
+        val interstitialAd = interstitialAd
+
+        if (interstitialAd != null) {
+            interstitialAd.fullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
                     super.onAdDismissedFullScreenContent()
                     adCallback(AdCallback.OnSuccess)
+                    this@GoogleAdmob.interstitialAd = null
                 }
 
                 override fun onAdFailedToShowFullScreenContent(p0: AdError) {
@@ -51,8 +62,12 @@ class GoogleAdmob @Inject constructor(@ActivityContext private val context: Cont
                     adCallback(AdCallback.OnError)
                 }
             }
-            it.show(context as Activity)
+            interstitialAd.show(context as Activity)
+        } else {
+            adCallback(AdCallback.OnError)
         }
+
+        reload()
     }
 
     companion object {

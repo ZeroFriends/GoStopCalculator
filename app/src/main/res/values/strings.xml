@@ -74,6 +74,7 @@
     <string name="dialog_text_complete">해당 라운드의 금액 계산을 하시겠습니까?</string>
     <string name="manual_title">점수 계산 법</string>
     <string name="manual">고스톱 설명서</string>
+    <string name="ad_error">광고를 불러오지 못했습니다.</string>
 
 
 </resources>
