@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
@@ -31,11 +32,8 @@ class MainActivity : AppCompatActivity() {
                         googleAdmob.showAd(
                             adCallback = { adCallback ->
                                 when (adCallback) {
-                                    AdCallback.OnError -> {
-                                        Toast.makeText(this, getString(R.string.ad_error), Toast.LENGTH_SHORT).show()
-                                        endAds()
-                                    }
-                                    AdCallback.OnSuccess -> endAds()
+                                    AdCallback.LostNetwork -> toast(getString(R.string.msg_network))
+                                    else -> endAds()
                                 }
                             },
                         )
@@ -47,4 +45,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun Context.toast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
 }

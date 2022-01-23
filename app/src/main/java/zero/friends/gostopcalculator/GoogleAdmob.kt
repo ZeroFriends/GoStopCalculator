@@ -15,15 +15,30 @@ import javax.inject.Inject
 sealed interface AdCallback {
     object OnError : AdCallback
     object OnSuccess : AdCallback
+    object LostNetwork : AdCallback
 }
 
-class GoogleAdmob @Inject constructor(@ActivityContext private val context: Context) {
+class GoogleAdmob @Inject constructor(
+    @ActivityContext private val context: Context,
+    netWorkChecker: NetWorkChecker
+) {
     private var interstitialAd: InterstitialAd? = null
 
     private lateinit var adCallback: (AdCallback) -> Unit
 
+    private var isConnect = false
+
     init {
-        reload()
+        netWorkChecker(
+            onAvailable = {
+                isConnect = true
+                reload()
+            },
+            onLost = {
+                interstitialAd = null
+                isConnect = false
+            }
+        )
     }
 
     private fun reload() {
@@ -64,7 +79,11 @@ class GoogleAdmob @Inject constructor(@ActivityContext private val context: Cont
             }
             interstitialAd.show(context as Activity)
         } else {
-            adCallback(AdCallback.OnError)
+            if (isConnect) {
+                adCallback(AdCallback.OnError)
+            } else {
+                adCallback(AdCallback.LostNetwork)
+            }
         }
 
         reload()
