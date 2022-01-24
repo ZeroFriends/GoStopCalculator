@@ -68,7 +68,6 @@ class GoogleAdmob @Inject constructor(
                 override fun onAdDismissedFullScreenContent() {
                     super.onAdDismissedFullScreenContent()
                     adCallback(AdCallback.OnSuccess)
-                    this@GoogleAdmob.interstitialAd = null
                 }
 
                 override fun onAdFailedToShowFullScreenContent(p0: AdError) {
