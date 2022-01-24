@@ -13,8 +13,10 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -141,15 +143,17 @@ private fun PlayerPickList(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun PlayerPickItem(index: Int, player: Player, isCheck: Boolean = true, onClick: (Boolean) -> Unit = {}) {
+    val shape = remember { RoundedCornerShape(18.dp) }
     val modifier = if (isCheck) Modifier.background(
         color = colorResource(id = R.color.orangey_red).copy(alpha = 0.1f),
-        shape = RoundedCornerShape(18.dp)
+        shape = shape
     )
     else Modifier
 
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .clip(shape)
             .clickable { onClick(!isCheck) }
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,

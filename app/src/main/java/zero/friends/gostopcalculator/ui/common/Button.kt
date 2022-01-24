@@ -28,8 +28,7 @@ fun GoStopButton(text: String, modifier: Modifier = Modifier, buttonEnabled: Boo
         ),
         shape = RoundedCornerShape(100.dp),
         enabled = buttonEnabled,
-        modifier = modifier
-            .fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
     ) {
         Text(
             text = text,

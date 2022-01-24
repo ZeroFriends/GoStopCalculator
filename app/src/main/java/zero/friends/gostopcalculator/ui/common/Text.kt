@@ -1,15 +1,21 @@
 package zero.friends.gostopcalculator.ui.common
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
@@ -56,13 +62,24 @@ fun RoundedCornerText(
     fontSize: TextUnit = 14.sp,
     onClick: (() -> Unit)? = null
 ) {
+    val shape = remember { RoundedCornerShape((12.5).dp) }
     Surface(
-        shape = RoundedCornerShape((12.5).dp),
-        border = BorderStroke(
-            width = 1.dp,
-            color = color
-        ),
-        modifier = Modifier.clickable(onClick = onClick ?: {}, enabled = onClick != null),
+        modifier = Modifier
+            .border(
+                BorderStroke(
+                    width = 1.dp,
+                    color = color
+                ),
+                shape = shape
+            )
+            .clip(shape)
+            .clickable(
+                onClick = onClick ?: {},
+                enabled = onClick != null,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(),
+                role = Role.Button
+            ),
     ) {
         Text(
             modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp),
