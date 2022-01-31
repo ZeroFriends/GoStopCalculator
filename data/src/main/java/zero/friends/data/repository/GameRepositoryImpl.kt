@@ -29,10 +29,10 @@ class GameRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteGame(gameId: Long) {
+        cacheGameId = null
         withContext(dispatcher) {
             launch {
                 gameDao.delete(GameEntity(id = gameId))
-                cacheGameId = null
             }
         }
     }

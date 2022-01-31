@@ -78,7 +78,7 @@ class PlayerViewModel @Inject constructor(
 
     fun editGameName(gameName: String) {
         viewModelScope.launch {
-            val name = if (gameName.isEmpty()) getUiState().value.currentTime else gameName
+            val name = gameName.ifEmpty { getUiState().value.currentTime }
             gameRepository.editGameName(name)
         }
     }
