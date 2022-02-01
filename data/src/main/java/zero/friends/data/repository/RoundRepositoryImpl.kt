@@ -42,7 +42,7 @@ class RoundRepositoryImpl @Inject constructor(private val roundDao: RoundDao) : 
     }
 
     override suspend fun deleteRound(roundId: Long) {
-        roundDao.deleteRound(roundId)
         cacheRoundId = null
+        roundDao.deleteRound(roundId)
     }
 }
