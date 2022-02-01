@@ -28,6 +28,7 @@ class EndViewModel @Inject constructor(
         viewModelScope.launch {
             _endUiState.update { it.copy(game = requireNotNull(gameRepository.getCurrentGame())) }
             observeRoundGamerUseCase()
+                .filterNotNull()
                 .onEach { gamers ->
                     _endUiState.update { it.copy(gamers = gamers) }
                 }.launchIn(viewModelScope)
