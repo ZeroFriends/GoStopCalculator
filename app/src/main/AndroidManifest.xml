@@ -14,7 +14,8 @@
         android:theme="@style/Theme.GoStopCalculator">
         <activity
             android:name="zero.friends.gostopcalculator.ui.MainActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

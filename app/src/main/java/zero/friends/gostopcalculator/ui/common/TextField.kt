@@ -128,7 +128,9 @@ fun NumberTextField(
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
             }),
-            modifier = Modifier.padding(end = 3.dp),
+            modifier = Modifier
+                .padding(end = 3.dp)
+                .fillMaxWidth(),
             interactionSource = interactionSource,
             placeholder = {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
@@ -171,8 +173,8 @@ private fun GoStopOutLinedTextFieldPreView() {
     GoStopOutLinedTextField(text = TextFieldValue("ZeroWorld!!"), hint = "hint", onValueChange = {})
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun NumberTextFieldPreView() {
-    NumberTextField(endText = "원")
+    NumberTextField(text = "1", endText = "원")
 }
