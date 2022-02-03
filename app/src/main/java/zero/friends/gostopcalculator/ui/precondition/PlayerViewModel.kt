@@ -18,6 +18,7 @@ data class PlayerUiState(
     val players: List<Player> = emptyList(),
     val gameName: String = "",
     val currentTime: String = TimeUtil.getCurrentTime(),
+    val gameId: Long = 0
 )
 
 
@@ -38,6 +39,7 @@ class PlayerViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val gameId = gameRepository.newGame(_uiState.value.currentTime, _uiState.value.currentTime)
+            _uiState.update { it.copy(gameId = gameId) }
             playerRepository.observePlayer(gameId = gameId)
                 .onEach { players ->
                     _uiState.update {
@@ -71,7 +73,7 @@ class PlayerViewModel @Inject constructor(
 
     fun clearGame() {
         viewModelScope.launch {
-            val gameId = requireNotNull(gameRepository.getCurrentGameId())
+            val gameId = gameRepository.getCurrentGameId() ?: _uiState.value.gameId
             gameRepository.deleteGame(gameId)
         }
     }
