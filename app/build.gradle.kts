@@ -21,14 +21,21 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
+            isDebuggable = true
             isMinifyEnabled = false
+            buildConfigField("String", "AD_UNIT_ID", "\"ca-app-pub-3940256099942544/1033173712\"")
+        }
+        release {
+            isDebuggable = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile(
                     "proguard-android-optimize.txt"
                 ),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "AD_UNIT_ID", "\"ca-app-pub-1663298612263181/4159961076\"")
         }
     }
 
