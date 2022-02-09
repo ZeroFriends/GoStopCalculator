@@ -30,7 +30,7 @@ import zero.friends.gostopcalculator.ui.history.guide.GuideFullScreenDialog
 private sealed class HistoryEvent {
     object StartGame : HistoryEvent()
     object ShowGuide : HistoryEvent()
-    class ShowGame(val game: Game) : HistoryEvent()
+    class ShowRound(val game: Game) : HistoryEvent()
     class ShowMore(val game: Game) : HistoryEvent()
 }
 
@@ -38,7 +38,7 @@ private sealed class HistoryEvent {
 fun HistoryScreen(
     viewModel: HistoryViewModel = hiltViewModel(),
     onStartGame: () -> Unit = {},
-    onShowGame: (Game) -> Unit = {}
+    onShowRound: (Game) -> Unit = {}
 ) {
     val uiState by viewModel.getUiState().collectAsState()
     var dialogGameId by remember {
@@ -67,8 +67,8 @@ fun HistoryScreen(
 
     HistoryScreen(uiState) { event ->
         when (event) {
-            is HistoryEvent.ShowGame -> {
-                onShowGame(event.game)
+            is HistoryEvent.ShowRound -> {
+                onShowRound(event.game)
             }
             HistoryEvent.ShowGuide -> {
                 showGuide = true
@@ -92,7 +92,7 @@ private fun HistoryScreen(uiState: HistoryUiState, event: (HistoryEvent) -> Unit
 
         History(
             uiState.games,
-            onClick = { event(HistoryEvent.ShowGame(it)) },
+            onClick = { event(HistoryEvent.ShowRound(it)) },
             onClickMore = { event(HistoryEvent.ShowMore(it)) })
     }
 }
@@ -141,7 +141,7 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: (Ga
                     .padding(vertical = 10.dp)
             ) {
                 items(items = games, key = { it.id }) { game ->
-                    GameLog(game, onClick = { onClick(game) }, onClickMore = { onClickMore(game) })
+                    RoundLog(game, onClick = { onClick(game) }, onClickMore = { onClickMore(game) })
                 }
             }
         }
@@ -151,13 +151,13 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: (Ga
 
 @Preview(showBackground = true)
 @Composable
-private fun GameLogPreview() {
-    GameLog(Game(0, "gameTitle", "2021.11.21"))
+private fun RoundLogPreview() {
+    RoundLog(Game(0, "gameTitle", "2021.11.21"))
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun GameLog(game: Game, onClick: () -> Unit = {}, onClickMore: () -> Unit = {}) {
+private fun RoundLog(game: Game, onClick: () -> Unit = {}, onClickMore: () -> Unit = {}) {
     Card(
         elevation = 6.dp,
         shape = RoundedCornerShape(18.dp),
