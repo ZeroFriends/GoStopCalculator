@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
                         adCallback = { adCallback ->
                             when (adCallback) {
                                 AdCallback.LostNetwork -> toast(getString(R.string.msg_network))
+                                is AdCallback.OnError -> toast(adCallback.msg ?: "에러")
                                 else -> endAds()
                             }
                         },

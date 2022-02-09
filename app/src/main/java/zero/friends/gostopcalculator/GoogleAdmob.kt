@@ -11,6 +11,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import dagger.hilt.android.qualifiers.ActivityContext
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
 sealed interface AdCallback {
     object OnError : AdCallback
