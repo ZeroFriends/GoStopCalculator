@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.domain.model.*
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
@@ -37,7 +38,7 @@ private sealed interface BoardEvent {
 
 @Composable
 fun BoardScreen(
-    boardViewModel: BoardViewModel,
+    boardViewModel: BoardViewModel = hiltViewModel(),
     onNext: (gameId: Long) -> Unit = {},
     onBack: () -> Unit = {},
     openDetailScreen: (roundId: Long) -> Unit = {},

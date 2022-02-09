@@ -1,9 +1,9 @@
 package zero.friends.gostopcalculator.ui.board.main
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
@@ -13,6 +13,8 @@ import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.RoundRepository
 import zero.friends.domain.usecase.ObservePlayerResultsUseCase
 import zero.friends.domain.usecase.round.ObserveRoundListUseCase
+import zero.friends.domain.util.Const
+import javax.inject.Inject
 
 data class BoardUiState(
     val game: Game = Game(),
@@ -20,20 +22,17 @@ data class BoardUiState(
     val playerResults: List<PlayerResult> = emptyList(),
 )
 
-class BoardViewModel @AssistedInject constructor(
-    @Assisted private val gameId: Long,
-    private val gameRepository: GameRepository,
+@HiltViewModel
+class BoardViewModel @Inject constructor(
+    gameRepository: GameRepository,
     private val observePlayerResultsUseCase: ObservePlayerResultsUseCase,
     private val observeRoundListUseCase: ObserveRoundListUseCase,
-    private val roundRepository: RoundRepository
+    private val roundRepository: RoundRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    private val gameId: Long = requireNotNull(savedStateHandle.get(Const.GameId))
     private val _uiState = MutableStateFlow(BoardUiState(Game(gameId)))
     fun getUiState() = _uiState.asStateFlow()
-
-    @dagger.assisted.AssistedFactory
-    fun interface Factory {
-        fun create(gameId: Long): BoardViewModel
-    }
 
     init {
         viewModelScope.launch {
