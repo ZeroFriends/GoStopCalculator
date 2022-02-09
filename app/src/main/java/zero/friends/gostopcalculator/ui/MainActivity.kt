@@ -11,7 +11,6 @@ import zero.friends.gostopcalculator.GoogleAdmob
 import zero.friends.gostopcalculator.Navigator
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.theme.GoStopTheme
-import zero.friends.gostopcalculator.util.getEntryPointFromActivity
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -28,18 +27,16 @@ class MainActivity : AppCompatActivity() {
                     onBackPressed = {
                         finish()
                     },
-                    showAds = { endAds ->
-                        googleAdmob.showAd(
-                            adCallback = { adCallback ->
-                                when (adCallback) {
-                                    AdCallback.LostNetwork -> toast(getString(R.string.msg_network))
-                                    else -> endAds()
-                                }
-                            },
-                        )
-                    },
-                    entryPoint = getEntryPointFromActivity(),
-                )
+                ) { endAds ->
+                    googleAdmob.showAd(
+                        adCallback = { adCallback ->
+                            when (adCallback) {
+                                AdCallback.LostNetwork -> toast(getString(R.string.msg_network))
+                                else -> endAds()
+                            }
+                        },
+                    )
+                }
             }
         }
 

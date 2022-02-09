@@ -3,8 +3,6 @@ package zero.friends.gostopcalculator
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,8 +10,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import kotlinx.coroutines.delay
 import zero.friends.domain.util.Const
-import zero.friends.domain.util.Const.RoundId
-import zero.friends.gostopcalculator.di.AssistedViewModelEntryPoint
 import zero.friends.gostopcalculator.ui.board.main.BoardScreen
 import zero.friends.gostopcalculator.ui.board.prepare.PrepareScreen
 import zero.friends.gostopcalculator.ui.board.result.CalculateScreen
@@ -25,7 +21,6 @@ import zero.friends.gostopcalculator.ui.history.HistoryScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
 import zero.friends.gostopcalculator.ui.splash.SplashScreen
-import zero.friends.gostopcalculator.util.viewModelFactory
 
 sealed interface Navigate {
 
@@ -71,8 +66,7 @@ typealias endAds = () -> Unit
 @Composable
 fun Navigator(
     onBackPressed: () -> Unit,
-    showAds: (endAds) -> Unit,
-    entryPoint: AssistedViewModelEntryPoint
+    showAds: (endAds) -> Unit
 ) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Navigate.Splash.route()) {
@@ -131,9 +125,8 @@ fun Navigator(
                     navController.popBackStack()
                     navController.navigate(Navigate.History.route())
                 },
-                openDetailScreen = {
-                    navController.putLong(RoundId, it)
-                    navController.navigate(Navigate.Board.Detail.route())
+                openDetailScreen = { roundId ->
+                    navController.navigate(Navigate.Board.Detail.route(argument = roundId))
                 },
                 openCalculated = {
                     showAds {
@@ -181,10 +174,14 @@ fun Navigator(
             )
         }
 
-        composable(Navigate.Board.Detail.route()) {
-            val roundId = navController.getLong(RoundId)
+        composable(
+            route = Navigate.Board.Detail.route(path = Const.RoundId),
+            arguments = listOf(navArgument(Const.RoundId) {
+                type = NavType.LongType
+                nullable = false
+            })
+        ) {
             DetailScreen(
-                viewModel(factory = viewModelFactory { entryPoint.detailFactory().create(roundId) }),
                 onBack = { navController.navigateUp() }
             )
         }
@@ -199,21 +196,5 @@ fun Navigator(
 
     }
 
-}
-
-private fun NavHostController.putLong(key: String, value: Long) {
-    currentBackStackEntry?.arguments?.putLong(key, value)
-}
-
-private fun NavHostController.getLong(key: String): Long {
-    return requireNotNull(previousBackStackEntry?.arguments?.getLong(key))
-}
-
-private fun NavHostController.putBoolean(key: String, value: Boolean) {
-    currentBackStackEntry?.arguments?.putBoolean(key, value)
-}
-
-private fun NavHostController.getBoolean(key: String): Boolean {
-    return requireNotNull(previousBackStackEntry?.arguments?.getBoolean(key))
 }
 
