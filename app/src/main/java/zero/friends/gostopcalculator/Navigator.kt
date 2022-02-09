@@ -28,8 +28,7 @@ import zero.friends.gostopcalculator.util.viewModelFactory
 sealed interface Navigate {
     fun route() = findRoute()
 
-    private fun findRoute() =
-        (this::class.supertypes.first().toString().split(".").last() + "_" + this::class.simpleName)
+    private fun findRoute() = requireNotNull(this::class.qualifiedName)
 
     object History : Navigate
     object Splash : Navigate
