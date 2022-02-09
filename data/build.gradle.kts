@@ -19,11 +19,11 @@ dependencies {
     implementation(Dep.Kotlin.coroutineCore)
     implementation(Dep.Kotlin.serialization)
 
-    api(Dep.AndroidX.Room.room)
+    implementation(Dep.AndroidX.Room.room)
     implementation(Dep.AndroidX.Room.roomKtx)
     kapt(Dep.AndroidX.Room.roomCompiler)
 
-    api(Dep.Square.retrofit)
+    implementation(Dep.Square.retrofit)
     implementation(Dep.Square.okhttp3_logging)
     implementation(Dep.Square.serialization)
 
