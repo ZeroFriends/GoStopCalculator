@@ -8,6 +8,8 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.qualifiers.ActivityContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -17,6 +19,8 @@ sealed interface AdCallback {
     object OnSuccess : AdCallback
     object LostNetwork : AdCallback
 }
+
+class AdException(override val message: String?) : Throwable()
 
 class GoogleAdmob @Inject constructor(
     @ActivityContext private val context: Context,
@@ -44,11 +48,12 @@ class GoogleAdmob @Inject constructor(
     private fun reload() {
         InterstitialAd.load(
             context,
-            AdUnitId,
+            BuildConfig.AD_UNIT_ID,
             AdRequest.Builder().build(),
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     Timber.tag("🔥zero:onAdFailedToLoad").e("$adError")
+                    Firebase.crashlytics.recordException(AdException("code : ${adError.code} /n ${adError.message}"))
                     adCallback(AdCallback.OnError)
                     interstitialAd = null
                 }
@@ -88,8 +93,4 @@ class GoogleAdmob @Inject constructor(
         reload()
     }
 
-    companion object {
-        private const val AdUnitId = "ca-app-pub-1663298612263181/4159961076"
-        private const val TestAdUnitId = "ca-app-pub-3940256099942544/1033173712"
-    }
 }

@@ -9,6 +9,8 @@ buildscript {
         classpath(Dep.Dagger.hiltGradlePlugin)
         classpath(Dep.Kotlin.gradlePlugin)
         classpath(Dep.Kotlin.serializationPlugin)
+        classpath(Dep.Google.googleService)
+        classpath(Dep.Google.crashlytics)
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

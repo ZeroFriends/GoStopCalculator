@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "858269317046",
+    "project_id": "gostopcalculator",
+    "storage_bucket": "gostopcalculator.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858269317046:android:9800a28f9efca52241b317",
+        "android_client_info": {
+          "package_name": "zero.friends.gostopcalculator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "858269317046-b2c4cnan6rjrqv565k1uq7p8bu56t84j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1SQ6zT6czCJDf0ba1wRljUT40Z8M57UA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "858269317046-b2c4cnan6rjrqv565k1uq7p8bu56t84j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
