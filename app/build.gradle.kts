@@ -3,6 +3,8 @@ plugins {
     kotlin("android")
     kotlin("kapt")
     id("dagger.hilt.android.plugin")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -96,5 +98,9 @@ dependencies {
     implementation(Dep.timber)
     implementation(Dep.Kotlin.reflect)
 
+    implementation(platform(Dep.Google.firebase))
+    implementation(Dep.Google.firebaseAnalytics)
+    implementation(Dep.Google.firebaseAnalyticsKtx)
+    implementation(Dep.Google.firebaseCrashlytics)
     implementation(Dep.admob)
 }

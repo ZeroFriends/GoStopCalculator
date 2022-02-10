@@ -87,6 +87,18 @@ object Dep {
         const val serialization = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
     }
 
+    object Google {
+        const val googleService = "com.google.gms:google-services:4.3.10"
+        const val crashlytics = "com.google.firebase:firebase-crashlytics-gradle:2.8.1"
+
+        const val firebase = "com.google.firebase:firebase-bom:29.0.4"
+
+        const val firebaseAnalyticsKtx = "com.google.firebase:firebase-analytics-ktx"
+        const val firebaseAnalytics = "com.google.firebase:firebase-analytics:20.0.2"
+        const val firebaseCrashlytics = "com.google.firebase:firebase-crashlytics-ktx"
+
+    }
+
     const val lottie = "com.airbnb.android:lottie-compose:4.2.2"
     const val timber = "com.jakewharton.timber:timber:4.7.1"
     const val inject = "javax.inject:javax.inject:1"

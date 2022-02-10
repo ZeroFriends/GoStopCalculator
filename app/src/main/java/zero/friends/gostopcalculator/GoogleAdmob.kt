@@ -8,16 +8,19 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.qualifiers.ActivityContext
 import timber.log.Timber
 import javax.inject.Inject
-import javax.inject.Singleton
 
 sealed interface AdCallback {
     object OnError : AdCallback
     object OnSuccess : AdCallback
     object LostNetwork : AdCallback
 }
+
+class AdException(override val message: String?) : Throwable()
 
 class GoogleAdmob @Inject constructor(
     @ActivityContext private val context: Context,
@@ -50,6 +53,7 @@ class GoogleAdmob @Inject constructor(
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     Timber.tag("🔥zero:onAdFailedToLoad").e("$adError")
+                    Firebase.crashlytics.recordException(AdException("code : ${adError.code} /n ${adError.message}"))
                     adCallback(AdCallback.OnError)
                     interstitialAd = null
                 }
