@@ -1,5 +1,6 @@
 package zero.friends.domain.model
 
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 
 data class Gamer(
@@ -20,6 +21,7 @@ data class Gamer(
 }
 
 @Serializable
+@Keep
 data class Target(
     val playerId: Long = 0,
     val name: String = "",
