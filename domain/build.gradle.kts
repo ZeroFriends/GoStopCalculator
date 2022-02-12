@@ -21,7 +21,6 @@ dependencies {
 
     implementation(Dep.Kotlin.serialization)
     implementation(Dep.Square.serialization)
-    implementation(Dep.AndroidX.annotation)
 }
 
 java {
