@@ -53,7 +53,7 @@ class GoogleAdmob @Inject constructor(
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     Timber.tag("🔥zero:onAdFailedToLoad").e("$adError")
-                    Firebase.crashlytics.recordException(AdException("code : ${adError.code} /n ${adError.message}"))
+                    Firebase.crashlytics.recordException(AdException("AD_UNIT_ID = ${BuildConfig.AD_UNIT_ID} / code : ${adError.code} /n ${adError.message}"))
                     adCallback(AdCallback.OnError)
                     interstitialAd = null
                 }
