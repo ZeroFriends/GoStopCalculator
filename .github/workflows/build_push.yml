@@ -14,12 +14,16 @@ jobs:
    runs-on: ubuntu-latest
    steps:
     - name : checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
       
     - name : set up JDK
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v2
       with:
+        distribution : 'adopt'
         java-version: 11
           
+    - name : print env
+      run : env
+      
     - name: build APK
       run: ./gradlew build
