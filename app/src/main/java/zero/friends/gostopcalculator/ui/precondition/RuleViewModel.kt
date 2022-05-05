@@ -1,17 +1,20 @@
 package zero.friends.gostopcalculator.ui.precondition
 
 import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import zero.friends.domain.model.Game
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import zero.friends.domain.model.Player
 import zero.friends.domain.model.Rule
-import zero.friends.domain.repository.GameRepository
-import zero.friends.domain.usecase.rule.AddNewRuleUseCase
+import zero.friends.domain.usecase.StartNewGameUseCase
 import zero.friends.domain.usecase.rule.GetDefaultRuleUseCase
+import zero.friends.domain.util.Const
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.util.TimeUtil
 import zero.friends.gostopcalculator.util.separateComma
@@ -28,8 +31,8 @@ data class RuleUiState(
 class RuleViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val getDefaultRuleUseCase: GetDefaultRuleUseCase,
-    private val addNewRuleUseCase: AddNewRuleUseCase,
-    private val gameRepository: GameRepository
+    private val startNewGame: StartNewGameUseCase,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RuleUiState())
@@ -38,10 +41,14 @@ class RuleViewModel @Inject constructor(
     private val _toast = MutableSharedFlow<String?>()
     fun toast() = _toast.asSharedFlow()
 
-    suspend fun updateRule() {
-        _uiState.update {
-            val rules = getDefaultRuleUseCase.invoke()
-            it.copy(rules = rules)
+    private val players =
+        Json.decodeFromString<List<Player>>(requireNotNull(savedStateHandle.get<String>(Const.Players)))
+
+    init {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(rules = getDefaultRuleUseCase(playerCount = players.size))
+            }
         }
     }
 
@@ -68,9 +75,13 @@ class RuleViewModel @Inject constructor(
         }
     }
 
-    suspend fun startGame(): Game {
-        addNewRuleUseCase(rules = getUiState().value.rules)
-        return requireNotNull(gameRepository.getCurrentGame())
+    suspend fun startGame(): Long {
+        return startNewGame.invoke(
+            gameName = savedStateHandle.get<String>(Const.GameName).orEmpty(),
+            createdAt = TimeUtil.getCurrentTime(),
+            players = players,
+            rules = getUiState().value.rules
+        )
     }
 
     fun checkButtonState() {

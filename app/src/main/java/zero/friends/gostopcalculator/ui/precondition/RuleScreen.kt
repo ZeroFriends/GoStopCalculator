@@ -28,7 +28,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
@@ -45,7 +44,7 @@ sealed class RuleClickEvent {
 }
 
 @Composable
-fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (Game) -> Unit, onBack: () -> Unit) {
+fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (gameId: Long) -> Unit, onBack: () -> Unit) {
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val uiState by ruleViewModel.getUiState().collectAsState()
@@ -56,7 +55,6 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (Game) ->
     }
 
     LaunchedEffect(Unit) {
-        ruleViewModel.updateRule()
         ruleViewModel.toast()
             .onEach {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -79,8 +77,8 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (Game) ->
                 RuleClickEvent.Back -> onBack()
                 is RuleClickEvent.Complete -> {
                     scope.launch {
-                        val game = ruleViewModel.startGame()
-                        onNext(game)
+                        val gameId = ruleViewModel.startGame()
+                        onNext(gameId)
                     }
 
                 }

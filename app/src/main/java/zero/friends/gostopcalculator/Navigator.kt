@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import kotlinx.coroutines.delay
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import zero.friends.domain.util.Const
 import zero.friends.gostopcalculator.ui.board.main.BoardScreen
 import zero.friends.gostopcalculator.ui.board.prepare.PrepareScreen
@@ -95,22 +97,24 @@ fun Navigator(
         //PreCondition
         composable(Navigate.Precondition.Player.destination()) {
             PlayerScreen(
-                onNext = { navController.navigate(Navigate.Precondition.Rule.route()) },
+                onNext = { players, gameName ->
+                    val playersJson = Json.encodeToString(players)
+                    navController.navigate(Navigate.Precondition.Rule.route(playersJson, gameName))
+                },
                 onBack = { navController.navigateUp() }
             )
         }
 
         composable(
-            route = Navigate.Precondition.Rule.destination(),
+            route = Navigate.Precondition.Rule.destination(Const.Players, Const.GameName),
             arguments = listOf(
-                navArgument(
-                    Const
-                )
+                navArgument(Const.Players) { type = NavType.StringType },
+                navArgument(Const.GameName) { type = NavType.StringType }
             )
         ) {
             RuleScreen(
-                onNext = { game ->
-                    navController.navigate(Navigate.Board.Main.route(game.id))
+                onNext = { gameId ->
+                    navController.navigate(Navigate.Board.Main.route(gameId))
                 },
                 onBack = { navController.navigateUp() },
             )

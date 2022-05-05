@@ -41,7 +41,11 @@ private sealed interface PlayerClickEvent {
 }
 
 @Composable
-fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Unit, onBack: () -> Unit) {
+fun PlayerScreen(
+    viewModel: PlayerViewModel = hiltViewModel(),
+    onNext: (players: List<Player>, gameName: String) -> Unit,
+    onBack: () -> Unit
+) {
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val uiState by viewModel.getUiState().collectAsState()
@@ -70,7 +74,7 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Uni
             is PlayerClickEvent.DeletePlayer -> viewModel.removePlayer(clickEvent.player)
             is PlayerClickEvent.Next -> {
                 viewModel.editGameName(clickEvent.groupName)
-                onNext()
+                onNext(uiState.players, uiState.gameName.ifEmpty { uiState.currentTime })
             }
             is PlayerClickEvent.EditPlayer -> {
                 openDialog = true to clickEvent.player

@@ -31,8 +31,6 @@ class AppModule {
 
     @Provides
     fun provideGetDefaultRuleUseCase(
-        gameRepository: GameRepository,
-        playerRepository: PlayerRepository,
         ruleRepository: RuleRepository,
-    ): GetDefaultRuleUseCase = GetDefaultRuleUseCase(gameRepository, playerRepository, ruleRepository)
+    ): GetDefaultRuleUseCase = GetDefaultRuleUseCase(ruleRepository)
 }
