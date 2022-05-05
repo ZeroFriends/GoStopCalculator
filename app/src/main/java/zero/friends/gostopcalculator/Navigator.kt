@@ -100,7 +100,14 @@ fun Navigator(
             )
         }
 
-        composable(Navigate.Precondition.Rule.destination()) {
+        composable(
+            route = Navigate.Precondition.Rule.destination(),
+            arguments = listOf(
+                navArgument(
+                    Const
+                )
+            )
+        ) {
             RuleScreen(
                 onNext = { game ->
                     navController.navigate(Navigate.Board.Main.route(game.id))

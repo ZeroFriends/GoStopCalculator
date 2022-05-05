@@ -76,6 +76,7 @@
     <string name="manual">고스톱 설명서</string>
     <string name="ad_error">광고를 불러오지 못했습니다.</string>
     <string name="msg_network">계속 이용하시려면 네트워크에 연결해주세요.</string>
+    <string name="player_format">플레이어 %d</string>
 
 
 </resources>

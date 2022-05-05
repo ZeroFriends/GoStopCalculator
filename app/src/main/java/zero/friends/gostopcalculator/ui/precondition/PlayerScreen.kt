@@ -4,7 +4,9 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -41,7 +43,6 @@ private sealed interface PlayerClickEvent {
 @Composable
 fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Unit, onBack: () -> Unit) {
     val context = LocalContext.current
-
     val scaffoldState = rememberScaffoldState()
     val uiState by viewModel.getUiState().collectAsState()
 
@@ -56,21 +57,17 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Uni
     }
 
     BackHandler(true) {
-        viewModel.clearGame()
         onBack()
     }
 
     PlayerScreen(
         scaffoldState,
-        uiState
+        uiState,
     ) { clickEvent ->
         when (clickEvent) {
             PlayerClickEvent.AddPlayer -> viewModel.addPlayer()
-            PlayerClickEvent.Back -> {
-                viewModel.clearGame()
-                onBack()
-            }
-            is PlayerClickEvent.DeletePlayer -> viewModel.deletePlayer(clickEvent.player)
+            PlayerClickEvent.Back -> onBack()
+            is PlayerClickEvent.DeletePlayer -> viewModel.removePlayer(clickEvent.player)
             is PlayerClickEvent.Next -> {
                 viewModel.editGameName(clickEvent.groupName)
                 onNext()
@@ -135,6 +132,7 @@ private fun PlayerScreen(
                 )
 
                 PlayerLazyColumn(
+                    scrollIndex = uiState.scrollIndex,
                     players = uiState.players,
                     clickEvent = clickEvent
                 )
@@ -146,10 +144,16 @@ private fun PlayerScreen(
 
 @Composable
 private fun PlayerLazyColumn(
+    scrollIndex: Int,
+    scrollState: LazyListState = rememberLazyListState(),
     players: List<Player>,
     clickEvent: (PlayerClickEvent) -> Unit,
 ) {
-    LazyColumn(contentPadding = PaddingValues(top = 30.dp, bottom = 12.dp)) {
+    LaunchedEffect(scrollIndex) {
+        scrollState.scrollToItem(scrollIndex)
+    }
+
+    LazyColumn(state = scrollState, contentPadding = PaddingValues(top = 30.dp, bottom = 12.dp)) {
         item {
             Text(text = stringResource(id = R.string.player), fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
@@ -164,7 +168,7 @@ private fun PlayerLazyColumn(
                 )
             }
         }
-        itemsIndexed(items = players, key = { _, player -> player.id }) { index, player ->
+        itemsIndexed(items = players) { index, player ->
             PlayerItem(index, player, clickEvent)
         }
 
@@ -224,6 +228,6 @@ private fun PlayerItemPreView() {
 private fun PlayerPreview() {
     PlayerScreen(
         scaffoldState = rememberScaffoldState(),
-        uiState = PlayerUiState()
+        uiState = PlayerUiState(),
     ) {}
 }
