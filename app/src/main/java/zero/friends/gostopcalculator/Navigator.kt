@@ -24,7 +24,14 @@ import zero.friends.gostopcalculator.ui.splash.SplashScreen
 
 sealed interface Navigate {
 
-    fun route(): String = requireNotNull(this::class.qualifiedName)
+    fun route() = requireNotNull(this::class.qualifiedName)
+
+    /**
+     * @param argument : 실제 데이터를 넣어 route 할 때 사용 Navigate/1
+     * @sample
+     * navController.navigate(argument = Navigate.Board.Main.route(argument = game.id))
+     */
+    fun route(vararg argument: Any) = route() + argument.joinToString("") { "/$it" }
 
     /**
      * @param path : 목적지 path 를 route 할 때 사용 Navigate/{someData}
@@ -33,14 +40,7 @@ sealed interface Navigate {
      *      route = Navigate.Board.Main.route(path = Const.GameId)
      * )
      */
-    fun route(path: String): String = route() + "/{${path}}"
-
-    /**
-     * @param argument : 실제 데이터를 넣어 route 할 때 사용 Navigate/1
-     * @sample
-     * navController.navigate(route = Navigate.Board.Main.route(argument = game.id))
-     */
-    fun route(argument: Any): String = route() + "/${argument}"
+    fun destination(vararg path: Any) = route() + path.joinToString("") { "/{$it}" }
 
     object History : Navigate
     object Splash : Navigate
@@ -70,14 +70,14 @@ fun Navigator(
 ) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Navigate.Splash.route()) {
-        composable(Navigate.Splash.route()) {
+        composable(Navigate.Splash.destination()) {
             SplashScreen()
             LaunchedEffect(true) {
                 delay(1500)
                 navController.navigate(Navigate.History.route())
             }
         }
-        composable(Navigate.History.route()) {
+        composable(Navigate.History.destination()) {
             HistoryScreen(
                 onStartGame = {
                     navController.navigate(Navigate.Precondition.Player.route())
@@ -93,14 +93,14 @@ fun Navigator(
         }
 
         //PreCondition
-        composable(Navigate.Precondition.Player.route()) {
+        composable(Navigate.Precondition.Player.destination()) {
             PlayerScreen(
                 onNext = { navController.navigate(Navigate.Precondition.Rule.route()) },
                 onBack = { navController.navigateUp() }
             )
         }
 
-        composable(Navigate.Precondition.Rule.route()) {
+        composable(Navigate.Precondition.Rule.destination()) {
             RuleScreen(
                 onNext = { game ->
                     navController.navigate(Navigate.Board.Main.route(game.id))
@@ -111,7 +111,7 @@ fun Navigator(
 
         //Board
         composable(
-            route = Navigate.Board.Main.route(path = Const.GameId),
+            route = Navigate.Board.Main.destination(Const.GameId),
             arguments = listOf(navArgument(Const.GameId) {
                 type = NavType.LongType
                 nullable = false
@@ -126,7 +126,7 @@ fun Navigator(
                     navController.navigate(Navigate.History.route())
                 },
                 openDetailScreen = { roundId ->
-                    navController.navigate(Navigate.Board.Detail.route(argument = roundId))
+                    navController.navigate(Navigate.Board.Detail.route(roundId))
                 },
                 openCalculated = {
                     showAds {
@@ -139,7 +139,7 @@ fun Navigator(
             )
         }
 
-        composable(Navigate.Board.Prepare.route()) {
+        composable(Navigate.Board.Prepare.destination()) {
             PrepareScreen(
                 onComplete = {
                     navController.navigate(Navigate.Board.Score.route())
@@ -148,7 +148,7 @@ fun Navigator(
             )
         }
 
-        composable(Navigate.Board.Score.route()) {
+        composable(Navigate.Board.Score.destination()) {
             ScoreScreen(
                 onBack = {
                     navController.navigateUp()
@@ -163,7 +163,7 @@ fun Navigator(
             )
         }
 
-        composable(Navigate.Board.End.route()) {
+        composable(Navigate.Board.End.destination()) {
             EndScreen(
                 onComplete = { gameId ->
                     showAds {
@@ -175,7 +175,7 @@ fun Navigator(
         }
 
         composable(
-            route = Navigate.Board.Detail.route(path = Const.RoundId),
+            route = Navigate.Board.Detail.destination(Const.RoundId),
             arguments = listOf(navArgument(Const.RoundId) {
                 type = NavType.LongType
                 nullable = false
@@ -186,11 +186,11 @@ fun Navigator(
             )
         }
 
-        composable(Navigate.Board.Calculate.route()) {
+        composable(Navigate.Board.Calculate.destination()) {
             CalculateScreen(onBack = { navController.navigateUp() })
         }
 
-        composable(Navigate.Board.Rule.route()) {
+        composable(Navigate.Board.Rule.destination()) {
             RuleLogScreen(onBack = { navController.navigateUp() })
         }
 
