@@ -4,12 +4,12 @@ object Versions {
 
     const val minSdk = 24
     const val targetSdk = 32
-    const val versionCode = 7
-    const val versionName = "1.0.6"
+    const val versionCode = 9
+    const val versionName = "1.0.8"
 }
 
 object Dep {
-    const val androidGradlePlugin = "com.android.tools.build:gradle:7.0.2"
+    const val androidGradlePlugin = "com.android.tools.build:gradle:7.1.3"
 
     object AndroidX {
         const val core = "androidx.core:core-ktx:1.7.0"

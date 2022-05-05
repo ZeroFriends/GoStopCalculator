@@ -22,10 +22,20 @@ android {
         jvmTarget = "1.8"
     }
 
+    signingConfigs {
+        create("release") {
+            keyAlias = "key"
+            keyPassword = "zerofriends"
+            storeFile = file("keystore/keystore.jks")
+            storePassword = "zerofriends"
+        }
+    }
+
     buildTypes {
         debug {
             isDebuggable = true
             buildConfigField("String", "AD_UNIT_ID", "\"ca-app-pub-3940256099942544/1033173712\"")
+            signingConfig = signingConfigs.getByName("debug")
         }
         release {
             isDebuggable = false
@@ -36,6 +46,7 @@ android {
                 "proguard-rules.pro"
             )
             buildConfigField("String", "AD_UNIT_ID", "\"ca-app-pub-1663298612263181/4159961076\"")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -53,7 +64,7 @@ android {
     }
 
     lint {
-        isAbortOnError = false
+        abortOnError = false
     }
 }
 
