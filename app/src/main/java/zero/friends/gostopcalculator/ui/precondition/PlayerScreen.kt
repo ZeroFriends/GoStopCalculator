@@ -50,8 +50,8 @@ fun PlayerScreen(
     val scaffoldState = rememberScaffoldState()
     val uiState by viewModel.getUiState().collectAsState()
 
-    var openDialog by remember {
-        mutableStateOf<Pair<Boolean, Player?>>(false to null)
+    var editingPlayer by remember {
+        mutableStateOf<Player?>(null)
     }
 
     LaunchedEffect(true) {
@@ -77,16 +77,17 @@ fun PlayerScreen(
                 onNext(uiState.players, uiState.gameName.ifEmpty { uiState.currentTime })
             }
             is PlayerClickEvent.EditPlayer -> {
-                openDialog = true to clickEvent.player
+                editingPlayer = clickEvent.player
             }
 
         }
     }
 
-    if (openDialog.first) {
+    if (editingPlayer != null) {
         NameEditDialog(
-            player = requireNotNull(openDialog.second),
-            onClose = { openDialog = false to null }
+            viewModel = viewModel,
+            player = requireNotNull(editingPlayer),
+            onClose = { editingPlayer = null }
         )
     }
 }

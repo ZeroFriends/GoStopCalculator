@@ -58,6 +58,14 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
+    fun editPlayer(originalPlayer: Player, name: String) {
+        val editPlayer = if (name.isEmpty()) originalPlayer else originalPlayer.copy(name = name)
+        val isExist = _uiState.value.players.any { it.name == name }
+        if (isExist) throw IllegalStateException("중복된 이름이 존재합니다.")
+        val index = _uiState.value.players.indexOf(originalPlayer)
+        _uiState.value.players[index] = editPlayer
+    }
+
     fun removePlayer(player: Player) {
         _uiState.update {
             val index = it.players.indexOf(player)

@@ -24,28 +24,36 @@ import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.GoStopButton
 import zero.friends.gostopcalculator.ui.common.GoStopOutLinedTextField
+import zero.friends.gostopcalculator.ui.precondition.PlayerViewModel
 
 @Composable
 fun NameEditDialog(
-    viewModel: NameEditDialogViewModel = hiltViewModel(),
+    viewModel: PlayerViewModel = hiltViewModel(),
     player: Player,
     onClose: () -> Unit = {}
 ) {
     val context = LocalContext.current
-    val dialogState by viewModel.getDialogState().collectAsState()
-    val editPlayerName = remember {
-        val playerName = dialogState.editPlayer?.name ?: ""
-        mutableStateOf(TextFieldValue(playerName, selection = TextRange(playerName.length)))
+    var editPlayerName by remember {
+        mutableStateOf(TextFieldValue("", selection = TextRange(player.name.length)))
     }
 
-    val editPlayer = {
-        viewModel.editPlayer(player, editPlayerName.value.text, onSuccess = onClose)
-        viewModel.clearState()
+    var error by remember {
+        mutableStateOf("")
+    }
+
+    val editPlayer: () -> Unit = {
+        runCatching {
+            viewModel.editPlayer(player, editPlayerName.text)
+        }.onFailure {
+            error = it.message.orEmpty()
+        }.onSuccess {
+            onClose()
+        }
     }
 
     AlertDialog(
         onDismissRequest = {
-            viewModel.clearState()
+            error = ""
             onClose()
         },
         text = {
@@ -62,11 +70,11 @@ fun NameEditDialog(
                 )
                 Spacer(modifier = Modifier.padding(bottom = 40.dp))
                 GoStopOutLinedTextField(
-                    text = editPlayerName.value,
+                    text = editPlayerName,
                     hint = player.name,
                     color = colorResource(id = R.color.black),
                     onValueChange = {
-                        if (it.text.length < 8) editPlayerName.value = it
+                        if (it.text.length < 8) editPlayerName = it
                         else Toast.makeText(
                             context,
                             context.getString(R.string.over_player_name_alert),
@@ -74,7 +82,7 @@ fun NameEditDialog(
                         ).show()
 
                     },
-                    error = dialogState.error?.message,
+                    error = error,
                     showKeyboard = true,
                     onDone = editPlayer
                 )
