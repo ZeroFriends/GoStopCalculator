@@ -26,4 +26,4 @@ jobs:
       run : env
       
     - name: build APK
-      run: ./gradlew build
+      run: ./gradlew assemble
