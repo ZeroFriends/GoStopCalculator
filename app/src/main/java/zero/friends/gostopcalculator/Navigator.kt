@@ -129,8 +129,8 @@ fun Navigator(
             }),
         ) {
             BoardScreen(
-                onNext = {
-                    navController.navigate(Navigate.Board.Prepare.route())
+                onNext = { gameId ->
+                    navController.navigate(Navigate.Board.Prepare.route(gameId))
                 },
                 onBack = {
                     navController.popBackStack()
@@ -150,16 +150,27 @@ fun Navigator(
             )
         }
 
-        composable(Navigate.Board.Prepare.destination()) {
+        composable(
+            route = Navigate.Board.Prepare.destination(Const.GameId),
+            arguments = listOf(
+                navArgument(Const.GameId) { type = NavType.LongType }
+            )
+        ) {
             PrepareScreen(
-                onComplete = {
-                    navController.navigate(Navigate.Board.Score.route())
+                onComplete = { gameId, roundId ->
+                    navController.navigate(Navigate.Board.Score.route(gameId, roundId))
                 },
                 onBack = { navController.navigateUp() }
             )
         }
 
-        composable(Navigate.Board.Score.destination()) {
+        composable(
+            route = Navigate.Board.Score.destination(Const.GameId, Const.RoundId),
+            arguments = listOf(
+                navArgument(Const.GameId) { type = NavType.LongType },
+                navArgument(Const.RoundId) { type = NavType.LongType },
+            )
+        ) {
             ScoreScreen(
                 onBack = {
                     navController.navigateUp()

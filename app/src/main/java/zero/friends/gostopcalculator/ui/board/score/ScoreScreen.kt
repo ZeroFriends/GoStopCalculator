@@ -74,6 +74,7 @@ fun ScoreScreen(
     LaunchedEffect(Unit) {
         scoreViewModel.escapeEvent()
             .onEach {
+                scoreViewModel.deleteRound()
                 onBack(uiState.game.id)
             }.launchIn(this)
 
@@ -90,9 +91,7 @@ fun ScoreScreen(
     if (openExtraDialog) {
         when (uiState.phase) {
             is Selling -> SellingInfoDialog { openExtraDialog = false }
-            else -> {
-                ManualFullScreenDialog { openExtraDialog = false }
-            }
+            else -> ManualFullScreenDialog { openExtraDialog = false }
         }
     }
 
