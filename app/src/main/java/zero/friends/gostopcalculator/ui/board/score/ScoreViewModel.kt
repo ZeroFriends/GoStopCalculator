@@ -10,14 +10,13 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.*
 import zero.friends.domain.repository.GameRepository
+import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.repository.RoundRepository
 import zero.friends.domain.usecase.calculate.CalculateGameResultUseCase
-import zero.friends.domain.usecase.gamer.GetRoundGamerUseCase
 import zero.friends.domain.usecase.option.SellingUseCase
 import zero.friends.domain.usecase.option.ToggleLoserOptionUseCase
 import zero.friends.domain.usecase.option.ToggleScoreOptionUseCase
 import zero.friends.domain.usecase.option.UpdateWinnerUseCase
-import zero.friends.domain.usecase.round.ObserveRoundGamerUseCase
 import zero.friends.domain.util.Const
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.util.separateComma
@@ -36,17 +35,16 @@ data class ScoreUiState(
 class ScoreViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val gameRepository: GameRepository,
-    private val getRoundGamerUseCase: GetRoundGamerUseCase,
     private val toggleScoreOptionUseCase: ToggleScoreOptionUseCase,
     private val toggleLoserOptionUseCase: ToggleLoserOptionUseCase,
-    private val observeRoundGamerUseCase: ObserveRoundGamerUseCase,
     private val updateWinnerUseCase: UpdateWinnerUseCase,
     private val calculateGameResultUseCase: CalculateGameResultUseCase,
     private val sellingUseCase: SellingUseCase,
     private val roundRepository: RoundRepository,
+    private val gamerRepository: GamerRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val roundId: Long = requireNotNull(savedStateHandle[Const.RoundId])
+    val roundId: Long = requireNotNull(savedStateHandle[Const.RoundId])
 
     private val _uiState = MutableStateFlow(ScoreUiState())
     fun uiState() = _uiState.asStateFlow()
@@ -59,7 +57,7 @@ class ScoreViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val gamers = getRoundGamerUseCase()
+            val gamers = gamerRepository.getRoundGamers(roundId)
             _uiState.update {
                 it.copy(
                     game = gameRepository.getGame(requireNotNull(savedStateHandle[Const.GameId])),
@@ -68,7 +66,7 @@ class ScoreViewModel @Inject constructor(
                 )
             }
 
-            observeRoundGamerUseCase()
+            gamerRepository.observeRoundGamers(roundId)
                 .onEach { roundGamers ->
                     _uiState.update {
                         it.copy(playerResults = roundGamers)
@@ -222,6 +220,7 @@ class ScoreViewModel @Inject constructor(
             if (winner != null) updateWinnerUseCase.invoke(winner)
 
             calculateGameResultUseCase.invoke(
+                roundId = roundId,
                 seller = uiState().value.seller,
                 winner = uiState().value.winner
             )

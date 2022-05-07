@@ -56,7 +56,7 @@ fun ScoreScreen(
     scoreViewModel: ScoreViewModel = hiltViewModel(),
     onBack: (gameId: Long?) -> Unit,
     Exit: (gameId: Long) -> Unit,
-    onComplete: () -> Unit = {}
+    onComplete: (gameId: Long, roundId: Long) -> Unit = { _, _ -> }
 ) {
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
@@ -101,7 +101,7 @@ fun ScoreScreen(
             titleText = stringResource(R.string.dialog_text_complete),
             onClick = {
                 scoreViewModel.calculateGameResult()
-                onComplete()
+                onComplete(uiState.game.id, scoreViewModel.roundId)
             },
             onDismiss = {
                 completeDialog = false
@@ -121,7 +121,7 @@ fun ScoreScreen(
             onClick = {
                 threeFuckDialog = false
                 scoreViewModel.calculateGameResult()
-                onComplete()
+                onComplete(uiState.game.id, scoreViewModel.roundId)
             }
         )
     }

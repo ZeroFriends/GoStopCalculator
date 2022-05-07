@@ -175,8 +175,8 @@ fun Navigator(
                 onBack = {
                     navController.navigateUp()
                 },
-                onComplete = {
-                    navController.navigate(Navigate.Board.End.route())
+                onComplete = { gameId, roundId ->
+                    navController.navigate(Navigate.Board.End.route(gameId, roundId))
                 },
                 Exit = { gameId ->
                     navController.popBackStack()
@@ -185,7 +185,13 @@ fun Navigator(
             )
         }
 
-        composable(Navigate.Board.End.destination()) {
+        composable(
+            route = Navigate.Board.End.destination(Const.GameId, Const.RoundId),
+            arguments = listOf(
+                navArgument(Const.GameId) { type = NavType.LongType },
+                navArgument(Const.RoundId) { type = NavType.LongType },
+            )
+        ) {
             EndScreen(
                 onComplete = { gameId ->
                     showAds {

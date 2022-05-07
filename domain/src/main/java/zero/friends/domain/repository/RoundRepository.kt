@@ -8,7 +8,6 @@ interface RoundRepository {
     fun observeAllRound(gameId: Long): Flow<List<Round>>
     fun observeRound(roundId: Long): Flow<List<Gamer>>
     suspend fun createNewRound(gameId: Long): Long
-    suspend fun getCurrentRound(): Round?
     suspend fun deleteRound(roundId: Long)
 
 }
