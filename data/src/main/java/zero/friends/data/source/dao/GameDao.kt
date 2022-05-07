@@ -14,12 +14,6 @@ interface GameDao : BaseDao<GameEntity> {
     @Query("SELECT * FROM GameEntity WHERE :id = id")
     suspend fun getGameAndPlayer(id: Long): GameAndPlayerRelation
 
-    @Query("UPDATE GameEntity SET name = :editName WHERE id == :gameId")
-    suspend fun editGameName(gameId: Long, editName: String)
-
-    @Query("SELECT name From GameEntity WHERE id == :gameId")
-    fun observeGameName(gameId: Long): Flow<String>
-
     @Query("SELECT * FROM GameEntity")
     fun observeAllGame(): Flow<List<GameEntity>>
 

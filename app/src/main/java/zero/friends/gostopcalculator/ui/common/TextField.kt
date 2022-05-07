@@ -74,6 +74,7 @@ fun GoStopOutLinedTextField(
         )
         if (error != null) {
             Text(
+                modifier = Modifier.padding(top = 6.dp),
                 text = error,
                 color = MaterialTheme.colors.error,
                 style = MaterialTheme.typography.caption,
@@ -170,7 +171,13 @@ private fun TitleOutlinedTextField() {
 @Preview(showBackground = true)
 @Composable
 private fun GoStopOutLinedTextFieldPreView() {
-    GoStopOutLinedTextField(text = TextFieldValue("ZeroWorld!!"), hint = "hint", onValueChange = {})
+    GoStopOutLinedTextField(text = TextFieldValue("ZeroWorld!!"), hint = "", error = "에러메시지 입니다.", onValueChange = {})
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PreView() {
+    GoStopOutLinedTextField(text = TextFieldValue(""), hint = "hint", onValueChange = {})
 }
 
 @Preview(showBackground = true)

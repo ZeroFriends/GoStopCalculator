@@ -1,19 +1,14 @@
 package zero.friends.domain.usecase.rule
 
 import zero.friends.domain.model.Rule
-import zero.friends.domain.repository.GameRepository
-import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.repository.RuleRepository
+import javax.inject.Inject
 
-class GetDefaultRuleUseCase(
-    private val gameRepository: GameRepository,
-    private val playerRepository: PlayerRepository,
+class GetDefaultRuleUseCase @Inject constructor(
     private val ruleRepository: RuleRepository,
 ) {
-    suspend operator fun invoke(): List<Rule> {
-        val gameId = requireNotNull(gameRepository.getCurrentGameId())
-
-        val canSellShine = playerRepository.getPlayers(gameId).size > 3
+    suspend operator fun invoke(playerCount: Int): List<Rule> {
+        val canSellShine = playerCount > 3
         val rules = ruleRepository.getDefaultRule().toMutableList()
         val sellShineRule = rules.find { it.name == "광팔기" }
 

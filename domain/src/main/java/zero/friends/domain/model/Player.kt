@@ -1,3 +1,6 @@
 package zero.friends.domain.model
 
-data class Player(val id: Long = 0, val name: String = "", val gameId: Long = 0)
+import java.io.Serializable
+
+@kotlinx.serialization.Serializable
+data class Player(val id: Long = 0, val name: String = "", val gameId: Long = 0) : Serializable
