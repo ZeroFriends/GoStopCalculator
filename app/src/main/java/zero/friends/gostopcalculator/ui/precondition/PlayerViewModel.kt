@@ -16,7 +16,6 @@ import javax.inject.Inject
 
 
 data class PlayerUiState(
-    val gameName: String = "",
     val players: SnapshotStateList<Player> = mutableStateListOf(),
     val currentTime: String = TimeUtil.getCurrentTime(),
     val scrollIndex: Int = 0
@@ -70,17 +69,7 @@ class PlayerViewModel @Inject constructor(
         _uiState.update {
             val index = it.players.indexOf(player)
             it.players.remove(player)
-            it.copy(
-                scrollIndex = index
-            )
-        }
-    }
-
-    fun editGameName(gameName: String) {
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(gameName = gameName)
-            }
+            it.copy(scrollIndex = index)
         }
     }
 

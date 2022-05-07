@@ -73,8 +73,7 @@ fun PlayerScreen(
             PlayerClickEvent.Back -> onBack()
             is PlayerClickEvent.DeletePlayer -> viewModel.removePlayer(clickEvent.player)
             is PlayerClickEvent.Next -> {
-                viewModel.editGameName(clickEvent.groupName)
-                onNext(uiState.players, uiState.gameName.ifEmpty { uiState.currentTime })
+                onNext(uiState.players, clickEvent.groupName.ifEmpty { uiState.currentTime })
             }
             is PlayerClickEvent.EditPlayer -> {
                 editingPlayer = clickEvent.player
@@ -110,8 +109,8 @@ private fun PlayerScreen(
             )
         }
     ) {
-        val gameName = remember {
-            mutableStateOf(TextFieldValue(uiState.gameName))
+        var gameName by remember {
+            mutableStateOf(TextFieldValue(""))
         }
 
         AprilBackground(
@@ -119,15 +118,15 @@ private fun PlayerScreen(
             subTitle = stringResource(id = R.string.player_description),
             buttonText = stringResource(id = R.string.next),
             buttonEnabled = uiState.players.size > 1,
-            onClick = { clickEvent(PlayerClickEvent.Next(gameName.value.text)) }
+            onClick = { clickEvent(PlayerClickEvent.Next(gameName.text)) }
         ) {
             Column {
                 TitleOutlinedTextField(
                     title = stringResource(id = R.string.group_name),
-                    text = gameName.value,
+                    text = gameName,
                     hint = uiState.currentTime,
                     onValueChange = {
-                        if (it.text.length <= 15) gameName.value = it
+                        if (it.text.length <= 15) gameName = it
                         else Toast.makeText(
                             context,
                             context.getString(R.string.over_game_name_alert),
