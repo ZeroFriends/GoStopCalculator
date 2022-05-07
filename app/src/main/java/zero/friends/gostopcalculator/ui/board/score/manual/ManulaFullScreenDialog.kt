@@ -15,9 +15,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -104,13 +106,15 @@ fun ImageManual(script: List<Script>, imageRes: List<Int>) {
                 modifier = Modifier
                     .padding(16.dp)
                     .background(color = colorResource(id = R.color.white), shape = RoundedCornerShape(4.dp))
-                    .shadow(1.dp, shape = RoundedCornerShape(1.dp))
-                    .size(156.dp),
+                    .shadow(1.dp, shape = RoundedCornerShape(1.dp)),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.padding(10.dp))
-                Image(painter = painterResource(id = imageRes[index]), contentDescription = null)
+                Image(
+                    painter = rememberVectorPainter(image = ImageVector.vectorResource(id = imageRes[index])),
+                    contentDescription = null
+                )
                 Spacer(modifier = Modifier.padding(7.dp))
                 Text(
                     text = item.header,
@@ -179,11 +183,13 @@ private fun ManualGrids(manuals: List<Manual>, focusIndex: Int, onClick: (index:
 @Preview
 @Composable
 private fun TextPreview() {
-    TextManual(items = listOf(Script("header", "body")))
+    TextManual(items = listOf(Script("피박", "승자가 피 10장 이상을 모아 점수를 얻었는데 피가 5장 이하인 경우. 승자에게 2배의 돈을 지불한다.")))
 }
 
 @Preview
 @Composable
 private fun ImagePreview() {
-    ImageManual(script = listOf(Script("header", "body")), emptyList())
+    ImageManual(
+        script = listOf(Script("10장•1점", "1장 추가 시 1점씩 추가\n/ 쌍피 2점, 쓰리피 3점추가")), listOf(R.drawable.pees)
+    )
 }
