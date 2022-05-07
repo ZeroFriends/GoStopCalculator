@@ -41,9 +41,9 @@ fun BoardScreen(
     boardViewModel: BoardViewModel = hiltViewModel(),
     onNext: (gameId: Long) -> Unit = {},
     onBack: () -> Unit = {},
-    openDetailScreen: (roundId: Long) -> Unit = {},
-    openCalculated: () -> Unit = {},
-    openRule: () -> Unit = {}
+    openDetailScreen: (gameId: Long, roundId: Long) -> Unit = { _, _ -> },
+    openCalculated: (gameId: Long) -> Unit = {},
+    openRule: (gameId: Long) -> Unit = {}
 ) {
     val scaffoldState = rememberScaffoldState()
     val uiState by boardViewModel.getUiState().collectAsState()
@@ -62,13 +62,13 @@ fun BoardScreen(
             BoardEvent.Back -> onBack()
             BoardEvent.StartGame -> onNext(uiState.game.id)
             is BoardEvent.Detail -> {
-                openDetailScreen(event.roundId)
+                openDetailScreen(uiState.game.id, event.roundId)
             }
             is BoardEvent.More -> {
                 openDialog = event.roundId
             }
-            BoardEvent.OpenCalculated -> openCalculated()
-            BoardEvent.OpenRule -> openRule()
+            BoardEvent.OpenCalculated -> openCalculated(uiState.game.id)
+            BoardEvent.OpenRule -> openRule(uiState.game.id)
         }
     }
 

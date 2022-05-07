@@ -26,8 +26,6 @@ class DetailViewModel @Inject constructor(
     private val gameRepository: GameRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val roundId: Long = requireNotNull(savedStateHandle.get(Const.RoundId))
-
     private val _uiState = MutableStateFlow(DetailUiState())
     fun uiState() = _uiState.asStateFlow()
 
@@ -35,8 +33,8 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    game = requireNotNull(gameRepository.getCurrentGame()),
-                    gamers = gamerRepository.getRoundGamers(roundId = roundId)
+                    game = gameRepository.getGame(requireNotNull(savedStateHandle[Const.GameId])),
+                    gamers = gamerRepository.getRoundGamers(roundId = requireNotNull(savedStateHandle.get(Const.RoundId)))
                 )
             }
         }

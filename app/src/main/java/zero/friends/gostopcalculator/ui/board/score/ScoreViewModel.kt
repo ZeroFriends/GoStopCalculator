@@ -220,6 +220,7 @@ class ScoreViewModel @Inject constructor(
             if (winner != null) updateWinnerUseCase.invoke(winner)
 
             calculateGameResultUseCase.invoke(
+                gameId = uiState().value.game.id,
                 roundId = roundId,
                 seller = uiState().value.seller,
                 winner = uiState().value.winner

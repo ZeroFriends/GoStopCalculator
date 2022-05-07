@@ -2,8 +2,9 @@ package zero.friends.domain.usecase.rule
 
 import zero.friends.domain.model.Rule
 import zero.friends.domain.repository.RuleRepository
+import javax.inject.Inject
 
-class GetDefaultRuleUseCase(
+class GetDefaultRuleUseCase @Inject constructor(
     private val ruleRepository: RuleRepository,
 ) {
     suspend operator fun invoke(playerCount: Int): List<Rule> {

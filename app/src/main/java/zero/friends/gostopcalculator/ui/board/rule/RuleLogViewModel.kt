@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.board.rule
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,6 +12,7 @@ import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.RuleRepository
+import zero.friends.domain.util.Const
 import javax.inject.Inject
 
 data class RuleLogUiState(
@@ -21,7 +23,8 @@ data class RuleLogUiState(
 @HiltViewModel
 class RuleLogViewModel @Inject constructor(
     private val gameRepository: GameRepository,
-    private val ruleRepository: RuleRepository
+    private val ruleRepository: RuleRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RuleLogUiState())
@@ -29,7 +32,7 @@ class RuleLogViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val game = requireNotNull(gameRepository.getCurrentGame())
+            val game = gameRepository.getGame(requireNotNull(savedStateHandle[Const.GameId]))
             val rule = ruleRepository.getRules(game.id)
             _uiState.update { it.copy(game = game, rule = rule) }
         }
