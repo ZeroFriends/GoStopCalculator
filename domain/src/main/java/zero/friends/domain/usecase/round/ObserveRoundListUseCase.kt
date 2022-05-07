@@ -11,9 +11,7 @@ class ObserveRoundListUseCase @Inject constructor(
 ) {
     operator fun invoke(gameId: Long): Flow<Map<Long, List<Gamer>>> {
         return gamerRepository.observeGamers(gameId).map { gamers ->
-            gamers
-                .filter { it.gameId == gameId }
-                .groupBy { it.roundId }
+            gamers.groupBy { it.roundId }
         }
     }
 }

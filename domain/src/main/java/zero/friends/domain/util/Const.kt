@@ -2,6 +2,9 @@ package zero.friends.domain.util
 
 object Const {
     const val GameId = "gameId"
+    const val GameName = "game_name"
+    const val Players = "players"
+
     const val RoundId = "roundId"
     const val FuckEnding = "fuckEnding"
 

@@ -4,24 +4,27 @@ import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.LoserOption
 import zero.friends.domain.model.Rule
 import zero.friends.domain.model.ScoreOption
-import zero.friends.domain.repository.GameRepository
+import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.repository.RuleRepository
-import zero.friends.domain.usecase.gamer.GetRoundGamerUseCase
 import zero.friends.domain.util.Const
 import javax.inject.Inject
 
 class CalculateGameResultUseCase @Inject constructor(
-    private val gameRepository: GameRepository,
     private val ruleRepository: RuleRepository,
-    private val roundGamerUseCase: GetRoundGamerUseCase,
-    private val updateAccountUseCase: UpdateAccountUseCase
+    private val updateAccountUseCase: UpdateAccountUseCase,
+    private val gamerRepository: GamerRepository
 ) {
     private lateinit var rules: List<Rule>
     private lateinit var roundGamers: List<Gamer>
 
-    suspend operator fun invoke(seller: Gamer?, winner: Gamer?) {
-        rules = ruleRepository.getRules(requireNotNull(gameRepository.getCurrentGameId()))
-        roundGamers = roundGamerUseCase()
+    suspend operator fun invoke(
+        gameId: Long,
+        roundId: Long,
+        seller: Gamer?,
+        winner: Gamer?
+    ) {
+        rules = ruleRepository.getRules(gameId)
+        roundGamers = gamerRepository.getRoundGamers(roundId)
 
         //1 광팜 계산
         if (seller != null) calculateSellAccount(seller)

@@ -1,10 +1,12 @@
 package zero.friends.gostopcalculator.ui.board.score.manual
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import zero.friends.domain.model.Manual
 import zero.friends.domain.repository.ManualRepository
 import zero.friends.gostopcalculator.R
@@ -36,9 +38,11 @@ class ManualViewModel @Inject constructor(
 
 
     init {
-        _uiState.update {
-            val manuals = manualRepository.getManuals()
-            it.copy(manuals = manuals)
+        viewModelScope.launch {
+            _uiState.update {
+                val manuals = manualRepository.getManuals()
+                it.copy(manuals = manuals)
+            }
         }
     }
 }

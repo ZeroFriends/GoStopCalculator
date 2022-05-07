@@ -43,7 +43,7 @@ private sealed interface PrepareEvent {
 @Composable
 fun PrepareScreen(
     prepareViewModel: PrepareViewModel = hiltViewModel(),
-    onComplete: () -> Unit = { },
+    onComplete: (gameId: Long, roundId: Long) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -51,7 +51,6 @@ fun PrepareScreen(
     val uiState by prepareViewModel.uiState().collectAsState()
 
     BackHandler(true) {
-        prepareViewModel.deleteRound()
         onBack()
     }
 
@@ -61,11 +60,12 @@ fun PrepareScreen(
         event = { event ->
             when (event) {
                 PrepareEvent.Back -> {
-                    prepareViewModel.deleteRound()
                     onBack()
                 }
                 PrepareEvent.Complete -> {
-                    onComplete()
+                    prepareViewModel.createNewRound { roundId ->
+                        onComplete(uiState.game.id, roundId)
+                    }
                 }
                 is PrepareEvent.OnClickPlayer -> {
                     prepareViewModel.onClickPlayer(event.isCheck, event.player) {
@@ -95,7 +95,7 @@ private fun PrepareScreen(
     ) {
         GoStopButtonBackground(
             buttonString = stringResource(id = R.string.complete),
-            buttonEnabled = uiState.gamer.size >= 2,
+            buttonEnabled = uiState.selectedPlayers.size >= 2,
             onClick = { event(PrepareEvent.Complete) },
             contents = {
                 Column {
@@ -133,7 +133,7 @@ private fun PlayerPickList(
                 PlayerPickItem(
                     index = index,
                     player = player,
-                    isCheck = uiState.gamer.any { player.id == it.playerId },
+                    isCheck = uiState.selectedPlayers.any { player.id == it.id },
                     onClick = { event(PrepareEvent.OnClickPlayer(player, it)) })
             }
         }

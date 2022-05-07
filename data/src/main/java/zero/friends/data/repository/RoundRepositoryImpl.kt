@@ -14,16 +14,8 @@ import javax.inject.Inject
 
 class RoundRepositoryImpl @Inject constructor(private val roundDao: RoundDao) : RoundRepository {
 
-    private var cacheRoundId: Long? = null
-
     override suspend fun createNewRound(gameId: Long): Long {
-        return roundDao.insert(RoundEntity(gameId = gameId)).also { cacheRoundId = it }
-    }
-
-    override suspend fun getCurrentRound(): Round? {
-        return cacheRoundId?.let { roundId ->
-            roundDao.getRound(roundId).toRound()
-        }
+        return roundDao.insert(RoundEntity(gameId = gameId))
     }
 
     override fun observeAllRound(gameId: Long): Flow<List<Round>> {
@@ -42,7 +34,6 @@ class RoundRepositoryImpl @Inject constructor(private val roundDao: RoundDao) : 
     }
 
     override suspend fun deleteRound(roundId: Long) {
-        cacheRoundId = null
         roundDao.deleteRound(roundId)
     }
 }

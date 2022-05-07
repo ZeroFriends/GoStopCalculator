@@ -98,6 +98,7 @@ dependencies {
 
     implementation(Dep.Kotlin.coroutineCore)
     implementation(Dep.Kotlin.coroutineAndroid)
+    implementation(Dep.Kotlin.serialization)
 
     implementation(Dep.Dagger.hiltAndroid)
     implementation(Dep.Dagger.hiltLifeCycleViewModel)

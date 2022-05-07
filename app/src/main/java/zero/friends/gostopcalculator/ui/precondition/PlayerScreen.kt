@@ -4,7 +4,9 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,14 +41,17 @@ private sealed interface PlayerClickEvent {
 }
 
 @Composable
-fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Unit, onBack: () -> Unit) {
+fun PlayerScreen(
+    viewModel: PlayerViewModel = hiltViewModel(),
+    onNext: (players: List<Player>, gameName: String) -> Unit,
+    onBack: () -> Unit
+) {
     val context = LocalContext.current
-
     val scaffoldState = rememberScaffoldState()
     val uiState by viewModel.getUiState().collectAsState()
 
-    var openDialog by remember {
-        mutableStateOf<Pair<Boolean, Player?>>(false to null)
+    var editingPlayer by remember {
+        mutableStateOf<Player?>(null)
     }
 
     LaunchedEffect(true) {
@@ -56,36 +61,32 @@ fun PlayerScreen(viewModel: PlayerViewModel = hiltViewModel(), onNext: () -> Uni
     }
 
     BackHandler(true) {
-        viewModel.clearGame()
         onBack()
     }
 
     PlayerScreen(
         scaffoldState,
-        uiState
+        uiState,
     ) { clickEvent ->
         when (clickEvent) {
             PlayerClickEvent.AddPlayer -> viewModel.addPlayer()
-            PlayerClickEvent.Back -> {
-                viewModel.clearGame()
-                onBack()
-            }
-            is PlayerClickEvent.DeletePlayer -> viewModel.deletePlayer(clickEvent.player)
+            PlayerClickEvent.Back -> onBack()
+            is PlayerClickEvent.DeletePlayer -> viewModel.removePlayer(clickEvent.player)
             is PlayerClickEvent.Next -> {
-                viewModel.editGameName(clickEvent.groupName)
-                onNext()
+                onNext(uiState.players, clickEvent.groupName.ifEmpty { uiState.currentTime })
             }
             is PlayerClickEvent.EditPlayer -> {
-                openDialog = true to clickEvent.player
+                editingPlayer = clickEvent.player
             }
 
         }
     }
 
-    if (openDialog.first) {
+    if (editingPlayer != null) {
         NameEditDialog(
-            player = requireNotNull(openDialog.second),
-            onClose = { openDialog = false to null }
+            viewModel = viewModel,
+            player = requireNotNull(editingPlayer),
+            onClose = { editingPlayer = null }
         )
     }
 }
@@ -108,8 +109,8 @@ private fun PlayerScreen(
             )
         }
     ) {
-        val gameName = remember {
-            mutableStateOf(TextFieldValue(uiState.gameName))
+        var gameName by remember {
+            mutableStateOf(TextFieldValue(""))
         }
 
         AprilBackground(
@@ -117,15 +118,15 @@ private fun PlayerScreen(
             subTitle = stringResource(id = R.string.player_description),
             buttonText = stringResource(id = R.string.next),
             buttonEnabled = uiState.players.size > 1,
-            onClick = { clickEvent(PlayerClickEvent.Next(gameName.value.text)) }
+            onClick = { clickEvent(PlayerClickEvent.Next(gameName.text)) }
         ) {
             Column {
                 TitleOutlinedTextField(
                     title = stringResource(id = R.string.group_name),
-                    text = gameName.value,
+                    text = gameName,
                     hint = uiState.currentTime,
                     onValueChange = {
-                        if (it.text.length <= 15) gameName.value = it
+                        if (it.text.length <= 15) gameName = it
                         else Toast.makeText(
                             context,
                             context.getString(R.string.over_game_name_alert),
@@ -135,6 +136,7 @@ private fun PlayerScreen(
                 )
 
                 PlayerLazyColumn(
+                    scrollIndex = uiState.scrollIndex,
                     players = uiState.players,
                     clickEvent = clickEvent
                 )
@@ -146,10 +148,16 @@ private fun PlayerScreen(
 
 @Composable
 private fun PlayerLazyColumn(
+    scrollIndex: Int,
+    scrollState: LazyListState = rememberLazyListState(),
     players: List<Player>,
     clickEvent: (PlayerClickEvent) -> Unit,
 ) {
-    LazyColumn(contentPadding = PaddingValues(top = 30.dp, bottom = 12.dp)) {
+    LaunchedEffect(scrollIndex) {
+        scrollState.scrollToItem(scrollIndex)
+    }
+
+    LazyColumn(state = scrollState, contentPadding = PaddingValues(top = 30.dp, bottom = 12.dp)) {
         item {
             Text(text = stringResource(id = R.string.player), fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
@@ -164,7 +172,7 @@ private fun PlayerLazyColumn(
                 )
             }
         }
-        itemsIndexed(items = players, key = { _, player -> player.id }) { index, player ->
+        itemsIndexed(items = players) { index, player ->
             PlayerItem(index, player, clickEvent)
         }
 
@@ -224,6 +232,6 @@ private fun PlayerItemPreView() {
 private fun PlayerPreview() {
     PlayerScreen(
         scaffoldState = rememberScaffoldState(),
-        uiState = PlayerUiState()
+        uiState = PlayerUiState(),
     ) {}
 }
