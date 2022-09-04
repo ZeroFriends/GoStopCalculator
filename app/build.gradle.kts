@@ -26,7 +26,7 @@ android {
         create("release") {
             keyAlias = "key"
             keyPassword = "zerofriends"
-            storeFile = file("keystore/keystore.jks")
+            storeFile = file("keystore/key")
             storePassword = "zerofriends"
         }
     }
