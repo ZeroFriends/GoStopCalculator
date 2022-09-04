@@ -12,12 +12,18 @@ class ToggleLoserOptionUseCase @Inject constructor(
         val currentGamer = gamerRepository.getGamer(gamerId)
         val roundGamers = gamerRepository.getRoundGamers(currentGamer.roundId)
 
-        val otherGoBakGamer =
-            (roundGamers - currentGamer).firstOrNull { it.loserOption.contains(LoserOption.GoBak) }
-
-        if (otherGoBakGamer != null) {//고박은 only 1개
-            updateOptionsUseCase(otherGoBakGamer.id, emptyList(), LoserOption.GoBak::class)
+        if (option == LoserOption.GoBak) {
+            val otherGoBakGamer =
+                (roundGamers - currentGamer).firstOrNull { it.loserOption.contains(LoserOption.GoBak) }
+            if (otherGoBakGamer != null) {//고박은 only 1개
+                updateOptionsUseCase(
+                    otherGoBakGamer.id,
+                    otherGoBakGamer.loserOption - LoserOption.GoBak,
+                    LoserOption.GoBak::class
+                )
+            }
         }
+
         val hasOption = currentGamer.loserOption.contains(option)
         val toggledList = if (hasOption) {
             currentGamer.loserOption - option
