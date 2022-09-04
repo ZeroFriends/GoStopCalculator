@@ -36,7 +36,7 @@ class ScoreViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val gameRepository: GameRepository,
     private val toggleScoreOptionUseCase: ToggleScoreOptionUseCase,
-    private val toggleLoserOptionUseCase: ToggleLoserOptionUseCase,
+    private val toggleLoserOption: ToggleLoserOptionUseCase,
     private val updateWinnerUseCase: UpdateWinnerUseCase,
     private val calculateGameResultUseCase: CalculateGameResultUseCase,
     private val sellingUseCase: SellingUseCase,
@@ -90,7 +90,7 @@ class ScoreViewModel @Inject constructor(
 
     fun selectLoser(gamer: Gamer, option: LoserOption) {
         viewModelScope.launch {
-            toggleLoserOptionUseCase(gamer, option)
+            toggleLoserOption(gamer.id, option)
         }
     }
 

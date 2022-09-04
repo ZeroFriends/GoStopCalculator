@@ -103,7 +103,7 @@ fun CenterTextTopBar(
 fun ContentsCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    boxContents: @Composable() (BoxScope.() -> Unit)
+    boxContents: @Composable (BoxScope.() -> Unit)
 ) {
     Card(
         modifier = modifier,

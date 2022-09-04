@@ -1,11 +1,11 @@
 package zero.friends.gostopcalculator.ui.common
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -41,13 +41,16 @@ fun RoundBox(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(text = String.format(stringResource(id = R.string.round, (index + 1))))
-                    IconButton(onClick = { onClickMore?.invoke() }) {
-                        Icon(painter = painterResource(id = R.drawable.ic_more_black), contentDescription = null)
+                    Surface(modifier = Modifier.clickable { onClickMore?.invoke() }) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_more_black),
+                            contentDescription = null
+                        )
                     }
                 }
             }
@@ -81,7 +84,7 @@ fun RoundBox(
 @Composable
 private fun RoundBoxPreview() {
     RoundBox(
-//        index = 1,
+        index = 1,
         gamers = listOf(
             Gamer(name = "조재영", account = 10, winnerOption = WinnerOption.Winner),
             Gamer(

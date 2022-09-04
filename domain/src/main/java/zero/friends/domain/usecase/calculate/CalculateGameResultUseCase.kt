@@ -8,6 +8,7 @@ import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.repository.RuleRepository
 import zero.friends.domain.util.Const
 import javax.inject.Inject
+import kotlin.math.pow
 
 class CalculateGameResultUseCase @Inject constructor(
     private val ruleRepository: RuleRepository,
@@ -58,26 +59,45 @@ class CalculateGameResultUseCase @Inject constructor(
         if (goBakGamer != null) {
             //고박 플레이어는 나머지 플레이어들의 돈을 다 내준다....
             val remainLoser = losers - goBakGamer
-            remainLoser.forEach { loser ->
-                val account = getLoserAccount(loser, winnerScore, gameScore)
+
+            if (remainLoser.isEmpty()) { //맞고
+                val account = getLoserAccount(goBakGamer.loserOption, winnerScore, gameScore)
+                updateAccountUseCase(goBakGamer, winner, -1 * account)
+                updateAccountUseCase(winner, goBakGamer, account)
+            } else { //고스톱
+                remainLoser.forEach { loser ->
+                    val account = getLoserAccount(
+                        loser.loserOption - LoserOption.GoBak,
+                        winnerScore,
+                        gameScore
+                    )
+                    updateAccountUseCase(goBakGamer, winner, -1 * account)
+                    updateAccountUseCase(winner, goBakGamer, account)
+                }
+                val account = getLoserAccount(
+                    goBakGamer.loserOption - LoserOption.GoBak,
+                    winnerScore,
+                    gameScore
+                )
                 updateAccountUseCase(goBakGamer, winner, -1 * account)
                 updateAccountUseCase(winner, goBakGamer, account)
             }
-            val account = getLoserAccount(goBakGamer, winnerScore, gameScore)
-            updateAccountUseCase(goBakGamer, winner, -1 * account)
-            updateAccountUseCase(winner, goBakGamer, account)
         } else {
             losers.forEach { loser ->
-                val account = getLoserAccount(loser, winnerScore, gameScore)
+                val account = getLoserAccount(loser.loserOption, winnerScore, gameScore)
                 updateAccountUseCase(loser, winner, account * -1)
                 updateAccountUseCase(winner, loser, account)
             }
         }
     }
 
-    private fun getLoserAccount(loser: Gamer, winnerScore: Int, gameScore: Int): Int {
-        return if (loser.loserOption.isNotEmpty()) {
-            loser.loserOption.map { winnerScore * 2 * gameScore }.sum() //패자 점수 2배
+    private fun getLoserAccount(
+        loserOptions: List<LoserOption>,
+        winnerScore: Int,
+        gameScore: Int
+    ): Int {
+        return if (loserOptions.isNotEmpty()) {
+            winnerScore * gameScore * (2.0).pow(loserOptions.size.toDouble()).toInt()
         } else {
             winnerScore * gameScore
         }

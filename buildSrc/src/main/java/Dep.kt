@@ -4,8 +4,8 @@ object Versions {
 
     const val minSdk = 24
     const val targetSdk = 32
-    const val versionCode = 10
-    const val versionName = "1.0.9"
+    const val versionCode = 11
+    const val versionName = "1.0.10"
 }
 
 object Dep {
@@ -43,7 +43,7 @@ object Dep {
     }
 
     object Compose {
-        const val composeVersion = "1.0.5"
+        const val composeVersion = "1.1.1"
         const val ui = "androidx.compose.ui:ui:$composeVersion"
         const val material = "androidx.compose.material:material:$composeVersion"
         const val tooling = "androidx.compose.ui:ui-tooling:$composeVersion"
@@ -57,7 +57,7 @@ object Dep {
     }
 
     object Kotlin {
-        private const val version = "1.5.31"
+        private const val version = "1.6.10"
         private const val coroutineVersion = "1.5.1"
 
         const val gradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
