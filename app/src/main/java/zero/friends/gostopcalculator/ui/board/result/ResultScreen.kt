@@ -1,5 +1,7 @@
 package zero.friends.gostopcalculator.ui.board.result
 
+import android.graphics.Bitmap
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,17 +13,26 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ShareCompat
+import androidx.core.content.FileProvider
+import androidx.core.graphics.applyCanvas
 import zero.friends.domain.model.*
 import zero.friends.domain.model.Target
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.CalculatedBox
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
+import java.io.File
+
+private const val IMAGE_NAME = "image.png"
+private const val AUTHORITY = "zerofriends"
 
 @Composable
 fun ResultScreen(
@@ -31,13 +42,43 @@ fun ResultScreen(
     onBack: () -> Unit = {},
     title: String = ""
 ) {
+    val view = LocalView.current
+    val context = LocalContext.current
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(
                 text = gameName,
                 onBack = onBack,
-                isRed = false
+                isRed = false,
+                onAction = {
+                    //Note : 화면 및 기능이 바뀔일이 없어보여 여기다 때려넣음
+                    runCatching {
+                        val bitmap = Bitmap.createBitmap(
+                            view.width,
+                            view.height,
+                            Bitmap.Config.ARGB_8888
+                        ).applyCanvas { view.draw(this) }
+
+                        val file = File(context.cacheDir, IMAGE_NAME).apply {
+                            outputStream().use { out ->
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                                out.flush()
+                            }
+                        }
+                        FileProvider.getUriForFile(context, AUTHORITY, file)
+                    }.onSuccess { uri ->
+                        ShareCompat.IntentBuilder(context)
+                            .setType("image/*")
+                            .setStream(uri)
+                            .createChooserIntent()
+                            .also(context::startActivity)
+                    }.onFailure {
+                        Toast.makeText(context, "공유에 실패하였습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                actionText = stringResource(R.string.share)
             )
         }
     ) {
