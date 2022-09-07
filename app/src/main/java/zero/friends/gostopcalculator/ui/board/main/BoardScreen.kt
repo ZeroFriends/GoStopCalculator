@@ -1,12 +1,10 @@
 package zero.friends.gostopcalculator.ui.board.main
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.*
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
@@ -97,6 +95,8 @@ private fun BoardScreen(
     uiState: BoardUiState = BoardUiState(),
     event: (BoardEvent) -> Unit = {}
 ) {
+    val historyListState = rememberLazyListState()
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -116,10 +116,15 @@ private fun BoardScreen(
                 Column {
                     IncomeHistory(
                         players = uiState.playerResults,
-                        onClickCalculated = { event(BoardEvent.OpenCalculated) }
+                        onClickCalculated = { event(BoardEvent.OpenCalculated) },
+                        hide = historyListState.firstVisibleItemIndex != 0
                     )
                     Spacer(modifier = Modifier.padding(9.dp))
-                    GameHistory(uiState = uiState, event = event)
+                    GameHistory(
+                        uiState = uiState,
+                        event = event,
+                        lazyListState = historyListState
+                    )
                 }
             }
         )
@@ -131,7 +136,8 @@ private fun BoardScreen(
 private fun IncomeHistory(
     modifier: Modifier = Modifier,
     players: List<PlayerResult> = emptyList(),
-    onClickCalculated: () -> Unit = {}
+    onClickCalculated: () -> Unit = {},
+    hide: Boolean
 ) {
     ContentsCard(
         modifier = modifier
@@ -159,8 +165,11 @@ private fun IncomeHistory(
                         onClick = onClickCalculated
                     )
                 }
-                LazyVerticalGrid(cells = GridCells.Fixed(2)) {
-                    itemsIndexed(players) { index: Int, item: PlayerResult ->
+                LazyVerticalGrid(
+                    modifier = modifier.animateContentSize(),
+                    cells = GridCells.Fixed(2)
+                ) {
+                    itemsIndexed(if (hide) emptyList() else players) { index: Int, item: PlayerResult ->
                         PlayerItem(index = index, playerResult = item)
                     }
                 }
@@ -170,7 +179,12 @@ private fun IncomeHistory(
 }
 
 @Composable
-private fun GameHistory(modifier: Modifier = Modifier, uiState: BoardUiState, event: (BoardEvent) -> Unit = {}) {
+private fun GameHistory(
+    modifier: Modifier = Modifier,
+    uiState: BoardUiState,
+    event: (BoardEvent) -> Unit = {},
+    lazyListState: LazyListState
+) {
     Column(modifier = modifier) {
         Text(
             text = stringResource(id = R.string.game_history),
@@ -185,7 +199,7 @@ private fun GameHistory(modifier: Modifier = Modifier, uiState: BoardUiState, ev
             )
         } else {
             Spacer(modifier = Modifier.padding(5.dp))
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            LazyColumn(state = lazyListState, verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 itemsIndexed(uiState.gameHistories.toList()) { index, (roundId, gamer) ->
                     RoundBox(
                         index = uiState.gameHistories.size - index - 1,
