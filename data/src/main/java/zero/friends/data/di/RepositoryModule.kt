@@ -13,23 +13,23 @@ import javax.inject.Singleton
 interface RepositoryModule {
     @Binds
     @Singleton
-    fun providePlayerRepository(playerRepository: PlayerRepositoryImpl): PlayerRepository
+    fun bindPlayerRepository(playerRepository: PlayerRepositoryImpl): PlayerRepository
 
     @Binds
     @Singleton
-    fun provideGameRepository(gameRepository: GameRepositoryImpl): GameRepository
+    fun bindGameRepository(gameRepository: GameRepositoryImpl): GameRepository
 
     @Binds
     @Singleton
-    fun provideRuleRepository(ruleRepository: RuleRepositoryImpl): RuleRepository
+    fun bindRuleRepository(ruleRepository: RuleRepositoryImpl): RuleRepository
 
     @Binds
     @Singleton
-    fun provideGamerRepository(gamerRepository: GamerRepositoryImpl): GamerRepository
+    fun bindGamerRepository(gamerRepository: GamerRepositoryImpl): GamerRepository
 
     @Binds
     @Singleton
-    fun provideRoundRepository(roundRepository: RoundRepositoryImpl): RoundRepository
+    fun bindRoundRepository(roundRepository: RoundRepositoryImpl): RoundRepository
 
     @Binds
     @Singleton
