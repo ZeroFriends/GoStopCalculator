@@ -1,20 +1,24 @@
 package zero.friends.data.source
 
 import android.content.Context
+import android.content.res.AssetManager
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.nio.charset.Charset
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 class AssetProvider @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    fun loadAsset(fileName: String): String {
-        return context.assets.open(fileName).use {
+    val assetManager: AssetManager = context.assets
+    inline operator fun <reified T> invoke(fileName: String): T {
+        val json = assetManager.open(fileName).use {
             val size = it.available()
             val buffer = ByteArray(size)
             it.read(buffer)
-            String(buffer, Charset.forName("UTF-8"))
+            String(buffer, Charsets.UTF_8)
         }
+        return Json.decodeFromString(json)
     }
 
 }

@@ -2,8 +2,6 @@ package zero.friends.data.repository
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import zero.friends.data.entity.RuleEntity
 import zero.friends.data.entity.RuleEntity.Companion.toRule
 import zero.friends.data.source.AssetProvider
@@ -22,8 +20,7 @@ class RuleRepositoryImpl @Inject constructor(
 ) : RuleRepository {
     override suspend fun getDefaultRule(): List<Rule> {
         return runCatching {
-            val json = assetProvider.loadAsset("rule.json")
-            Json.decodeFromString<List<Rule>>(json)
+             assetProvider<List<Rule>>("rule.json")
         }
             .recoverCatching { ruleApi.getDefaultRule() }
             .getOrThrow()

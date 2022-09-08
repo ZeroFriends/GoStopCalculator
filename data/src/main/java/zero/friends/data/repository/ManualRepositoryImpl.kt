@@ -2,8 +2,6 @@ package zero.friends.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import zero.friends.data.source.AssetProvider
 import zero.friends.data.source.api.ManualApi
 import zero.friends.domain.model.Manual
@@ -16,8 +14,7 @@ class ManualRepositoryImpl @Inject constructor(
 ) : ManualRepository {
     override suspend fun getManuals(): Flow<List<Manual>> =
         flow {
-            val localJson = assetProvider.loadAsset("manual.json")
-            val localManual = Json.decodeFromString<List<Manual>>(localJson)
+            val localManual = assetProvider<List<Manual>>("manual.json")
             emit(localManual)
 
             val remoteManual = manualApi.getManual()
