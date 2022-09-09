@@ -200,7 +200,7 @@ private fun GameHistory(
         } else {
             Spacer(modifier = Modifier.padding(5.dp))
             LazyColumn(state = lazyListState, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                itemsIndexed(uiState.gameHistories.toList()) { index, (roundId, gamer) ->
+                itemsIndexed(uiState.gameHistories.toList().asReversed()) { index, (roundId, gamer) ->
                     RoundBox(
                         index = uiState.gameHistories.size - index - 1,
                         gamers = gamer,
