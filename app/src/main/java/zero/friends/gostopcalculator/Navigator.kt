@@ -23,6 +23,8 @@ import zero.friends.gostopcalculator.ui.history.HistoryScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
 import zero.friends.gostopcalculator.ui.splash.SplashScreen
+import java.net.URLDecoder
+import java.net.URLEncoder
 
 sealed interface Navigate {
 
@@ -33,7 +35,8 @@ sealed interface Navigate {
      * @sample
      * navController.navigate(argument = Navigate.Board.Main.route(argument = game.id))
      */
-    fun route(vararg argument: Any) = route() + argument.joinToString("") { "/$it" }
+    fun route(vararg argument: Any) =
+        route() + argument.joinToString("") { "/${URLEncoder.encode(it.toString(), "UTF-8")}" }
 
     /**
      * @param path : 목적지 path 를 route 할 때 사용 Navigate/{someData}
@@ -42,7 +45,8 @@ sealed interface Navigate {
      *      route = Navigate.Board.Main.route(path = Const.GameId)
      * )
      */
-    fun destination(vararg path: Any) = route() + path.joinToString("") { "/{$it}" }
+    fun destination(vararg path: Any) =
+        route() + path.joinToString("") { "/{${URLDecoder.decode(it.toString(), "UTF-8")}}" }
 
     object History : Navigate
     object Splash : Navigate
