@@ -3,11 +3,24 @@ plugins {
     kotlin("android")
     kotlin("kapt")
     id("dagger.hilt.android.plugin")
+    id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    id("kotlin-parcelize")
+}
+
+kotlin {
+    compilerOptions {
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
+    }
+    kotlin {
+        jvmToolchain(21)
+    }
 }
 
 android {
+    namespace = "zero.friends.gostopcalculator"
     compileSdk = Versions.compileSdk
 
     defaultConfig {
@@ -19,7 +32,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "21"
     }
 
     signingConfigs {
@@ -51,8 +64,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     composeOptions {
@@ -61,6 +74,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     lint {
@@ -101,7 +115,6 @@ dependencies {
     implementation(Dep.Kotlin.serialization)
 
     implementation(Dep.Dagger.hiltAndroid)
-    implementation(Dep.Dagger.hiltLifeCycleViewModel)
     implementation(Dep.Dagger.navigationCompose)
     kapt(Dep.Dagger.hiltCompiler)
 

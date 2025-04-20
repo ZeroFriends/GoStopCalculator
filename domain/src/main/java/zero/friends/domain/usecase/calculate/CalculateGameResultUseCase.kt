@@ -31,7 +31,7 @@ class CalculateGameResultUseCase @Inject constructor(
         if (seller != null) calculateSellAccount(seller)
 
         //2 패자 계산
-        if (winner != null) calculateLoserAccount(seller, winner)
+        if  (winner != null) calculateLoserAccount(seller, winner)
 
         //3 점수옵션 계산
         calculateScoreAccount(seller)

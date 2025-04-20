@@ -6,7 +6,7 @@ sealed interface Option {
     val korean: String
 }
 
-inline fun <reified T : Enum<out T>> findOptional(values: String?): List<T> {
+inline fun <reified T : Enum<T>> findOptional(values: String?): List<T> {
     return if (values == null) emptyList()
     else {
         val options = values.split(",")

@@ -3,12 +3,10 @@ package zero.friends.gostopcalculator.ui.common
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -76,8 +74,6 @@ fun RoundedCornerText(
             .clickable(
                 onClick = onClick ?: {},
                 enabled = onClick != null,
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(),
                 role = Role.Button
             ),
     ) {

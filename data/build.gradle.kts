@@ -7,8 +7,19 @@ plugins {
 }
 
 android {
+    namespace = "zero.friends.gostopcalculator"
     compileSdk = Versions.compileSdk
 }
+kotlin {
+    compilerOptions {
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
+    }
+    kotlin {
+        jvmToolchain(21)
+    }
+}
+
 
 dependencies {
     implementation(project(":domain"))

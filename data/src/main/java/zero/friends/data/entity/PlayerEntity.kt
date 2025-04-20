@@ -1,7 +1,11 @@
 package zero.friends.data.entity
 
-import androidx.room.*
-import androidx.room.ForeignKey.CASCADE
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import androidx.room.Relation
 import zero.friends.domain.model.Player
 
 @Entity(
@@ -10,7 +14,7 @@ import zero.friends.domain.model.Player
             entity = GameEntity::class,
             parentColumns = ["id"],
             childColumns = ["gameId"],
-            onDelete = CASCADE,
+            onDelete = ForeignKey.CASCADE,
         )
     ],
     indices = [Index(value = ["gameId"], unique = false)]

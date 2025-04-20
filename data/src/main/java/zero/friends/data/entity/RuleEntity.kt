@@ -2,7 +2,6 @@ package zero.friends.data.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.ForeignKey.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import zero.friends.domain.model.Rule
@@ -13,7 +12,7 @@ import zero.friends.domain.model.Rule
             entity = GameEntity::class,
             parentColumns = ["id"],
             childColumns = ["gameId"],
-            onDelete = CASCADE
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [Index(value = ["gameId"], unique = false)]

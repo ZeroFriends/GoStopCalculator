@@ -2,11 +2,13 @@ package zero.friends.data.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.ForeignKey.CASCADE
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import zero.friends.domain.model.*
+import zero.friends.domain.model.Gamer
+import zero.friends.domain.model.SellerOption
 import zero.friends.domain.model.Target
+import zero.friends.domain.model.WinnerOption
+import zero.friends.domain.model.findOptional
 
 @Entity(
     foreignKeys = [
@@ -14,13 +16,13 @@ import zero.friends.domain.model.Target
             entity = RoundEntity::class,
             parentColumns = ["id"],
             childColumns = ["roundId"],
-            onDelete = CASCADE
+            onDelete = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = GameEntity::class,
             parentColumns = ["id"],
             childColumns = ["gameId"],
-            onDelete = CASCADE
+            onDelete = ForeignKey.CASCADE
         )
     ],
     indices = [Index(value = ["roundId"], unique = false)]

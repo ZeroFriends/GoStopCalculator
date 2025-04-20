@@ -8,7 +8,6 @@ plugins {
 repositories {
     mavenCentral()
 }
-
 tasks.test {
     useJUnitPlatform()
     testLogging {
@@ -24,6 +23,6 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }

@@ -5,6 +5,9 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
@@ -167,7 +170,7 @@ private fun IncomeHistory(
                 }
                 LazyVerticalGrid(
                     modifier = modifier.animateContentSize(),
-                    cells = GridCells.Fixed(2)
+                    columns = GridCells.Fixed(2)
                 ) {
                     itemsIndexed(if (hide) emptyList() else players) { index: Int, item: PlayerResult ->
                         PlayerItem(index = index, playerResult = item)
