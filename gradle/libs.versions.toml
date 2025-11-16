@@ -10,6 +10,7 @@ versionName = "1.0.10"
 # Plugin Versions
 androidGradlePlugin = "8.13.1"
 kotlin = "2.2.21"
+ksp = "2.2.21-RC-2.0.4"
 hilt = "2.57.2"
 googleServices = "4.4.4"
 crashlytics = "3.0.6"
@@ -127,6 +128,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }

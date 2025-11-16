@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)         // Android 라이브러리 플러그인
     alias(libs.plugins.kotlin.android)                // Kotlin Android
-    kotlin("kapt")                   // Annotation Processor (KAPT)
+    alias(libs.plugins.ksp)                   // Kotlin Symbol Processing (KSP)
 }
 kotlin {
     compilerOptions {

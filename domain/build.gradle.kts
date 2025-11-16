@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
     id("java-library")
     alias(libs.plugins.kotlin.serialization)
 }

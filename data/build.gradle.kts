@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    kotlin("kapt")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlin.serialization)
 }
@@ -23,14 +23,14 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":shared"))
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.kotlin.coroutines.core)
     implementation(libs.kotlin.serialization.json)
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
     implementation(libs.retrofit)
     implementation(libs.okhttp.logging.interceptor)
