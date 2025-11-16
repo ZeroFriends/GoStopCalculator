@@ -8,8 +8,7 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.firebase.crashlytics.ktx.crashlytics
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.qualifiers.ActivityContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -53,7 +52,9 @@ class GoogleAdmob @Inject constructor(
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     Timber.tag("🔥zero:onAdFailedToLoad").e("$adError")
-                    Firebase.crashlytics.recordException(AdException("AD_UNIT_ID = ${BuildConfig.AD_UNIT_ID} / code : ${adError.code} /n ${adError.message}"))
+                    FirebaseCrashlytics.getInstance().recordException(
+                        AdException("AD_UNIT_ID = ${BuildConfig.AD_UNIT_ID} / code : ${adError.code} / ${adError.message}")
+                    )
                     adCallback(AdCallback.OnError)
                     interstitialAd = null
                 }
@@ -75,9 +76,12 @@ class GoogleAdmob @Inject constructor(
                     adCallback(AdCallback.OnSuccess)
                 }
 
-                override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                    super.onAdFailedToShowFullScreenContent(p0)
-                    Timber.tag("🔥GoogleAdmob").e(p0.message)
+                override fun onAdFailedToShowFullScreenContent(adError: AdError) {
+                    super.onAdFailedToShowFullScreenContent(adError)
+                    Timber.tag("🔥GoogleAdmob").e(adError.message)
+                    FirebaseCrashlytics.getInstance().recordException(
+                        AdException("Failed to show ad: ${adError.message}")
+                    )
                     adCallback(AdCallback.OnError)
                 }
             }

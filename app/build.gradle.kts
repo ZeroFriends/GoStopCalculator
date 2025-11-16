@@ -11,12 +11,10 @@ plugins {
 
 kotlin {
     compilerOptions {
-        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
     }
-    kotlin {
-        jvmToolchain(21)
-    }
+    jvmToolchain(21)
 }
 
 android {
@@ -31,9 +29,6 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
     }
 
-    kotlinOptions {
-        jvmTarget = "21"
-    }
 
     signingConfigs {
         create("release") {
@@ -123,7 +118,6 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
-    implementation(libs.firebase.analytics.ktx)
     implementation(libs.firebase.crashlytics)
     implementation(libs.play.services.ads)
 }

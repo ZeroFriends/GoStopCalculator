@@ -5,19 +5,14 @@ plugins {
 }
 kotlin {
     compilerOptions {
-        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_1)
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
     }
-    kotlin {
-        jvmToolchain(21)
-    }
+    jvmToolchain(21)
 }
 android {
     namespace = "zero.friends.gostopcalculator"
     compileSdk = libs.versions.compileSdk.get().toInt()
-    kotlinOptions {
-        jvmTarget = "21"
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21

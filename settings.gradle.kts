@@ -6,6 +6,11 @@ pluginManagement {
     }
 }
 
+// Java Toolchain 자동 다운로드 활성화
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
