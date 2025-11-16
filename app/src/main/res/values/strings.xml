@@ -78,6 +78,7 @@
     <string name="msg_network">계속 이용하시려면 네트워크에 연결해주세요.</string>
     <string name="player_format">플레이어 %d</string>
     <string name="share">공유</string>
+    <string name="back">뒤로가기</string>
 
 
 </resources>

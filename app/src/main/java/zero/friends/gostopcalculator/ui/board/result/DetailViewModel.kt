@@ -17,7 +17,8 @@ import javax.inject.Inject
 
 data class DetailUiState(
     val game: Game = Game(),
-    val gamers: List<Gamer> = emptyList()
+    val gamers: List<Gamer> = emptyList(),
+    val roundId: Long = 0L
 )
 
 @HiltViewModel
@@ -31,10 +32,14 @@ class DetailViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            val gameId = requireNotNull(savedStateHandle.get<Long>(Const.GameId))
+            val roundId = requireNotNull(savedStateHandle.get<Long>(Const.RoundId))
+            
             _uiState.update {
                 it.copy(
-                    game = gameRepository.getGame(requireNotNull(savedStateHandle[Const.GameId])),
-                    gamers = gamerRepository.getRoundGamers(roundId = requireNotNull(savedStateHandle.get(Const.RoundId)))
+                    game = gameRepository.getGame(gameId),
+                    gamers = gamerRepository.getRoundGamers(roundId),
+                    roundId = roundId
                 )
             }
         }

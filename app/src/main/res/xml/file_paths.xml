@@ -3,4 +3,7 @@
     <cache-path
         name="capture_image_cache"
         path="." />
+    <cache-path
+        name="images"
+        path="images/" />
 </paths>

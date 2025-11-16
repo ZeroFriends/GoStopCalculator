@@ -24,6 +24,8 @@ androidxMaterial = "1.13.0"
 androidxConstraintCompose = "1.1.1"
 androidxLifecycle = "2.9.4"
 androidxRoom = "2.8.3"
+androidxCoordinatorLayout = "1.3.0"
+androidxRecyclerView = "1.4.0"
 
 # Navigation
 navigation = "2.9.6"
@@ -77,6 +79,9 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidxRoom" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidxRoom" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidxRoom" }
+androidx-coordinatorlayout = { module = "androidx.coordinatorlayout:coordinatorlayout", version.ref = "androidxCoordinatorLayout" }
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "androidxRecyclerView" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
 
 # Navigation
 navigation-fragment = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigation" }

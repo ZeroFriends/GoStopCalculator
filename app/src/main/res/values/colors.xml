@@ -12,5 +12,8 @@
     <color name="non_click">#757575</color>
     <color name="line">#eeeeee</color>
     <color name="manual_background">#fafafa</color>
+    <color name="gallery">#eeeeee</color>
+    <color name="apple">#4caf50</color>
+    <color name="dusty_gray">#999999</color>
 
 </resources>
