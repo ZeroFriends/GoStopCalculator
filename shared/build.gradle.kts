@@ -1,6 +1,6 @@
 plugins {
-    id("com.android.library")         // Android 라이브러리 플러그인
-    kotlin("android")                // Kotlin Android
+    alias(libs.plugins.android.library)         // Android 라이브러리 플러그인
+    alias(libs.plugins.kotlin.android)                // Kotlin Android
     kotlin("kapt")                   // Annotation Processor (KAPT)
 }
 kotlin {
@@ -14,7 +14,7 @@ kotlin {
 }
 android {
     namespace = "zero.friends.gostopcalculator"
-    compileSdk = Versions.compileSdk
+    compileSdk = libs.versions.compileSdk.get().toInt()
     kotlinOptions {
         jvmTarget = "21"
     }
@@ -25,5 +25,5 @@ android {
 }
 
 dependencies {
-    implementation(Dep.inject)
+    implementation(libs.javax.inject)
 }

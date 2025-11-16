@@ -1,14 +1,14 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
     kotlin("kapt")
-    id("dagger.hilt.android.plugin")
-    id("kotlinx-serialization")
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "zero.friends.gostopcalculator"
-    compileSdk = Versions.compileSdk
+    compileSdk = libs.versions.compileSdk.get().toInt()
 }
 kotlin {
     compilerOptions {
@@ -24,20 +24,20 @@ kotlin {
 dependencies {
     implementation(project(":domain"))
     implementation(project(":shared"))
-    implementation(Dep.Dagger.hiltAndroid)
-    kapt(Dep.Dagger.hiltCompiler)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 
-    implementation(Dep.Kotlin.coroutineCore)
-    implementation(Dep.Kotlin.serialization)
+    implementation(libs.kotlin.coroutines.core)
+    implementation(libs.kotlin.serialization.json)
 
-    implementation(Dep.AndroidX.Room.room)
-    implementation(Dep.AndroidX.Room.roomKtx)
-    kapt(Dep.AndroidX.Room.roomCompiler)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
 
-    implementation(Dep.Square.retrofit)
-    implementation(Dep.Square.okhttp3_logging)
-    implementation(Dep.Square.serialization)
+    implementation(libs.retrofit)
+    implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.retrofit.kotlinx.serialization)
 
-    implementation(Dep.timber)
+    implementation(libs.timber)
 
 }

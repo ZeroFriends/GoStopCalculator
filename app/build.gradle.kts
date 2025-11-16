@@ -1,11 +1,11 @@
 plugins {
-    id("com.android.application")
-    kotlin("android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
     kotlin("kapt")
-    id("dagger.hilt.android.plugin")
-    id("org.jetbrains.kotlin.plugin.compose")
-    id("com.google.gms.google-services")
-    id("com.google.firebase.crashlytics")
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
     id("kotlin-parcelize")
 }
 
@@ -21,14 +21,14 @@ kotlin {
 
 android {
     namespace = "zero.friends.gostopcalculator"
-    compileSdk = Versions.compileSdk
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "zero.friends.gostopcalculator"
-        targetSdk = Versions.targetSdk
-        versionCode = Versions.versionCode
-        versionName = Versions.versionName
-        minSdk = Versions.minSdk
+        targetSdk = libs.versions.targetSdk.get().toInt()
+        versionCode = libs.versions.versionCode.get().toInt()
+        versionName = libs.versions.versionName.get()
+        minSdk = libs.versions.minSdk.get().toInt()
     }
 
     kotlinOptions {
@@ -69,7 +69,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = Dep.Compose.composeVersion
+        kotlinCompilerExtensionVersion = libs.versions.compose.get()
     }
 
     buildFeatures {
@@ -87,43 +87,43 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":shared"))
 
-    implementation(Dep.Compose.ui)
-    implementation(Dep.Compose.tooling)
-    implementation(Dep.Compose.material)
-    implementation(Dep.Compose.themeAdapter)
-    implementation(Dep.lottie)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling)
+    implementation(libs.compose.material)
+    implementation(libs.compose.theme.adapter)
+    implementation(libs.lottie.compose)
 
-    implementation(Dep.Accompanist.systemController)
-    implementation(Dep.Accompanist.pager)
-    implementation(Dep.Accompanist.pagerIndicator)
+    implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
 
-    implementation(Dep.AndroidX.core)
-    implementation(Dep.AndroidX.startUp)
-    implementation(Dep.AndroidX.fragment)
-    implementation(Dep.AndroidX.constraintCompose)
-    implementation(Dep.AndroidX.Activity.activity)
-    implementation(Dep.AndroidX.Activity.compose)
-    implementation(Dep.AndroidX.Lifecycle.viewModel)
-    implementation(Dep.AndroidX.Lifecycle.composeViewModel)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.startup)
+    implementation(libs.androidx.fragment)
+    implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    implementation(Dep.Navigation.ui)
-    implementation(Dep.Navigation.fragment)
-    implementation(Dep.Navigation.compose)
+    implementation(libs.navigation.ui)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.compose)
 
-    implementation(Dep.Kotlin.coroutineCore)
-    implementation(Dep.Kotlin.coroutineAndroid)
-    implementation(Dep.Kotlin.serialization)
+    implementation(libs.kotlin.coroutines.core)
+    implementation(libs.kotlin.coroutines.android)
+    implementation(libs.kotlin.serialization.json)
 
-    implementation(Dep.Dagger.hiltAndroid)
-    implementation(Dep.Dagger.navigationCompose)
-    kapt(Dep.Dagger.hiltCompiler)
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
+    kapt(libs.hilt.compiler)
 
-    implementation(Dep.timber)
-    implementation(Dep.Kotlin.reflect)
+    implementation(libs.timber)
+    implementation(libs.kotlin.reflect)
 
-    implementation(platform(Dep.Google.firebase))
-    implementation(Dep.Google.firebaseAnalytics)
-    implementation(Dep.Google.firebaseAnalyticsKtx)
-    implementation(Dep.Google.firebaseCrashlytics)
-    implementation(Dep.admob)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.analytics.ktx)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.play.services.ads)
 }
