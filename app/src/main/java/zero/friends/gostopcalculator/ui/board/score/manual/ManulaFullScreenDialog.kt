@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -27,10 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Image
 import zero.friends.domain.model.Manual
@@ -42,12 +41,11 @@ import zero.friends.gostopcalculator.ui.common.GoStopDivider
 import zero.friends.gostopcalculator.ui.common.GridItems
 import zero.friends.gostopcalculator.ui.dialog.FullScreenDialog
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ManualFullScreenDialog(manualViewModel: ManualViewModel = hiltViewModel(), onDismiss: () -> Unit = {}) {
 
     val uiState by manualViewModel.uiState().collectAsState()
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = { uiState.manuals.size })
     val scope = rememberCoroutineScope()
 
     BackHandler {
@@ -82,7 +80,6 @@ fun ManualFullScreenDialog(manualViewModel: ManualViewModel = hiltViewModel(), o
                 GoStopDivider()
                 HorizontalPager(
                     modifier = Modifier.background(color = colorResource(id = R.color.manual_background)),
-                    count = uiState.manuals.size,
                     state = pagerState
                 ) { page ->
                     when (uiState.manuals[page]) {

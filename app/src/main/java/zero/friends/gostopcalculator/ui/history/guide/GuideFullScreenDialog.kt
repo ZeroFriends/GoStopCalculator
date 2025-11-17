@@ -4,6 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -16,22 +18,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.dialog.FullScreenDialog
 
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
-fun GuideFullScreenDialog(guideViewModel: GuideViewModel = hiltViewModel(), onDismiss: () -> Unit = {}) {
+fun GuideFullScreenDialog(
+    guideViewModel: GuideViewModel = hiltViewModel(),
+    onDismiss: () -> Unit = {},
+) {
     val uiState = guideViewModel.uiState().collectAsState()
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = { 6 })
     val scope = rememberCoroutineScope()
 
     BackHandler {
@@ -72,15 +72,17 @@ fun GuideFullScreenDialog(guideViewModel: GuideViewModel = hiltViewModel(), onDi
                         .fillMaxSize(),
                 ) {
                     Spacer(modifier = Modifier.padding(16.dp))
-                    HorizontalPagerIndicator(
+                    PagerIndicator(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
-                        pagerState = pagerState,
+                        pageCount = 6,
+                        currentPage = pagerState.currentPage,
                         inactiveColor = Color.White.copy(alpha = 0.5f),
                         activeColor = Color.White,
                     )
                     Spacer(modifier = Modifier.padding(16.dp))
-                    HorizontalPager(count = 6, state = pagerState) { page ->
+                    HorizontalPager(state = pagerState) { page ->
                         Image(
+                            modifier = Modifier.fillMaxSize(),
                             painter = painterResource(id = uiState.value.pagerList[page]),
                             contentDescription = null,
                         )
@@ -119,6 +121,31 @@ fun GuideFullScreenDialog(guideViewModel: GuideViewModel = hiltViewModel(), onDi
 
     }
 
+}
+
+@Composable
+private fun PagerIndicator(
+    modifier: Modifier = Modifier,
+    pageCount: Int,
+    currentPage: Int,
+    activeColor: Color = Color.White,
+    inactiveColor: Color = Color.White.copy(alpha = 0.5f),
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        repeat(pageCount) { index ->
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .background(
+                        color = if (index == currentPage) activeColor else inactiveColor,
+                        shape = androidx.compose.foundation.shape.CircleShape
+                    )
+            )
+        }
+    }
 }
 
 @Preview

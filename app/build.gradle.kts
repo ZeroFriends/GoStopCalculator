@@ -86,12 +86,7 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling)
     implementation(libs.compose.material)
-    implementation(libs.compose.theme.adapter)
     implementation(libs.lottie.compose)
-
-    implementation(libs.accompanist.systemuicontroller)
-    implementation(libs.accompanist.pager)
-    implementation(libs.accompanist.pager.indicators)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.startup)
