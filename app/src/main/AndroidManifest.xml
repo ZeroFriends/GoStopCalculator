@@ -11,10 +11,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.GoStopCalculator">
+        android:theme="@style/Theme.GoStopCalculator"
+        android:enableOnBackInvokedCallback="true">
         <activity
             android:name="zero.friends.gostopcalculator.ui.MainActivity"
             android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,6 +28,7 @@
         <activity
             android:name=".ui.board.result.ResultActivity"
             android:theme="@style/Theme.GoStopCalculator.Result"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false" />
 
         <provider
