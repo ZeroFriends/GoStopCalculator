@@ -61,6 +61,9 @@ timber = "5.0.1"
 inject = "1"
 admob = "24.7.0"
 
+# Test
+junit = "4.13.2"
+
 [libraries]
 # AndroidX
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
@@ -96,6 +99,7 @@ compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = 
 # Kotlin
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlin-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlin-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
 
@@ -119,6 +123,9 @@ lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 javax-inject = { module = "javax.inject:javax.inject", version.ref = "inject" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "admob" }
+
+# Test
+junit = { module = "junit:junit", version.ref = "junit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }

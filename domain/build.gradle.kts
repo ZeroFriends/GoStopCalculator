@@ -14,7 +14,6 @@ kotlin {
 }
 
 tasks.test {
-    useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
     }
@@ -25,6 +24,10 @@ dependencies {
 
     implementation(libs.kotlin.serialization.json)
     implementation(libs.retrofit.kotlinx.serialization)
+    
+    // Test
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.coroutines.test)
 }
 
 java {
