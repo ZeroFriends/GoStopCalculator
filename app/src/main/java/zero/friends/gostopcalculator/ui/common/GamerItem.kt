@@ -52,7 +52,7 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
                 horizontalAlignment = Alignment.Start,
             ) {
                 Text(
-                    text = gamer.winnerOption?.korean ?: ("" + " " + gamer.sellerOption?.korean),
+                    text = gamer.winnerOption?.korean ?: (" " + gamer.sellerOption?.korean),
                     fontSize = 8.sp,
                     modifier = Modifier.alpha(if (gamer.isWinner()) 1f else 0f)
                 )

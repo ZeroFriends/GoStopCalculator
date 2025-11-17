@@ -24,6 +24,7 @@
 
         <activity
             android:name=".ui.board.result.ResultActivity"
+            android:theme="@style/Theme.GoStopCalculator.Result"
             android:exported="false" />
 
         <provider
