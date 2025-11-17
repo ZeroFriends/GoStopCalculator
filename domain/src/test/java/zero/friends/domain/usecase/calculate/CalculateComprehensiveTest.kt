@@ -370,7 +370,7 @@ class CalculateComprehensiveTest {
         
         val result = loserUseCase(winner, listOf(goBakLoser, normalLoser), 100)
         
-        assertEquals(1400, result.accounts[1L])
+        assertEquals(1400, result.accounts[1L])  // 700(대신 냄) + 700(본인, 고박 제외) = 700 + 700
         assertEquals(-1400, result.accounts[2L])  // 고박자가 전부 냄
         assertEquals(null, result.accounts[3L])
     }
@@ -383,7 +383,7 @@ class CalculateComprehensiveTest {
         
         val result = loserUseCase(winner, listOf(goBakLoser, normalLoser), 100)
         
-        assertEquals(2400, result.accounts[1L])  // 800 + 1600
+        assertEquals(2400, result.accounts[1L])  // 800(대신 냄) + 800×2(본인, 고박 제외, 피박만) = 800 + 1600
         assertEquals(-2400, result.accounts[2L])
     }
     
@@ -398,7 +398,7 @@ class CalculateComprehensiveTest {
         val loserResult = loserUseCase(winner, listOf(goBakLoser, loser2, loser3), 100)
         val scoreResult = scoreOptionUseCase(gamers, 100)
         
-        assertEquals(1800, loserResult.accounts[1L])  // 600 + 600 + 600
+        assertEquals(1800, loserResult.accounts[1L])  // 600 + 600 + 600(본인, 고박 제외) = 600 + 600 + 600
         assertEquals(-1800, loserResult.accounts[2L]) // 고박자가 전부
         assertEquals(300, scoreResult.accounts[1L])   // 100 × 3
     }
@@ -411,7 +411,7 @@ class CalculateComprehensiveTest {
         
         val result = loserUseCase(winner, listOf(goBakLoser, normalLoser), 100)
         
-        assertEquals(2800, result.accounts[1L])  // 1400(고박자) + 1400(다른패자)
+        assertEquals(2800, result.accounts[1L])  // 1400(대신 냄) + 700×2(본인, 고박 제외, 광박만) = 1400 + 1400
         assertEquals(-2800, result.accounts[2L])
     }
     
@@ -424,7 +424,7 @@ class CalculateComprehensiveTest {
         
         val result = loserUseCase(winner, listOf(goBakLoser, loser2, loser3), 100)
         
-        assertEquals(5400, result.accounts[1L])  // 1800(고박자) + 1800 + 1800
+        assertEquals(5400, result.accounts[1L])  // 1800 + 1800 + 900×2(본인, 고박 제외, 피박만) = 1800 + 1800 + 1800
         assertEquals(-5400, result.accounts[2L])
     }
     
@@ -437,8 +437,8 @@ class CalculateComprehensiveTest {
         
         val result = loserUseCase(winner, listOf(goBakLoser), 100)
         
-        assertEquals(4000, result.accounts[1L])  // 1000 × 4 (2개 박)
-        assertEquals(-4000, result.accounts[2L])
+        assertEquals(8000, result.accounts[1L])  // 1000 × 8 (3개 박 = 고박+피박+광박)
+        assertEquals(-8000, result.accounts[2L])
     }
     
     @Test
@@ -452,7 +452,7 @@ class CalculateComprehensiveTest {
         val loserResult = loserUseCase(winner, listOf(goBakLoser, normalLoser), 100)
         val scoreResult = scoreOptionUseCase(gamers, 100)
         
-        assertEquals(1400, loserResult.accounts[1L])
+        assertEquals(1400, loserResult.accounts[1L])  // 700(대신 냄) + 700(본인, 고박 제외) = 700 + 700
         assertEquals(600, scoreResult.accounts[1L])  // 800 - 200
     }
     
@@ -468,7 +468,7 @@ class CalculateComprehensiveTest {
         val loserResult = loserUseCase(winner, listOf(goBakLoser, normalLoser), 100)
         
         assertEquals(600, sellResult.accounts[1L])   // 200 × 3
-        assertEquals(1200, loserResult.accounts[2L]) // 600 + 600
+        assertEquals(1200, loserResult.accounts[2L]) // 600(대신 냄) + 600(본인, 고박 제외) = 600 + 600
         assertEquals(-1200, loserResult.accounts[3L])
     }
     
@@ -482,7 +482,7 @@ class CalculateComprehensiveTest {
         val loserResult = loserUseCase(winner, listOf(goBakLoser, normalLoser), 100)
         val scoreResult = scoreOptionUseCase(gamers, 100)
         
-        assertEquals(2400, loserResult.accounts[1L])  // 1600 + 800
+        assertEquals(2400, loserResult.accounts[1L])  // 800(대신 냄) + 800×2(본인, 고박 제외, 멍박만) = 800 + 1600
         assertEquals(200, scoreResult.accounts[1L])
     }
     
@@ -495,7 +495,7 @@ class CalculateComprehensiveTest {
         
         val result = loserUseCase(winner, listOf(goBakLoser, loser2, loser3), 100)
         
-        assertEquals(3500, result.accounts[1L])  // 700 + 1400 + 1400
+        assertEquals(3500, result.accounts[1L])  // 1400 + 1400 + 700(본인, 고박 제외) = 1400 + 1400 + 700
         assertEquals(-3500, result.accounts[2L]) // 고박자가 전부
     }
     
@@ -638,7 +638,7 @@ class CalculateComprehensiveTest {
         val scoreResult = scoreOptionUseCase(listOf(winner, goBakLoser, normalLoser), 100)
         
         assertEquals(600, sellResult.accounts[1L])
-        assertEquals(2400, loserResult.accounts[2L])  // 1600 + 800
+        assertEquals(2400, loserResult.accounts[2L])  // 800(대신 냄) + 800×2(본인, 고박 제외, 피박만) = 800 + 1600
         assertEquals(-2400, loserResult.accounts[3L]) // 고박
         
         // 총액 검증
@@ -682,7 +682,7 @@ class CalculateComprehensiveTest {
         
         // 각 단계별 검증
         assertEquals(300, sellResult.accounts[1L])
-        assertEquals(4200, loserResult.accounts[2L])  // 2800(고박) + 1400(멍박)
+        assertEquals(4200, loserResult.accounts[2L])  // 1400(대신 냄) + 700×4(본인, 고박 제외, 피박+광박) = 1400 + 2800
         assertEquals(-4200, loserResult.accounts[3L])
         
         // 총액은 0

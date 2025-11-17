@@ -57,9 +57,9 @@ class CalculateEdgeCasesTest {
         // When
         val result = loserUseCase(winner, listOf(loser), scorePerPoint)
         
-        // Then: 1000 × 2^3 = 8000 (고박 제외하고 3개 박)
-        assertEquals(8000, result.accounts[1L])
-        assertEquals(-8000, result.accounts[2L])
+        // Then: 1000 × 2^4 = 16000 (고박 포함 4개 박)
+        assertEquals(16000, result.accounts[1L])
+        assertEquals(-16000, result.accounts[2L])
     }
     
     @Test
@@ -162,9 +162,9 @@ class CalculateEdgeCasesTest {
         // When
         val result = loserUseCase(winner, listOf(loser), 100)
         
-        // Then: 고박자가 혼자 냄
-        assertEquals(700, result.accounts[1L])
-        assertEquals(-700, result.accounts[2L])
+        // Then: 고박자가 혼자 냄 (고박 2배 적용)
+        assertEquals(1400, result.accounts[1L])
+        assertEquals(-1400, result.accounts[2L])
     }
     
     @Test
@@ -207,7 +207,10 @@ class CalculateEdgeCasesTest {
         // When
         val result = loserUseCase(winner, listOf(goBakLoser, normalLoser), 100)
         
-        // Then: 고박자가 자신의 금액(피박: 1600) + 일반 패자 금액(광박: 1600) = 3200
+        // Then: 고박자가 자신의 금액 + 일반 패자 금액 대신 냄 (고스톱이므로 고박 제외)
+        //   패자2(광박): 800×2 = 1600 → 고박자가 대신 냄: 1600 (그대로)
+        //   고박자 본인(고박 제외, 피박만): 800×2 = 1600
+        //   총합: 1600 + 1600 = 3200
         assertEquals(3200, result.accounts[1L])
         assertEquals(-3200, result.accounts[2L])
         assertEquals(null, result.accounts[3L]) // 고박자가 대신 냄

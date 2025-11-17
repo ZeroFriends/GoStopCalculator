@@ -14,7 +14,11 @@ import kotlin.math.pow
  *   - 피박, 광박, 멍박, 고박
  * - 고박(GoBak) 특수 룰:
  *   - 고박한 사람이 다른 모든 패자들의 금액까지 대신 지불
- *   - 고박한 사람 본인도 (자신의 박 옵션 - 고박)에 따라 추가 지불
+ *     - 맞고(2명): 다른 사람의 금액에 고박의 2배 적용
+ *     - 고스톱(3명 이상): 다른 사람의 금액을 그대로 대신 지불
+ *   - 고박한 사람 본인의 금액 계산
+ *     - 맞고(2명): 고박 포함하여 계산 (고박 2배 적용)
+ *     - 고스톱(3명 이상): 고박 제외하고 계산 (고박은 다른 사람 대신 내는 것이므로 본인 금액에는 적용 안됨)
  */
 class CalculateLoserScoreUseCase @Inject constructor() {
     
@@ -51,6 +55,12 @@ class CalculateLoserScoreUseCase @Inject constructor() {
             // 고박 케이스: 고박자가 모든 패자의 돈을 대신 냄
             val remainLosers = losers - goBakGamer
             
+            // 전체 게임 인원 수 확인 (winner + losers)
+            // 맞고(2명): losers.size = 1
+            // 고스톱(3명): losers.size = 2
+            // 고스톱(4명): losers.size = 3
+            val isMatgo = losers.size == 1  // 맞고인 경우
+            
             var totalPayment = 0
             
             // 다른 패자들의 금액 계산 (고박자가 대신 냄)
@@ -60,15 +70,28 @@ class CalculateLoserScoreUseCase @Inject constructor() {
                     winnerScore = winnerScore,
                     scorePerPoint = scorePerPoint
                 )
-                totalPayment += loserAmount
+                // 맞고일 때만 고박의 2배 적용, 고스톱일 때는 그대로
+                totalPayment += if (isMatgo) loserAmount * 2 else loserAmount
             }
             
-            // 고박자 본인의 금액 계산 (고박 제외한 나머지 박 옵션)
-            val goBakOwnAmount = calculateLoserAmount(
-                loserOptions = goBakGamer.loserOption - LoserOption.GoBak,
-                winnerScore = winnerScore,
-                scorePerPoint = scorePerPoint
-            )
+            // 고박자 본인의 금액 계산
+            //   - 고스톱: 고박은 다른 사람 대신 내는 것이므로 본인 금액에는 적용 안됨 (고박 제외)
+            //   - 맞고: 고박 2배 적용
+            val goBakOwnAmount = if (isMatgo) {
+                // 맞고: 고박 2배 적용
+                calculateLoserAmount(
+                    loserOptions = goBakGamer.loserOption,
+                    winnerScore = winnerScore,
+                    scorePerPoint = scorePerPoint
+                )
+            } else {
+                // 고스톱: 고박 제외하고 계산 (다른 사람 대신 내는 것이므로 본인 금액에는 적용 안됨)
+                calculateLoserAmount(
+                    loserOptions = goBakGamer.loserOption - LoserOption.GoBak,
+                    winnerScore = winnerScore,
+                    scorePerPoint = scorePerPoint
+                )
+            }
             totalPayment += goBakOwnAmount
             
             // 고박자가 모두 지불
@@ -103,7 +126,7 @@ class CalculateLoserScoreUseCase @Inject constructor() {
      * 기본 금액 = 승자 점수 × 점당
      * 박이 있으면: 기본 금액 × (2 ^ 박의 개수)
      * 
-     * @param loserOptions 패자의 박 옵션 (고박 제외)
+     * @param loserOptions 패자의 박 옵션
      * @param winnerScore 승자 점수
      * @param scorePerPoint 점당
      * @return 패자가 지불할 금액

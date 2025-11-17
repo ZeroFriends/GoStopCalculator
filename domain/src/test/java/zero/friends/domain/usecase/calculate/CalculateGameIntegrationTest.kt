@@ -123,9 +123,9 @@ class CalculateGameIntegrationTest {
         val losers = listOf(loser1, loser2)
         val loserResult = loserUseCase(winner, losers, scorePerPoint)
         
-        // Then: 고박자가 모두 지불
-        // 플레이어2 본인: 1000 × 2 (광박) = 2000
-        // 플레이어3 대신: 1000
+        // Then: 고박자가 모두 지불 (고스톱이므로 고박 제외)
+        // 플레이어2 본인: 1000 × 2 (고박 제외, 광박만) = 2000
+        // 플레이어3 대신: 1000 (고박자가 대신 냄, 그대로)
         // 합계: 3000
         assertEquals(3000, loserResult.accounts[1L])
         assertEquals(-3000, loserResult.accounts[2L])
@@ -175,9 +175,9 @@ class CalculateGameIntegrationTest {
         val losers = listOf(loser1, loser2)
         val loserResult = loserUseCase(winner, losers, scorePerPoint)
         
-        // Then: 고박자가 모두 지불
-        // 플레이어3 본인: 800
-        // 플레이어4 대신: 800
+        // Then: 고박자가 모두 지불 (고스톱이므로 고박 제외)
+        // 플레이어3 본인: 800 (고박 제외, 기본 금액만)
+        // 플레이어4 대신: 800 (고박자가 대신 냄, 그대로)
         // 합계: 1600
         assertEquals(1600, loserResult.accounts[2L])
         assertEquals(-1600, loserResult.accounts[3L])
@@ -209,7 +209,8 @@ class CalculateGameIntegrationTest {
         val loser1 = Gamer(id = 3, name = "플레이어3 (고박+피박+첫뻑)", 
                           loserOption = listOf(LoserOption.GoBak, LoserOption.PeaBak),
                           scoreOption = listOf(ScoreOption.FirstFuck))
-        val loser2 = Gamer(id = 4, name = "플레이어4 (광박+멍박)")
+        val loser2 = Gamer(id = 4, name = "플레이어4 (광박+멍박)",
+                          loserOption = listOf(LoserOption.LightBak, LoserOption.MongBak))
         val allGamers = listOf(seller, winner, loser1, loser2)
         
         val sellScorePerLight = 100  // 광 하나당 100원
@@ -227,10 +228,11 @@ class CalculateGameIntegrationTest {
         val losers = listOf(loser1, loser2)
         val loserResult = loserUseCase(winner, losers, scorePerPoint)
         
-        // 플레이어3(고박+피박): 본인 1000원(피박) + 플레이어4 대신 500원 = 1500원
-        // 플레이어4(광박+멍박): 고박자가 대신 냄
-        assertEquals(1500, loserResult.accounts[2L])
-        assertEquals(-1500, loserResult.accounts[3L])
+        // 플레이어3(고박+피박): 본인 1000원(고박 제외, 피박만 = 2배)
+        // 플레이어4(광박+멍박): 500×4 = 2000 → 고박자가 대신 냄: 2000 (그대로, 고스톱이므로)
+        // 총합: 1000 + 2000 = 3000원
+        assertEquals(3000, loserResult.accounts[2L])
+        assertEquals(-3000, loserResult.accounts[3L])
         
         // When: 점수옵션 계산 (seller 제외)
         val scoreOptionGamers = listOf(winner, loser1, loser2)
@@ -245,10 +247,10 @@ class CalculateGameIntegrationTest {
         
         // 최종 정산:
         // 플레이어1(seller): +300
-        // 플레이어2(winner): -100 + 1500 + 50 = +1450
-        // 플레이어3(고박): -100 - 1500 + 50 = -1550
+        // 플레이어2(winner): -100 + 3000 + 50 = +2950
+        // 플레이어3(고박): -100 - 3000 + 50 = -3050
         // 플레이어4: -100 + 0 - 100 = -200
-        // 합계: 300 + 1450 - 1550 - 200 = 0 ✓
+        // 합계: 300 + 2950 - 3050 - 200 = 0 ✓
     }
     
     @Test
@@ -265,14 +267,14 @@ class CalculateGameIntegrationTest {
         val losers = listOf(loser)
         val loserResult = loserUseCase(winner, losers, scorePerPoint)
         
-        // Then: 고박+멍박 = 900 × 2 = 1800
-        assertEquals(1800, loserResult.accounts[1L])
-        assertEquals(-1800, loserResult.accounts[2L])
+        // Then: 고박+멍박 = 900 × 4 = 3600 (2개 박)
+        assertEquals(3600, loserResult.accounts[1L])
+        assertEquals(-3600, loserResult.accounts[2L])
         
         // 최종 정산:
-        // 플레이어1(winner): +1800
-        // 플레이어2(고박): -1800
-        // 합계: 1800 - 1800 = 0 ✓
+        // 플레이어1(winner): +3600
+        // 플레이어2(고박): -3600
+        // 합계: 3600 - 3600 = 0 ✓
     }
     
     @Test

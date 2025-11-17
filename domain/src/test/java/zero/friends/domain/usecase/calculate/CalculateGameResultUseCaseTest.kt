@@ -144,8 +144,11 @@ class CalculateGameResultUseCaseTest {
         val loser2Account = mockGamerRepository.getGamerAccount(3L)
         val loser3Account = mockGamerRepository.getGamerAccount(4L)
         
-        // 패자 계산: 고박자가 모든 패자의 돈을 대신 냄
-        //   - 고박자 본인(피박) 1600 + 패자2 800 + 패자3 800 = 3200
+        // 패자 계산: 고박자가 모든 패자의 돈을 대신 냄 (고스톱이므로 고박 제외)
+        //   - 패자2: 800 (고박자가 대신 냄, 그대로)
+        //   - 패자3: 800 (고박자가 대신 냄, 그대로)
+        //   - 고박자 본인(고박 제외, 피박만 = 2배): 800×2 = 1600
+        //   총합: 800 + 800 + 1600 = 3200
         // 연뻑: 각자 냄 (고박과 무관) 200 × 3 = 600
         assertEquals(3800, winnerAccount)    // 3200 + 600
         assertEquals(-3400, goBakAccount)    // -3200 (패자) - 200 (연뻑)
@@ -183,7 +186,10 @@ class CalculateGameResultUseCaseTest {
         val normalLoserAccount = mockGamerRepository.getGamerAccount(4L)
         
         // 광팜: seller가 200 × 3 = 600 받음
-        // 패자 계산: 고박자가 700 + 700 = 1400 대신 냄 (패자 계산만)
+        // 패자 계산: 고박자가 패자2의 금액 대신 냄 + 자신의 금액 (고스톱이므로 고박 제외)
+        //   - 패자2: 700 (고박자가 대신 냄, 그대로)
+        //   - 고박자 본인: 700 (고박 제외, 기본 금액만)
+        //   총합: 700 + 700 = 1400
         // 첫뻑: 각자 냄 (seller 제외, winner, goBak, normalLoser) 100 × 2 = 200
         assertEquals(600, sellerAccount)     // 600 (광팜)
         assertEquals(1400, winnerAccount)    // -200 (광팜) + 1400 (패자) + 200 (첫뻑)
