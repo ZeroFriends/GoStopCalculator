@@ -17,7 +17,7 @@ import zero.friends.gostopcalculator.ui.board.prepare.PrepareScreen
 import zero.friends.gostopcalculator.ui.board.result.CalculateScreen
 import zero.friends.gostopcalculator.ui.board.result.DetailScreen
 import zero.friends.gostopcalculator.ui.board.rule.RuleLogScreen
-import zero.friends.gostopcalculator.ui.board.score.ScoreScreen
+import zero.friends.gostopcalculator.ui.board.score.ScoreCoordinator
 import zero.friends.gostopcalculator.ui.board.score.end.EndScreen
 import zero.friends.gostopcalculator.ui.history.HistoryScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
@@ -91,9 +91,7 @@ fun Navigator(
                 }
             )
 
-            BackHandler(true) {
-                onBackPressed()
-            }
+            BackHandler(true, onBackPressed)
         }
 
         //PreCondition
@@ -118,7 +116,7 @@ fun Navigator(
                 onNext = { gameId ->
                     navController.navigate(Navigate.Board.Main.route(gameId))
                 },
-                onBack = { navController.navigateUp() },
+                onBack = navController::navigateUp,
             )
         }
 
@@ -162,7 +160,7 @@ fun Navigator(
                 onComplete = { gameId, roundId ->
                     navController.navigate(Navigate.Board.Score.route(gameId, roundId))
                 },
-                onBack = { navController.navigateUp() }
+                onBack = navController::navigateUp
             )
         }
 
@@ -173,14 +171,12 @@ fun Navigator(
                 navArgument(Const.RoundId) { type = NavType.LongType },
             )
         ) {
-            ScoreScreen(
-                onBack = {
-                    navController.navigateUp()
-                },
+            ScoreCoordinator(
+                onBack = { navController.navigateUp() },
                 onComplete = { gameId, roundId ->
                     navController.navigate(Navigate.Board.End.route(gameId, roundId))
                 },
-                Exit = { gameId ->
+                onExit = { gameId ->
                     navController.popBackStack()
                     navController.navigate(Navigate.Board.Main.route(gameId))
                 }
@@ -211,9 +207,7 @@ fun Navigator(
                 navArgument(Const.RoundId) { type = NavType.LongType }
             )
         ) {
-            DetailScreen(
-                onBack = { navController.navigateUp() }
-            )
+            DetailScreen(onBack = navController::navigateUp)
         }
 
         composable(
@@ -222,7 +216,7 @@ fun Navigator(
                 navArgument(Const.GameId) { type = NavType.LongType }
             )
         ) {
-            CalculateScreen(onBack = { navController.navigateUp() })
+            CalculateScreen(onBack = navController::navigateUp)
         }
 
         composable(
@@ -231,7 +225,7 @@ fun Navigator(
                 navArgument(Const.GameId) { type = NavType.LongType }
             )
         ) {
-            RuleLogScreen(onBack = { navController.navigateUp() })
+            RuleLogScreen(onBack = navController::navigateUp)
         }
 
     }

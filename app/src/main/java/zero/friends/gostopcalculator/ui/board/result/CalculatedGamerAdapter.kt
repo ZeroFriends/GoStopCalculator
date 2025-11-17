@@ -15,9 +15,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import zero.friends.domain.model.Gamer
-import zero.friends.domain.model.LoserOption
-import zero.friends.domain.model.ScoreOption
-import zero.friends.domain.model.WinnerOption
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.databinding.ItemCalculatedGamerBinding
 import zero.friends.gostopcalculator.util.getMoneyColor
@@ -54,31 +51,19 @@ class CalculatedGamerAdapter : ListAdapter<Gamer, CalculatedGamerAdapter.ViewHol
                     ContextCompat.getColor(root.context, account.getMoneyColor())
                 )
 
-                // 옵션 표시 (따당, 박, 쌍피 등)
+                // 옵션 표시 (따닥, 박, 쌍피 등)
                 val options = buildList {
-                    when (gamer.winnerOption) {
-                        WinnerOption.Winner -> add("따당")
-                        else -> {}
+                    val winnerOption = gamer.winnerOption?.korean
+                    if (winnerOption != null) {
+                        add(winnerOption)
                     }
                     
                     gamer.loserOption.forEach { option ->
-                        when (option) {
-                            LoserOption.PeaBak -> add("피박")
-                            LoserOption.LightBak -> add("광박")
-                            LoserOption.MongBak -> add("멍박")
-                            LoserOption.GoBak -> add("고박")
-                            else -> {}
-                        }
+                        add(option.korean)
                     }
                     
                     gamer.scoreOption.forEach { option ->
-                        when (option) {
-                            ScoreOption.FirstFuck -> add("쌍피")
-                            ScoreOption.SecondFuck -> add("삼피")
-                            ScoreOption.ThreeFuck -> add("사피")
-                            ScoreOption.FirstDdadak -> add("따닥")
-                            else -> {}
-                        }
+                        add(option.korean)
                     }
                 }
 

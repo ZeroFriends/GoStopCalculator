@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -169,7 +170,10 @@ private fun PlayerPickItem(index: Int, player: Player, isCheck: Boolean = true, 
             Spacer(modifier = Modifier.padding(8.dp))
             Text(text = player.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
-        Surface(onClick = { onClick(!isCheck) }) {
+        Surface(
+            onClick = { onClick(!isCheck) },
+            shape = CircleShape
+        ) {
             if (isCheck) {
                 Image(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_check_circle_24_dp),
