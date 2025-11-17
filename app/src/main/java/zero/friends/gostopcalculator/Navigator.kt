@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -9,7 +10,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import kotlinx.coroutines.delay
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import zero.friends.domain.util.Const
 import zero.friends.gostopcalculator.ui.board.main.BoardScreen
@@ -23,8 +23,6 @@ import zero.friends.gostopcalculator.ui.history.HistoryScreen
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
 import zero.friends.gostopcalculator.ui.splash.SplashScreen
-import java.net.URLDecoder
-import java.net.URLEncoder
 
 sealed interface Navigate {
 
@@ -36,7 +34,7 @@ sealed interface Navigate {
      * navController.navigate(argument = Navigate.Board.Main.route(argument = game.id))
      */
     fun route(vararg argument: Any) =
-        route() + argument.joinToString("") { "/${URLEncoder.encode(it.toString(), "UTF-8")}" }
+        route() + argument.joinToString("") { "/${Uri.encode(it.toString())}" }
 
     /**
      * @param path : 목적지 path 를 route 할 때 사용 Navigate/{someData}
@@ -46,7 +44,7 @@ sealed interface Navigate {
      * )
      */
     fun destination(vararg path: Any) =
-        route() + path.joinToString("") { "/{${URLDecoder.decode(it.toString(), "UTF-8")}}" }
+        route() + path.joinToString("") { "/{${it}}" }
 
     object History : Navigate
     object Splash : Navigate
