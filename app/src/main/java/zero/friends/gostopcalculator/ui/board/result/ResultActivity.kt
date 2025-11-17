@@ -32,6 +32,8 @@ class ResultActivity : AppCompatActivity() {
 
     private val gameId: Long by lazy { intent.getLongExtra(EXTRA_GAME_ID, -1L) }
     private val roundId: Long by lazy { intent.getLongExtra(EXTRA_ROUND_ID, -1L) }
+    
+    private var lastSharedFile: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,10 +45,18 @@ class ResultActivity : AppCompatActivity() {
         loadData()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // 공유 후 돌아왔을 때 파일 삭제
+        lastSharedFile?.delete()
+        lastSharedFile = null
+    }
+
     private fun setupViews() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@ResultActivity)
             adapter = this@ResultActivity.adapter
+            isNestedScrollingEnabled = false
         }
 
         binding.btnBack.setOnClickListener {
@@ -82,7 +92,10 @@ class ResultActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val bitmap = captureScrollView()
-                val uri = saveBitmapToCache(bitmap)
+                val (file, uri) = saveBitmapToCache(bitmap)
+                
+                // 공유할 파일 저장 (나중에 삭제하기 위해)
+                lastSharedFile = file
 
                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
                     type = "image/png"
@@ -98,60 +111,64 @@ class ResultActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun captureScrollView(): Bitmap = withContext(Dispatchers.Default) {
-        val scrollView = binding.scrollView
+    private suspend fun captureScrollView(): Bitmap = withContext(Dispatchers.Main) {
         val contentLayout = binding.contentLayout
-
-        // 스크롤뷰의 전체 컨텐츠 크기 측정
-        contentLayout.measure(
-            View.MeasureSpec.makeMeasureSpec(scrollView.width, View.MeasureSpec.EXACTLY),
-            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        )
-
-        val bitmap = createBitmap(contentLayout.measuredWidth, contentLayout.measuredHeight)
-
-        val canvas = Canvas(bitmap)
+        val scrollView = binding.scrollView
 
         // 현재 스크롤 위치 저장
         val scrollX = scrollView.scrollX
         val scrollY = scrollView.scrollY
 
         // 스크롤을 맨 위로
-        withContext(Dispatchers.Main) {
-            scrollView.scrollTo(0, 0)
-        }
+        scrollView.scrollTo(0, 0)
 
-        // 레이아웃 그리기
+        // RecyclerView가 모든 아이템을 그릴 수 있도록 강제로 레이아웃 요청
+        binding.recyclerView.requestLayout()
+
+        // 전체 컨텐츠 크기로 측정
+        val widthSpec = View.MeasureSpec.makeMeasureSpec(scrollView.width, View.MeasureSpec.EXACTLY)
+        val heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        contentLayout.measure(widthSpec, heightSpec)
+
+        // 레이아웃 배치
         contentLayout.layout(
             0,
             0,
             contentLayout.measuredWidth,
             contentLayout.measuredHeight
         )
+
+        // 비트맵 생성
+        val bitmap = createBitmap(contentLayout.measuredWidth, contentLayout.measuredHeight)
+        val canvas = Canvas(bitmap)
+        
+        // 배경 색상 그리기 (화면과 동일한 배경)
+        canvas.drawColor(getColor(R.color.light_gray))
+        
+        // 컨텐츠 그리기 (모든 RecyclerView 아이템 포함)
         contentLayout.draw(canvas)
 
         // 원래 스크롤 위치로 복원
-        withContext(Dispatchers.Main) {
-            scrollView.scrollTo(scrollX, scrollY)
-        }
+        scrollView.scrollTo(scrollX, scrollY)
 
         bitmap
     }
 
     private suspend fun saveBitmapToCache(bitmap: Bitmap) = withContext(Dispatchers.IO) {
-        val cacheDir = File(cacheDir, "images").apply { mkdirs() }
-        val file = File(cacheDir, "result_${System.currentTimeMillis()}.png")
+        val file = File(cacheDir, "result_share.png")
 
         file.outputStream().use { out ->
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
             out.flush()
         }
 
-        FileProvider.getUriForFile(
+        val uri = FileProvider.getUriForFile(
             this@ResultActivity,
             AUTHORITY,
             file
         )
+        
+        Pair(file, uri)
     }
 
     enum class ScreenType {
