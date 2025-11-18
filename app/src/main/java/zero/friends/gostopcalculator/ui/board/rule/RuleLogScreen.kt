@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Rule
+import zero.friends.domain.util.Const
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.ContentsCard
@@ -92,7 +93,7 @@ fun RuleLogItem(index: Int = 0, rule: Rule = Rule()) {
             Spacer(modifier = Modifier.padding(4.dp))
             Text(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                text = rule.name,
+                text = rule.name.displayName,
                 fontSize = 16.sp,
                 color = colorResource(id = R.color.nero),
             )
@@ -115,10 +116,10 @@ private fun Preview() {
         uiState = RuleLogUiState(
             Game(name = "hello world"),
             listOf(
-                Rule(name = "hello"),
-                Rule(name = "world"),
-                Rule(name = "world"),
-                Rule(name = "world"),
+                Rule(name = Const.Rule.Score),
+                Rule(name = Const.Rule.Fuck),
+                Rule(name = Const.Rule.Sell),
+                Rule(name = Const.Rule.FirstDdadak),
             )
         )
     )

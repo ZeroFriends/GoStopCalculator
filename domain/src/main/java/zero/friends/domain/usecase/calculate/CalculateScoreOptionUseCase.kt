@@ -46,7 +46,7 @@ class CalculateScoreOptionUseCase @Inject constructor(
     ): ScoreOptionResult {
         val allGamers = gamerRepository.getRoundGamers(roundId)
         // 광팜 플레이어는 점수옵션 계산에서 제외
-        val gamers = seller?.let { allGamers - it } ?: allGamers
+        val gamers = seller?.let { excludePlayer(allGamers, it.id) } ?: allGamers
         // 룰에서 필요한 값 가져오기
         val rules = ruleRepository.getRules(gameId)
         val fuckScore = rules.firstOrNull { it.name == Const.Rule.Fuck }?.score ?: 0
@@ -59,7 +59,7 @@ class CalculateScoreOptionUseCase @Inject constructor(
                 val amount = calculateScoreOptionAmount(option, fuckScore, scorePerPoint)
                 
                 // 해당 플레이어가 다른 모든 플레이어로부터 받음
-                val otherGamers = gamers - gamer
+                val otherGamers = excludePlayer(gamers, gamer.id)
                 
                 // 받는 사람
                 accounts[gamer.id] = (accounts[gamer.id] ?: 0) + (amount * otherGamers.size)
@@ -73,6 +73,11 @@ class CalculateScoreOptionUseCase @Inject constructor(
         
         return ScoreOptionResult(accounts)
     }
+
+    private fun excludePlayer(
+        gamers: List<Gamer>,
+        playerId: Long
+    ): List<Gamer> = gamers.filter { it.id != playerId }
     
     /**
      * 점수 옵션별 금액 계산
@@ -95,4 +100,3 @@ class CalculateScoreOptionUseCase @Inject constructor(
         }
     }
 }
-

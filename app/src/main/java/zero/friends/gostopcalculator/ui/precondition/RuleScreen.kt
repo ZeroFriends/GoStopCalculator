@@ -233,7 +233,7 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
-                        text = rule.name,
+                        text = rule.name.displayName,
                         fontSize = 16.sp,
                         color = colorResource(id = if (isFirstDdadak) R.color.dusty_gray else R.color.nero)
                     )
@@ -283,7 +283,7 @@ private fun AmountSettingBlock(modifier: Modifier = Modifier, onHelperClick: () 
 @Preview(showBackground = true)
 @Composable
 private fun RuleItemPreview() {
-    RuleItem(index = 0, rule = Rule("점당", true, "필수 항목 입니다.", 0))
+    RuleItem(index = 0, rule = Rule(isEssential = true, script = "필수 항목 입니다."))
 }
 
 @Preview

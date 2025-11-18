@@ -49,7 +49,7 @@ class CalculateSellScoreUseCase @Inject constructor(
         val sellTotalAmount = sellScorePerLight * seller.score
         
         // 판 사람을 제외한 나머지 플레이어들이 지불
-        val buyers = allGamers - seller
+        val buyers = allGamers.filter { it.id != seller.id }
         
         // 판 사람은 받음
         accounts[seller.id] = sellTotalAmount * buyers.size
@@ -62,4 +62,3 @@ class CalculateSellScoreUseCase @Inject constructor(
         return SellScoreResult(accounts)
     }
 }
-

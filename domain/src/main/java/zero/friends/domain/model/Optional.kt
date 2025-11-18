@@ -17,23 +17,23 @@ inline fun <reified T : Enum<T>> findOptional(values: String?): List<T> {
 }
 
 enum class WinnerOption(override val korean: String) : Option {
-    Winner(Const.Rule.Winner);
+    Winner(Const.Rule.Winner.displayName);
 }
 
 enum class SellerOption(override val korean: String) : Option {
-    Seller(Const.Rule.Seller),
+    Seller(Const.Rule.Seller.displayName),
 }
 
 enum class ScoreOption(override val korean: String) : Option {
-    FirstFuck(Const.Rule.FirstFuck),
-    SecondFuck(Const.Rule.SecondFuck),
-    ThreeFuck(Const.Rule.ThreeFuck),
-    FirstDdadak(Const.Rule.FirstDdadak);
+    FirstFuck(Const.Rule.FirstFuck.displayName),
+    SecondFuck(Const.Rule.SecondFuck.displayName),
+    ThreeFuck(Const.Rule.ThreeFuck.displayName),
+    FirstDdadak(Const.Rule.FirstDdadak.displayName);
 }
 
 enum class LoserOption(override val korean: String) : Option {
-    PeaBak(Const.Rule.PeaBak),
-    LightBak(Const.Rule.LightBak),
-    MongBak(Const.Rule.MongBak),
-    GoBak(Const.Rule.GoBak);
+    PeaBak(Const.Rule.PeaBak.displayName),
+    LightBak(Const.Rule.LightBak.displayName),
+    MongBak(Const.Rule.MongBak.displayName),
+    GoBak(Const.Rule.GoBak.displayName);
 }

@@ -40,9 +40,6 @@ class CalculateGameResultUseCase @Inject constructor(
         seller: Gamer?,
         winner: Gamer?
     ) {
-        // 플레이어 정보 로드
-        val allGamers = gamerRepository.getRoundGamers(roundId)
-        
         // 1. 광팜 계산
         if (seller != null) {
             applySellAccount(gameId, roundId, seller)
@@ -73,7 +70,8 @@ class CalculateGameResultUseCase @Inject constructor(
         val allGamers = gamerRepository.getRoundGamers(roundId)
         
         // seller와 각 buyer 간 거래 기록
-        val buyers = allGamers - seller
+        val buyers = allGamers.filter { it.id != seller.id }
+        if (buyers.isEmpty()) return
         // sellResult에서 각 buyer가 지불하는 금액 계산
         val amountPerBuyer = -(sellResult.accounts[buyers.first().id] ?: 0)  // 음수이므로 부호 반전
         
@@ -100,10 +98,8 @@ class CalculateGameResultUseCase @Inject constructor(
         )
         val allGamers = gamerRepository.getRoundGamers(roundId)
         // 광팜 플레이어를 제외한 패자 목록
-        val losers = if (seller != null) {
-            allGamers - winner - seller
-        } else {
-            allGamers - winner
+        val losers = allGamers.filter { gamer ->
+            gamer.id != winner.id && (seller == null || gamer.id != seller.id)
         }
         
         // 거래 기록
@@ -140,7 +136,11 @@ class CalculateGameResultUseCase @Inject constructor(
         )
         val allGamers = gamerRepository.getRoundGamers(roundId)
         // 광팜 플레이어는 점수옵션 계산에서 제외
-        val scoreOptionGamers = seller?.let { allGamers - it } ?: allGamers
+        val scoreOptionGamers = if (seller != null) {
+            allGamers.filter { it.id != seller.id }
+        } else {
+            allGamers
+        }
         
         // 룰에서 필요한 값 가져오기 (target 기록용)
         val rules = ruleRepository.getRules(gameId)
@@ -156,7 +156,7 @@ class CalculateGameResultUseCase @Inject constructor(
                 
                 // 각 상대방과의 거래 기록
                 // 옵션 소유자는 다른 플레이어들로부터 받음
-                val others = scoreOptionGamers - gamer
+                val others = scoreOptionGamers.filter { it.id != gamer.id }
                 gamer.scoreOption.forEach { option ->
                     val amount = when (option) {
                         zero.friends.domain.model.ScoreOption.FirstFuck -> fuckScore

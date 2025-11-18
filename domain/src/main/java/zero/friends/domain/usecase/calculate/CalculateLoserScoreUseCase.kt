@@ -57,10 +57,8 @@ class CalculateLoserScoreUseCase @Inject constructor(
         
         val allGamers = gamerRepository.getRoundGamers(roundId)
         // 광팜 플레이어를 제외한 패자 목록
-        val losers = if (seller != null) {
-            allGamers - winner - seller
-        } else {
-            allGamers - winner
+        val losers = allGamers.filter { gamer ->
+            gamer.id != winner.id && (seller == null || gamer.id != seller.id)
         }
         val accounts = mutableMapOf<Long, Int>()
         
@@ -166,4 +164,3 @@ class CalculateLoserScoreUseCase @Inject constructor(
         }
     }
 }
-

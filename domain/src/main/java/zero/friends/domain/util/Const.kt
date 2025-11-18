@@ -1,5 +1,8 @@
 package zero.friends.domain.util
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
 object Const {
     const val GameId = "gameId"
     const val GameName = "game_name"
@@ -8,22 +11,45 @@ object Const {
     const val RoundId = "roundId"
     const val FuckEnding = "fuckEnding"
 
-    object Rule {
-        const val Winner = "승자"
-        const val Seller = "광팜"
+    @Serializable
+    enum class Rule(val displayName: String) {
+        @SerialName("승자")
+        Winner("승자"),
 
-        const val Fuck = "뻑"
-        const val FirstFuck = "첫 뻑"
-        const val SecondFuck = "연 뻑"
-        const val ThreeFuck = "삼연 뻑"
-        const val FirstDdadak = "첫 따닥"
+        @SerialName("광팜")
+        Seller("광팜"),
 
-        const val PeaBak = "피 박"
-        const val LightBak = "광 박"
-        const val MongBak = "멍 박"
-        const val GoBak = "고 박"
+        @SerialName("뻑")
+        Fuck("뻑"),
 
-        const val Score = "점당"
-        const val Sell = "광팔기"
+        @SerialName("첫 뻑")
+        FirstFuck("첫 뻑"),
+
+        @SerialName("연 뻑")
+        SecondFuck("연 뻑"),
+
+        @SerialName("삼연 뻑")
+        ThreeFuck("삼연 뻑"),
+
+        @SerialName("첫 따닥")
+        FirstDdadak("첫 따닥"),
+
+        @SerialName("피 박")
+        PeaBak("피 박"),
+
+        @SerialName("광 박")
+        LightBak("광 박"),
+
+        @SerialName("멍 박")
+        MongBak("멍 박"),
+
+        @SerialName("고 박")
+        GoBak("고 박"),
+
+        @SerialName("점당")
+        Score("점당"),
+
+        @SerialName("광팔기")
+        Sell("광팔기"),
     }
 }
