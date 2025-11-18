@@ -34,7 +34,9 @@ jobs:
             ${{ runner.os }}-gradle-
       
       - name: Run all tests (113 tests)
-        run: ./gradlew test --console=plain
+        run: |
+          set -o pipefail
+          ./gradlew test --console=plain | tee test-output.log
       
       - name: Build Release APK
         run: ./gradlew assembleRelease --stacktrace --console=plain
@@ -55,6 +57,14 @@ jobs:
           path: |
             **/build/test-results/**/*.xml
             **/build/reports/tests/**
+          retention-days: 30
+      
+      - name: Upload test log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-log
+          path: test-output.log
           retention-days: 30
       
       - name: Test Summary
