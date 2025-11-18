@@ -1,6 +1,9 @@
 package zero.friends.domain.usecase.calculate
 
 import zero.friends.domain.model.Gamer
+import zero.friends.domain.repository.GamerRepository
+import zero.friends.domain.repository.RuleRepository
+import zero.friends.domain.util.Const
 import javax.inject.Inject
 
 /**
@@ -10,7 +13,10 @@ import javax.inject.Inject
  * - 광을 판 사람(seller)이 각 플레이어에게 (광팔기 점수 × 판 광 수)만큼 받음
  * - 광을 판 사람은 게임에 참여하지 않음
  */
-class CalculateSellScoreUseCase @Inject constructor() {
+class CalculateSellScoreUseCase @Inject constructor(
+    private val ruleRepository: RuleRepository,
+    private val gamerRepository: GamerRepository
+) {
     
     /**
      * 광팜 계산 결과
@@ -23,16 +29,20 @@ class CalculateSellScoreUseCase @Inject constructor() {
     /**
      * 광팜 계산
      * 
+     * @param gameId 게임 ID (룰 조회용)
+     * @param roundId 라운드 ID (플레이어 조회용)
      * @param seller 광을 판 사람
-     * @param allGamers 라운드의 모든 플레이어
-     * @param sellScorePerLight 광 하나당 가격
      * @return 각 플레이어의 계산 결과
      */
-    operator fun invoke(
-        seller: Gamer,
-        allGamers: List<Gamer>,
-        sellScorePerLight: Int
+    suspend operator fun invoke(
+        gameId: Long,
+        roundId: Long,
+        seller: Gamer
     ): SellScoreResult {
+        val allGamers = gamerRepository.getRoundGamers(roundId)
+        // 룰에서 광팔기 점수 가져오기
+        val rules = ruleRepository.getRules(gameId)
+        val sellScorePerLight = rules.firstOrNull { it.name == Const.Rule.Sell }?.score ?: 0
         val accounts = mutableMapOf<Long, Int>()
         
         // 광 팔기 총액 계산 (광 하나당 가격 × 판 광 수)

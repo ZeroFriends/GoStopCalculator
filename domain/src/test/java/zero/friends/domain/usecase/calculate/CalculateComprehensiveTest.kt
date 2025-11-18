@@ -300,10 +300,15 @@ class CalculateComprehensiveTest {
         val gamers = listOf(winner, loser1, loser2, loser3)
         
         val loserResult = loserUseCase(winner, listOf(loser1, loser2, loser3), 100)
-        val scoreResult = scoreOptionUseCase(gamers, 100)
+        val scoreResult = scoreOptionUseCase(gamers, 100, 100)  // 점당 100원 전달
         
         assertEquals(2000, loserResult.accounts[1L])  // 1000 + 500 + 500
-        assertEquals(200, scoreResult.accounts[1L])   // 300 - 100
+        // 첫따닥: 100 × 3 = 300원
+        // 승자: 첫따닥 300 × 3 = 900 받음
+        // 패자1: 첫뻑 100 × 3 = 300 받음
+        // 승자가 패자1에게 첫뻑 금액 지불: -100
+        // 승자 총합: 900 - 100 = 800원
+        assertEquals(800, scoreResult.accounts[1L])   // 첫따닥(900) - 첫뻑(100) = 800
     }
     
     @Test
@@ -354,10 +359,15 @@ class CalculateComprehensiveTest {
         val gamers = listOf(winner, loser1, loser2, loser3)
         
         val loserResult = loserUseCase(winner, listOf(loser1, loser2, loser3), 100)
-        val scoreResult = scoreOptionUseCase(gamers, 100)
+        val scoreResult = scoreOptionUseCase(gamers, 100, 100)  // 점당 100원 전달
         
         assertEquals(2800, loserResult.accounts[1L])  // 1400 + 700 + 700
-        assertEquals(800, scoreResult.accounts[1L])   // 900 - 100
+        // 첫따닥: 100 × 3 = 300원, 연뻑: 100 × 2 = 200원
+        // 승자: 첫따닥 300 × 3 = 900 받음, 연뻑 200 × 3 = 600 받음, 총 1500 받음
+        // 패자2: 첫뻑 100 × 3 = 300 받음
+        // 승자가 패자2에게 첫뻑 금액 지불: -100
+        // 승자 총합: 1500 - 100 = 1400원
+        assertEquals(1400, scoreResult.accounts[1L])   // 첫따닥(900) + 연뻑(600) - 첫뻑(100) = 1400
     }
     
     // ===== 고박 케이스 (26~35) =====

@@ -178,18 +178,20 @@ class CalculateEdgeCasesTest {
         )
         val fuckScore = 100
         
-        // When
-        val result = scoreOptionUseCase(gamers, fuckScore)
+        // When: 첫따닥이 포함되어 있으므로 scorePerPoint 필요 (점당 100원 가정)
+        val scorePerPoint = 100
+        val result = scoreOptionUseCase(gamers, fuckScore, scorePerPoint)
         
         // Then: 각자 주고받은 결과
-        // 플레이어1: +300 (100×3), -200 (연뻑), -400 (삼연뻑), -100 (따닥) = -400
-        // 플레이어2: +600 (200×3), -100 (첫뻑), -400 (삼연뻑), -100 (따닥) = 0
-        // 플레이어3: +1200 (400×3), -100 (첫뻑), -200 (연뻑), -100 (따닥) = +800
-        // 플레이어4: +300 (100×3), -100 (첫뻑), -200 (연뻑), -400 (삼연뻑) = -400
-        assertEquals(-400, result.accounts[1L])
-        assertEquals(0, result.accounts[2L])
-        assertEquals(800, result.accounts[3L])
-        assertEquals(-400, result.accounts[4L])
+        // 첫따닥: 100 × 3 = 300원
+        // 플레이어1: +300 (100×3), -200 (연뻑), -400 (삼연뻑), -300 (첫따닥) = -600
+        // 플레이어2: +600 (200×3), -100 (첫뻑), -400 (삼연뻑), -300 (첫따닥) = -200
+        // 플레이어3: +1200 (400×3), -100 (첫뻑), -200 (연뻑), -300 (첫따닥) = +600
+        // 플레이어4(첫따닥): +900 (300×3), -100 (첫뻑), -200 (연뻑), -400 (삼연뻑) = +200
+        assertEquals(-600, result.accounts[1L])
+        assertEquals(-200, result.accounts[2L])
+        assertEquals(600, result.accounts[3L])
+        assertEquals(200, result.accounts[4L])  // 첫따닥(900) - 첫뻑(100) - 연뻑(200) - 삼연뻑(400) = 200
         
         // 총액은 0이어야 함
         assertEquals(0, result.accounts.values.sum())

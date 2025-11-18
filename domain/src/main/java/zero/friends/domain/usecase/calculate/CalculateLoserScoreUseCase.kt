@@ -2,6 +2,9 @@ package zero.friends.domain.usecase.calculate
 
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.LoserOption
+import zero.friends.domain.repository.GamerRepository
+import zero.friends.domain.repository.RuleRepository
+import zero.friends.domain.util.Const
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -20,7 +23,10 @@ import kotlin.math.pow
  *     - 맞고(2명): 고박 포함하여 계산 (고박 2배 적용)
  *     - 고스톱(3명 이상): 고박 제외하고 계산 (고박은 다른 사람 대신 내는 것이므로 본인 금액에는 적용 안됨)
  */
-class CalculateLoserScoreUseCase @Inject constructor() {
+class CalculateLoserScoreUseCase @Inject constructor(
+    private val ruleRepository: RuleRepository,
+    private val gamerRepository: GamerRepository
+) {
     
     /**
      * 패자 계산 결과
@@ -33,16 +39,29 @@ class CalculateLoserScoreUseCase @Inject constructor() {
     /**
      * 패자 점수 계산
      * 
+     * @param gameId 게임 ID (룰 조회용)
+     * @param roundId 라운드 ID (플레이어 조회용)
      * @param winner 승자
-     * @param losers 패자 목록 (광팜 플레이어 제외)
-     * @param scorePerPoint 점당 점수
+     * @param seller 광팜 플레이어 (없을 경우 null, 패자 계산에서 제외)
      * @return 각 플레이어의 계산 결과
      */
-    operator fun invoke(
+    suspend operator fun invoke(
+        gameId: Long,
+        roundId: Long,
         winner: Gamer,
-        losers: List<Gamer>,
-        scorePerPoint: Int
+        seller: Gamer? = null
     ): LoserScoreResult {
+        // 룰에서 점당 가져오기
+        val rules = ruleRepository.getRules(gameId)
+        val scorePerPoint = rules.firstOrNull { it.name == Const.Rule.Score }?.score ?: 0
+        
+        val allGamers = gamerRepository.getRoundGamers(roundId)
+        // 광팜 플레이어를 제외한 패자 목록
+        val losers = if (seller != null) {
+            allGamers - winner - seller
+        } else {
+            allGamers - winner
+        }
         val accounts = mutableMapOf<Long, Int>()
         
         // 승자 점수

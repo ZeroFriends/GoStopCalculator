@@ -224,10 +224,13 @@ class CalculateGameResultUseCaseTest {
         val loser2Account = mockGamerRepository.getGamerAccount(3L)
         
         // 패자 계산: 1000 (광박) + 500 (기본) = 1500
-        // 첫따닥: 50 × 2 = 100
-        assertEquals(1600, winnerAccount)
-        assertEquals(-1050, loser1Account)   // -1000 - 50
-        assertEquals(-550, loser2Account)    // -500 - 50
+        // 첫따닥: 100 × 3 = 300원 (점당 × 3), 패자 2명에게서 받음 = 300 × 2 = 600원
+        // 승자 총합: 1500 + 600 = 2100원
+        // 패자1: -1000 (광박) - 300 (첫따닥) = -1300원
+        // 패자2: -500 (기본) - 300 (첫따닥) = -800원
+        assertEquals(2100, winnerAccount)  // 1500 + 600
+        assertEquals(-1300, loser1Account)   // -1000 - 300
+        assertEquals(-800, loser2Account)    // -500 - 300
     }
     
     @Test

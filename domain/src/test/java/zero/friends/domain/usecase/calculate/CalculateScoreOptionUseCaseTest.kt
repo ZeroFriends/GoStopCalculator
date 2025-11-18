@@ -1,33 +1,42 @@
 package zero.friends.domain.usecase.calculate
 
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import zero.friends.domain.mock.MockRuleRepository
 import zero.friends.domain.model.Gamer
+import zero.friends.domain.model.Rule
 import zero.friends.domain.model.ScoreOption
 
 class CalculateScoreOptionUseCaseTest {
     
     private lateinit var useCase: CalculateScoreOptionUseCase
+    private lateinit var mockRuleRepository: MockRuleRepository
     
     @Before
     fun setup() {
-        useCase = CalculateScoreOptionUseCase()
+        mockRuleRepository = MockRuleRepository()
+        useCase = CalculateScoreOptionUseCase(mockRuleRepository)
     }
     
     @Test
-    fun `첫 뻑 - 한 명이 첫 뻑을 했을 때`() {
+    fun `첫 뻑 - 한 명이 첫 뻑을 했을 때`() = runTest {
         // Given: 4명이 게임 중, 플레이어1이 첫 뻑, 뻑 점수 100원
+        val gameId = 1L
         val gamers = listOf(
             Gamer(id = 1, name = "플레이어1", scoreOption = listOf(ScoreOption.FirstFuck)),
             Gamer(id = 2, name = "플레이어2"),
             Gamer(id = 3, name = "플레이어3"),
             Gamer(id = 4, name = "플레이어4")
         )
-        val fuckScore = 100
+        mockRuleRepository.setRules(gameId, listOf(
+            Rule(name = "뻑", score = 100),
+            Rule(name = "점당", score = 100)
+        ))
         
         // When: 점수 옵션 계산
-        val result = useCase(gamers, fuckScore)
+        val result = useCase(gameId, gamers)
         
         // Then: 플레이어1은 300원 받고 (100 × 3), 나머지는 각각 100원 지불
         assertEquals(300, result.accounts[1L])
@@ -78,7 +87,7 @@ class CalculateScoreOptionUseCaseTest {
     
     @Test
     fun `첫 따닥 - 한 명이 첫 따닥을 했을 때`() {
-        // Given: 4명이 게임 중, 플레이어3이 첫 따닥, 뻑 점수 150원
+        // Given: 4명이 게임 중, 플레이어3이 첫 따닥, 점당 50원, 뻑 점수 150원
         val gamers = listOf(
             Gamer(id = 1, name = "플레이어1"),
             Gamer(id = 2, name = "플레이어2"),
@@ -86,11 +95,13 @@ class CalculateScoreOptionUseCaseTest {
             Gamer(id = 4, name = "플레이어4")
         )
         val fuckScore = 150
+        val scorePerPoint = 50  // 점당 50원
         
         // When: 점수 옵션 계산
-        val result = useCase(gamers, fuckScore)
+        val result = useCase(gamers, fuckScore, scorePerPoint)
         
-        // Then: 플레이어3은 450원 받고 (150 × 3), 나머지는 각각 150원 지불
+        // Then: 첫따닥은 점당 × 3 = 50 × 3 = 150원
+        // 플레이어3은 450원 받고 (150 × 3), 나머지는 각각 150원 지불
         assertEquals(450, result.accounts[3L])
         assertEquals(-150, result.accounts[1L])
         assertEquals(-150, result.accounts[2L])
@@ -99,7 +110,7 @@ class CalculateScoreOptionUseCaseTest {
     
     @Test
     fun `복수 옵션 - 한 명이 첫 뻑과 첫 따닥을 모두 했을 때`() {
-        // Given: 4명이 게임 중, 플레이어1이 첫 뻑 + 첫 따닥, 뻑 점수 100원
+        // Given: 4명이 게임 중, 플레이어1이 첫 뻑 + 첫 따닥, 점당 50원, 뻑 점수 100원
         val gamers = listOf(
             Gamer(id = 1, name = "플레이어1", 
                   scoreOption = listOf(ScoreOption.FirstFuck, ScoreOption.FirstDdadak)),
@@ -108,15 +119,17 @@ class CalculateScoreOptionUseCaseTest {
             Gamer(id = 4, name = "플레이어4")
         )
         val fuckScore = 100
+        val scorePerPoint = 50  // 점당 50원
         
         // When: 점수 옵션 계산
-        val result = useCase(gamers, fuckScore)
+        val result = useCase(gamers, fuckScore, scorePerPoint)
         
-        // Then: 플레이어1은 600원 받고 (100 + 100) × 3, 나머지는 각각 200원 지불
-        assertEquals(600, result.accounts[1L])
-        assertEquals(-200, result.accounts[2L])
-        assertEquals(-200, result.accounts[3L])
-        assertEquals(-200, result.accounts[4L])
+        // Then: 첫뻑 100원 + 첫따닥(점당 × 3 = 50 × 3 = 150원) = 250원
+        // 플레이어1은 750원 받고 (250 × 3), 나머지는 각각 250원 지불
+        assertEquals(750, result.accounts[1L])
+        assertEquals(-250, result.accounts[2L])
+        assertEquals(-250, result.accounts[3L])
+        assertEquals(-250, result.accounts[4L])
     }
     
     @Test
@@ -146,7 +159,7 @@ class CalculateScoreOptionUseCaseTest {
     
     @Test
     fun `여러 명이 복잡한 옵션을 가진 경우`() {
-        // Given: 4명이 게임 중, 다양한 옵션, 뻑 점수 100원
+        // Given: 4명이 게임 중, 다양한 옵션, 뻑 점수 100원, 점당 약 33원 (첫따닥 100원 = 점당 × 3)
         val gamers = listOf(
             Gamer(id = 1, name = "플레이어1", 
                   scoreOption = listOf(ScoreOption.FirstFuck, ScoreOption.FirstDdadak)),
@@ -157,19 +170,32 @@ class CalculateScoreOptionUseCaseTest {
             Gamer(id = 4, name = "플레이어4")
         )
         val fuckScore = 100
+        val scorePerPoint = 33  // 첫따닥 100원 = 점당 × 3, 따라서 점당 약 33원
         
         // When: 점수 옵션 계산
-        val result = useCase(gamers, fuckScore)
+        val result = useCase(gamers, fuckScore, scorePerPoint)
         
         // Then: 각 플레이어의 수입/지출 계산
-        // 플레이어1: (100+100) × 3 받음 - 200(연뻑) - 100(플3 첫뻑) = 600 - 300 = 300
-        // 플레이어2: 200 × 3 받음 - 200(플1) - 100(플3) = 600 - 300 = 300
-        // 플레이어3: 100 × 3 받음 - 200(플1) - 200(연뻑) = 300 - 400 = -100
-        // 플레이어4: 0 받음 - 200(플1) - 200(연뻑) - 100(플3) = -500
-        assertEquals(300, result.accounts[1L])
-        assertEquals(300, result.accounts[2L])
-        assertEquals(-100, result.accounts[3L])
-        assertEquals(-500, result.accounts[4L])
+        // 플레이어1: 첫뻑 100 + 첫따닥 99(33×3) = 199, 받음 199 × 3 = 597, 냄 200(연뻑) + 100(플3 첫뻑) = 300, 총합 597 - 300 = 297
+        // 플레이어2: 연뻑 200, 받음 200 × 3 = 600, 냄 199(플1) + 100(플3) = 299, 총합 600 - 299 = 301
+        // 플레이어3: 첫뻑 100, 받음 100 × 3 = 300, 냄 199(플1) + 200(연뻑) = 399, 총합 300 - 399 = -99
+        // 플레이어4: 받음 0, 냄 199(플1) + 200(연뻑) + 100(플3) = 499, 총합 -499
+        // 정확한 계산: 첫따닥 = 33 × 3 = 99원
+        val firstDdadakAmount = scorePerPoint * 3  // 99원
+        val player1Receive = (fuckScore + firstDdadakAmount) * 3  // (100 + 99) × 3 = 597
+        val player1Pay = (fuckScore * 2) + fuckScore  // 200(연뻑) + 100(플3 첫뻑) = 300
+        assertEquals(player1Receive - player1Pay, result.accounts[1L])
+        
+        val player2Receive = (fuckScore * 2) * 3  // 200 × 3 = 600
+        val player2Pay = (fuckScore + firstDdadakAmount) + fuckScore  // 199(플1) + 100(플3) = 299
+        assertEquals(player2Receive - player2Pay, result.accounts[2L])
+        
+        val player3Receive = fuckScore * 3  // 100 × 3 = 300
+        val player3Pay = (fuckScore + firstDdadakAmount) + (fuckScore * 2)  // 199(플1) + 200(연뻑) = 399
+        assertEquals(player3Receive - player3Pay, result.accounts[3L])
+        
+        val player4Pay = (fuckScore + firstDdadakAmount) + (fuckScore * 2) + fuckScore  // 199(플1) + 200(연뻑) + 100(플3) = 499
+        assertEquals(-player4Pay, result.accounts[4L])
     }
     
     @Test

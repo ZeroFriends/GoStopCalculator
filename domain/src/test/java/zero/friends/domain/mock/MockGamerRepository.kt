@@ -1,9 +1,11 @@
 package zero.friends.domain.mock
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.Option
 import zero.friends.domain.model.Player
+import zero.friends.domain.model.Target
 import zero.friends.domain.repository.GamerRepository
 import kotlin.reflect.KClass
 
@@ -16,6 +18,7 @@ class MockGamerRepository : GamerRepository {
     private val roundGamersMap = mutableMapOf<Long, List<Gamer>>()
     private val accountMap = mutableMapOf<Long, Int>()
     private val targetMap = mutableMapOf<Long, MutableMap<Long, Int>>()
+    private val allGamersFlow = MutableStateFlow<List<Gamer>>(emptyList())
     
     /**
      * 테스트용: 라운드의 플레이어 목록 설정
@@ -24,6 +27,22 @@ class MockGamerRepository : GamerRepository {
         roundGamersMap[roundId] = gamers
         // 초기 계정 설정
         gamers.forEach { accountMap[it.id] = 0 }
+        // allGamersFlow 업데이트
+        updateAllGamersFlow()
+    }
+
+    /**
+     * 테스트용: 게임의 모든 플레이어 설정
+     */
+    fun setAllGamers(gamers: List<Gamer>) {
+        allGamersFlow.value = gamers
+    }
+
+    /**
+     * 테스트용: allGamersFlow 업데이트
+     */
+    private fun updateAllGamersFlow() {
+        allGamersFlow.value = roundGamersMap.values.flatten()
     }
     
     /**
@@ -46,11 +65,29 @@ class MockGamerRepository : GamerRepository {
     }
     
     override suspend fun getRoundGamers(roundId: Long): List<Gamer> {
-        return roundGamersMap[roundId] ?: emptyList()
+        val gamers = roundGamersMap[roundId] ?: return emptyList()
+        // account와 calculate(target) 정보를 반영하여 반환
+        return gamers.map { gamer ->
+            val account = accountMap[gamer.id] ?: 0
+            val targets = targetMap[gamer.id]?.map { (targetId, targetAccount) ->
+                // targetId로 원본 gamer 찾기
+                val targetGamer = roundGamersMap.values.flatten().firstOrNull { it.id == targetId }
+                Target(
+                    playerId = targetId,
+                    name = targetGamer?.name ?: "",
+                    account = targetAccount
+                )
+            } ?: emptyList()
+
+            gamer.copy(
+                account = account,
+                calculate = targets
+            )
+        }
     }
     
     override fun observeGamers(gameId: Long): Flow<List<Gamer>> {
-        throw NotImplementedError("observeGamers is not implemented in MockGamerRepository")
+        return allGamersFlow
     }
     
     override suspend fun createGamer(gameId: Long, roundId: Long, player: Player) {

@@ -40,46 +40,42 @@ class CalculateGameResultUseCase @Inject constructor(
         seller: Gamer?,
         winner: Gamer?
     ) {
-        // 룰 및 플레이어 정보 로드
-        val rules = ruleRepository.getRules(gameId)
+        // 플레이어 정보 로드
         val allGamers = gamerRepository.getRoundGamers(roundId)
-        
-        // 룰 값 추출
-        val sellScorePerLight = rules.firstOrNull { it.name == Const.Rule.Sell }?.score ?: 0
-        val scorePerPoint = rules.firstOrNull { it.name == Const.Rule.Score }?.score ?: 0
-        val fuckScore = rules.firstOrNull { it.name == Const.Rule.Fuck }?.score ?: 0
         
         // 1. 광팜 계산
         if (seller != null) {
-            applySellAccount(seller, allGamers, sellScorePerLight)
+            applySellAccount(gameId, roundId, seller)
         }
         
         // 2. 패자 계산 (승자가 있을 경우)
         if (winner != null) {
-            applyLoserAccount(winner, seller, allGamers, scorePerPoint)
+            applyLoserAccount(gameId, roundId, winner, seller)
         }
         
         // 3. 점수옵션 계산 (뻑, 따닥)
-        applyScoreOptionAccount(seller, allGamers, fuckScore)
+        applyScoreOptionAccount(gameId, roundId, seller)
     }
     
     /**
      * 광팜 계산 및 적용
      */
     private suspend fun applySellAccount(
-        seller: Gamer,
-        allGamers: List<Gamer>,
-        sellScorePerLight: Int
+        gameId: Long,
+        roundId: Long,
+        seller: Gamer
     ) {
         val sellResult = calculateSellScoreUseCase(
-            seller = seller,
-            allGamers = allGamers,
-            sellScorePerLight = sellScorePerLight
+            gameId = gameId,
+            roundId = roundId,
+            seller = seller
         )
+        val allGamers = gamerRepository.getRoundGamers(roundId)
         
         // seller와 각 buyer 간 거래 기록
         val buyers = allGamers - seller
-        val amountPerBuyer = sellScorePerLight * seller.score
+        // sellResult에서 각 buyer가 지불하는 금액 계산
+        val amountPerBuyer = -(sellResult.accounts[buyers.first().id] ?: 0)  // 음수이므로 부호 반전
         
         buyers.forEach { buyer ->
             updateAccountUseCase(seller, buyer, amountPerBuyer)
@@ -91,23 +87,24 @@ class CalculateGameResultUseCase @Inject constructor(
      * 패자 계산 및 적용
      */
     private suspend fun applyLoserAccount(
+        gameId: Long,
+        roundId: Long,
         winner: Gamer,
-        seller: Gamer?,
-        allGamers: List<Gamer>,
-        scorePerPoint: Int
+        seller: Gamer?
     ) {
+        val loserResult = calculateLoserScoreUseCase(
+            gameId = gameId,
+            roundId = roundId,
+            winner = winner,
+            seller = seller
+        )
+        val allGamers = gamerRepository.getRoundGamers(roundId)
         // 광팜 플레이어를 제외한 패자 목록
         val losers = if (seller != null) {
             allGamers - winner - seller
         } else {
             allGamers - winner
         }
-        
-        val loserResult = calculateLoserScoreUseCase(
-            winner = winner,
-            losers = losers,
-            scorePerPoint = scorePerPoint
-        )
         
         // 거래 기록
         // 고박 케이스와 일반 케이스 구분
@@ -132,17 +129,23 @@ class CalculateGameResultUseCase @Inject constructor(
      * 점수옵션 계산 및 적용
      */
     private suspend fun applyScoreOptionAccount(
-        seller: Gamer?,
-        allGamers: List<Gamer>,
-        fuckScore: Int
+        gameId: Long,
+        roundId: Long,
+        seller: Gamer?
     ) {
+        val scoreOptionResult = calculateScoreOptionUseCase(
+            gameId = gameId,
+            roundId = roundId,
+            seller = seller
+        )
+        val allGamers = gamerRepository.getRoundGamers(roundId)
         // 광팜 플레이어는 점수옵션 계산에서 제외
         val scoreOptionGamers = seller?.let { allGamers - it } ?: allGamers
         
-        val scoreOptionResult = calculateScoreOptionUseCase(
-            gamers = scoreOptionGamers,
-            fuckScore = fuckScore
-        )
+        // 룰에서 필요한 값 가져오기 (target 기록용)
+        val rules = ruleRepository.getRules(gameId)
+        val fuckScore = rules.firstOrNull { it.name == Const.Rule.Fuck }?.score ?: 0
+        val scorePerPoint = rules.firstOrNull { it.name == Const.Rule.Score }?.score ?: 0
         
         // 거래 기록: 각 옵션 소유자와 나머지 플레이어들 간 거래
         scoreOptionGamers.forEach { gamer ->
@@ -152,16 +155,20 @@ class CalculateGameResultUseCase @Inject constructor(
                 gamerRepository.addAccount(gamer, gamerAmount)
                 
                 // 각 상대방과의 거래 기록
+                // 옵션 소유자는 다른 플레이어들로부터 받음
                 val others = scoreOptionGamers - gamer
                 gamer.scoreOption.forEach { option ->
                     val amount = when (option) {
                         zero.friends.domain.model.ScoreOption.FirstFuck -> fuckScore
                         zero.friends.domain.model.ScoreOption.SecondFuck -> fuckScore * 2
                         zero.friends.domain.model.ScoreOption.ThreeFuck -> fuckScore * 4
-                        zero.friends.domain.model.ScoreOption.FirstDdadak -> fuckScore
+                        zero.friends.domain.model.ScoreOption.FirstDdadak -> scorePerPoint * 3  // 3점에 해당하는 금액
                     }
                     others.forEach { other ->
-                        gamerRepository.updateTarget(gamer, amount, other)
+                        // 옵션 소유자(gamer)가 다른 플레이어(other)로부터 받음
+                        gamerRepository.updateTarget(gamer, amount, other)  // gamer가 other로부터 +amount 받음
+                        // 다른 플레이어(other)가 옵션 소유자(gamer)에게 줌
+                        gamerRepository.updateTarget(other, -amount, gamer)  // other가 gamer에게 -amount 줌
                     }
                 }
             }

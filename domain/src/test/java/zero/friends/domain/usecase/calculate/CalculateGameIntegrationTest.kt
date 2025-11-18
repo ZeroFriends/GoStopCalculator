@@ -236,21 +236,22 @@ class CalculateGameIntegrationTest {
         
         // When: 점수옵션 계산 (seller 제외)
         val scoreOptionGamers = listOf(winner, loser1, loser2)
-        val scoreOptionResult = scoreOptionUseCase(scoreOptionGamers, fuckScore)
+        val scoreOptionResult = scoreOptionUseCase(scoreOptionGamers, fuckScore, scorePerPoint)
         
-        // 플레이어2(첫따닥): +100 (50 × 2), -50 (첫뻑) = +50
-        // 플레이어3(첫뻑): +100 (50 × 2), -50 (첫따닥) = +50
-        // 플레이어4: -50 (첫뻑) - 50 (첫따닥) = -100
-        assertEquals(50, scoreOptionResult.accounts[2L])
-        assertEquals(50, scoreOptionResult.accounts[3L])
-        assertEquals(-100, scoreOptionResult.accounts[4L])
+        // 첫따닥: 100 × 3 = 300원
+        // 플레이어2(첫따닥): +300 × 2 = +600, -50 (첫뻑) = +550
+        // 플레이어3(첫뻑): +50 × 2 = +100, -300 (첫따닥) = -200
+        // 플레이어4: -50 (첫뻑) - 300 (첫따닥) = -350
+        assertEquals(550, scoreOptionResult.accounts[2L])  // 첫따닥(600) - 첫뻑(50) = 550
+        assertEquals(-200, scoreOptionResult.accounts[3L])  // 첫뻑(100) - 첫따닥(300) = -200
+        assertEquals(-350, scoreOptionResult.accounts[4L])  // -50 - 300 = -350
         
         // 최종 정산:
         // 플레이어1(seller): +300
-        // 플레이어2(winner): -100 + 3000 + 50 = +2950
-        // 플레이어3(고박): -100 - 3000 + 50 = -3050
-        // 플레이어4: -100 + 0 - 100 = -200
-        // 합계: 300 + 2950 - 3050 - 200 = 0 ✓
+        // 플레이어2(winner): -100 + 3000 + 550 = +3450
+        // 플레이어3(고박): -100 - 3000 - 200 = -3300
+        // 플레이어4: -100 + 0 - 350 = -450
+        // 합계: 300 + 3450 - 3300 - 450 = 0 ✓
     }
     
     @Test

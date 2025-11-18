@@ -218,17 +218,17 @@ class CalculateSpecificCasesTest {
         
         // When
         val loserResult = loserUseCase(winner, listOf(loser), scorePerPoint)
-        val scoreOptionResult = scoreOptionUseCase(listOf(winner, loser), fuckScore)
+        val scoreOptionResult = scoreOptionUseCase(listOf(winner, loser), fuckScore, scorePerPoint)
         
         // Then: 
         // 패자 계산: 8 × 100 × 2(광박) = 1600
-        // 연뻑: 200, 첫따닥: 100 = 총 300
+        // 연뻑: 200, 첫따닥: 100 × 3 = 300 = 총 500
         assertEquals(1600, loserResult.accounts[1L])
         assertEquals(-1600, loserResult.accounts[2L])
-        assertEquals(300, scoreOptionResult.accounts[1L])
-        assertEquals(-300, scoreOptionResult.accounts[2L])
+        assertEquals(500, scoreOptionResult.accounts[1L])  // 연뻑(200) + 첫따닥(300)
+        assertEquals(-500, scoreOptionResult.accounts[2L])
         
-        assertEquals(1900, loserResult.accounts[1L]!! + scoreOptionResult.accounts[1L]!!)
+        assertEquals(2100, loserResult.accounts[1L]!! + scoreOptionResult.accounts[1L]!!)  // 1600 + 500 = 2100
     }
     
     @Test
