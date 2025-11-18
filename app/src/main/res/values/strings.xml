@@ -98,6 +98,10 @@
     <string name="next_step_1">다음 (1/3)</string>
     <string name="next_step_2">다음 (2/3)</string>
     <string name="next_step_3">다음 (3/3)</string>
+    <string name="player_with_condition">플레이어(조건)</string>
+    <string name="formula">수식</string>
+    <string name="result">결과</string>
+    <string name="calculation_result_title">계산 결과</string>
 
 
 </resources>

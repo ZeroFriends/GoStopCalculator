@@ -14,6 +14,7 @@ import androidx.core.graphics.createBitmap
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,7 +25,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.databinding.ActivityResultBinding
+import zero.friends.gostopcalculator.databinding.ViewTraceTableHeaderBinding
+import zero.friends.gostopcalculator.databinding.ViewTraceTableRowBinding
+import zero.friends.gostopcalculator.databinding.ViewTraceTitleBinding
 import java.io.File
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ResultActivity : AppCompatActivity() {
@@ -32,11 +37,11 @@ class ResultActivity : AppCompatActivity() {
     private lateinit var binding: ActivityResultBinding
     private val adapter = CalculatedGamerAdapter()
 
+    @Inject
+    lateinit var roundTraceFormatter: RoundTraceFormatter
+
     private val viewModel: ResultViewModel by viewModels()
 
-    private val gameId: Long by lazy { intent.getLongExtra(EXTRA_GAME_ID, -1L) }
-    private val roundId: Long by lazy { intent.getLongExtra(EXTRA_ROUND_ID, -1L) }
-    
     private var lastSharedFile: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,14 +116,39 @@ class ResultActivity : AppCompatActivity() {
                     ScreenType.DETAIL -> getString(R.string.detail_text)
                 }
                 adapter.submitList(state.gamers)
+                bindFormula(state)
             }
+        }
+    }
+
+    private fun bindFormula(state: ResultUiState) {
+        val trace = state.roundTrace
+        val shouldShow = state.screenType == ScreenType.DETAIL && trace != null
+        binding.traceContainer.isVisible = shouldShow
+        if (!shouldShow) return
+
+        binding.traceContainer.removeAllViews()
+        val titleBinding = ViewTraceTitleBinding.inflate(layoutInflater, binding.traceContainer, false)
+        val totalAmount = trace.totalAmount
+        titleBinding.tvTraceTotal.text = roundTraceFormatter.formatAmount(totalAmount)
+        binding.traceContainer.addView(titleBinding.root)
+        val headerBinding = ViewTraceTableHeaderBinding.inflate(layoutInflater, binding.traceContainer, false)
+        binding.traceContainer.addView(headerBinding.root)
+
+        val lines = roundTraceFormatter.toLines(trace)
+        lines.forEach { line ->
+            val itemBinding = ViewTraceTableRowBinding.inflate(layoutInflater, binding.traceContainer, false)
+            itemBinding.tvPlayer.text = line.title
+            itemBinding.tvFormula.text = line.formula
+            itemBinding.tvAmount.text = line.amount
+            binding.traceContainer.addView(itemBinding.root)
         }
     }
 
     private fun loadData() {
         when (viewModel.uiState.value.screenType) {
-            ScreenType.CALCULATE -> viewModel.loadCalculateData(gameId)
-            ScreenType.DETAIL -> viewModel.loadDetailData(gameId, roundId)
+            ScreenType.CALCULATE -> viewModel.loadCalculateData()
+            ScreenType.DETAIL -> viewModel.loadDetailData()
         }
     }
 
@@ -211,8 +241,8 @@ class ResultActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val EXTRA_GAME_ID = "extra_game_id"
-        private const val EXTRA_ROUND_ID = "extra_round_id"
+        const val EXTRA_GAME_ID = "extra_game_id"
+        const val EXTRA_ROUND_ID = "extra_round_id"
         const val EXTRA_SCREEN_TYPE = "extra_screen_type"
         private const val AUTHORITY = "zerofriends"
 
@@ -232,4 +262,3 @@ class ResultActivity : AppCompatActivity() {
         }
     }
 }
-

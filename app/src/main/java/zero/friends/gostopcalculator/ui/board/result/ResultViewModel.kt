@@ -13,9 +13,13 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Gamer
+import zero.friends.domain.model.RoundTrace
 import zero.friends.domain.model.Target
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.GamerRepository
+import zero.friends.domain.usecase.calculate.BuildRoundTraceUseCase
+import zero.friends.gostopcalculator.ui.board.result.ResultActivity.Companion.EXTRA_GAME_ID
+import zero.friends.gostopcalculator.ui.board.result.ResultActivity.Companion.EXTRA_ROUND_ID
 import zero.friends.gostopcalculator.ui.board.result.ResultActivity.Companion.EXTRA_SCREEN_TYPE
 import javax.inject.Inject
 
@@ -23,8 +27,12 @@ import javax.inject.Inject
 class ResultViewModel @Inject constructor(
     private val gameRepository: GameRepository,
     private val gamerRepository: GamerRepository,
+    private val buildRoundTraceUseCase: BuildRoundTraceUseCase,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
+    private val gameId by lazy { savedStateHandle[EXTRA_GAME_ID] ?: -1L }
+    private val roundId by lazy { savedStateHandle[EXTRA_ROUND_ID] ?: -1L }
 
     private val _uiState = MutableStateFlow(ResultUiState())
     val uiState: StateFlow<ResultUiState> = _uiState.asStateFlow()
@@ -36,7 +44,7 @@ class ResultViewModel @Inject constructor(
         }
     }
 
-    fun loadCalculateData(gameId: Long) {
+    fun loadCalculateData() {
         viewModelScope.launch {
             val game = gameRepository.getGame(gameId)
 
@@ -69,7 +77,8 @@ class ResultViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             gameName = game.name,
-                            gamers = result
+                            gamers = result,
+                            roundTrace = null
                         )
                     }
                 }
@@ -77,15 +86,17 @@ class ResultViewModel @Inject constructor(
         }
     }
 
-    fun loadDetailData(gameId: Long, roundId: Long) {
+    fun loadDetailData() {
         viewModelScope.launch {
             val game = gameRepository.getGame(gameId)
             val gamers = gamerRepository.getRoundGamers(roundId)
+            val trace = buildRoundTraceUseCase(gameId = gameId, roundId = roundId)
 
             _uiState.update {
                 it.copy(
                     gameName = game.name,
-                    gamers = gamers
+                    gamers = gamers,
+                    roundTrace = trace
                 )
             }
         }
@@ -96,5 +107,5 @@ data class ResultUiState(
     val screenType: ResultActivity.ScreenType = ResultActivity.ScreenType.CALCULATE,
     val gameName: String = "",
     val gamers: List<Gamer> = emptyList(),
+    val roundTrace: RoundTrace? = null,
 )
-

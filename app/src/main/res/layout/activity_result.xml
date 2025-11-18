@@ -97,9 +97,19 @@
                 tools:itemCount="3"
                 tools:listitem="@layout/item_calculated_gamer" />
 
+            <LinearLayout
+                android:id="@+id/traceContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:background="@drawable/bg_trace_table"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
