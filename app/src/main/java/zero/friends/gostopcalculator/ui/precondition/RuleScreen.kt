@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Rule
+import zero.friends.domain.util.Const
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.NumberTextField
@@ -202,6 +203,8 @@ private fun RuleLazyColumn(
 
 @Composable
 private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {}) {
+    val isFirstDdadak = rule.name == Const.Rule.FirstDdadak
+
     Row(
         Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -232,7 +235,7 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
                     Text(
                         text = rule.name,
                         fontSize = 16.sp,
-                        color = colorResource(id = R.color.nero)
+                        color = colorResource(id = if (isFirstDdadak) R.color.dusty_gray else R.color.nero)
                     )
                     if (rule.isEssential) {
                         Image(
@@ -251,7 +254,9 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
         NumberTextField(
             text = rule.score.toString(),
             modifier = Modifier.weight(1f),
-            endText = stringResource(R.string.won)
+            endText = stringResource(R.string.won),
+            isEnable = !isFirstDdadak,  // 첫따닥은 비활성화
+            hintColor = colorResource(id = if (isFirstDdadak) R.color.dusty_gray else R.color.nero)
         ) {
             onUpdateScore(it)
         }

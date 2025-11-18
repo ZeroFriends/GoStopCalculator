@@ -8,7 +8,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import zero.friends.domain.model.Player
 import zero.friends.domain.model.Rule
@@ -69,7 +68,21 @@ class RuleViewModel @Inject constructor(
                             it
                         }
                     }
-                    state.copy(rules = newRule)
+                    
+                    // 점당이 변경되면 첫따닥 자동 업데이트 (점당 × 3)
+                    val updatedRules = if (targetRule.name == Const.Rule.Score) {
+                        newRule.map { rule ->
+                            if (rule.name == Const.Rule.FirstDdadak) {
+                                rule.copy(score = (score * 3).toInt())
+                            } else {
+                                rule
+                            }
+                        }
+                    } else {
+                        newRule
+                    }
+                    
+                    state.copy(rules = updatedRules)
                 }
             }
         }

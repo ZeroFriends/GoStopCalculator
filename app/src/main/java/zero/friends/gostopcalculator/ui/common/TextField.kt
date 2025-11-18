@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.FocusRequester.Companion.FocusRequesterFactory.component1
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -103,6 +104,7 @@ fun NumberTextField(
     onValueChane: (Long) -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val textColor = if (isEnable) colorResource(id = R.color.nero) else hintColor
 
     Box(modifier = modifier) {
         TextField(
@@ -119,9 +121,14 @@ fun NumberTextField(
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = colorResource(id = android.R.color.transparent),
                 cursorColor = colorResource(id = R.color.black),
-                focusedIndicatorColor = colorResource(id = R.color.orangey_red)
+                focusedIndicatorColor = colorResource(id = R.color.orangey_red),
+                disabledTextColor = hintColor,
+                disabledIndicatorColor = hintColor.copy(alpha = 0.38f)
             ),
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.End),
+            textStyle = LocalTextStyle.current.copy(
+                textAlign = TextAlign.End,
+                color = textColor
+            ),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
