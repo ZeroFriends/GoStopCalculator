@@ -37,6 +37,9 @@
             android:exported="false"
             tools:node="merge">
             <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                tools:node="remove" />
+            <meta-data
                 android:name="zero.friends.gostopcalculator.initailizer.TimberInitializer"
                 android:value="androidx.startup" />
 
