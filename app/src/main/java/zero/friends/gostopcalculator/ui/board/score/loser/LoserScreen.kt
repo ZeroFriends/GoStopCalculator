@@ -65,7 +65,7 @@ private fun LoserGamerList(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         GamerListHeader(
-            buttonText = stringResource(R.string.manual_button),
+            buttonText = stringResource(R.string.manual),
             onButtonClick = onShowManual
         )
         Spacer(modifier = Modifier.padding(9.dp))
