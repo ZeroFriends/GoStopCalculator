@@ -12,7 +12,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
-import zero.friends.data.source.api.ManualApi
 import zero.friends.data.source.api.RuleApi
 import javax.inject.Singleton
 
@@ -55,10 +54,4 @@ class NetworkModule {
     fun provideRuleApi(
         retrofit: Retrofit,
     ): RuleApi = retrofit.create(RuleApi::class.java)
-
-    @Provides
-    @Singleton
-    fun provideManualApi(
-        retrofit: Retrofit
-    ): ManualApi = retrofit.create(ManualApi::class.java)
 }

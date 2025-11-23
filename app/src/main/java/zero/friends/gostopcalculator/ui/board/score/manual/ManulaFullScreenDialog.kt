@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.launch
+import zero.friends.domain.model.FullImage
 import zero.friends.domain.model.Image
 import zero.friends.domain.model.Manual
 import zero.friends.domain.model.Script
@@ -85,12 +87,24 @@ fun ManualFullScreenDialog(manualViewModel: ManualViewModel = hiltViewModel(), o
                     when (uiState.manuals[page]) {
                         is Image -> ImageManual(uiState.manuals[page].script, uiState.images)
                         is Text -> TextManual(uiState.manuals[page].script)
+                        is FullImage -> AllCardManual()
                     }
                 }
             }
 
         }
     }
+}
+
+@Composable
+fun AllCardManual() {
+    Image(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        painter = painterResource(R.drawable.all_card),
+        contentDescription = null
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
