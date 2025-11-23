@@ -46,6 +46,7 @@ class CalculateFourPlayerMassTest {
                 id = 2,
                 roundId = roundId,
                 score = WINNER_SCORE,
+                go = scenario.goCount,
                 scoreOption = scenario.winnerOptions
             )
             val losers = scenario.loserBakOptions.mapIndexed { idx, bak ->
@@ -62,7 +63,9 @@ class CalculateFourPlayerMassTest {
             val loserAccounts = losers.associate { gamer -> gamer.id to gamerRepository.getGamerAccount(gamer.id) }
             val expect = scenario.expectedAccounts()
 
-            println("Four Case ${scenario.id} sellerScore=${scenario.sellerScore} losers=${scenario.loserBakOptions} winner=${scenario.winnerOptions} -> seller=$sellerAccount, winner=$winnerAccount, losers=$loserAccounts")
+            println(
+                "Four Case ${scenario.id} seller=${scenario.sellerScore}장 go=${scenario.goCount} losers=${scenario.loserBakOptions} winnerOpts=${scenario.winnerOptions} -> seller=$sellerAccount, winner=$winnerAccount, losers=$loserAccounts"
+            )
             assertEquals(expect.seller, sellerAccount)
             assertEquals(expect.winner, winnerAccount)
             losers.forEach { gamer ->
@@ -86,12 +89,15 @@ class CalculateFourPlayerMassTest {
         var id = 1
         val loserPairs = BASE_LOSER_COMBINATIONS
         val sellerScores = listOf(1, 2, 3)
+        val goCounts = listOf(0, 2, 4)
         for (score in sellerScores) {
             for (first in loserPairs) {
                 for (second in loserPairs) {
                     if (listOf(first, second).count { it.contains(LoserOption.GoBak) } <= 1) {
                         for (winnerOpt in WINNER_OPTIONS) {
-                            yield(FourScenario(id++, score, listOf(first, second), winnerOpt))
+                            for (go in goCounts) {
+                                yield(FourScenario(id++, score, go, listOf(first, second), winnerOpt))
+                            }
                         }
                     }
                 }
@@ -102,17 +108,31 @@ class CalculateFourPlayerMassTest {
     private fun FourScenario.expectedAccounts(): ExpectedResult {
         val sellerIncome = SELL_SCORE * sellerScore * (loserBakOptions.size + 1)
         val loserPayments = mutableMapOf<Long, Int>()
-        val baseAmounts = loserBakOptions.map { baseLoserAmount(it) }.toMutableList()
+        val winnerScore = calculateGoScore(WINNER_SCORE, goCount)
+        val baseAmounts = loserBakOptions.map { baseLoserAmount(it, winnerScore) }.toMutableList()
         val goIndex = loserBakOptions.indexOfFirst { it.contains(LoserOption.GoBak) }
 
         val winnerBaseIncome = if (goIndex >= 0) {
-            val others = baseAmounts.withIndex().filter { it.index != goIndex }
-            val othersSum = others.sumOf { it.value }
-            val goOwn = baseLoserAmount(loserBakOptions[goIndex].filterNot { it == LoserOption.GoBak })
+            val basePerLoser = baseLoserAmount(emptyList(), winnerScore)
+            val baseTotal = basePerLoser * loserBakOptions.size
+            val goBakExtra = baseLoserAmount(
+                loserBakOptions[goIndex].filterNot { it == LoserOption.GoBak },
+                winnerScore
+            ) - basePerLoser
+            val remainExtras = loserBakOptions.withIndex()
+                .filter { it.index != goIndex }
+                .sumOf { indexed ->
+                    baseLoserAmount(
+                        indexed.value.filterNot { it == LoserOption.GoBak },
+                        winnerScore
+                    ) - basePerLoser
+                }
+
+            val total = baseTotal + goBakExtra + (remainExtras * 2)
             loserBakOptions.indices.forEach { idx ->
-                loserPayments[idx.toLong() + 3] = if (idx == goIndex) -(othersSum + goOwn) else 0
+                loserPayments[idx.toLong() + 3] = if (idx == goIndex) -total else 0
             }
-            othersSum + goOwn
+            total
         } else {
             baseAmounts.forEachIndexed { idx, amount ->
                 loserPayments[idx.toLong() + 3] = -amount
@@ -137,13 +157,9 @@ class CalculateFourPlayerMassTest {
         )
     }
 
-    private fun baseLoserAmount(options: List<LoserOption>): Int {
+    private fun baseLoserAmount(options: List<LoserOption>, winnerScore: Int): Int {
         val nonGo = options.filterNot { it == LoserOption.GoBak }
-        var result = WINNER_SCORE * SCORE_PER_POINT * (1 shl nonGo.size)
-        if (options.contains(LoserOption.GoBak)) {
-            result *= 2
-        }
-        return result
+        return winnerScore * SCORE_PER_POINT * (1 shl nonGo.size)
     }
 
     private fun calculateScoreOptionIncome(options: List<ScoreOption>, opponentCount: Int): Pair<Int, Int> {
@@ -161,8 +177,9 @@ class CalculateFourPlayerMassTest {
     data class FourScenario(
         val id: Int,
         val sellerScore: Int,
+        val goCount: Int,
         val loserBakOptions: List<List<LoserOption>>,
-        val winnerOptions: List<ScoreOption>
+        val winnerOptions: List<ScoreOption>,
     )
 
     data class ExpectedResult(

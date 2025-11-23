@@ -102,13 +102,19 @@ class CalculateGoStopMassTest {
         val winnerBaseIncome: Int
 
         if (goIndex >= 0) {
-            val others = perLoserBase.withIndex().filter { it.index != goIndex }
-            val othersSum = others.sumOf { it.value }
-            val goOwn = baseLoserAmount(
+            val basePerLoser = baseLoserAmount(emptyList(), isMatgo = false)
+            val baseTotal = basePerLoser * losersBakOptions.size
+            val goBakExtra = baseLoserAmount(
                 losersBakOptions[goIndex].filterNot { it == LoserOption.GoBak },
                 isMatgo = false
-            )
-            winnerBaseIncome = othersSum + goOwn
+            ) - basePerLoser
+            val remainExtras = losersBakOptions.withIndex()
+                .filter { it.index != goIndex }
+                .sumOf { indexed ->
+                    baseLoserAmount(indexed.value.filterNot { it == LoserOption.GoBak }, isMatgo = false) - basePerLoser
+                }
+
+            winnerBaseIncome = baseTotal + goBakExtra + (remainExtras * 2)
             losersBakOptions.indices.forEach { idx ->
                 payments[idx.toLong() + 2] = if (idx == goIndex) -winnerBaseIncome else 0
             }

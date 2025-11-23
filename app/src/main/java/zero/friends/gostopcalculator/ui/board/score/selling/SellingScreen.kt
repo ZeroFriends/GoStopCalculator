@@ -77,7 +77,7 @@ private fun SellingGamerList(
                         endText = stringResource(R.string.page),
                         isEnable = true,
                         hintColor = colorResource(id = R.color.nero),
-                        onValueChane = { count ->
+                        onValueChange = { count ->
                             onUpdateSeller(gamer, count)
                         }
                     )
@@ -86,4 +86,3 @@ private fun SellingGamerList(
         }
     }
 }
-

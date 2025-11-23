@@ -110,7 +110,7 @@ class MockGamerRepository : GamerRepository {
         accountMap[gamer.id] = account
     }
     
-    override suspend fun updateScore(gamer: Gamer, score: Int) {
+    override suspend fun updateScore(gamer: Gamer, score: Int, go: Int) {
         throw NotImplementedError("updateScore is not implemented in MockGamerRepository")
     }
     
@@ -137,4 +137,3 @@ class MockGamerRepository : GamerRepository {
         throw NotImplementedError("observeRoundGamers is not implemented in MockGamerRepository")
     }
 }
-

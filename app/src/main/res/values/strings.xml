@@ -53,6 +53,7 @@
     <string name="sell_shine_description">4인 플레이경우 한명이 필수로 광을 팔아야 플레이가 가능합니다. 광을 판 플레이어를 선택해주세요.</string>
     <string name="page">장</string>
     <string name="point">점</string>
+    <string name="go">고</string>
     <string name="save">저장</string>
     <string name="end_game">게임종료</string>
     <string name="sum_score">누적금액 👍</string>

@@ -8,7 +8,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import zero.friends.data.source.DataBase
-import zero.friends.data.source.dao.*
+import zero.friends.data.source.dao.GameDao
+import zero.friends.data.source.dao.GamerDao
+import zero.friends.data.source.dao.PlayerDao
+import zero.friends.data.source.dao.RoundDao
+import zero.friends.data.source.dao.RuleDao
 import javax.inject.Singleton
 
 @Module
@@ -18,7 +22,7 @@ class DataBaseModule {
     @Singleton
     fun provideDataBase(@ApplicationContext context: Context): DataBase =
         Room.databaseBuilder(context, DataBase::class.java, "zero.db")
-            .fallbackToDestructiveMigration()
+            .addMigrations(DataBase.MIGRATION_1_2)
             .build()
 
     @Provides
@@ -40,4 +44,5 @@ class DataBaseModule {
     @Provides
     @Singleton
     fun provideRoundDao(dataBase: DataBase): RoundDao = dataBase.roundDao()
+
 }

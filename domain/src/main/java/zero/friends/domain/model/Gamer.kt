@@ -9,6 +9,7 @@ data class Gamer(
     val playerId: Long = 0,
     val gameId: Long = 0,
     val score: Int = 0,
+    val go: Int = 0,
     val account: Int = 0,
     val winnerOption: WinnerOption? = null,
     val sellerOption: SellerOption? = null,
