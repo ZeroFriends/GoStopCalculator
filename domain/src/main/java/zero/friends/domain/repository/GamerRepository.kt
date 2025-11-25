@@ -15,7 +15,7 @@ interface GamerRepository {
     suspend fun updateOption(id: Long, options: List<Option>)
     suspend fun clearOption(id: Long, kClass: KClass<out Option>)
     suspend fun updateAccount(gamer: Gamer, account: Int)
-    suspend fun updateScore(gamer: Gamer, score: Int)
+    suspend fun updateScore(gamer: Gamer, score: Int, go: Int = 0)
     suspend fun addAccount(gamer: Gamer, account: Int)
     suspend fun findWinner(roundId: Long): Gamer
     suspend fun findSeller(roundId: Long): Gamer?

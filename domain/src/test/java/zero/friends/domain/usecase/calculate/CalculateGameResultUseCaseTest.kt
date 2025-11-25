@@ -2,6 +2,7 @@ package zero.friends.domain.usecase.calculate
 
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import zero.friends.domain.mock.MockGamerRepository
@@ -134,5 +135,58 @@ class CalculateGameResultUseCaseTest {
         assertEquals(-800, gamerRepository.getGamerAccount(3))
         // 패자2: 피박 1,000 + 광팜 300 = -1,300
         assertEquals(-1_300, gamerRepository.getGamerAccount(4))
+    }
+
+    @Test
+    fun `고 입력 시 점수에 합산된다`() = runTest {
+        val gameId = 2L
+        val roundId = 2L
+
+        val winner = Gamer(id = 1, roundId = roundId, score = 5, go = 3)
+        val loser1 = Gamer(id = 2, roundId = roundId)
+        val loser2 = Gamer(id = 3, roundId = roundId)
+
+        gamerRepository.setRoundGamers(roundId, listOf(winner, loser1, loser2))
+        ruleRepository.setRules(
+            gameId,
+            listOf(Rule(name = Const.Rule.Score, score = 100))
+        )
+
+        useCase(gameId, roundId, seller = null, winner = winner)
+
+        // 3고: (5+3) * 2^(1) = 16점 -> 16 * 100 * 2명 = +3,200
+        assertEquals(3_200, gamerRepository.getGamerAccount(1))
+        assertEquals(-1_600, gamerRepository.getGamerAccount(2))
+        assertEquals(-1_600, gamerRepository.getGamerAccount(3))
+
+        val trace = roundTraceRepository.traces[roundId]
+        checkNotNull(trace)
+        assertEquals(3_200, trace.totalAmount)
+        assertTrue(trace.terms.any { it.label.contains("3고") && it.amount == 3_200 })
+    }
+
+    @Test
+    fun `고스톱 3인 고박+광박`() = runTest {
+        val gameId = 3L
+        val roundId = 3L
+
+        val winner = Gamer(id = 1, roundId = roundId, score = 8, go = 5)
+        val goBakLoser = Gamer(id = 2, roundId = roundId, loserOption = listOf(LoserOption.GoBak))
+        val lightBakLoser = Gamer(id = 3, roundId = roundId, loserOption = listOf(LoserOption.LightBak))
+
+        gamerRepository.setRoundGamers(roundId, listOf(winner, goBakLoser, lightBakLoser))
+        ruleRepository.setRules(gameId, listOf(Rule(name = Const.Rule.Score, score = 100)))
+
+        useCase(gameId, roundId, seller = null, winner = winner)
+
+        // (점당 100 * (8+5) * 2^3 * 2명) + (광박 *2) = 41,600
+        assertEquals(41_600, gamerRepository.getGamerAccount(1))
+        assertEquals(-41_600, gamerRepository.getGamerAccount(2))
+        assertEquals(0, gamerRepository.getGamerAccount(3))
+
+        val trace = roundTraceRepository.traces[roundId]
+        checkNotNull(trace)
+        assertEquals(41_600, trace.totalAmount)
+        assertTrue(trace.terms.any { it.label.contains("광 박") && it.amount == 20_800 })
     }
 }

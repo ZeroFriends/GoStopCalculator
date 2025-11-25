@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.FocusRequester.Companion.FocusRequesterFactory.component1
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -46,9 +45,7 @@ fun GoStopOutLinedTextField(
     onDone: () -> Unit = {},
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val (focusRequester) = remember {
-        FocusRequester.createRefs()
-    }
+    val focusRequester = remember { FocusRequester() }
 
     Column {
         OutlinedTextField(
@@ -98,22 +95,23 @@ fun NumberTextField(
     modifier: Modifier = Modifier,
     text: String = "",
     endText: String,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    interactionSource: MutableInteractionSource? = null,
     isEnable: Boolean = true,
     hintColor: Color = colorResource(id = R.color.nero),
-    onValueChane: (Long) -> Unit = {}
+    onValueChange: (Long) -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val textColor = if (isEnable) colorResource(id = R.color.nero) else hintColor
+    val resolvedInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
+    val displayText = text.takeUnless { it == "0" } ?: ""
 
     Box(modifier = modifier) {
         TextField(
-            value = if (text == "0") "" else text,
+            value = displayText,
             onValueChange = {
-                if (Regex("[0-9]+").matches(it)) {
-                    onValueChane(it.toLong())
-                } else if (it.isBlank()) {
-                    onValueChane(0)
+                when {
+                    it.isBlank() -> onValueChange(0)
+                    it.all(Char::isDigit) -> it.toLongOrNull()?.let(onValueChange)
                 }
             },
             enabled = isEnable,
@@ -139,7 +137,7 @@ fun NumberTextField(
             modifier = Modifier
                 .padding(end = 3.dp)
                 .fillMaxWidth(),
-            interactionSource = interactionSource,
+            interactionSource = resolvedInteractionSource,
             placeholder = {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                     Text(text = "0", textAlign = TextAlign.End, color = hintColor)

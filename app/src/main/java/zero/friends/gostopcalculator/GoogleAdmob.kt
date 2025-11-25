@@ -67,6 +67,10 @@ class GoogleAdmob @Inject constructor(
     }
 
     fun showAd(adCallback: (AdCallback) -> Unit) {
+        if (BuildConfig.DEBUG) {
+            adCallback(AdCallback.OnSuccess)
+            return
+        }
         val interstitialAd = interstitialAd
 
         if (interstitialAd != null) {

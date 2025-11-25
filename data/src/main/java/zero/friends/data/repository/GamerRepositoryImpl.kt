@@ -7,8 +7,14 @@ import kotlinx.coroutines.withContext
 import zero.friends.data.entity.GamerEntity
 import zero.friends.data.entity.GamerEntity.Companion.toGamer
 import zero.friends.data.source.dao.GamerDao
-import zero.friends.domain.model.*
+import zero.friends.domain.model.Gamer
+import zero.friends.domain.model.LoserOption
+import zero.friends.domain.model.Option
+import zero.friends.domain.model.Player
+import zero.friends.domain.model.ScoreOption
+import zero.friends.domain.model.SellerOption
 import zero.friends.domain.model.Target
+import zero.friends.domain.model.WinnerOption
 import zero.friends.domain.repository.GamerRepository
 import zero.friends.shared.IoDispatcher
 import javax.inject.Inject
@@ -93,9 +99,9 @@ class GamerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateScore(gamer: Gamer, score: Int) {
+    override suspend fun updateScore(gamer: Gamer, score: Int, go: Int) {
         withContext(dispatcher) {
-            gamerDao.updateScore(gamer.id, score)
+            gamerDao.updateScore(gamer.id, score, go)
         }
     }
 

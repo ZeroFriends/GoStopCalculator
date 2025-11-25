@@ -3,6 +3,7 @@ package zero.friends.data.repository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import zero.friends.data.entity.GameEntity
@@ -41,6 +42,8 @@ class GameRepositoryImpl @Inject constructor(
     }
 
     override fun observeGame(gameId: Long): Flow<Game> {
-        return gameDao.observeGame(gameId)
+        return gameDao.observeGame(gameId).mapNotNull { entity ->
+            entity?.toGame()
+        }
     }
 }

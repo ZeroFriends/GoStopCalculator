@@ -6,7 +6,6 @@ import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import zero.friends.data.entity.GameAndPlayerRelation
 import zero.friends.data.entity.GameEntity
-import zero.friends.domain.model.Game
 
 @Dao
 interface GameDao : BaseDao<GameEntity> {
@@ -21,5 +20,5 @@ interface GameDao : BaseDao<GameEntity> {
     suspend fun getGame(gameId: Long): GameEntity
 
     @Query("SELECT * FROM GameEntity WHERE id == :gameId")
-    fun observeGame(gameId: Long): Flow<Game>
+    fun observeGame(gameId: Long): Flow<GameEntity?>
 }

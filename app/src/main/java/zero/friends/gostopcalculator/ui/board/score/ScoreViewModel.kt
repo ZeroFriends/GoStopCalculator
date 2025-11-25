@@ -128,18 +128,18 @@ class ScoreViewModel @Inject constructor(
                         playerResults = when (state.phase) {
                             is Scoring -> state.playerResults.map {
                                 if (state.seller?.id == it.id) {
-                                    it.copy(score = state.seller.score)
+                                    it.copy(score = state.seller.score, go = 0)
                                 } else {
-                                    it.copy(score = 0)
+                                    it.copy(score = 0, go = 0)
                                 }
 
                             }
                             is Winner -> state.playerResults
                             Loser -> state.playerResults.map {
                                 if (state.winner?.id == it.id) {
-                                    it.copy(score = state.winner.score)
+                                    it.copy(score = state.winner.score, go = state.winner.go)
                                 } else {
-                                    it.copy(score = 0)
+                                    it.copy(score = 0, go = 0)
                                 }
                             }
                             else -> throw IllegalStateException("${context.getString(R.string.error_msg_phase_not_exist)} ${state.phase}")
@@ -163,15 +163,16 @@ class ScoreViewModel @Inject constructor(
                 _uiState.update { state ->
                     val newGamers = state.playerResults.map {
                         if (it.name == seller.name) {
-                            it.copy(score = count.toInt())
+                            it.copy(score = count.toInt(), go = 0)
                         } else {
-                            it.copy(score = 0)
+                            it.copy(score = 0, go = 0)
                         }
                     }
                     state.copy(
                         phase = Selling(newGamers.any { it.score != 0 }),
                         seller = if (count != 0L) seller.copy(
                             score = count.toInt(),
+                            go = 0,
                             sellerOption = SellerOption.Seller
                         ) else null,
                         playerResults = newGamers
@@ -181,7 +182,7 @@ class ScoreViewModel @Inject constructor(
         }
     }
 
-    fun updateWinner(gamer: Gamer, point: Long) {
+    fun updateWinner(gamer: Gamer, point: Long, go: Long) {
         viewModelScope.launch {
             runCatching {
                 require(point <= MAX_POINT) {
@@ -191,17 +192,20 @@ class ScoreViewModel @Inject constructor(
                 _toast.emit(it.message)
             }.onSuccess {
                 _uiState.update { state ->
+                    val goValue = go.toInt()
                     val newGamers = state.playerResults.map {
                         if (it.name == gamer.name) {
-                            it.copy(score = point.toInt())
+                            it.copy(score = point.toInt(), go = goValue)
                         } else {
-                            it.copy(score = 0)
+                            it.copy(score = 0, go = 0)
                         }
                     }
+                    val hasWinnerInput = newGamers.any { it.score != 0 || it.go != 0 }
                     state.copy(
-                        phase = Winner(newGamers.any { it.score != 0 }),
-                        winner = if (point != 0L) gamer.copy(
+                        phase = Winner(hasWinnerInput),
+                        winner = if (hasWinnerInput) gamer.copy(
                             score = point.toInt(),
+                            go = goValue,
                             winnerOption = WinnerOption.Winner
                         ) else null,
                         playerResults = newGamers

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -25,7 +26,7 @@ fun WinnerScreen(
     onNext: () -> Unit,
     onBack: () -> Unit,
     onExit: () -> Unit,
-    onUpdateWinner: (Gamer, Long) -> Unit,
+    onUpdateWinner: (Gamer, Long, Long) -> Unit,
     onShowManual: () -> Unit
 ) {
     ScorePhaseLayout(
@@ -51,12 +52,12 @@ fun WinnerScreen(
 private fun WinnerGamerList(
     gamers: List<Gamer>,
     seller: Gamer?,
-    onUpdateWinner: (Gamer, Long) -> Unit,
+    onUpdateWinner: (Gamer, Long, Long) -> Unit,
     onShowManual: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         GamerListHeader(
-            buttonText = stringResource(R.string.manual_button),
+            buttonText = stringResource(R.string.manual),
             onButtonClick = onShowManual
         )
         Spacer(modifier = Modifier.padding(9.dp))
@@ -94,23 +95,38 @@ private fun WinnerGamerList(
 private fun WinnerGamerItem(
     index: Int,
     gamer: Gamer,
-    onUpdateWinner: (Gamer, Long) -> Unit
+    onUpdateWinner: (Gamer, Long, Long) -> Unit
 ) {
     BaseGamerItem(
         index = index,
         gamer = gamer,
         isEnabled = true
     ) {
-        NumberTextField(
+        Row(
             modifier = Modifier.weight(1f),
-            text = gamer.score.toString(),
-            endText = stringResource(R.string.point),
-            isEnable = true,
-            hintColor = colorResource(id = R.color.nero),
-            onValueChane = { point ->
-                onUpdateWinner(gamer, point)
-            }
-        )
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            NumberTextField(
+                modifier = Modifier.weight(1f),
+                text = gamer.score.toString(),
+                endText = stringResource(R.string.point),
+                isEnable = true,
+                hintColor = colorResource(id = R.color.nero),
+                onValueChange = { point ->
+                    onUpdateWinner(gamer, point, gamer.go.toLong())
+                }
+            )
+            NumberTextField(
+                modifier = Modifier.width(88.dp),
+                text = gamer.go.toString(),
+                endText = stringResource(R.string.go),
+                isEnable = true,
+                hintColor = colorResource(id = R.color.nero),
+                onValueChange = { go ->
+                    onUpdateWinner(gamer, gamer.score.toLong(), go)
+                }
+            )
+        }
     }
 }
-

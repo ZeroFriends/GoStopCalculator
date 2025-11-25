@@ -34,6 +34,7 @@ data class GamerEntity(
     val name: String,
     val gameId: Long,
     val score: Int = 0,
+    val go: Int = 0,
     val account: Int = 0,
     val winnerOption: String? = null,
     val sellerOption: String? = null,
@@ -43,18 +44,19 @@ data class GamerEntity(
 ) {
     companion object {
         fun GamerEntity.toGamer() = Gamer(
-            id,
-            name,
-            roundId,
-            playerId,
-            gameId,
-            score,
-            account,
-            findOptional<WinnerOption>(winnerOption).firstOrNull(),
-            findOptional<SellerOption>(sellerOption).firstOrNull(),
-            findOptional(scoreOption),
-            findOptional(loserOption),
-            target
+            id = id,
+            name = name,
+            roundId = roundId,
+            playerId = playerId,
+            gameId = gameId,
+            score = score,
+            go = go,
+            account = account,
+            winnerOption = findOptional<WinnerOption>(winnerOption).firstOrNull(),
+            sellerOption = findOptional<SellerOption>(sellerOption).firstOrNull(),
+            scoreOption = findOptional(scoreOption),
+            loserOption = findOptional(loserOption),
+            calculate = target
         )
 
         fun Gamer.toGamerEntity() = GamerEntity(
@@ -64,6 +66,7 @@ data class GamerEntity(
             name = name,
             gameId = gameId,
             score = score,
+            go = go,
             winnerOption = this.winnerOption?.name,
             sellerOption = this.sellerOption?.name,
             scoreOption = if (this.scoreOption.isEmpty()) null else this.scoreOption.joinToString(","),

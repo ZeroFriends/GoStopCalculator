@@ -2,6 +2,7 @@ package zero.friends.domain.usecase.calculate
 
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.LoserOption
+import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.repository.RuleRepository
 import zero.friends.domain.util.Const
@@ -159,10 +160,10 @@ class CalculateGameResultUseCase @Inject constructor(
                 val others = scoreOptionGamers.filter { it.id != gamer.id }
                 gamer.scoreOption.forEach { option ->
                     val amount = when (option) {
-                        zero.friends.domain.model.ScoreOption.FirstFuck -> fuckScore
-                        zero.friends.domain.model.ScoreOption.SecondFuck -> fuckScore * 2
-                        zero.friends.domain.model.ScoreOption.ThreeFuck -> fuckScore * 4
-                        zero.friends.domain.model.ScoreOption.FirstDdadak -> scorePerPoint * 3  // 3점에 해당하는 금액
+                        ScoreOption.FirstFuck -> fuckScore
+                        ScoreOption.SecondFuck -> fuckScore * 2
+                        ScoreOption.ThreeFuck -> fuckScore * 4
+                        ScoreOption.FirstDdadak -> scorePerPoint * 3  // 3점에 해당하는 금액
                     }
                     others.forEach { other ->
                         // 옵션 소유자(gamer)가 다른 플레이어(other)로부터 받음

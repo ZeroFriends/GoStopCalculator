@@ -28,3 +28,10 @@ data class Image(
     override val title: String,
     override val script: List<Script>,
 ) : Manual()
+
+@Serializable
+@SerialName("full_image")
+data class FullImage(
+    override val title: String,
+    override val script: List<Script>,
+) : Manual()
