@@ -72,3 +72,25 @@ jobs:
         if: always()
         with:
           paths: "**/build/test-results/**/*.xml"
+
+  sync-develop:
+    name: Merge main into develop
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Merge main into develop
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin main develop
+          git checkout -B develop origin/develop
+          git merge --no-ff --no-edit origin/main
+          git push origin develop

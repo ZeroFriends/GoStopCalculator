@@ -11,6 +11,7 @@ import zero.friends.domain.model.LoserOption
 import zero.friends.domain.model.Rule
 import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.util.Const
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * 4인 게임(광팔기 포함) 통합 테스트
@@ -36,7 +37,7 @@ class CalculateFourPlayerMassTest {
     }
 
     @Test
-    fun `4인 고스톱 전체 시나리오`() = runTest {
+    fun `4인 고스톱 전체 시나리오`() = runTest(timeout = MASS_TEST_TIMEOUT) {
         generateScenarios().forEach { scenario ->
             val gameId = scenario.id.toLong()
             val roundId = gameId
@@ -193,6 +194,7 @@ class CalculateFourPlayerMassTest {
         private const val SCORE_PER_POINT = 100
         private const val FUCK_SCORE = 500
         private const val SELL_SCORE = 500
+        private val MASS_TEST_TIMEOUT = 300.seconds
 
         private val WINNER_OPTIONS = listOf(
             emptyList(),

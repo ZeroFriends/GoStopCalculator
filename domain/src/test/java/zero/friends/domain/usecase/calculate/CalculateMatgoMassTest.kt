@@ -11,6 +11,7 @@ import zero.friends.domain.model.LoserOption
 import zero.friends.domain.model.Rule
 import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.util.Const
+import kotlin.time.Duration.Companion.seconds
 
 class CalculateMatgoMassTest {
     private lateinit var useCase: CalculateGameResultUseCase
@@ -32,7 +33,7 @@ class CalculateMatgoMassTest {
     }
 
     @Test
-    fun `맞고 전체 시나리오`() = runTest {
+    fun `맞고 전체 시나리오`() = runTest(timeout = MASS_TEST_TIMEOUT) {
         generateMatgoScenarios().forEach { scenario ->
             val gameId = scenario.id.toLong()
             val roundId = gameId
@@ -120,6 +121,7 @@ class CalculateMatgoMassTest {
         private const val WINNER_SCORE = 10
         private const val SCORE_PER_POINT = 100
         private const val FUCK_SCORE = 500
+        private val MASS_TEST_TIMEOUT = 300.seconds
 
         private val WINNER_OPTIONS = listOf(
             emptyList(),

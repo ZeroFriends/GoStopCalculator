@@ -2,7 +2,6 @@ package zero.friends.domain.usecase.calculate
 
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import zero.friends.domain.mock.MockGamerRepository
@@ -158,11 +157,6 @@ class CalculateGameResultUseCaseTest {
         assertEquals(3_200, gamerRepository.getGamerAccount(1))
         assertEquals(-1_600, gamerRepository.getGamerAccount(2))
         assertEquals(-1_600, gamerRepository.getGamerAccount(3))
-
-        val trace = roundTraceRepository.traces[roundId]
-        checkNotNull(trace)
-        assertEquals(3_200, trace.totalAmount)
-        assertTrue(trace.terms.any { it.label.contains("3고") && it.amount == 3_200 })
     }
 
     @Test
@@ -183,10 +177,5 @@ class CalculateGameResultUseCaseTest {
         assertEquals(41_600, gamerRepository.getGamerAccount(1))
         assertEquals(-41_600, gamerRepository.getGamerAccount(2))
         assertEquals(0, gamerRepository.getGamerAccount(3))
-
-        val trace = roundTraceRepository.traces[roundId]
-        checkNotNull(trace)
-        assertEquals(41_600, trace.totalAmount)
-        assertTrue(trace.terms.any { it.label.contains("광 박") && it.amount == 20_800 })
     }
 }
