@@ -1,6 +1,6 @@
 package zero.friends.data.repository
 
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -11,12 +11,10 @@ import zero.friends.data.entity.GameEntity.Companion.toGame
 import zero.friends.data.source.dao.GameDao
 import zero.friends.domain.model.Game
 import zero.friends.domain.repository.GameRepository
-import zero.friends.shared.IoDispatcher
 import javax.inject.Inject
 
 class GameRepositoryImpl @Inject constructor(
-    private val gameDao: GameDao,
-    @IoDispatcher private val dispatcher: CoroutineDispatcher
+    private val gameDao: GameDao
 ) : GameRepository {
 
     override suspend fun newGame(name: String, createdAt: String): Long {
@@ -24,7 +22,7 @@ class GameRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteGame(gameId: Long) {
-        withContext(dispatcher) {
+        withContext(Dispatchers.IO) {
             launch {
                 gameDao.delete(GameEntity(id = gameId))
             }
