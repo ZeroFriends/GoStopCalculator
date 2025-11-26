@@ -1,6 +1,6 @@
 package zero.friends.data.repository
 
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -16,13 +16,11 @@ import zero.friends.domain.model.SellerOption
 import zero.friends.domain.model.Target
 import zero.friends.domain.model.WinnerOption
 import zero.friends.domain.repository.GamerRepository
-import zero.friends.shared.IoDispatcher
 import javax.inject.Inject
 import kotlin.reflect.KClass
 
 class GamerRepositoryImpl @Inject constructor(
-    private val gamerDao: GamerDao,
-    @IoDispatcher private val dispatcher: CoroutineDispatcher
+    private val gamerDao: GamerDao
 ) : GamerRepository {
     override suspend fun getGamer(gamerId: Long): Gamer {
         return gamerDao.getGamer(gamerId).toGamer()
@@ -54,7 +52,7 @@ class GamerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateOption(id: Long, options: List<Option>) {
-        withContext(dispatcher) {
+        withContext(Dispatchers.IO) {
             options.groupBy { it::class }
                 .forEach { map ->
                     when (map.key) {
@@ -76,7 +74,7 @@ class GamerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun clearOption(id: Long, optionClass: KClass<out Option>) {
-        withContext(dispatcher) {
+        withContext(Dispatchers.IO) {
             when (optionClass) {
                 ScoreOption::class -> gamerDao.updateScoreOption(id, null)
                 LoserOption::class -> gamerDao.updateLoserOption(id, null)
@@ -87,35 +85,35 @@ class GamerRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateAccount(gamer: Gamer, account: Int) {
-        withContext(dispatcher) {
+        withContext(Dispatchers.IO) {
             gamerDao.updateAccount(gamer.id, account)
         }
     }
 
     override suspend fun addAccount(gamer: Gamer, account: Int) {
-        withContext(dispatcher) {
+        withContext(Dispatchers.IO) {
             val currentGamer = gamerDao.getGamer(gamer.id)
             gamerDao.updateAccount(currentGamer.id, currentGamer.account + account)
         }
     }
 
     override suspend fun updateScore(gamer: Gamer, score: Int, go: Int) {
-        withContext(dispatcher) {
+        withContext(Dispatchers.IO) {
             gamerDao.updateScore(gamer.id, score, go)
         }
     }
 
     override suspend fun findWinner(roundId: Long): Gamer =
-        withContext(dispatcher) {
+        withContext(Dispatchers.IO) {
             gamerDao.findWinner(roundId).toGamer()
         }
 
-    override suspend fun findSeller(roundId: Long): Gamer? = withContext(dispatcher) {
+    override suspend fun findSeller(roundId: Long): Gamer? = withContext(Dispatchers.IO) {
         gamerDao.findSeller(roundId)?.toGamer()
     }
 
     override suspend fun updateTarget(gamer: Gamer, account: Int, target: Gamer) {
-        withContext(dispatcher) {
+        withContext(Dispatchers.IO) {
             val targetMap = gamerDao.getGamer(gamer.id).target.associateBy { it.playerId }.toMutableMap()
 
             val targetGamer = targetMap[target.id]

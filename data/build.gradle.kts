@@ -21,7 +21,6 @@ kotlin {
 
 dependencies {
     implementation(project(":domain"))
-    implementation(project(":shared"))
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 

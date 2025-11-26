@@ -4,19 +4,17 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import zero.friends.shared.MainDispatcher
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class NetWorkChecker @Inject constructor(
-    @ApplicationContext private val context: Context,
-    @MainDispatcher private val dispatcher: CoroutineDispatcher
+    @ApplicationContext private val context: Context
 ) {
-    private val mainScope = CoroutineScope(dispatcher)
+    private val mainScope = CoroutineScope(Dispatchers.Main)
 
     operator fun invoke(onLost: () -> Unit, onAvailable: () -> Unit) {
         val connectivityManager = context.getSystemService(ConnectivityManager::class.java)

@@ -81,7 +81,6 @@ android {
 dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
-    implementation(project(":shared"))
 
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.tooling)

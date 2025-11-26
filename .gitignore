@@ -52,6 +52,7 @@ out/
 
 # Gradle files
 .gradle/
+.gradle-local/
 build/
 
 # Local configuration file (sdk path, etc)
