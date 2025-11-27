@@ -103,8 +103,12 @@ class RoundTraceFormatter @Inject constructor(
         // 1. 기본 점수 파트
         val baseScorePart = mutableListOf<String>()
         val totalScore = factors.baseScore + factors.goCount
-        if (totalScore > 0) baseScorePart.add("(기본 ${factors.baseScore}점 + ${factors.goCount}고)")
-        if (factors.scorePerPoint > 0) baseScorePart.add("x ${formatNumber(factors.scorePerPoint)}원")
+        if (totalScore > 0) {
+            baseScorePart.add("(기본 ${factors.baseScore}점 + ${factors.goCount}고)")
+            if (factors.scorePerPoint > 0) {
+                baseScorePart.add("x ${formatNumber(factors.scorePerPoint)}원")
+            }
+        }
 
         if (baseScorePart.isNotEmpty()) {
             builder.append(baseScorePart.joinToString(" "))
@@ -158,6 +162,21 @@ class RoundTraceFormatter @Inject constructor(
         return builder
     }
 
+    private fun Int.toSuperscript(): String = toString().map {
+        when (it) {
+            '0', '1' -> ""
+            '2' -> '²'
+            '3' -> '³'
+            '4' -> '⁴'
+            '5' -> '⁵'
+            '6' -> '⁶'
+            '7' -> '⁷'
+            '8' -> '⁸'
+            '9' -> '⁹'
+            else -> it
+        }
+    }.joinToString("")
+
     fun formatAmount(value: Int): CharSequence = buildAmount(value)
 
     private fun buildAmount(
@@ -199,23 +218,5 @@ class RoundTraceFormatter @Inject constructor(
         val start = length
         block()
         setSpan(StyleSpan(Typeface.BOLD), start, length, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
-    }
-
-    private fun Int.toSuperscript(): String {
-        return this.toString().map {
-            when (it) {
-                '0' -> '⁰'
-                '1' -> '¹'
-                '2' -> '²'
-                '3' -> '³'
-                '4' -> '⁴'
-                '5' -> '⁵'
-                '6' -> '⁶'
-                '7' -> '⁷'
-                '8' -> '⁸'
-                '9' -> '⁹'
-                else -> it
-            }
-        }.joinToString("")
     }
 }
