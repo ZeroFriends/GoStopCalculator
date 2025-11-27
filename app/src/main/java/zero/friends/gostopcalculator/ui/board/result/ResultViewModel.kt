@@ -42,9 +42,14 @@ class ResultViewModel @Inject constructor(
         if (screenType != null) {
             _uiState.update { it.copy(screenType = screenType) }
         }
+        when (screenType) {
+            ResultActivity.ScreenType.CALCULATE -> loadCalculateData()
+            ResultActivity.ScreenType.DETAIL -> loadDetailData()
+            else -> {}
+        }
     }
 
-    fun loadCalculateData() {
+    private fun loadCalculateData() {
         viewModelScope.launch {
             val game = gameRepository.getGame(gameId)
 
@@ -86,7 +91,7 @@ class ResultViewModel @Inject constructor(
         }
     }
 
-    fun loadDetailData() {
+    private fun loadDetailData() {
         viewModelScope.launch {
             val game = gameRepository.getGame(gameId)
             val gamers = gamerRepository.getRoundGamers(roundId)

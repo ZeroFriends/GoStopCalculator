@@ -52,7 +52,6 @@ class ResultActivity : AppCompatActivity() {
         setupWindow()
         setupViews()
         observeViewModel()
-        loadData()
     }
 
     private fun setupWindow() {
@@ -142,13 +141,6 @@ class ResultActivity : AppCompatActivity() {
             itemBinding.tvFormula.text = line.formula
             itemBinding.tvAmount.text = line.amount
             binding.traceContainer.addView(itemBinding.root)
-        }
-    }
-
-    private fun loadData() {
-        when (viewModel.uiState.value.screenType) {
-            ScreenType.CALCULATE -> viewModel.loadCalculateData()
-            ScreenType.DETAIL -> viewModel.loadDetailData()
         }
     }
 
