@@ -137,7 +137,9 @@ fun Navigator(
                     navController.navigate(Navigate.History.route())
                 },
                 openDetailScreen = { gameId, roundId ->
-                    navController.navigate(Navigate.Board.Detail.route(gameId, roundId))
+                    showAds {
+                        navController.navigate(Navigate.Board.Detail.route(gameId, roundId))
+                    }
                 },
                 openCalculated = { gameId ->
                     showAds {
