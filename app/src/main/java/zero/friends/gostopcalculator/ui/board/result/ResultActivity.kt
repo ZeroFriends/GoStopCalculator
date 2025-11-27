@@ -2,15 +2,9 @@ package zero.friends.gostopcalculator.ui.board.result
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.FileProvider
-import androidx.core.graphics.createBitmap
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -18,18 +12,15 @@ import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import zero.friends.domain.model.RoundTraceTerm
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.databinding.ActivityResultBinding
 import zero.friends.gostopcalculator.databinding.ViewTraceTableHeaderBinding
 import zero.friends.gostopcalculator.databinding.ViewTraceTableRowBinding
 import zero.friends.gostopcalculator.databinding.ViewTraceTitleBinding
-import java.io.File
+import zero.friends.gostopcalculator.util.ScreenCaptureManager
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -41,14 +32,17 @@ class ResultActivity : AppCompatActivity() {
     @Inject
     lateinit var roundTraceFormatter: RoundTraceFormatter
 
-    private val viewModel: ResultViewModel by viewModels()
+    @Inject
+    lateinit var screenCaptureManager: ScreenCaptureManager
 
-    private var lastSharedFile: File? = null
+    private val viewModel: ResultViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        lifecycle.addObserver(screenCaptureManager)
 
         setupWindow()
         setupViews()
@@ -57,7 +51,7 @@ class ResultActivity : AppCompatActivity() {
 
     private fun setupWindow() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        WindowCompat.getInsetsController(window, window.decorView)?.apply {
+        WindowCompat.getInsetsController(window, window.decorView).apply {
             isAppearanceLightStatusBars = true
             isAppearanceLightNavigationBars = true
         }
@@ -84,13 +78,6 @@ class ResultActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        // 공유 후 돌아왔을 때 파일 삭제
-        lastSharedFile?.delete()
-        lastSharedFile = null
-    }
-
     private fun setupViews() {
         binding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@ResultActivity)
@@ -103,7 +90,9 @@ class ResultActivity : AppCompatActivity() {
         }
 
         binding.btnShare.setOnClickListener {
-            captureAndShare()
+            lifecycleScope.launch {
+                screenCaptureManager.captureAndShare(binding.contentLayout, AUTHORITY)
+            }
         }
     }
 
@@ -207,69 +196,6 @@ class ResultActivity : AppCompatActivity() {
             itemBinding.tvAmount.text = line.amount
             binding.loserTraceContainer.addView(itemBinding.root)
         }
-    }
-
-    private fun captureAndShare() {
-        lifecycleScope.launch {
-            try {
-                val bitmap = captureScrollView()
-                val (file, uri) = saveBitmapToCache(bitmap)
-                
-                lastSharedFile = file
-
-                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                    type = "image/png"
-                    putExtra(Intent.EXTRA_STREAM, uri)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-
-                startActivity(Intent.createChooser(shareIntent, getString(R.string.share)))
-            } catch (e: Exception) {
-                FirebaseCrashlytics.getInstance().recordException(e)
-                Toast.makeText(this@ResultActivity, "공유에 실패하였습니다.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private suspend fun captureScrollView(): Bitmap = withContext(Dispatchers.Main) {
-        val contentLayout = binding.contentLayout
-        val scrollView = binding.scrollView
-
-        val scrollX = scrollView.scrollX
-        val scrollY = scrollView.scrollY
-        scrollView.scrollTo(0, 0)
-
-        binding.recyclerView.requestLayout()
-
-        val widthSpec = View.MeasureSpec.makeMeasureSpec(scrollView.width, View.MeasureSpec.EXACTLY)
-        val heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        contentLayout.measure(widthSpec, heightSpec)
-
-        contentLayout.layout(0, 0, contentLayout.measuredWidth, contentLayout.measuredHeight)
-
-        val bitmap = createBitmap(contentLayout.measuredWidth, contentLayout.measuredHeight)
-        val canvas = Canvas(bitmap)
-        
-        canvas.drawColor(getColor(R.color.light_gray))
-        
-        contentLayout.draw(canvas)
-
-        scrollView.scrollTo(scrollX, scrollY)
-
-        return@withContext bitmap
-    }
-
-    private suspend fun saveBitmapToCache(bitmap: Bitmap) = withContext(Dispatchers.IO) {
-        val file = File(cacheDir, "result_share.png")
-
-        file.outputStream().use { out ->
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-            out.flush()
-        }
-
-        val uri = FileProvider.getUriForFile(this@ResultActivity, AUTHORITY, file)
-        
-        return@withContext Pair(file, uri)
     }
 
     enum class ScreenType {
