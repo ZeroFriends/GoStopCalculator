@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.tools"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/light_gray"
@@ -98,7 +98,29 @@
                 tools:listitem="@layout/item_calculated_gamer" />
 
             <LinearLayout
-                android:id="@+id/traceContainer"
+                android:id="@+id/winnerTraceContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:background="@drawable/bg_trace_table"
+                android:visibility="gone"
+                tools:visibility="visible" />
+            
+            <LinearLayout
+                android:id="@+id/sellerTraceContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:background="@drawable/bg_trace_table"
+                android:visibility="gone"
+                tools:visibility="visible" />
+            
+            <LinearLayout
+                android:id="@+id/loserTraceContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"

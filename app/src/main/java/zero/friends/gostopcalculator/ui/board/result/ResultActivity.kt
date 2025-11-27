@@ -23,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import zero.friends.domain.model.RoundTraceTerm
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.databinding.ActivityResultBinding
 import zero.friends.gostopcalculator.databinding.ViewTraceTableHeaderBinding
@@ -123,24 +124,88 @@ class ResultActivity : AppCompatActivity() {
     private fun bindFormula(state: ResultUiState) {
         val trace = state.roundTrace
         val shouldShow = state.screenType == ScreenType.DETAIL && trace != null
-        binding.traceContainer.isVisible = shouldShow
+        
+        binding.winnerTraceContainer.isVisible = shouldShow
+        binding.sellerTraceContainer.isVisible = shouldShow
+        binding.loserTraceContainer.isVisible = shouldShow
+
         if (!shouldShow) return
 
-        binding.traceContainer.removeAllViews()
-        val titleBinding = ViewTraceTitleBinding.inflate(layoutInflater, binding.traceContainer, false)
-        val totalAmount = trace.totalAmount
-        titleBinding.tvTraceTotal.text = roundTraceFormatter.formatAmount(totalAmount)
-        binding.traceContainer.addView(titleBinding.root)
-        val headerBinding = ViewTraceTableHeaderBinding.inflate(layoutInflater, binding.traceContainer, false)
-        binding.traceContainer.addView(headerBinding.root)
+        // Clear all views before binding
+        binding.winnerTraceContainer.removeAllViews()
+        binding.sellerTraceContainer.removeAllViews()
+        binding.loserTraceContainer.removeAllViews()
 
-        val lines = roundTraceFormatter.toLines(trace)
-        lines.forEach { line ->
-            val itemBinding = ViewTraceTableRowBinding.inflate(layoutInflater, binding.traceContainer, false)
+        // Separate terms by role
+        val winnerTerm = trace.terms.find { it.gamerId == trace.winnerId }
+        val sellerTerms = trace.terms.filter { it.factors.isSeller && it.gamerId != trace.winnerId }
+        val loserTerms = trace.terms.filter { it.gamerId != trace.winnerId && !it.factors.isSeller }
+
+        // Bind UI for each role
+        bindWinnerUi(state, winnerTerm)
+        bindSellerUi(sellerTerms)
+        bindLoserUi(loserTerms)
+    }
+
+    private fun bindWinnerUi(state: ResultUiState, winnerTerm: RoundTraceTerm?) {
+        val trace = state.roundTrace ?: return
+        if (winnerTerm == null) {
+            binding.winnerTraceContainer.isVisible = false
+            return
+        }
+        
+        val winnerInfo = state.gamers.find { it.id == trace.winnerId }
+        val winnerName = winnerInfo?.name ?: "승자"
+        
+        val titleBinding = ViewTraceTitleBinding.inflate(layoutInflater, binding.winnerTraceContainer, false)
+        titleBinding.tvTraceTotal.text = "승자 ($winnerName)"
+        binding.winnerTraceContainer.addView(titleBinding.root)
+
+        val winnerLines = roundTraceFormatter.toWinnerBreakdown(winnerTerm)
+        winnerLines.forEach { line ->
+            val itemBinding = ViewTraceTableRowBinding.inflate(layoutInflater, binding.winnerTraceContainer, false)
+            itemBinding.tvPlayer.text = line.title
+            itemBinding.tvFormula.text = ""
+            itemBinding.tvAmount.text = line.amount
+            binding.winnerTraceContainer.addView(itemBinding.root)
+        }
+    }
+    
+    private fun bindSellerUi(sellerTerms: List<RoundTraceTerm>) {
+        if (sellerTerms.isEmpty()) {
+            binding.sellerTraceContainer.isVisible = false
+            return
+        }
+
+        val headerBinding = ViewTraceTableHeaderBinding.inflate(layoutInflater, binding.sellerTraceContainer, false)
+        binding.sellerTraceContainer.addView(headerBinding.root)
+        
+        val sellerLines = roundTraceFormatter.toLines(sellerTerms)
+        sellerLines.forEach { line ->
+            val itemBinding = ViewTraceTableRowBinding.inflate(layoutInflater, binding.sellerTraceContainer, false)
             itemBinding.tvPlayer.text = line.title
             itemBinding.tvFormula.text = line.formula
             itemBinding.tvAmount.text = line.amount
-            binding.traceContainer.addView(itemBinding.root)
+            binding.sellerTraceContainer.addView(itemBinding.root)
+        }
+    }
+
+    private fun bindLoserUi(loserTerms: List<RoundTraceTerm>) {
+        if (loserTerms.isEmpty()) {
+            binding.loserTraceContainer.isVisible = false
+            return
+        }
+        
+        val headerBinding = ViewTraceTableHeaderBinding.inflate(layoutInflater, binding.loserTraceContainer, false)
+        binding.loserTraceContainer.addView(headerBinding.root)
+        
+        val loserLines = roundTraceFormatter.toLines(loserTerms)
+        loserLines.forEach { line ->
+            val itemBinding = ViewTraceTableRowBinding.inflate(layoutInflater, binding.loserTraceContainer, false)
+            itemBinding.tvPlayer.text = line.title
+            itemBinding.tvFormula.text = line.formula
+            itemBinding.tvAmount.text = line.amount
+            binding.loserTraceContainer.addView(itemBinding.root)
         }
     }
 
@@ -150,7 +215,6 @@ class ResultActivity : AppCompatActivity() {
                 val bitmap = captureScrollView()
                 val (file, uri) = saveBitmapToCache(bitmap)
                 
-                // 공유할 파일 저장 (나중에 삭제하기 위해)
                 lastSharedFile = file
 
                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
@@ -171,43 +235,28 @@ class ResultActivity : AppCompatActivity() {
         val contentLayout = binding.contentLayout
         val scrollView = binding.scrollView
 
-        // 현재 스크롤 위치 저장
         val scrollX = scrollView.scrollX
         val scrollY = scrollView.scrollY
-
-        // 스크롤을 맨 위로
         scrollView.scrollTo(0, 0)
 
-        // RecyclerView가 모든 아이템을 그릴 수 있도록 강제로 레이아웃 요청
         binding.recyclerView.requestLayout()
 
-        // 전체 컨텐츠 크기로 측정
         val widthSpec = View.MeasureSpec.makeMeasureSpec(scrollView.width, View.MeasureSpec.EXACTLY)
         val heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         contentLayout.measure(widthSpec, heightSpec)
 
-        // 레이아웃 배치
-        contentLayout.layout(
-            0,
-            0,
-            contentLayout.measuredWidth,
-            contentLayout.measuredHeight
-        )
+        contentLayout.layout(0, 0, contentLayout.measuredWidth, contentLayout.measuredHeight)
 
-        // 비트맵 생성
         val bitmap = createBitmap(contentLayout.measuredWidth, contentLayout.measuredHeight)
         val canvas = Canvas(bitmap)
         
-        // 배경 색상 그리기 (화면과 동일한 배경)
         canvas.drawColor(getColor(R.color.light_gray))
         
-        // 컨텐츠 그리기 (모든 RecyclerView 아이템 포함)
         contentLayout.draw(canvas)
 
-        // 원래 스크롤 위치로 복원
         scrollView.scrollTo(scrollX, scrollY)
 
-        bitmap
+        return@withContext bitmap
     }
 
     private suspend fun saveBitmapToCache(bitmap: Bitmap) = withContext(Dispatchers.IO) {
@@ -218,13 +267,9 @@ class ResultActivity : AppCompatActivity() {
             out.flush()
         }
 
-        val uri = FileProvider.getUriForFile(
-            this@ResultActivity,
-            AUTHORITY,
-            file
-        )
+        val uri = FileProvider.getUriForFile(this@ResultActivity, AUTHORITY, file)
         
-        Pair(file, uri)
+        return@withContext Pair(file, uri)
     }
 
     enum class ScreenType {
