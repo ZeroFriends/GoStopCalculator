@@ -34,10 +34,6 @@ navigation = "2.9.6"
 
 # Compose
 compose = "1.9.4"
-composeThemeAdapter = "1.2.1"
-
-# Accompanist
-accompanist = "0.36.0"
 
 # Kotlin
 coroutines = "1.10.2"
@@ -61,7 +57,7 @@ firebaseCrashlytics = "19.4.4"
 lottie = "6.7.1"
 timber = "5.0.1"
 inject = "1"
-admob = "24.7.0"
+admob = "24.8.0"
 
 # Test
 junit = "4.13.2"
