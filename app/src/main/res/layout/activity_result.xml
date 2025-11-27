@@ -97,38 +97,56 @@
                 tools:itemCount="3"
                 tools:listitem="@layout/item_calculated_gamer" />
 
-            <LinearLayout
-                android:id="@+id/winnerTraceContainer"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/winnerTraceCard"
+                style="@style/Widget.GoStop.CardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:orientation="vertical"
-                android:padding="8dp"
-                android:background="@drawable/bg_trace_table"
                 android:visibility="gone"
-                tools:visibility="visible" />
-            
-            <LinearLayout
-                android:id="@+id/sellerTraceContainer"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:id="@+id/winnerTraceContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/sellerTraceCard"
+                style="@style/Widget.GoStop.CardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:orientation="vertical"
-                android:padding="8dp"
-                android:background="@drawable/bg_trace_table"
                 android:visibility="gone"
-                tools:visibility="visible" />
-            
-            <LinearLayout
-                android:id="@+id/loserTraceContainer"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:id="@+id/sellerTraceContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/loserTraceCard"
+                style="@style/Widget.GoStop.CardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:orientation="vertical"
-                android:padding="8dp"
-                android:background="@drawable/bg_trace_table"
                 android:visibility="gone"
-                tools:visibility="visible" />
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:id="@+id/loserTraceContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="8dp" />
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 

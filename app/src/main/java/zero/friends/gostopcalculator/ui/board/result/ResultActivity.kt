@@ -114,9 +114,9 @@ class ResultActivity : AppCompatActivity() {
         val trace = state.roundTrace
         val shouldShow = state.screenType == ScreenType.DETAIL && trace != null
         
-        binding.winnerTraceContainer.isVisible = shouldShow
-        binding.sellerTraceContainer.isVisible = shouldShow
-        binding.loserTraceContainer.isVisible = shouldShow
+        binding.winnerTraceCard.isVisible = shouldShow
+        binding.sellerTraceCard.isVisible = shouldShow
+        binding.loserTraceCard.isVisible = shouldShow
 
         if (!shouldShow) return
 
@@ -139,7 +139,7 @@ class ResultActivity : AppCompatActivity() {
     private fun bindWinnerUi(state: ResultUiState, winnerTerm: RoundTraceTerm?) {
         val trace = state.roundTrace ?: return
         if (winnerTerm == null) {
-            binding.winnerTraceContainer.isVisible = false
+            binding.winnerTraceCard.isVisible = false
             return
         }
         
@@ -162,7 +162,7 @@ class ResultActivity : AppCompatActivity() {
     
     private fun bindSellerUi(sellerTerms: List<RoundTraceTerm>) {
         if (sellerTerms.isEmpty()) {
-            binding.sellerTraceContainer.isVisible = false
+            binding.sellerTraceCard.isVisible = false
             return
         }
 
@@ -181,7 +181,7 @@ class ResultActivity : AppCompatActivity() {
 
     private fun bindLoserUi(loserTerms: List<RoundTraceTerm>) {
         if (loserTerms.isEmpty()) {
-            binding.loserTraceContainer.isVisible = false
+            binding.loserTraceCard.isVisible = false
             return
         }
         
