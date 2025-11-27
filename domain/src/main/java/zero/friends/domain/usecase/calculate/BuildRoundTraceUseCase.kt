@@ -124,7 +124,7 @@ class BuildRoundTraceUseCase @Inject constructor(
         candidates.forEach { owner ->
             val others = candidates.filter { it.id != owner.id }
             owner.scoreOption.forEach { option ->
-                val amountPerOpponent = calculateScoreOptionAmount(option, fuckScore, scorePerPoint)
+                val amountPerOpponent = option.calculateScore(fuckScore, scorePerPoint)
                 val total = amountPerOpponent * others.size
                 val ownerContribution = contributions[owner.id] ?: return@forEach
                 when (option) {
@@ -203,18 +203,5 @@ class BuildRoundTraceUseCase @Inject constructor(
         }
 
         return if (tags.isEmpty()) "" else "(${tags.joinToString(separator = ", ")})"
-    }
-
-    private fun calculateScoreOptionAmount(
-        option: ScoreOption,
-        fuckScore: Int,
-        scorePerPoint: Int
-    ): Int {
-        return when (option) {
-            ScoreOption.FirstFuck -> fuckScore
-            ScoreOption.SecondFuck -> fuckScore * 2
-            ScoreOption.ThreeFuck -> fuckScore * 4
-            ScoreOption.FirstDdadak -> scorePerPoint * 3
-        }
     }
 }

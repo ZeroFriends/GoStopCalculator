@@ -29,6 +29,13 @@ enum class ScoreOption(override val korean: String) : Option {
     SecondFuck(Const.Rule.SecondFuck.displayName),
     ThreeFuck(Const.Rule.ThreeFuck.displayName),
     FirstDdadak(Const.Rule.FirstDdadak.displayName);
+
+    fun calculateScore(fuckScore: Int, scorePerPoint: Int): Int = when (this) {
+        FirstFuck -> fuckScore
+        SecondFuck -> fuckScore * 2
+        ThreeFuck -> fuckScore * 4
+        FirstDdadak -> scorePerPoint * 3
+    }
 }
 
 enum class LoserOption(override val korean: String) : Option {
