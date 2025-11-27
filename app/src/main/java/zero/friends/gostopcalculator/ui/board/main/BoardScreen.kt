@@ -3,6 +3,7 @@ package zero.friends.gostopcalculator.ui.board.main
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -15,6 +16,9 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -99,6 +103,8 @@ private fun BoardScreen(
     event: (BoardEvent) -> Unit = {}
 ) {
     val historyListState = rememberLazyListState()
+    val showBottomGradient by remember { derivedStateOf { historyListState.canScrollForward } }
+    val showTopGradient by remember { derivedStateOf { historyListState.canScrollBackward } }
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -113,20 +119,24 @@ private fun BoardScreen(
         }
     ) {
         GoStopButtonBackground(
+            modifier = Modifier,
             buttonString = stringResource(id = R.string.start_game),
             onClick = { event(BoardEvent.StartGame) },
+            showGradient = showBottomGradient,
             contents = {
                 Column {
                     IncomeHistory(
+                        modifier = Modifier.padding(horizontal = 16.dp),
                         players = uiState.playerResults,
                         onClickCalculated = { event(BoardEvent.OpenCalculated) },
-                        hide = historyListState.firstVisibleItemIndex != 0
+                        hide = historyListState.firstVisibleItemIndex != 0 || !historyListState.canScrollForward
                     )
                     Spacer(modifier = Modifier.padding(9.dp))
                     GameHistory(
                         uiState = uiState,
                         event = event,
-                        lazyListState = historyListState
+                        lazyListState = historyListState,
+                        showTopGradient = showTopGradient
                     )
                 }
             }
@@ -143,8 +153,7 @@ private fun IncomeHistory(
     hide: Boolean
 ) {
     ContentsCard(
-        modifier = modifier
-            .fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         boxContents = {
             Column(
                 modifier = Modifier
@@ -169,8 +178,8 @@ private fun IncomeHistory(
                     )
                 }
                 LazyVerticalGrid(
-                    modifier = modifier.animateContentSize(),
-                    columns = GridCells.Fixed(2)
+                    modifier = Modifier.animateContentSize(),
+                    columns = GridCells.Fixed(2),
                 ) {
                     itemsIndexed(if (hide) emptyList() else players) { index: Int, item: PlayerResult ->
                         PlayerItem(index = index, playerResult = item)
@@ -186,13 +195,15 @@ private fun GameHistory(
     modifier: Modifier = Modifier,
     uiState: BoardUiState,
     event: (BoardEvent) -> Unit = {},
-    lazyListState: LazyListState
+    lazyListState: LazyListState,
+    showTopGradient: Boolean,
 ) {
     Column(modifier = modifier) {
         Text(
             text = stringResource(id = R.string.game_history),
             fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
         if (uiState.gameHistories.isEmpty()) {
             EmptyHistory(
@@ -202,13 +213,35 @@ private fun GameHistory(
             )
         } else {
             Spacer(modifier = Modifier.padding(5.dp))
-            LazyColumn(state = lazyListState, verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                itemsIndexed(uiState.gameHistories.toList().asReversed()) { index, (roundId, gamer) ->
-                    RoundBox(
-                        index = uiState.gameHistories.size - index - 1,
-                        gamers = gamer,
-                        onClickDetail = { event(BoardEvent.Detail(roundId)) },
-                        onClickMore = { event(BoardEvent.More(roundId)) }
+            Box {
+                LazyColumn(
+                    state = lazyListState,
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp)
+                ) {
+                    itemsIndexed(uiState.gameHistories.toList().asReversed()) { index, (roundId, gamer) ->
+                        RoundBox(
+                            index = uiState.gameHistories.size - index - 1,
+                            gamers = gamer,
+                            onClickDetail = { event(BoardEvent.Detail(roundId)) },
+                            onClickMore = { event(BoardEvent.More(roundId)) }
+                        )
+                    }
+                }
+                if (showTopGradient) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(20.dp)
+                            .align(Alignment.TopCenter)
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        LightGray,
+                                        Color.Transparent
+                                    )
+                                )
+                            )
                     )
                 }
             }
@@ -243,10 +276,6 @@ private fun BoardScreenPreview() {
                     Gamer(name = "sdlakfdsfkl")
                 ),
                 4L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
-//                5L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
-//                6L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
-//                7L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
-//                8L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
             ),
             playerResults = listOf(PlayerResult("hPlayer1", 200), PlayerResult("HPlayer2", -100))
         )

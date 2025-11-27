@@ -49,17 +49,18 @@ fun ScorePhaseLayout(
         GoStopButtonBackground(
             buttonString = buttonText,
             buttonEnabled = buttonEnabled,
-            onClick = onButtonClick
-        ) {
-            Column {
-                DescriptionBox(
-                    mainText = mainText,
-                    subText = subText
-                )
-                Spacer(modifier = Modifier.padding(22.dp))
-                content()
-            }
-        }
+            onClick = onButtonClick,
+            contents = {
+                Column {
+                    DescriptionBox(
+                        mainText = mainText,
+                        subText = subText
+                    )
+                    Spacer(modifier = Modifier.padding(22.dp))
+                    content()
+                }
+            },
+        )
     }
 }
 
