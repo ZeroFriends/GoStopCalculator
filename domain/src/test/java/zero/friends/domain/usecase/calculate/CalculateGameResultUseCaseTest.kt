@@ -99,10 +99,10 @@ class CalculateGameResultUseCaseTest {
 
         useCase(gameId, roundId, seller = null, winner = winner)
 
-        // 패자: (7×100×2) + (7×100) = 2,100을 고박자가 모두 부담
+        // 패자: (7×100×2^2) + (7×100) = 3,500을 고박자가 모두 부담
         // 첫따닥: 점당 100 × 3 × 2명 = 600
-        assertEquals(2_700, gamerRepository.getGamerAccount(1))
-        assertEquals(-2_400, gamerRepository.getGamerAccount(2))
+        assertEquals(4_100, gamerRepository.getGamerAccount(1))
+        assertEquals(-3_800, gamerRepository.getGamerAccount(2))
         assertEquals(-300, gamerRepository.getGamerAccount(3))
     }
 
@@ -157,6 +157,43 @@ class CalculateGameResultUseCaseTest {
         assertEquals(3_200, gamerRepository.getGamerAccount(1))
         assertEquals(-1_600, gamerRepository.getGamerAccount(2))
         assertEquals(-1_600, gamerRepository.getGamerAccount(3))
+    }
+
+    @Test
+    fun `4인 고스톱 - 고박, 피박, 광팔기, 첫뻑 시나리오`() = runTest {
+        val gameId = 4L
+        val roundId = 4L
+
+        val seller = Gamer(id = 1, roundId = roundId, score = 1)
+        val winner = Gamer(id = 3, roundId = roundId, score = 15, go = 5)
+        val peaAndFuck = Gamer(
+            id = 2,
+            roundId = roundId,
+            loserOption = listOf(LoserOption.PeaBak),
+            scoreOption = listOf(ScoreOption.FirstFuck)
+        )
+        val goBakLoser = Gamer(
+            id = 4,
+            roundId = roundId,
+            loserOption = listOf(LoserOption.GoBak, LoserOption.LightBak)
+        )
+
+        gamerRepository.setRoundGamers(roundId, listOf(seller, winner, peaAndFuck, goBakLoser))
+        ruleRepository.setRules(
+            gameId,
+            listOf(
+                Rule(name = Const.Rule.Score, score = 100),
+                Rule(name = Const.Rule.Fuck, score = 300),
+                Rule(name = Const.Rule.Sell, score = 300)
+            )
+        )
+
+        useCase(gameId, roundId, seller = seller, winner = winner)
+
+        assertEquals(900, gamerRepository.getGamerAccount(1))
+        assertEquals(300, gamerRepository.getGamerAccount(2))
+        assertEquals(95_400, gamerRepository.getGamerAccount(3))
+        assertEquals(-96_600, gamerRepository.getGamerAccount(4))
     }
 
     @Test

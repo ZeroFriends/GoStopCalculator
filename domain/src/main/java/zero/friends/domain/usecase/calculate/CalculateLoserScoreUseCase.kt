@@ -17,12 +17,7 @@ import kotlin.math.pow
  * - 박(Bak): 각 박 옵션마다 2배씩 증가
  *   - 피박, 광박, 멍박, 고박
  * - 고박(GoBak) 특수 룰:
- *   - 고박한 사람이 다른 모든 패자들의 금액까지 대신 지불
- *     - 맞고(2명): 다른 사람의 금액에 고박의 2배 적용
- *     - 고스톱(3명 이상): 다른 사람의 금액을 그대로 대신 지불
- *   - 고박한 사람 본인의 금액 계산
- *     - 맞고(2명): 고박 포함하여 계산 (고박 2배 적용)
- *     - 고스톱(3명 이상): 고박 제외하고 계산 (고박은 다른 사람 대신 내는 것이므로 본인 금액에는 적용 안됨)
+ *   - 고박한 사람이 다른 모든 패자들의 금액까지 대신 지불하며, 본인 금액에도 고박이 포함된다
  */
 class CalculateLoserScoreUseCase @Inject constructor(
     private val ruleRepository: RuleRepository,
@@ -66,63 +61,22 @@ class CalculateLoserScoreUseCase @Inject constructor(
         // 승자 점수 (고 규칙 반영)
         val winnerScore = calculateGoScore(winner.score, winner.go)
         
-        // 고박 플레이어 찾기
+        // 고박 플레이어 찾기 (있다면 고박자가 모든 패자 금액을 대신 지불)
         val goBakGamer = losers.firstOrNull { it.loserOption.contains(LoserOption.GoBak) }
         
         if (goBakGamer != null) {
-            // 고박 케이스: 고박자가 모든 패자의 돈을 대신 냄
-            val remainLosers = losers - goBakGamer
-            
-            // 전체 게임 인원 수 확인 (winner + losers)
-            // 맞고(2명): losers.size = 1
-            // 고스톱(3명): losers.size = 2
-            // 고스톱(4명): losers.size = 3
-            val isMatgo = losers.size == 1  // 맞고인 경우
-            
-            if (!isMatgo) {
-                // 고스톱: 고박자가 다른 패자 금액을 2배로 대신 지불, 본인 옵션만 추가
-                val basePerLoser = winnerScore * scorePerPoint
-                val baseTotal = basePerLoser * losers.size
-
-                val goBakExtra = calculateLoserAmount(
-                    loserOptions = goBakGamer.loserOption - LoserOption.GoBak,
-                    winnerScore = winnerScore,
-                    scorePerPoint = scorePerPoint
-                ) - basePerLoser
-
-                val remainExtras = remainLosers.sumOf { loser ->
-                    calculateLoserAmount(
-                        loserOptions = loser.loserOption - LoserOption.GoBak,
-                        winnerScore = winnerScore,
-                        scorePerPoint = scorePerPoint
-                    ) - basePerLoser
-                }
-
-                val totalPayment = baseTotal + goBakExtra + (remainExtras * 2)
-                accounts[goBakGamer.id] = -totalPayment
-                accounts[winner.id] = totalPayment
-            } else {
-                var totalPayment = 0
-                remainLosers.forEach { loser ->
-                    val loserAmount = calculateLoserAmount(
-                        loserOptions = loser.loserOption - LoserOption.GoBak,
-                        winnerScore = winnerScore,
-                        scorePerPoint = scorePerPoint
-                    )
-                    totalPayment += loserAmount * 2
-                }
-
-                val goBakOwnAmount = calculateLoserAmount(
-                    loserOptions = goBakGamer.loserOption,
+            // 고박자가 모든 패자의 금액을 대신 지불 (본인 금액에도 고박 적용)
+            val loserAmounts = losers.associateWith { loser ->
+                calculateLoserAmount(
+                    loserOptions = loser.loserOption,
                     winnerScore = winnerScore,
                     scorePerPoint = scorePerPoint
                 )
-                totalPayment += goBakOwnAmount
-
-                accounts[goBakGamer.id] = -totalPayment
-                accounts[winner.id] = totalPayment
             }
-            
+
+            val totalPayment = loserAmounts.values.sum()
+            accounts[goBakGamer.id] = -totalPayment
+            accounts[winner.id] = totalPayment
         } else {
             // 일반 케이스: 각 패자가 자신의 금액을 냄
             var totalWinnerIncome = 0

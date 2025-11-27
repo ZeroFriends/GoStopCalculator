@@ -97,31 +97,19 @@ class CalculateGoStopMassTest {
     }
 
     private fun GoStopScenario.expectedAccounts(): Pair<Int, Map<Long, Int>> {
-        val perLoserBase = losersBakOptions.map { baseLoserAmount(it, isMatgo = false) }.toMutableList()
+        val perLoserAmount = losersBakOptions.map { baseLoserAmount(it) }
         val goIndex = losersBakOptions.indexOfFirst { it.contains(LoserOption.GoBak) }
         val payments = mutableMapOf<Long, Int>()
-        val winnerBaseIncome: Int
+
+        val winnerBaseIncome = perLoserAmount.sum()
 
         if (goIndex >= 0) {
-            val basePerLoser = baseLoserAmount(emptyList(), isMatgo = false)
-            val baseTotal = basePerLoser * losersBakOptions.size
-            val goBakExtra = baseLoserAmount(
-                losersBakOptions[goIndex].filterNot { it == LoserOption.GoBak },
-                isMatgo = false
-            ) - basePerLoser
-            val remainExtras = losersBakOptions.withIndex()
-                .filter { it.index != goIndex }
-                .sumOf { indexed ->
-                    baseLoserAmount(indexed.value.filterNot { it == LoserOption.GoBak }, isMatgo = false) - basePerLoser
-                }
-
-            winnerBaseIncome = baseTotal + goBakExtra + (remainExtras * 2)
+            // 고박자가 모든 패자 금액을 대신 지불
             losersBakOptions.indices.forEach { idx ->
                 payments[idx.toLong() + 2] = if (idx == goIndex) -winnerBaseIncome else 0
             }
         } else {
-            winnerBaseIncome = perLoserBase.sum()
-            perLoserBase.forEachIndexed { idx, amount ->
+            perLoserAmount.forEachIndexed { idx, amount ->
                 payments[idx.toLong() + 2] = -amount
             }
         }
@@ -134,11 +122,8 @@ class CalculateGoStopMassTest {
         return winnerTotal to payments
     }
 
-    private fun baseLoserAmount(options: List<LoserOption>, isMatgo: Boolean): Int {
-        val nonGo = options.filterNot { it == LoserOption.GoBak }
-        val result = WINNER_SCORE * SCORE_PER_POINT * (2.0.pow(nonGo.size).toInt())
-        return if (isMatgo && options.contains(LoserOption.GoBak)) result * 2 else result
-    }
+    private fun baseLoserAmount(options: List<LoserOption>): Int =
+        WINNER_SCORE * SCORE_PER_POINT * (2.0.pow(options.size).toInt())
 
     private fun calculateScoreOptionIncome(options: List<ScoreOption>, opponentCount: Int): Pair<Int, Int> {
         val perOpponent = options.sumOf {

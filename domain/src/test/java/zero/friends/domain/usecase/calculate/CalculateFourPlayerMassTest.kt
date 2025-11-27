@@ -110,35 +110,18 @@ class CalculateFourPlayerMassTest {
         val sellerIncome = SELL_SCORE * sellerScore * (loserBakOptions.size + 1)
         val loserPayments = mutableMapOf<Long, Int>()
         val winnerScore = calculateGoScore(WINNER_SCORE, goCount)
-        val baseAmounts = loserBakOptions.map { baseLoserAmount(it, winnerScore) }.toMutableList()
+        val baseAmounts = loserBakOptions.map { baseLoserAmount(it, winnerScore) }
         val goIndex = loserBakOptions.indexOfFirst { it.contains(LoserOption.GoBak) }
 
-        val winnerBaseIncome = if (goIndex >= 0) {
-            val basePerLoser = baseLoserAmount(emptyList(), winnerScore)
-            val baseTotal = basePerLoser * loserBakOptions.size
-            val goBakExtra = baseLoserAmount(
-                loserBakOptions[goIndex].filterNot { it == LoserOption.GoBak },
-                winnerScore
-            ) - basePerLoser
-            val remainExtras = loserBakOptions.withIndex()
-                .filter { it.index != goIndex }
-                .sumOf { indexed ->
-                    baseLoserAmount(
-                        indexed.value.filterNot { it == LoserOption.GoBak },
-                        winnerScore
-                    ) - basePerLoser
-                }
-
-            val total = baseTotal + goBakExtra + (remainExtras * 2)
+        val winnerBaseIncome = baseAmounts.sum()
+        if (goIndex >= 0) {
             loserBakOptions.indices.forEach { idx ->
-                loserPayments[idx.toLong() + 3] = if (idx == goIndex) -total else 0
+                loserPayments[idx.toLong() + 3] = if (idx == goIndex) -winnerBaseIncome else 0
             }
-            total
         } else {
             baseAmounts.forEachIndexed { idx, amount ->
                 loserPayments[idx.toLong() + 3] = -amount
             }
-            baseAmounts.sum()
         }
 
         val (totalOption, perOpponent) = calculateScoreOptionIncome(winnerOptions, opponentCount = loserBakOptions.size)
@@ -158,10 +141,8 @@ class CalculateFourPlayerMassTest {
         )
     }
 
-    private fun baseLoserAmount(options: List<LoserOption>, winnerScore: Int): Int {
-        val nonGo = options.filterNot { it == LoserOption.GoBak }
-        return winnerScore * SCORE_PER_POINT * (1 shl nonGo.size)
-    }
+    private fun baseLoserAmount(options: List<LoserOption>, winnerScore: Int): Int =
+        winnerScore * SCORE_PER_POINT * (1 shl options.size)
 
     private fun calculateScoreOptionIncome(options: List<ScoreOption>, opponentCount: Int): Pair<Int, Int> {
         val perOpponent = options.sumOf {
