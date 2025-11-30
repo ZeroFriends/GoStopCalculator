@@ -65,6 +65,10 @@ class CalculatedGamerAdapter : ListAdapter<Gamer, CalculatedGamerAdapter.ViewHol
                     gamer.scoreOption.forEach { option ->
                         add(option.korean)
                     }
+
+                    if (gamer.sellerOption != null) {
+                        add(gamer.sellerOption?.korean)
+                    }
                 }
 
                 if (options.isNotEmpty()) {
