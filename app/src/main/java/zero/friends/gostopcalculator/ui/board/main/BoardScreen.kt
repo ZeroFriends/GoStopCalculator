@@ -106,6 +106,12 @@ private fun BoardScreen(
     val showBottomGradient by remember { derivedStateOf { historyListState.canScrollForward } }
     val showTopGradient by remember { derivedStateOf { historyListState.canScrollBackward } }
 
+    val isScrolled by remember {
+        derivedStateOf {
+            historyListState.firstVisibleItemIndex > 0 || historyListState.firstVisibleItemScrollOffset > 0
+        }
+    }
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -129,7 +135,7 @@ private fun BoardScreen(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         players = uiState.playerResults,
                         onClickCalculated = { event(BoardEvent.OpenCalculated) },
-                        hide = historyListState.firstVisibleItemIndex != 0 || !historyListState.canScrollForward
+                        hide = isScrolled
                     )
                     Spacer(modifier = Modifier.padding(9.dp))
                     GameHistory(
