@@ -23,7 +23,7 @@ import zero.friends.data.util.SerializationConverters
         GameEntity::class,
         RuleEntity::class,
         GamerEntity::class,
-        RoundEntity::class
+        RoundEntity::class,
     ],
     version = 2,
     exportSchema = false
@@ -48,4 +48,5 @@ abstract class DataBase : RoomDatabase() {
             }
         }
     }
+
 }

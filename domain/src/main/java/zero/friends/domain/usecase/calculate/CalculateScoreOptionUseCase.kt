@@ -1,7 +1,6 @@
 package zero.friends.domain.usecase.calculate
 
 import zero.friends.domain.model.Gamer
-import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.repository.RuleRepository
 import zero.friends.domain.util.Const
@@ -56,7 +55,7 @@ class CalculateScoreOptionUseCase @Inject constructor(
         // 각 플레이어의 점수 옵션을 계산
         gamers.forEach { gamer ->
             gamer.scoreOption.forEach { option ->
-                val amount = calculateScoreOptionAmount(option, fuckScore, scorePerPoint)
+                val amount = option.calculateScore(fuckScore,scorePerPoint)
                 
                 // 해당 플레이어가 다른 모든 플레이어로부터 받음
                 val otherGamers = excludePlayer(gamers, gamer.id)
@@ -78,25 +77,5 @@ class CalculateScoreOptionUseCase @Inject constructor(
         gamers: List<Gamer>,
         playerId: Long
     ): List<Gamer> = gamers.filter { it.id != playerId }
-    
-    /**
-     * 점수 옵션별 금액 계산
-     * 
-     * @param option 점수 옵션
-     * @param fuckScore 뻑 기본 점수
-     * @param scorePerPoint 점당 금액 (첫따닥 계산용)
-     * @return 계산된 금액
-     */
-    private fun calculateScoreOptionAmount(
-        option: ScoreOption,
-        fuckScore: Int,
-        scorePerPoint: Int
-    ): Int {
-        return when (option) {
-            ScoreOption.FirstFuck -> fuckScore
-            ScoreOption.SecondFuck -> fuckScore * 2
-            ScoreOption.ThreeFuck -> fuckScore * 4
-            ScoreOption.FirstDdadak -> scorePerPoint * 3  // 3점에 해당하는 금액
-        }
-    }
+
 }

@@ -105,9 +105,12 @@ private fun PrepareScreen(
                         subText = stringResource(id = R.string.start_description)
                     )
                     Spacer(modifier = Modifier.padding(22.dp))
-                    PlayerPickList(uiState = uiState, event = event)
+                    PlayerPickList(
+                        uiState = uiState,
+                        event = event
+                    )
                 }
-            }
+            },
         )
 
     }
