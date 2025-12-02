@@ -50,7 +50,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="zerofriends"
+            android:authorities="zero.friends.gostopcalculator.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
