@@ -2,7 +2,12 @@ package zero.friends.gostopcalculator.ui.board.result
 
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.ACTION_SEND
+import android.content.Intent.EXTRA_STREAM
+import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+import android.content.Intent.createChooser
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,7 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.RoundTraceTerm
+import zero.friends.gostopcalculator.GoogleAdmob
 import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.R.string
 import zero.friends.gostopcalculator.databinding.ActivityResultBinding
 import zero.friends.gostopcalculator.databinding.ViewTraceTableHeaderBinding
 import zero.friends.gostopcalculator.databinding.ViewTraceTableRowBinding
@@ -35,14 +42,22 @@ class ResultActivity : AppCompatActivity() {
     @Inject
     lateinit var screenCaptureManager: ScreenCaptureManager
 
+    @Inject
+    lateinit var googleAdmob: GoogleAdmob
+
     private val viewModel: ResultViewModel by viewModels()
+
+    private val shareResultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            // 공유 화면에서 돌아왔을 때 광고 표시 및 임시 파일 정리
+            googleAdmob.showAd { }
+            screenCaptureManager.clearTempFile()
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        lifecycle.addObserver(screenCaptureManager)
 
         setupWindow()
         setupViews()
@@ -91,7 +106,16 @@ class ResultActivity : AppCompatActivity() {
 
         binding.btnShare.setOnClickListener {
             lifecycleScope.launch {
-                screenCaptureManager.captureAndShare(binding.contentLayout, AUTHORITY)
+                val uri = screenCaptureManager.captureAndGetUri(binding.contentLayout, AUTHORITY)
+                if (uri != null) {
+                    val shareIntent = Intent(ACTION_SEND).apply {
+                        this.type = "image/png"
+                        putExtra(EXTRA_STREAM, uri)
+                        addFlags(FLAG_GRANT_READ_URI_PERMISSION)
+                    }
+                    val intent = createChooser(shareIntent, getString(string.share))
+                    shareResultLauncher.launch(intent)
+                }
             }
         }
     }
@@ -113,7 +137,7 @@ class ResultActivity : AppCompatActivity() {
     private fun bindFormula(state: ResultUiState) {
         val trace = state.roundTrace
         val shouldShow = state.screenType == ScreenType.DETAIL && trace != null
-        
+
         binding.winnerTraceCard.isVisible = shouldShow
         binding.sellerTraceCard.isVisible = shouldShow
         binding.loserTraceCard.isVisible = shouldShow
@@ -142,10 +166,10 @@ class ResultActivity : AppCompatActivity() {
             binding.winnerTraceCard.isVisible = false
             return
         }
-        
+
         val winnerInfo = state.gamers.find { it.id == trace.winnerId }
         val winnerName = winnerInfo?.name ?: "승자"
-        
+
         val titleBinding = ViewTraceTitleBinding.inflate(layoutInflater, binding.winnerTraceContainer, false)
         titleBinding.tvTraceTotal.text = "승자 ($winnerName)"
         binding.winnerTraceContainer.addView(titleBinding.root)
@@ -159,7 +183,7 @@ class ResultActivity : AppCompatActivity() {
             binding.winnerTraceContainer.addView(itemBinding.root)
         }
     }
-    
+
     private fun bindSellerUi(sellerTerms: List<RoundTraceTerm>) {
         if (sellerTerms.isEmpty()) {
             binding.sellerTraceCard.isVisible = false
@@ -168,7 +192,7 @@ class ResultActivity : AppCompatActivity() {
 
         val headerBinding = ViewTraceTableHeaderBinding.inflate(layoutInflater, binding.sellerTraceContainer, false)
         binding.sellerTraceContainer.addView(headerBinding.root)
-        
+
         val sellerLines = roundTraceFormatter.toLines(sellerTerms)
         sellerLines.forEach { line ->
             val itemBinding = ViewTraceTableRowBinding.inflate(layoutInflater, binding.sellerTraceContainer, false)
@@ -184,10 +208,10 @@ class ResultActivity : AppCompatActivity() {
             binding.loserTraceCard.isVisible = false
             return
         }
-        
+
         val headerBinding = ViewTraceTableHeaderBinding.inflate(layoutInflater, binding.loserTraceContainer, false)
         binding.loserTraceContainer.addView(headerBinding.root)
-        
+
         val loserLines = roundTraceFormatter.toLines(loserTerms)
         loserLines.forEach { line ->
             val itemBinding = ViewTraceTableRowBinding.inflate(layoutInflater, binding.loserTraceContainer, false)
@@ -207,7 +231,7 @@ class ResultActivity : AppCompatActivity() {
         const val EXTRA_GAME_ID = "extra_game_id"
         const val EXTRA_ROUND_ID = "extra_round_id"
         const val EXTRA_SCREEN_TYPE = "extra_screen_type"
-        private const val AUTHORITY = "zerofriends"
+        private const val AUTHORITY = "zero.friends.gostopcalculator.fileprovider"
 
         fun createCalculateIntent(context: Context, gameId: Long): Intent {
             return Intent(context, ResultActivity::class.java).apply {
