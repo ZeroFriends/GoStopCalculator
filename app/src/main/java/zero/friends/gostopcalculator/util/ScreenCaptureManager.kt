@@ -2,13 +2,12 @@ package zero.friends.gostopcalculator.util
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.net.Uri
-import android.view.View
-import android.widget.ScrollView
 import android.widget.Toast
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.core.content.FileProvider
-import androidx.core.graphics.createBitmap
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.coroutines.Dispatchers
@@ -23,9 +22,24 @@ class ScreenCaptureManager @Inject constructor(
 
     private var capturedFile: File? = null
 
-    suspend fun captureAndGetUri(view: View, authority: String, fileName: String = "result_share.png"): Uri? {
+    suspend fun captureAndGetUri(
+        graphicsLayer: GraphicsLayer,
+        authority: String,
+        fileNamePrefix: String = "result_share"
+    ): Uri? {
+        val imageBitmap = graphicsLayer.toImageBitmap()
+        return captureAndGetUri(imageBitmap, authority, fileNamePrefix)
+    }
+
+    suspend fun captureAndGetUri(
+        imageBitmap: ImageBitmap,
+        authority: String,
+        fileNamePrefix: String = "result_share"
+    ): Uri? {
         return try {
-            val bitmap = captureView(view)
+            clearOldTempFiles()
+            val fileName = "${fileNamePrefix}_${System.currentTimeMillis()}.png"
+            val bitmap = imageBitmap.asAndroidBitmap()
             val file = saveBitmapToFile(bitmap, fileName)
             capturedFile = file
             FileProvider.getUriForFile(context, authority, file)
@@ -38,19 +52,21 @@ class ScreenCaptureManager @Inject constructor(
         }
     }
 
+    fun clearOldTempFiles() {
+        try {
+            context.cacheDir.listFiles()?.forEach { file ->
+                if (file.name.startsWith("result_share")) {
+                    file.delete()
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e("이전 임시 파일 청소 실패 $e")
+        }
+    }
+
     fun clearTempFile() {
         capturedFile?.delete()
         capturedFile = null
-    }
-
-    private suspend fun captureView(view: View): Bitmap = withContext(Dispatchers.Main) {
-        val scrollView = view.parent as? ScrollView
-        val content = if (scrollView != null) scrollView.getChildAt(0) else view
-
-        val bitmap = createBitmap(content.width, content.height, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        content.draw(canvas)
-        bitmap
     }
 
     private suspend fun saveBitmapToFile(bitmap: Bitmap, fileName: String): File =
@@ -63,3 +79,5 @@ class ScreenCaptureManager @Inject constructor(
             }
         }
 }
+
+
