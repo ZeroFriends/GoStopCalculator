@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "zero.friends.gostopcalculator"
+    namespace = "zero.friends.data"
     compileSdk = libs.versions.compileSdk.get().toInt()
 }
 kotlin {
