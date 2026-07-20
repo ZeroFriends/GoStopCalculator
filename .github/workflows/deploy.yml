@@ -41,7 +41,7 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          ./gradlew bundleRealRelease \
+          ./gradlew :app:bundleRelease \
             -Pandroid.injected.signing.store.file=$(pwd)/app/keystore/release.keystore.jks \
             -Pandroid.injected.signing.store.password=$STORE_PASSWORD \
             -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
@@ -53,5 +53,5 @@ jobs:
         if: success()
         with:
           name: GoStopCalculator-Signed-Production-AAB
-          path: app/build/outputs/bundle/realRelease/*.aab
+          path: app/build/outputs/bundle/release/*.aab
           retention-days: 60
