@@ -93,8 +93,11 @@ private fun PrepareScreen(
                 isRed = false,
             )
         }
-    ) {
+    ) { innerPadding ->
         GoStopButtonBackground(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp),
             buttonString = stringResource(id = R.string.complete),
             buttonEnabled = uiState.selectedPlayers.size >= 2,
             onClick = { event(PrepareEvent.Complete) },

@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.Target
+import androidx.compose.foundation.layout.navigationBarsPadding
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.theme.GoStopTheme
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
@@ -104,13 +105,13 @@ fun ResultScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .drawGraphicsLayer(graphicsLayer)
-                    .background(colorResource(id = R.color.white))
             ) {
                 ResultContent(
                     uiState = uiState,
                     roundTraceFormatter = roundTraceFormatter
                 )
             }
+            Spacer(modifier = Modifier.navigationBarsPadding())
         }
     }
 }

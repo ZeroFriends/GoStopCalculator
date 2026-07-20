@@ -9,18 +9,11 @@
         <item name="colorSecondary">@color/orangey_red</item>
         <item name="colorSecondaryVariant">@color/orangey_red</item>
         <item name="colorOnSecondary">@color/orangey_red</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">@android:color/white</item>
+        <!-- Status bar & Navigation bar color -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
         <!-- 다크모드 강제 비활성화 -->
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
-        <!-- Edge-to-edge 관련 설정 -->
-        <item name="android:windowTranslucentStatus">false</item>
-        <item name="android:windowTranslucentNavigation">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="p">default</item>
-        <!-- Android 15+ Edge-to-edge 강제 비활성화 -->
-        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
-        <!-- Customize your theme here. -->
     </style>
 </resources>

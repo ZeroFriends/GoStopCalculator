@@ -65,8 +65,12 @@ fun ManualFullScreenDialog(manualViewModel: ManualViewModel = hiltViewModel(), o
                     isRed = false
                 )
             }
-        ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
                 Text(
                     modifier = Modifier.padding(16.dp),
                     text = stringResource(R.string.manual),

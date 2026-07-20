@@ -3,7 +3,10 @@ package zero.friends.gostopcalculator.ui
 import android.content.Context
 import android.os.Bundle
 import android.widget.Toast
+import android.graphics.Color
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +24,16 @@ class MainActivity : AppCompatActivity() {
     lateinit var googleAdmob: GoogleAdmob
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(
+                Color.TRANSPARENT,
+                Color.TRANSPARENT
+            ),
+            navigationBarStyle = SystemBarStyle.light(
+                Color.TRANSPARENT,
+                Color.TRANSPARENT
+            )
+        )
         super.onCreate(savedInstanceState)
 
         setContent {

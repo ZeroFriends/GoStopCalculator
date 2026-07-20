@@ -45,8 +45,11 @@ fun ScorePhaseLayout(
                 isRed = false
             )
         }
-    ) {
+    ) { innerPadding ->
         GoStopButtonBackground(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp),
             buttonString = buttonText,
             buttonEnabled = buttonEnabled,
             onClick = onButtonClick,

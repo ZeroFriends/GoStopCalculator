@@ -2,7 +2,7 @@
 <resources>
     <!-- ResultActivity 전용 테마 (흰색 상태바) -->
     <style name="Theme.GoStopCalculator.Result" parent="Theme.GoStopCalculator">
-        <item name="android:statusBarColor">@android:color/white</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

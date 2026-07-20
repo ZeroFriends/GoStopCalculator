@@ -54,8 +54,8 @@ private fun RuleLogScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = { CenterTextTopBar(text = uiState.game.name, isRed = false, onBack = onBack) },
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+    ) { innerPadding ->
+        Column(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)) {
             TitleText(
                 modifier = Modifier.padding(top = 34.dp, start = 18.dp),
                 text = stringResource(id = R.string.rule_title_text)

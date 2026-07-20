@@ -29,6 +29,8 @@ import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
 import zero.friends.gostopcalculator.util.getMoneyColor
 
 
+import androidx.compose.foundation.layout.statusBarsPadding
+
 @Composable
 fun CenterTextTopBar(
     text: String,
@@ -38,63 +40,74 @@ fun CenterTextTopBar(
     actionIcon: Painter? = null,
     actionText: String? = null
 ) {
-    val modifier = Modifier
+    val iconModifier = Modifier
         .defaultMinSize(60.dp, 60.dp)
         .background(Color.Transparent)
 
     val iconColor = if (isRed) R.color.white else R.color.black
-    TopAppBar(
-        title = {
-            Text(
-                text = text,
-                textAlign = TextAlign.Center,
-                fontSize = 14.sp,
-                modifier = Modifier
-                    .wrapContentWidth(align = Alignment.CenterHorizontally)
-                    .fillMaxWidth()
-            )
-        },
-        navigationIcon = {
-            Box(modifier = modifier, contentAlignment = Alignment.Center) {
-                if (onBack != null) {
-                    IconButton(onClick = { onBack() }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_topbar_back),
-                            contentDescription = "Back",
-                            tint = colorResource(id = iconColor)
-                        )
-                    }
-                }
-            }
-        },
-        actions = {
-            Box(modifier = modifier, contentAlignment = Alignment.Center) {
-                if (onAction != null) {
-                    if (actionIcon != null) {
-                        IconButton(onClick = onAction) {
+    val topBarBackgroundColor = if (isRed) colorResource(id = R.color.orangey_red) else colorResource(id = R.color.white)
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = topBarBackgroundColor,
+        elevation = 1.dp
+    ) {
+        TopAppBar(
+            title = {
+                Text(
+                    text = text,
+                    textAlign = TextAlign.Center,
+                    fontSize = 14.sp,
+                    modifier = Modifier
+                        .wrapContentWidth(align = Alignment.CenterHorizontally)
+                        .fillMaxWidth()
+                )
+            },
+            navigationIcon = {
+                Box(modifier = iconModifier, contentAlignment = Alignment.Center) {
+                    if (onBack != null) {
+                        IconButton(onClick = { onBack() }) {
                             Icon(
-                                painter = actionIcon,
-                                contentDescription = "Close",
+                                painter = painterResource(id = R.drawable.ic_topbar_back),
+                                contentDescription = "Back",
                                 tint = colorResource(id = iconColor)
                             )
                         }
-                    } else if (actionText != null) {
-                        Surface(
-                            modifier = Modifier
-                                .padding(end = 16.dp)
-                                .clickable(onClick = onAction)
-                        ) {
-                            Text(text = actionText, fontSize = 14.sp, color = colorResource(id = R.color.orangey_red))
+                    }
+                }
+            },
+            actions = {
+                Box(modifier = iconModifier, contentAlignment = Alignment.Center) {
+                    if (onAction != null) {
+                        if (actionIcon != null) {
+                            IconButton(onClick = onAction) {
+                                Icon(
+                                    painter = actionIcon,
+                                    contentDescription = "Close",
+                                    tint = colorResource(id = iconColor)
+                                )
+                            }
+                        } else if (actionText != null) {
+                            Surface(
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                                    .clickable(onClick = onAction),
+                                color = Color.Transparent
+                            ) {
+                                Text(text = actionText, fontSize = 14.sp, color = colorResource(id = R.color.orangey_red))
+                            }
                         }
                     }
                 }
-            }
-        },
-        modifier = Modifier.fillMaxWidth(),
-        backgroundColor = if (isRed) colorResource(id = R.color.orangey_red) else colorResource(id = R.color.white),
-        contentColor = if (isRed) colorResource(id = R.color.white) else colorResource(id = R.color.black),
-        elevation = 1.dp
-    )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding(),
+            backgroundColor = Color.Transparent,
+            contentColor = if (isRed) colorResource(id = R.color.white) else colorResource(id = R.color.black),
+            elevation = 0.dp
+        )
+    }
 }
 
 

@@ -25,6 +25,8 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import zero.friends.gostopcalculator.R
 
 
+import androidx.compose.foundation.layout.navigationBarsPadding
+
 @Composable
 fun SplashScreen() {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.gostop_splash))
@@ -48,8 +50,9 @@ fun SplashScreen() {
             color = Color.Black,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .padding(bottom = 20.dp)
                 .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = 20.dp)
         )
     }
 }

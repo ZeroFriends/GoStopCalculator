@@ -107,12 +107,13 @@ private fun PlayerScreen(
                 onBack = { clickEvent.invoke(PlayerClickEvent.Back) },
             )
         }
-    ) {
+    ) { innerPadding ->
         var gameName by remember {
             mutableStateOf(TextFieldValue(""))
         }
 
         AprilBackground(
+            modifier = Modifier.padding(innerPadding),
             title = stringResource(id = R.string.player_title),
             subTitle = stringResource(id = R.string.player_description),
             buttonText = stringResource(id = R.string.next),

@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
@@ -69,6 +70,7 @@ fun AprilBackground(
                 ConstraintLayout(
                     modifier = Modifier
                         .fillMaxSize()
+                        .navigationBarsPadding()
                         .padding(vertical = 20.dp, horizontal = 16.dp),
                 ) {
                     val (upper, button) = createRefs()

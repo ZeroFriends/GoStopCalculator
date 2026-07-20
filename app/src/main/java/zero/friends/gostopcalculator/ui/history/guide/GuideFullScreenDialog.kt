@@ -61,10 +61,11 @@ fun GuideFullScreenDialog(
                     }
                 )
             }
-        ) {
+        ) { innerPadding ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(innerPadding)
                     .background(color = colorResource(id = R.color.orangey_red))
             ) {
                 Column(
@@ -94,6 +95,7 @@ fun GuideFullScreenDialog(
                         .background(color = colorResource(id = android.R.color.transparent))
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
+                        .navigationBarsPadding()
                         .padding(horizontal = 16.dp, vertical = 14.dp),
                     color = colorResource(id = android.R.color.transparent)
                 ) {

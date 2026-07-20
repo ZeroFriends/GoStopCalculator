@@ -96,7 +96,7 @@ private fun HistoryScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(color = colorResource(id = R.color.white))
+                .statusBarsPadding()
         ) {
             NewGame(
                 event = event,
@@ -174,6 +174,9 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: (Ga
             ) {
                 items(items = games, key = { it.id }) { game ->
                     RoundLog(game, onClick = { onClick(game) }, onClickMore = { onClickMore(game) })
+                }
+                item {
+                    Spacer(modifier = Modifier.navigationBarsPadding())
                 }
             }
         }

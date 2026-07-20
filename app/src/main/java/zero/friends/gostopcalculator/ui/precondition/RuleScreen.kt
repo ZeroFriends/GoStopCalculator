@@ -166,8 +166,9 @@ private fun RuleScreen(
                 onBack = { clickEvent(RuleClickEvent.Back) },
             )
         }
-    ) {
+    ) { innerPadding ->
         AprilBackground(
+            modifier = Modifier.padding(innerPadding),
             title = stringResource(R.string.rule_title),
             subTitle = stringResource(id = R.string.rule_subtitle),
             buttonText = stringResource(id = R.string.complete),
