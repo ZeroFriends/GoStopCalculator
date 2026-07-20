@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import dagger.hilt.android.AndroidEntryPoint
 import zero.friends.gostopcalculator.AdCallback
 import zero.friends.gostopcalculator.GoogleAdmob
@@ -22,11 +24,19 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val isDebugAdEnabled = remember {
+                mutableStateOf(GoogleAdmob.isDebugAdEnabled)
+            }
             GoStopTheme {
                 Navigator(
                     onBackPressed = {
                         finish()
                     },
+                    isDebugAdEnabled = isDebugAdEnabled.value,
+                    onToggleDebugAd = {
+                        GoogleAdmob.isDebugAdEnabled = !GoogleAdmob.isDebugAdEnabled
+                        isDebugAdEnabled.value = GoogleAdmob.isDebugAdEnabled
+                    }
                 ) { endAds ->
                     googleAdmob.showAd(
                         adCallback = { adCallback ->

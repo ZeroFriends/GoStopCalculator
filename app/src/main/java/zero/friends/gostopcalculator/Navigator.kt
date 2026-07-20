@@ -70,6 +70,8 @@ typealias endAds = () -> Unit
 @Composable
 fun Navigator(
     onBackPressed: () -> Unit,
+    isDebugAdEnabled: Boolean = true,
+    onToggleDebugAd: (() -> Unit)? = null,
     showAds: (endAds) -> Unit
 ) {
     val navController = rememberNavController()
@@ -88,7 +90,9 @@ fun Navigator(
                 },
                 onShowRound = { game ->
                     navController.navigate(route = Navigate.Board.Main.route(game.id))
-                }
+                },
+                isDebugAdEnabled = isDebugAdEnabled,
+                onToggleDebugAd = onToggleDebugAd
             )
 
             BackHandler(true, onBackPressed)

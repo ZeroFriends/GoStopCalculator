@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,8 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.domain.model.Game
+import zero.friends.gostopcalculator.BuildConfig
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.*
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
@@ -38,7 +40,9 @@ private sealed class HistoryEvent {
 fun HistoryScreen(
     viewModel: HistoryViewModel = hiltViewModel(),
     onStartGame: () -> Unit = {},
-    onShowRound: (Game) -> Unit = {}
+    onShowRound: (Game) -> Unit = {},
+    isDebugAdEnabled: Boolean = true,
+    onToggleDebugAd: (() -> Unit)? = null
 ) {
     val uiState by viewModel.getUiState().collectAsState()
     var dialogGameId by remember {
@@ -65,40 +69,58 @@ fun HistoryScreen(
         GuideFullScreenDialog(onDismiss = { showGuide = false })
     }
 
-    HistoryScreen(uiState) { event ->
-        when (event) {
-            is HistoryEvent.ShowRound -> {
-                onShowRound(event.game)
+    HistoryScreenContent(
+        uiState = uiState,
+        event = { event ->
+            when (event) {
+                is HistoryEvent.ShowRound -> onShowRound(event.game)
+                HistoryEvent.ShowGuide -> showGuide = true
+                HistoryEvent.StartGame -> onStartGame()
+                is HistoryEvent.ShowMore -> dialogGameId = event.game.id
             }
-            HistoryEvent.ShowGuide -> {
-                showGuide = true
-            }
-            HistoryEvent.StartGame -> {
-                onStartGame()
-            }
-            is HistoryEvent.ShowMore -> {
-                dialogGameId = event.game.id
-            }
+        },
+        isDebugAdEnabled = isDebugAdEnabled,
+        onToggleDebugAd = onToggleDebugAd
+    )
+}
+
+@Composable
+private fun HistoryScreenContent(
+    uiState: HistoryUiState,
+    event: (HistoryEvent) -> Unit = {},
+    isDebugAdEnabled: Boolean = true,
+    onToggleDebugAd: (() -> Unit)? = null
+) {
+    Scaffold { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(color = colorResource(id = R.color.white))
+        ) {
+            NewGame(
+                event = event,
+                isDebugAdEnabled = isDebugAdEnabled,
+                onToggleDebugAd = onToggleDebugAd
+            )
+
+            GoStopDivider(Modifier.padding(vertical = 16.dp))
+
+            History(
+                games = uiState.games,
+                onClick = { event(HistoryEvent.ShowRound(it)) },
+                onClickMore = { event(HistoryEvent.ShowMore(it)) }
+            )
         }
     }
 }
 
 @Composable
-private fun HistoryScreen(uiState: HistoryUiState, event: (HistoryEvent) -> Unit = {}) {
-    Column(modifier = Modifier.background(color = colorResource(id = R.color.white))) {
-        NewGame(event)
-
-        GoStopDivider(Modifier.padding(vertical = 16.dp))
-
-        History(
-            uiState.games,
-            onClick = { event(HistoryEvent.ShowRound(it)) },
-            onClickMore = { event(HistoryEvent.ShowMore(it)) })
-    }
-}
-
-@Composable
-private fun NewGame(event: (HistoryEvent) -> Unit) {
+private fun NewGame(
+    event: (HistoryEvent) -> Unit,
+    isDebugAdEnabled: Boolean = true,
+    onToggleDebugAd: (() -> Unit)? = null
+) {
     Column(Modifier.padding(16.dp)) {
         SubTitleText(stringResource(R.string.new_game))
         Spacer(modifier = Modifier.height(4.dp))
@@ -108,12 +130,23 @@ private fun NewGame(event: (HistoryEvent) -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             TitleText(text = stringResource(id = R.string.today_game))
-            RoundedCornerText(
-                text = stringResource(id = R.string.guide),
-                color = colorResource(id = R.color.orangey_red),
-                fontSize = 14.sp,
-                onClick = { event(HistoryEvent.ShowGuide) }
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (BuildConfig.DEBUG && onToggleDebugAd != null) {
+                    RoundedCornerText(
+                        text = if (isDebugAdEnabled) "Ad ON" else "Ad OFF",
+                        color = if (isDebugAdEnabled) colorResource(id = R.color.orangey_red) else colorResource(id = R.color.dusty_gray),
+                        fontSize = 14.sp,
+                        onClick = onToggleDebugAd
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                RoundedCornerText(
+                    text = stringResource(id = R.string.guide),
+                    color = colorResource(id = R.color.orangey_red),
+                    fontSize = 14.sp,
+                    onClick = { event(HistoryEvent.ShowGuide) }
+                )
+            }
         }
         Spacer(modifier = Modifier.padding(18.dp))
         GoStopButton(stringResource(id = R.string.start), onClick = { event(HistoryEvent.StartGame) })
@@ -136,9 +169,8 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: (Ga
             )
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(vertical = 10.dp)
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 items(items = games, key = { it.id }) { game ->
                     RoundLog(game, onClick = { onClick(game) }, onClickMore = { onClickMore(game) })
@@ -146,13 +178,6 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: (Ga
             }
         }
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-private fun RoundLogPreview() {
-    RoundLog(Game(0, "gameTitle", "2021.11.21"))
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -206,19 +231,16 @@ private fun RoundLog(game: Game, onClick: () -> Unit = {}, onClickMore: () -> Un
 @Preview("HistoryPreview", showBackground = true)
 @Composable
 private fun HistoryPreview() {
-    HistoryScreen(HistoryUiState())
+    HistoryScreenContent(HistoryUiState())
 }
 
 @Preview("HistoryPreviewWithItem", showBackground = true)
 @Composable
 private fun HistoryPreviewWithItem() {
-    HistoryScreen(
+    HistoryScreenContent(
         HistoryUiState(
             games = listOf(
-                Game(1, "첫 번째 게임", "2021.11.22"),
-                Game(2, "두 번째 게임", "2021.11.23"),
-                Game(3, "세 번째 게임", "2021.11.24"),
-                Game(4, "네 번째 게임", "2021.11.25")
+                Game(1, "즐거운 고스톱", "2022-01-01")
             )
         )
     )

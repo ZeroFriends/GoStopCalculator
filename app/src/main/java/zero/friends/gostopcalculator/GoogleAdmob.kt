@@ -10,6 +10,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.qualifiers.ActivityContext
+import kotlinx.coroutines.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -25,11 +26,20 @@ class GoogleAdmob @Inject constructor(
     @ActivityContext private val context: Context,
     netWorkChecker: NetWorkChecker
 ) {
+    private val scope = CoroutineScope(Dispatchers.Main.immediate + SupervisorJob())
+    private var retryJob: Job? = null
+    private var retryCount = 0
+    private val maxRetryCount = 3
+
     private var interstitialAd: InterstitialAd? = null
-
-    private lateinit var adCallback: (AdCallback) -> Unit
-
     private var isConnect = false
+    private var isLoading = false
+
+    companion object {
+        var isDebugAdEnabled: Boolean = true
+        private var lastAdDismissedTime: Long = 0L
+        private const val AD_COOLDOWN_MILLIS: Long = 30_000L
+    }
 
     init {
         netWorkChecker(
@@ -38,67 +48,113 @@ class GoogleAdmob @Inject constructor(
                 reload()
             },
             onLost = {
+                cancelRetry()
                 interstitialAd = null
                 isConnect = false
             }
         )
     }
 
-    private fun reload() {
+    private fun cancelRetry() {
+        retryJob?.cancel()
+        retryJob = null
+    }
+
+    fun reload() {
+        if (isLoading || interstitialAd != null) return
+        isLoading = true
+
+        val adUnitId = if (BuildConfig.DEBUG) {
+            "ca-app-pub-3940256099942544/1033173712"
+        } else {
+            BuildConfig.AD_UNIT_ID
+        }
+
         InterstitialAd.load(
             context,
-            BuildConfig.AD_UNIT_ID,
+            adUnitId,
             AdRequest.Builder().build(),
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Timber.tag("🔥zero:onAdFailedToLoad").e("$adError")
-                    FirebaseCrashlytics.getInstance().recordException(
-                        AdException("AD_UNIT_ID = ${BuildConfig.AD_UNIT_ID} / code : ${adError.code} / ${adError.message}")
-                    )
-                    adCallback(AdCallback.OnError)
+                    isLoading = false
                     interstitialAd = null
+                    Timber.tag("🔥GoogleAdmob").e("onAdFailedToLoad: $adError")
+                    FirebaseCrashlytics.getInstance().recordException(
+                        AdException("AD_UNIT_ID = $adUnitId / code : ${adError.code} / ${adError.message}")
+                    )
+
+                    cancelRetry()
+                    if (retryCount < maxRetryCount) {
+                        retryCount++
+                        retryJob = scope.launch {
+                            delay(5000L)
+                            if (isConnect && interstitialAd == null) {
+                                reload()
+                            }
+                        }
+                    }
                 }
 
-                override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                    this@GoogleAdmob.interstitialAd = interstitialAd
+                override fun onAdLoaded(ad: InterstitialAd) {
+                    isLoading = false
+                    retryCount = 0
+                    cancelRetry()
+                    interstitialAd = ad
+                    Timber.tag("🔥GoogleAdmob").d("onAdLoaded Success")
                 }
             }
         )
     }
 
     fun showAd(adCallback: (AdCallback) -> Unit) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && !isDebugAdEnabled) {
             adCallback(AdCallback.OnSuccess)
             return
         }
-        val interstitialAd = interstitialAd
 
-        if (interstitialAd != null) {
-            interstitialAd.fullScreenContentCallback = object : FullScreenContentCallback() {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastAdDismissedTime < AD_COOLDOWN_MILLIS) {
+            adCallback(AdCallback.OnSuccess)
+            return
+        }
+
+        val currentAd = interstitialAd
+
+        if (currentAd != null) {
+            currentAd.fullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
                     super.onAdDismissedFullScreenContent()
+                    lastAdDismissedTime = System.currentTimeMillis()
+                    interstitialAd = null
                     adCallback(AdCallback.OnSuccess)
+                    reload()
                 }
 
                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                     super.onAdFailedToShowFullScreenContent(adError)
-                    Timber.tag("🔥GoogleAdmob").e(adError.message)
+                    interstitialAd = null
+                    Timber.tag("🔥GoogleAdmob").e("onAdFailedToShow: ${adError.message}")
                     FirebaseCrashlytics.getInstance().recordException(
                         AdException("Failed to show ad: ${adError.message}")
                     )
                     adCallback(AdCallback.OnError)
+                    reload()
                 }
             }
-            interstitialAd.show(context as Activity)
+            val activity = context as? Activity
+            if (activity != null && !activity.isFinishing && !activity.isDestroyed) {
+                currentAd.show(activity)
+            } else {
+                adCallback(AdCallback.OnError)
+                reload()
+            }
         } else {
             if (isConnect) {
                 adCallback(AdCallback.OnError)
             } else {
                 adCallback(AdCallback.LostNetwork)
             }
+            reload()
         }
-
-        reload()
     }
-
 }
