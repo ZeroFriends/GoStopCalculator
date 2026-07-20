@@ -31,13 +31,13 @@ fun GoStopButtonBackground(
     contents: @Composable BoxScope.() -> Unit = {},
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .navigationBarsPadding()
             .padding(top = 12.dp, bottom = 20.dp),
     ) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .weight(1f),
         ) {
             contents()

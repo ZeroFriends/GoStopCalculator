@@ -1,7 +1,12 @@
 package zero.friends.gostopcalculator.ui.board.main
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,11 +15,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
@@ -132,12 +138,6 @@ private fun BoardScreen(
     val showBottomGradient by remember { derivedStateOf { historyListState.canScrollForward } }
     val showTopGradient by remember { derivedStateOf { historyListState.canScrollBackward } }
 
-    val isScrolled by remember {
-        derivedStateOf {
-            historyListState.firstVisibleItemIndex > 0 || historyListState.firstVisibleItemScrollOffset > 0
-        }
-    }
-
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -152,25 +152,72 @@ private fun BoardScreen(
     ) { innerPadding ->
         GoStopButtonBackground(
             modifier = Modifier
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp),
             buttonString = stringResource(id = R.string.start_game),
             onClick = { event(BoardEvent.StartGame) },
             showGradient = showBottomGradient,
             contents = {
-                Column {
-                    IncomeHistory(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        players = uiState.playerResults,
-                        onClickCalculated = { event(BoardEvent.OpenCalculated) },
-                        hide = isScrolled
-                    )
-                    Spacer(modifier = Modifier.padding(9.dp))
-                    GameHistory(
-                        uiState = uiState,
-                        event = event,
-                        lazyListState = historyListState,
-                        showTopGradient = showTopGradient
-                    )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(
+                        state = historyListState,
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
+                        item {
+                            IncomeHistory(
+                                players = uiState.playerResults,
+                                onClickCalculated = { event(BoardEvent.OpenCalculated) }
+                            )
+                        }
+
+                        item {
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = stringResource(id = R.string.game_history),
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+
+                        if (uiState.gameHistories.isEmpty()) {
+                            item {
+                                EmptyHistory(
+                                    painter = painterResource(id = R.drawable.ic_error_outline_black),
+                                    title = stringResource(R.string.empty_game_log),
+                                    subTitle = stringResource(R.string.info_game_start)
+                                )
+                            }
+                        } else {
+                            val histories = uiState.gameHistories.toList().asReversed()
+                            itemsIndexed(histories) { index, (roundId, gamer) ->
+                                RoundBox(
+                                    index = uiState.gameHistories.size - index - 1,
+                                    gamers = gamer,
+                                    onClickDetail = { event(BoardEvent.Detail(roundId)) },
+                                    onClickMore = { event(BoardEvent.More(roundId)) }
+                                )
+                            }
+                        }
+                    }
+
+                    if (showTopGradient) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(20.dp)
+                                .align(Alignment.TopCenter)
+                                .background(
+                                    brush = Brush.verticalGradient(
+                                        colors = listOf(
+                                            LightGray,
+                                            Color.Transparent
+                                        )
+                                    )
+                                )
+                        )
+                    }
                 }
             }
         )
@@ -182,8 +229,7 @@ private fun BoardScreen(
 private fun IncomeHistory(
     modifier: Modifier = Modifier,
     players: List<PlayerResult> = emptyList(),
-    onClickCalculated: () -> Unit = {},
-    hide: Boolean
+    onClickCalculated: () -> Unit = {}
 ) {
     ContentsCard(
         modifier = modifier.fillMaxWidth(),
@@ -211,75 +257,16 @@ private fun IncomeHistory(
                     )
                 }
                 LazyVerticalGrid(
-                    modifier = Modifier.animateContentSize(),
+                    modifier = Modifier.heightIn(max = 240.dp),
                     columns = GridCells.Fixed(2),
                 ) {
-                    itemsIndexed(if (hide) emptyList() else players) { index: Int, item: PlayerResult ->
+                    itemsIndexed(players) { index: Int, item: PlayerResult ->
                         PlayerItem(index = index, playerResult = item)
                     }
                 }
             }
         }
     )
-}
-
-@Composable
-private fun GameHistory(
-    modifier: Modifier = Modifier,
-    uiState: BoardUiState,
-    event: (BoardEvent) -> Unit = {},
-    lazyListState: LazyListState,
-    showTopGradient: Boolean,
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = stringResource(id = R.string.game_history),
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        if (uiState.gameHistories.isEmpty()) {
-            EmptyHistory(
-                painter = painterResource(id = R.drawable.ic_error_outline_black),
-                title = stringResource(R.string.empty_game_log),
-                subTitle = stringResource(R.string.info_game_start)
-            )
-        } else {
-            Spacer(modifier = Modifier.padding(5.dp))
-            Box {
-                LazyColumn(
-                    state = lazyListState,
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp)
-                ) {
-                    itemsIndexed(uiState.gameHistories.toList().asReversed()) { index, (roundId, gamer) ->
-                        RoundBox(
-                            index = uiState.gameHistories.size - index - 1,
-                            gamers = gamer,
-                            onClickDetail = { event(BoardEvent.Detail(roundId)) },
-                            onClickMore = { event(BoardEvent.More(roundId)) }
-                        )
-                    }
-                }
-                if (showTopGradient) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(20.dp)
-                            .align(Alignment.TopCenter)
-                            .background(
-                                brush = Brush.verticalGradient(
-                                    colors = listOf(
-                                        LightGray,
-                                        Color.Transparent
-                                    )
-                                )
-                            )
-                    )
-                }
-            }
-        }
-    }
 }
 
 @Composable

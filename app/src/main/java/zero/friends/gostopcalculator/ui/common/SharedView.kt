@@ -1,11 +1,29 @@
 package zero.friends.gostopcalculator.ui.common
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -27,9 +45,6 @@ import zero.friends.domain.model.PlayerResult
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
 import zero.friends.gostopcalculator.util.getMoneyColor
-
-
-import androidx.compose.foundation.layout.statusBarsPadding
 
 @Composable
 fun CenterTextTopBar(
@@ -119,9 +134,9 @@ fun ContentsCard(
     boxContents: @Composable (BoxScope.() -> Unit)
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.padding(4.dp),
         shape = RoundedCornerShape(18.dp),
-        backgroundColor = colorResource(id = R.color.white),
+        backgroundColor = Color.White,
         elevation = 6.dp,
         onClick = onClick ?: {},
         enabled = onClick != null
