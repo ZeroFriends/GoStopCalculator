@@ -31,25 +31,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Decode Keystore File from Secret
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+      - name: Build Signed Production AAB
         run: |
-          mkdir -p app/keystore
-          echo "$KEYSTORE_BASE64" | base64 --decode > app/keystore/release.keystore.jks
-
-      - name: Build Signed Real Release AAB
-        env:
-          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: |
-          ./gradlew :app:bundleRelease \
-            -Pandroid.injected.signing.store.file=$(pwd)/app/keystore/release.keystore.jks \
-            -Pandroid.injected.signing.store.password=$STORE_PASSWORD \
-            -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
-            -Pandroid.injected.signing.key.password=$KEY_PASSWORD \
-            --stacktrace --console=plain
+          ./gradlew :app:bundleRelease --stacktrace --console=plain
 
       - name: Upload Signed App Bundle (.aab) Artifact
         uses: actions/upload-artifact@v4
