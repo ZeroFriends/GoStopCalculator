@@ -9,6 +9,9 @@ on:
       - '*.*.*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-aab:
     name: Build Signed Production App Bundle (.aab)
@@ -55,3 +58,14 @@ jobs:
           name: GoStopCalculator-Signed-Production-AAB
           path: app/build/outputs/bundle/release/*.aab
           retention-days: 60
+
+      - name: Create GitHub Release & Upload AAB Asset
+        uses: softprops/action-gh-release@v2
+        if: success()
+        with:
+          name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: app/build/outputs/bundle/release/*.aab
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
