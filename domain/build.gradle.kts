@@ -1,8 +1,18 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.ksp)
-    id("java-library")
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+}
+
+android {
+    namespace = "zero.friends.domain"
+    compileSdk = libs.versions.compileSdk.get().toInt()
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
 }
 
 kotlin {
@@ -11,26 +21,32 @@ kotlin {
         apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
     }
     jvmToolchain(21)
-}
 
-tasks.test {
-    testLogging {
-        events("passed", "skipped", "failed")
+    androidTarget()
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.kotlin.coroutines.core)
+            implementation(libs.kotlin.serialization.json)
+            implementation(libs.kotlin.inject.runtime)
+        }
+        androidMain.dependencies {
+            implementation(libs.javax.inject)
+        }
+        commonTest.dependencies {
+            implementation(libs.kotlin.coroutines.test)
+        }
     }
 }
+
 dependencies {
-    implementation(libs.javax.inject)
-    implementation(libs.kotlin.coroutines.core)
-
-    implementation(libs.kotlin.serialization.json)
-    implementation(libs.retrofit.kotlinx.serialization)
-    
-    // Test
-    testImplementation(libs.junit)
-    testImplementation(libs.kotlin.coroutines.test)
+    add("kspAndroid", libs.kotlin.inject.compiler.ksp)
+    add("kspIosX64", libs.kotlin.inject.compiler.ksp)
+    add("kspIosArm64", libs.kotlin.inject.compiler.ksp)
+    add("kspIosSimulatorArm64", libs.kotlin.inject.compiler.ksp)
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
+

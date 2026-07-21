@@ -7,7 +7,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import zero.friends.gostopcalculator.R
@@ -53,7 +52,7 @@ fun ScorePhaseLayout(
             buttonEnabled = buttonEnabled,
             onClick = onButtonClick,
         ) {
-            Column {
+            Column(modifier = Modifier.padding(16.dp)) {
                 DescriptionBox(
                     mainText = mainText,
                     subText = subText
