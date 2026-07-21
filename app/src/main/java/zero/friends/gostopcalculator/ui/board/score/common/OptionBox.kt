@@ -38,7 +38,7 @@ fun OptionBox(
         Text(
             modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp),
             text = text,
-            color = if (isSelected) colorResource(id = R.color.white) else color
+            color = if (isSelected) Color.White else color
         )
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.colorResource
@@ -123,7 +124,7 @@ fun ImageManual(script: List<Script>, imageRes: List<Int>) {
             Column(
                 modifier = Modifier
                     .padding(16.dp)
-                    .background(color = colorResource(id = R.color.white), shape = RoundedCornerShape(4.dp))
+                    .background(color = Color.White, shape = RoundedCornerShape(4.dp))
                     .shadow(1.dp, shape = RoundedCornerShape(1.dp)),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally

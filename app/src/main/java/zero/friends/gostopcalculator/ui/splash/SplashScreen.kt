@@ -34,7 +34,7 @@ fun SplashScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorResource(id = R.color.white))
+            .background(color = Color.White)
     ) {
         LottieAnimation(
             composition,

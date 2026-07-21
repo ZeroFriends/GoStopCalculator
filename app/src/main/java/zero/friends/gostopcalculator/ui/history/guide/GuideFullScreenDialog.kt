@@ -101,7 +101,7 @@ fun GuideFullScreenDialog(
                 ) {
                     Button(
                         modifier = Modifier,
-                        colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(id = R.color.black)),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Black),
                         shape = RoundedCornerShape(26.dp),
                         contentPadding = PaddingValues(16.dp),
                         onClick = {
@@ -113,7 +113,7 @@ fun GuideFullScreenDialog(
                     ) {
                         Text(
                             text = stringResource(if (isEndPage) R.string.start else R.string.next),
-                            color = colorResource(id = R.color.white),
+                            color = Color.White,
                             fontSize = 16.sp
                         )
                     }

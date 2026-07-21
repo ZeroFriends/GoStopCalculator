@@ -10,6 +10,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -65,14 +66,14 @@ fun NameEditDialog(
                     textAlign = TextAlign.Center,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = colorResource(id = R.color.black),
+                    color = Color.Black,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.padding(bottom = 40.dp))
                 GoStopOutLinedTextField(
                     text = editPlayerName,
                     hint = player.name,
-                    color = colorResource(id = R.color.black),
+                    color = Color.Black,
                     onValueChange = {
                         if (it.text.length < 8) editPlayerName = it
                         else Toast.makeText(
@@ -97,6 +98,6 @@ fun NameEditDialog(
             )
         },
         shape = RoundedCornerShape(16.dp),
-        contentColor = colorResource(id = R.color.black)
+        contentColor = Color.Black
     )
 }

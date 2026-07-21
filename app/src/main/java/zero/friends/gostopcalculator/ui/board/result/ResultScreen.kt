@@ -357,7 +357,7 @@ private fun TraceTableRow(line: RoundTraceFormatter.TraceLine) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(colorResource(id = R.color.white))
+            .background(Color.White)
             .padding(horizontal = 10.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

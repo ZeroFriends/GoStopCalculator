@@ -30,7 +30,7 @@ fun GoStopButtonBackground(
     onClick: () -> Unit = {},
     content: @Composable BoxScope.() -> Unit = {},
 ) {
-    val backgroundColor = colorResource(id = R.color.white)
+    val backgroundColor = Color.White
 
     Column(
         modifier = modifier

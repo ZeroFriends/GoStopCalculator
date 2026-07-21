@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -54,13 +55,13 @@ fun AprilBackground(
             Text(
                 title,
                 fontSize = 24.sp,
-                color = colorResource(id = R.color.white),
+                color = Color.White,
                 modifier = textModifier
             )
             Text(
                 subTitle,
                 fontSize = 14.sp,
-                color = colorResource(id = R.color.white),
+                color = Color.White,
                 modifier = textModifier.padding(bottom = 26.dp)
             )
             Surface(

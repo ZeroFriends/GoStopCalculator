@@ -10,6 +10,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,7 +24,7 @@ fun SellingInfoDialog(onClose: () -> Unit = {}) {
     Dialog(onDismissRequest = onClose) {
         Column(
             modifier = Modifier
-                .background(colorResource(id = R.color.white))
+                .background(Color.White)
                 .padding(12.dp)
         ) {
             Image(
@@ -37,7 +38,7 @@ fun SellingInfoDialog(onClose: () -> Unit = {}) {
             ) {
                 Text(
                     text = stringResource(id = android.R.string.ok),
-                    color = colorResource(id = R.color.white),
+                    color = Color.White,
                     fontSize = 16.sp
                 )
             }

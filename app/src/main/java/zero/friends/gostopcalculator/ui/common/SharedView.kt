@@ -59,8 +59,8 @@ fun CenterTextTopBar(
         .defaultMinSize(60.dp, 60.dp)
         .background(Color.Transparent)
 
-    val iconColor = if (isRed) R.color.white else R.color.black
-    val topBarBackgroundColor = if (isRed) colorResource(id = R.color.orangey_red) else colorResource(id = R.color.white)
+    val iconColor = if (isRed) Color.White else Color.Black
+    val topBarBackgroundColor = if (isRed) colorResource(id = R.color.orangey_red) else Color.White
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -85,7 +85,7 @@ fun CenterTextTopBar(
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_topbar_back),
                                 contentDescription = "Back",
-                                tint = colorResource(id = iconColor)
+                                tint = iconColor
                             )
                         }
                     }
@@ -99,7 +99,7 @@ fun CenterTextTopBar(
                                 Icon(
                                     painter = actionIcon,
                                     contentDescription = "Close",
-                                    tint = colorResource(id = iconColor)
+                                    tint = iconColor
                                 )
                             }
                         } else if (actionText != null) {
@@ -119,7 +119,7 @@ fun CenterTextTopBar(
                 .fillMaxWidth()
                 .statusBarsPadding(),
             backgroundColor = Color.Transparent,
-            contentColor = if (isRed) colorResource(id = R.color.white) else colorResource(id = R.color.black),
+            contentColor = if (isRed) Color.White else Color.Black,
             elevation = 0.dp
         )
     }

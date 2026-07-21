@@ -118,7 +118,7 @@ fun NumberTextField(
             singleLine = true,
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = colorResource(id = android.R.color.transparent),
-                cursorColor = colorResource(id = R.color.black),
+                cursorColor = Color.Black,
                 focusedIndicatorColor = colorResource(id = R.color.orangey_red),
                 disabledTextColor = hintColor,
                 disabledIndicatorColor = hintColor.copy(alpha = 0.38f)

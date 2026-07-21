@@ -15,6 +15,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -104,7 +105,7 @@ private fun RuleHelpDialog(
     ) {
         Column(
             modifier = Modifier
-                .background(colorResource(id = R.color.white))
+                .background(Color.White)
 
         ) {
             Box(
@@ -142,7 +143,7 @@ private fun RuleHelpDialog(
             ) {
                 Text(
                     text = stringResource(id = android.R.string.ok),
-                    color = colorResource(id = R.color.white),
+                    color = Color.White,
                     fontSize = 16.sp
                 )
             }
