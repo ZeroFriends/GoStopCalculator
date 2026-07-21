@@ -95,14 +95,12 @@ private fun PrepareScreen(
         }
     ) { innerPadding ->
         GoStopButtonBackground(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.padding(innerPadding),
             buttonString = stringResource(id = R.string.complete),
             buttonEnabled = uiState.selectedPlayers.size >= 2,
             onClick = { event(PrepareEvent.Complete) },
-            contents = {
-                Column {
+        ) {
+            Column {
                     DescriptionBox(
                         mainText = stringResource(id = R.string.start),
                         subText = stringResource(id = R.string.start_description)
@@ -112,10 +110,8 @@ private fun PrepareScreen(
                         uiState = uiState,
                         event = event
                     )
-                }
-            },
-        )
-
+            }
+        }
     }
 }
 

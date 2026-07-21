@@ -29,7 +29,7 @@ fun ScorePhaseLayout(
     onBack: () -> Unit,
     onExit: () -> Unit,
     onButtonClick: () -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
 
@@ -47,23 +47,20 @@ fun ScorePhaseLayout(
         }
     ) { innerPadding ->
         GoStopButtonBackground(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.padding(innerPadding),
             buttonString = buttonText,
             buttonEnabled = buttonEnabled,
             onClick = onButtonClick,
-            contents = {
-                Column {
-                    DescriptionBox(
-                        mainText = mainText,
-                        subText = subText
-                    )
-                    Spacer(modifier = Modifier.padding(22.dp))
-                    content()
-                }
-            },
-        )
+        ) {
+            Column {
+                DescriptionBox(
+                    mainText = mainText,
+                    subText = subText
+                )
+                Spacer(modifier = Modifier.padding(22.dp))
+                content()
+            }
+        }
     }
 }
 

@@ -1,12 +1,6 @@
 package zero.friends.gostopcalculator.ui.board.main
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -40,8 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.LightGray
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -80,7 +73,7 @@ fun BoardScreen(
     onBack: () -> Unit = {},
     openDetailScreen: (gameId: Long, roundId: Long) -> Unit = { _, _ -> },
     openCalculated: (gameId: Long) -> Unit = {},
-    openRule: (gameId: Long) -> Unit = {}
+    openRule: (gameId: Long) -> Unit = {},
 ) {
     val scaffoldState = rememberScaffoldState()
     val uiState by boardViewModel.getUiState().collectAsState()
@@ -101,9 +94,11 @@ fun BoardScreen(
             is BoardEvent.Detail -> {
                 openDetailScreen(uiState.game.id, event.roundId)
             }
+
             is BoardEvent.More -> {
                 openDialog = event.roundId
             }
+
             BoardEvent.OpenCalculated -> openCalculated(uiState.game.id)
             BoardEvent.OpenRule -> openRule(uiState.game.id)
         }
@@ -132,7 +127,7 @@ fun BoardScreen(
 private fun BoardScreen(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     uiState: BoardUiState = BoardUiState(),
-    event: (BoardEvent) -> Unit = {}
+    event: (BoardEvent) -> Unit = {},
 ) {
     val historyListState = rememberLazyListState()
     val showBottomGradient by remember { derivedStateOf { historyListState.canScrollForward } }
@@ -151,76 +146,72 @@ private fun BoardScreen(
         }
     ) { innerPadding ->
         GoStopButtonBackground(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.padding(innerPadding),
             buttonString = stringResource(id = R.string.start_game),
             onClick = { event(BoardEvent.StartGame) },
             showGradient = showBottomGradient,
-            contents = {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    LazyColumn(
-                        state = historyListState,
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        contentPadding = PaddingValues(bottom = 16.dp)
-                    ) {
-                        item {
-                            IncomeHistory(
-                                players = uiState.playerResults,
-                                onClickCalculated = { event(BoardEvent.OpenCalculated) }
-                            )
-                        }
+        ) {
+            LazyColumn(
+                state = historyListState,
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                item {
+                    IncomeHistory(
+                        players = uiState.playerResults,
+                        onClickCalculated = { event(BoardEvent.OpenCalculated) }
+                    )
+                }
 
-                        item {
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = stringResource(id = R.string.game_history),
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
+                item {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = stringResource(id = R.string.game_history),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
 
-                        if (uiState.gameHistories.isEmpty()) {
-                            item {
-                                EmptyHistory(
-                                    painter = painterResource(id = R.drawable.ic_error_outline_black),
-                                    title = stringResource(R.string.empty_game_log),
-                                    subTitle = stringResource(R.string.info_game_start)
-                                )
-                            }
-                        } else {
-                            val histories = uiState.gameHistories.toList().asReversed()
-                            itemsIndexed(histories) { index, (roundId, gamer) ->
-                                RoundBox(
-                                    index = uiState.gameHistories.size - index - 1,
-                                    gamers = gamer,
-                                    onClickDetail = { event(BoardEvent.Detail(roundId)) },
-                                    onClickMore = { event(BoardEvent.More(roundId)) }
-                                )
-                            }
-                        }
+                if (uiState.gameHistories.isEmpty()) {
+                    item {
+                        EmptyHistory(
+                            painter = painterResource(id = R.drawable.ic_error_outline_black),
+                            title = stringResource(R.string.empty_game_log),
+                            subTitle = stringResource(R.string.info_game_start)
+                        )
                     }
-
-                    if (showTopGradient) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(20.dp)
-                                .align(Alignment.TopCenter)
-                                .background(
-                                    brush = Brush.verticalGradient(
-                                        colors = listOf(
-                                            LightGray,
-                                            Color.Transparent
-                                        )
-                                    )
-                                )
+                } else {
+                    val histories = uiState.gameHistories.toList().asReversed()
+                    itemsIndexed(histories) { index, (roundId, gamer) ->
+                        RoundBox(
+                            index = uiState.gameHistories.size - index - 1,
+                            gamers = gamer,
+                            onClickDetail = { event(BoardEvent.Detail(roundId)) },
+                            onClickMore = { event(BoardEvent.More(roundId)) }
                         )
                     }
                 }
             }
-        )
+
+            if (showTopGradient) {
+                val topGradientColor = colorResource(id = R.color.white)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(24.dp)
+                        .align(Alignment.TopCenter)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    topGradientColor,
+                                    topGradientColor.copy(alpha = 0f)
+                                )
+                            )
+                        )
+                )
+            }
+        }
     }
 }
 
@@ -229,7 +220,7 @@ private fun BoardScreen(
 private fun IncomeHistory(
     modifier: Modifier = Modifier,
     players: List<PlayerResult> = emptyList(),
-    onClickCalculated: () -> Unit = {}
+    onClickCalculated: () -> Unit = {},
 ) {
     ContentsCard(
         modifier = modifier.fillMaxWidth(),

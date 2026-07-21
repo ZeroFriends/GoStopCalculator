@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.LightGray
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,44 +23,46 @@ import zero.friends.gostopcalculator.ui.common.GoStopButton
 
 @Composable
 fun GoStopButtonBackground(
-    modifier: Modifier = Modifier.padding(horizontal = 16.dp),
+    modifier: Modifier = Modifier,
     buttonString: String,
     buttonEnabled: Boolean = true,
     showGradient: Boolean = false,
     onClick: () -> Unit = {},
-    contents: @Composable BoxScope.() -> Unit = {},
+    content: @Composable BoxScope.() -> Unit = {},
 ) {
+    val backgroundColor = colorResource(id = R.color.white)
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .navigationBarsPadding()
-            .padding(top = 12.dp, bottom = 20.dp),
+            .navigationBarsPadding(),
     ) {
         Box(
             modifier = Modifier
-                .weight(1f),
+                .weight(1f)
+                .fillMaxWidth(),
         ) {
-            contents()
+            content()
             if (showGradient) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(40.dp)
+                        .height(28.dp)
                         .align(Alignment.BottomCenter)
                         .background(
                             brush = Brush.verticalGradient(
                                 colors = listOf(
-                                    Color.Transparent,
-                                    LightGray
+                                    backgroundColor.copy(alpha = 0f),
+                                    backgroundColor
                                 )
                             )
                         )
                 )
             }
         }
-        
+
         GoStopButton(
-            modifier = Modifier.padding(top = 10.dp, start = 16.dp, end = 16.dp),
+            modifier = Modifier.padding(top = 10.dp, bottom = 12.dp, start = 16.dp, end = 16.dp),
             text = buttonString,
             buttonEnabled = buttonEnabled,
             onClick = onClick

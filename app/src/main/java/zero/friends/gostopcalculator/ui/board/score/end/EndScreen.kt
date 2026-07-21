@@ -61,9 +61,7 @@ private fun EndScreen(
         }
     ) { innerPadding ->
         GoStopButtonBackground(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.padding(innerPadding),
             buttonString = stringResource(id = R.string.save),
             onClick = { onClick() }
         ) {
