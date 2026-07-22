@@ -62,6 +62,7 @@ kotlin {
             implementation(libs.kotlin.coroutines.core)
             implementation(libs.kotlin.serialization.json)
             implementation(libs.androidx.lifecycle.viewmodel.kmp)
+            implementation(libs.androidx.lifecycle.viewmodel.compose)
             implementation(libs.kotlin.inject.runtime)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)

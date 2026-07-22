@@ -1,6 +1,5 @@
 package zero.friends.gostopcalculator.ui.dialog
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,34 +7,36 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Player
-import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.edit
+import zero.friends.gostopcalculator.shared.generated.resources.edit_name
 import zero.friends.gostopcalculator.ui.common.GoStopButton
 import zero.friends.gostopcalculator.ui.common.GoStopOutLinedTextField
 import zero.friends.gostopcalculator.ui.precondition.PlayerViewModel
 
 @Composable
 fun NameEditDialog(
-    viewModel: PlayerViewModel = hiltViewModel(),
+    viewModel: PlayerViewModel,
     player: Player,
     onClose: () -> Unit = {}
 ) {
-    val context = LocalContext.current
     var editPlayerName by remember {
-        mutableStateOf(TextFieldValue("", selection = TextRange(player.name.length)))
+        mutableStateOf(TextFieldValue(player.name, selection = TextRange(player.name.length)))
     }
 
     var error by remember {
@@ -62,7 +63,7 @@ fun NameEditDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(R.string.edit_name),
+                    text = stringResource(Res.string.edit_name),
                     textAlign = TextAlign.Center,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
@@ -75,15 +76,14 @@ fun NameEditDialog(
                     hint = player.name,
                     color = Color.Black,
                     onValueChange = {
-                        if (it.text.length < 8) editPlayerName = it
-                        else Toast.makeText(
-                            context,
-                            context.getString(R.string.over_player_name_alert),
-                            Toast.LENGTH_SHORT
-                        ).show()
-
+                        if (it.text.length <= 8) {
+                            editPlayerName = it
+                            error = ""
+                        } else {
+                            error = "8자를 초과할 수 없습니다."
+                        }
                     },
-                    error = error,
+                    error = error.ifEmpty { null },
                     showKeyboard = true,
                     onDone = editPlayer
                 )
@@ -92,7 +92,7 @@ fun NameEditDialog(
         },
         confirmButton = {
             GoStopButton(
-                text = stringResource(R.string.edit),
+                text = stringResource(Res.string.edit),
                 modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp),
                 onClick = editPlayer
             )

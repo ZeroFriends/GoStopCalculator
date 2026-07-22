@@ -1,19 +1,18 @@
 package zero.friends.gostopcalculator.ui.precondition
 
-import android.content.Context
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Inject
 import zero.friends.domain.model.Player
-import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.util.TimeUtil
-import javax.inject.Inject
-
 
 data class PlayerUiState(
     val players: SnapshotStateList<Player> = mutableStateListOf(),
@@ -21,10 +20,7 @@ data class PlayerUiState(
     val scrollIndex: Int = 0
 )
 
-@HiltViewModel
-class PlayerViewModel @Inject constructor(
-    @ApplicationContext private val appContext: Context,
-) : ViewModel() {
+class PlayerViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(PlayerUiState())
     fun getUiState() = _uiState.asStateFlow()
@@ -42,10 +38,7 @@ class PlayerViewModel @Inject constructor(
                 }
                 it.players.add(
                     Player(
-                        name = String.format(
-                            appContext.getString(R.string.player_format),
-                            ++playerIdCache
-                        )
+                        name = "플레이어 ${++playerIdCache}"
                     )
                 )
                 it.copy(scrollIndex = it.players.lastIndex)
@@ -76,5 +69,4 @@ class PlayerViewModel @Inject constructor(
     companion object {
         const val LIMIT_PLAYER = 10
     }
-
 }

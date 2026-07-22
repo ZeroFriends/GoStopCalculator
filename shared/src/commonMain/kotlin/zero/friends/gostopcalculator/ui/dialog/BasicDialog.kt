@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.cancel
-import zero.friends.gostopcalculator.ui.common.OrangeyRed
+import zero.friends.gostopcalculator.theme.OrangeyRed
 
 @Composable
 fun BasicDialog(

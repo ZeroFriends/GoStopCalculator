@@ -1,43 +1,67 @@
 package zero.friends.gostopcalculator.ui.precondition
 
-import android.widget.Toast
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Rule
 import zero.friends.domain.util.Const
-import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.complete
+import zero.friends.gostopcalculator.shared.generated.resources.help
+import zero.friends.gostopcalculator.shared.generated.resources.help_ddaddak
+import zero.friends.gostopcalculator.shared.generated.resources.help_ddaddak_sub
+import zero.friends.gostopcalculator.shared.generated.resources.help_fuck
+import zero.friends.gostopcalculator.shared.generated.resources.help_score
+import zero.friends.gostopcalculator.shared.generated.resources.help_selling
+import zero.friends.gostopcalculator.shared.generated.resources.ic_star_red
+import zero.friends.gostopcalculator.shared.generated.resources.price_setting
+import zero.friends.gostopcalculator.shared.generated.resources.rule_subtitle
+import zero.friends.gostopcalculator.shared.generated.resources.rule_title
+import zero.friends.gostopcalculator.shared.generated.resources.won
+import zero.friends.gostopcalculator.theme.DustyGray
+import zero.friends.gostopcalculator.theme.Gray
+import zero.friends.gostopcalculator.theme.Gray38
+import zero.friends.gostopcalculator.theme.Nero
+import zero.friends.gostopcalculator.theme.OrangeyRed
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.NumberTextField
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.ui.common.background.AprilBackground
 import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
-
 
 sealed class RuleClickEvent {
     object Back : RuleClickEvent()
@@ -46,25 +70,17 @@ sealed class RuleClickEvent {
 }
 
 @Composable
-fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (gameId: Long) -> Unit, onBack: () -> Unit) {
-    val context = LocalContext.current
+fun RuleScreen(
+    ruleViewModel: RuleViewModel,
+    onNext: (gameId: Long) -> Unit,
+    onBack: () -> Unit
+) {
     val scaffoldState = rememberScaffoldState()
     val uiState by ruleViewModel.getUiState().collectAsState()
     val scope = rememberCoroutineScope()
 
     var openDialog by remember {
         mutableStateOf(false)
-    }
-
-    LaunchedEffect(Unit) {
-        ruleViewModel.toast()
-            .onEach {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            }.launchIn(this)
-    }
-
-    BackHandler(true) {
-        onBack()
     }
 
     if (openDialog) {
@@ -82,17 +98,14 @@ fun RuleScreen(ruleViewModel: RuleViewModel = hiltViewModel(), onNext: (gameId: 
                         val gameId = ruleViewModel.startGame()
                         onNext(gameId)
                     }
-
                 }
                 RuleClickEvent.Helper -> openDialog = true
             }
         },
         onUpdateRule = { rule, score ->
             ruleViewModel.updateRuleScore(rule, score)
-            ruleViewModel.checkButtonState()
-        })
-
-
+        }
+    )
 }
 
 @Composable
@@ -106,7 +119,6 @@ private fun RuleHelpDialog(
         Column(
             modifier = Modifier
                 .background(Color.White)
-
         ) {
             Box(
                 modifier = Modifier
@@ -114,26 +126,26 @@ private fun RuleHelpDialog(
                     .padding(top = 18.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = stringResource(id = R.string.help), fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text(text = stringResource(Res.string.help), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Nero)
             }
             Column(
                 modifier = Modifier
                     .padding(horizontal = 18.dp)
-                    .scrollable(scrollState, orientation = Orientation.Vertical)
+                    .verticalScroll(scrollState)
             ) {
                 Spacer(modifier = Modifier.padding(10.dp))
-                Text(text = stringResource(id = R.string.help_score), fontSize = 14.sp)
+                Text(text = stringResource(Res.string.help_score), fontSize = 14.sp, color = Nero)
                 Spacer(modifier = Modifier.padding(3.dp))
-                Text(text = stringResource(id = R.string.help_fuck), fontSize = 14.sp)
+                Text(text = stringResource(Res.string.help_fuck), fontSize = 14.sp, color = Nero)
                 Spacer(modifier = Modifier.padding(3.dp))
-                Text(text = stringResource(id = R.string.help_ddaddak), fontSize = 14.sp)
+                Text(text = stringResource(Res.string.help_ddaddak), fontSize = 14.sp, color = Nero)
                 Text(
-                    text = stringResource(id = R.string.help_ddaddak_sub), fontSize = 10.sp, color = colorResource(
-                        id = R.color.gray
-                    )
+                    text = stringResource(Res.string.help_ddaddak_sub),
+                    fontSize = 10.sp,
+                    color = Gray
                 )
                 Spacer(modifier = Modifier.padding(3.dp))
-                Text(text = stringResource(id = R.string.help_selling), fontSize = 14.sp)
+                Text(text = stringResource(Res.string.help_selling), fontSize = 14.sp, color = Nero)
             }
             Button(
                 modifier = Modifier
@@ -142,7 +154,7 @@ private fun RuleHelpDialog(
                 onClick = onClose
             ) {
                 Text(
-                    text = stringResource(id = android.R.string.ok),
+                    text = "확인",
                     color = Color.White,
                     fontSize = 16.sp
                 )
@@ -163,16 +175,16 @@ private fun RuleScreen(
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(
-                text = String.format(stringResource(id = R.string.game_setting_title), 2),
+                text = "게임 설정 (2/2)",
                 onBack = { clickEvent(RuleClickEvent.Back) },
             )
         }
     ) { innerPadding ->
         AprilBackground(
             modifier = Modifier.padding(innerPadding),
-            title = stringResource(R.string.rule_title),
-            subTitle = stringResource(id = R.string.rule_subtitle),
-            buttonText = stringResource(id = R.string.complete),
+            title = stringResource(Res.string.rule_title),
+            subTitle = stringResource(Res.string.rule_subtitle),
+            buttonText = stringResource(Res.string.complete),
             buttonEnabled = uiState.enableComplete,
             onClick = { clickEvent(RuleClickEvent.Complete) }
         ) {
@@ -195,11 +207,10 @@ private fun RuleLazyColumn(
             items = rules,
             key = { _, item -> item.name }
         ) { index, rule ->
-            RuleItem(index = index, rule) {
-                onUpdateRule(rule, it)
-            }
+            RuleItem(index = index, rule = rule, onUpdateScore = { score ->
+                onUpdateRule(rule, score)
+            })
         }
-
     }
 }
 
@@ -223,7 +234,7 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
                     .padding(16.dp),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.orangey_red)
+                color = OrangeyRed
             )
             Column(
                 modifier = Modifier
@@ -237,18 +248,19 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
                     Text(
                         text = rule.name.displayName,
                         fontSize = 16.sp,
-                        color = colorResource(id = if (isFirstDdadak) R.color.dusty_gray else R.color.nero)
+                        color = if (isFirstDdadak) DustyGray else Nero
                     )
                     if (rule.isEssential) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_star_red),
-                            contentDescription = null,
-                            modifier = Modifier.padding(horizontal = 4.dp)
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_star_red),
+                            contentDescription = "Essential Rule",
+                            tint = Color.Unspecified,
+                            modifier = Modifier.padding(start = 4.dp)
                         )
                     }
                 }
                 if (rule.script.isNotEmpty()) {
-                    Text(text = rule.script, fontSize = 10.sp, color = colorResource(id = R.color.gray38))
+                    Text(text = rule.script, fontSize = 10.sp, color = Gray38)
                 }
             }
         }
@@ -256,9 +268,9 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
         NumberTextField(
             text = rule.score.toString(),
             modifier = Modifier.weight(1f),
-            endText = stringResource(R.string.won),
-            isEnable = !isFirstDdadak,  // 첫따닥은 비활성화
-            hintColor = colorResource(id = if (isFirstDdadak) R.color.dusty_gray else R.color.nero)
+            endText = stringResource(Res.string.won),
+            isEnable = !isFirstDdadak,
+            hintColor = if (isFirstDdadak) DustyGray else Nero
         ) {
             onUpdateScore(it)
         }
@@ -272,24 +284,12 @@ private fun AmountSettingBlock(modifier: Modifier = Modifier, onHelperClick: () 
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = stringResource(R.string.price_setting), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(text = stringResource(Res.string.price_setting), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Nero)
         RoundedCornerText(
-            stringResource(R.string.help),
-            colorResource(id = R.color.orangey_red),
+            stringResource(Res.string.help),
+            OrangeyRed,
             fontSize = 14.sp,
             onClick = onHelperClick
         )
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun RuleItemPreview() {
-    RuleItem(index = 0, rule = Rule(isEssential = true, script = "필수 항목 입니다."))
-}
-
-@Preview
-@Composable
-private fun RuleScreenPreview() {
-    RuleScreen(rememberScaffoldState(), uiState = RuleUiState())
 }

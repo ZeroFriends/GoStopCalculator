@@ -8,7 +8,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -19,18 +24,18 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
-import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.theme.Gray
+import zero.friends.gostopcalculator.theme.Nero
+import zero.friends.gostopcalculator.theme.OrangeyRed
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -38,7 +43,7 @@ fun GoStopOutLinedTextField(
     modifier: Modifier = Modifier,
     text: TextFieldValue,
     hint: String,
-    color: Color = colorResource(id = R.color.gray),
+    color: Color = Gray,
     onValueChange: (TextFieldValue) -> Unit,
     error: String? = null,
     showKeyboard: Boolean = false,
@@ -60,10 +65,10 @@ fun GoStopOutLinedTextField(
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 unfocusedBorderColor = color,
                 focusedBorderColor = color,
-                cursorColor = colorResource(id = R.color.nero)
+                cursorColor = Nero
             ),
-            placeholder = { Text(text = hint, color = colorResource(id = R.color.gray).copy(alpha = 0.9f)) },
-            textStyle = TextStyle(fontSize = 16.sp),
+            placeholder = { Text(text = hint, color = Gray.copy(alpha = 0.9f)) },
+            textStyle = TextStyle(fontSize = 16.sp, color = Nero),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = {
                 keyboardController?.hide()
@@ -97,11 +102,11 @@ fun NumberTextField(
     endText: String,
     interactionSource: MutableInteractionSource? = null,
     isEnable: Boolean = true,
-    hintColor: Color = colorResource(id = R.color.nero),
+    hintColor: Color = Nero,
     onValueChange: (Long) -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val textColor = if (isEnable) colorResource(id = R.color.nero) else hintColor
+    val textColor = if (isEnable) Nero else hintColor
     val resolvedInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
     val displayText = text.takeUnless { it == "0" } ?: ""
 
@@ -117,9 +122,9 @@ fun NumberTextField(
             enabled = isEnable,
             singleLine = true,
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = colorResource(id = android.R.color.transparent),
+                backgroundColor = Color.Transparent,
                 cursorColor = Color.Black,
-                focusedIndicatorColor = colorResource(id = R.color.orangey_red),
+                focusedIndicatorColor = OrangeyRed,
                 disabledTextColor = hintColor,
                 disabledIndicatorColor = hintColor.copy(alpha = 0.38f)
             ),
@@ -162,31 +167,7 @@ fun TitleOutlinedTextField(
     onValueChange: (TextFieldValue) -> Unit,
 ) {
     Column(modifier = modifier) {
-        Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 4.dp))
+        Text(title, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Nero, modifier = Modifier.padding(bottom = 4.dp))
         GoStopOutLinedTextField(text = text, hint = hint, onValueChange = onValueChange)
     }
-}
-
-@Preview
-@Composable
-private fun TitleOutlinedTextField() {
-    TitleOutlinedTextField(title = "title", text = TextFieldValue("text"), hint = "hint", onValueChange = {})
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun GoStopOutLinedTextFieldPreView() {
-    GoStopOutLinedTextField(text = TextFieldValue("ZeroWorld!!"), hint = "", error = "에러메시지 입니다.", onValueChange = {})
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PreView() {
-    GoStopOutLinedTextField(text = TextFieldValue(""), hint = "hint", onValueChange = {})
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun NumberTextFieldPreView() {
-    NumberTextField(text = "1", endText = "원")
 }

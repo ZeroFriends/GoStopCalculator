@@ -1,29 +1,50 @@
 package zero.friends.gostopcalculator.ui.precondition
 
-import android.widget.Toast
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Player
-import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.add_new_player
+import zero.friends.gostopcalculator.shared.generated.resources.group_name
+import zero.friends.gostopcalculator.shared.generated.resources.ic_delete_black
+import zero.friends.gostopcalculator.shared.generated.resources.ic_mode_edit_black
+import zero.friends.gostopcalculator.shared.generated.resources.info_player_add
+import zero.friends.gostopcalculator.shared.generated.resources.next
+import zero.friends.gostopcalculator.shared.generated.resources.player
+import zero.friends.gostopcalculator.shared.generated.resources.player_description
+import zero.friends.gostopcalculator.shared.generated.resources.player_title
+import zero.friends.gostopcalculator.theme.Nero
+import zero.friends.gostopcalculator.theme.OrangeyRed
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.GoStopExtraButton
 import zero.friends.gostopcalculator.ui.common.TitleOutlinedTextField
@@ -41,26 +62,15 @@ private sealed interface PlayerClickEvent {
 
 @Composable
 fun PlayerScreen(
-    viewModel: PlayerViewModel = hiltViewModel(),
+    viewModel: PlayerViewModel,
     onNext: (players: List<Player>, gameName: String) -> Unit,
     onBack: () -> Unit
 ) {
-    val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val uiState by viewModel.getUiState().collectAsState()
 
     var editingPlayer by remember {
         mutableStateOf<Player?>(null)
-    }
-
-    LaunchedEffect(true) {
-        viewModel.error().collect {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    BackHandler(true) {
-        onBack()
     }
 
     PlayerScreen(
@@ -77,7 +87,6 @@ fun PlayerScreen(
             is PlayerClickEvent.EditPlayer -> {
                 editingPlayer = clickEvent.player
             }
-
         }
     }
 
@@ -96,14 +105,12 @@ private fun PlayerScreen(
     uiState: PlayerUiState,
     clickEvent: (PlayerClickEvent) -> Unit,
 ) {
-    val context = LocalContext.current
-
     Scaffold(
         modifier = TabKeyboardDownModifier(),
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(
-                text = String.format(stringResource(id = R.string.game_setting_title), 1),
+                text = "게임 설정 (1/2)",
                 onBack = { clickEvent.invoke(PlayerClickEvent.Back) },
             )
         }
@@ -114,24 +121,19 @@ private fun PlayerScreen(
 
         AprilBackground(
             modifier = Modifier.padding(innerPadding),
-            title = stringResource(id = R.string.player_title),
-            subTitle = stringResource(id = R.string.player_description),
-            buttonText = stringResource(id = R.string.next),
+            title = stringResource(Res.string.player_title),
+            subTitle = stringResource(Res.string.player_description),
+            buttonText = stringResource(Res.string.next),
             buttonEnabled = uiState.players.size > 1,
             onClick = { clickEvent(PlayerClickEvent.Next(gameName.text)) }
         ) {
             Column {
                 TitleOutlinedTextField(
-                    title = stringResource(id = R.string.group_name),
+                    title = stringResource(Res.string.group_name),
                     text = gameName,
                     hint = uiState.currentTime,
                     onValueChange = {
                         if (it.text.length <= 15) gameName = it
-                        else Toast.makeText(
-                            context,
-                            context.getString(R.string.over_game_name_alert),
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
                 )
 
@@ -142,7 +144,6 @@ private fun PlayerScreen(
                 )
             }
         }
-
     }
 }
 
@@ -154,18 +155,20 @@ private fun PlayerLazyColumn(
     clickEvent: (PlayerClickEvent) -> Unit,
 ) {
     LaunchedEffect(scrollIndex) {
-        scrollState.scrollToItem(scrollIndex)
+        if (scrollIndex in players.indices) {
+            scrollState.scrollToItem(scrollIndex)
+        }
     }
 
     LazyColumn(state = scrollState, contentPadding = PaddingValues(top = 30.dp, bottom = 12.dp)) {
         item {
-            Text(text = stringResource(id = R.string.player), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text(text = stringResource(Res.string.player), fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
 
         if (players.isEmpty()) {
             item {
                 Text(
-                    text = stringResource(id = R.string.info_player_add),
+                    text = stringResource(Res.string.info_player_add),
                     fontSize = 14.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -178,7 +181,7 @@ private fun PlayerLazyColumn(
 
         item {
             GoStopExtraButton(
-                text = stringResource(id = R.string.add_new_player),
+                text = stringResource(Res.string.add_new_player),
                 modifier = Modifier.padding(top = 10.dp),
                 onClick = { clickEvent(PlayerClickEvent.AddPlayer) }
             )
@@ -200,7 +203,7 @@ private fun PlayerItem(index: Int, player: Player, clickEvent: (PlayerClickEvent
                     .align(Alignment.CenterVertically)
                     .padding(16.dp),
                 fontSize = 16.sp,
-                color = colorResource(id = R.color.orangey_red)
+                color = OrangeyRed
             )
             Text(
                 text = player.name,
@@ -208,30 +211,23 @@ private fun PlayerItem(index: Int, player: Player, clickEvent: (PlayerClickEvent
                     .align(Alignment.CenterVertically)
                     .padding(end = 6.dp),
                 fontSize = 16.sp,
-                color = colorResource(id = R.color.nero),
+                color = Nero,
                 maxLines = 1
             )
             IconButton(onClick = { clickEvent(PlayerClickEvent.EditPlayer(player)) }) {
-                Icon(painter = painterResource(id = R.drawable.ic_mode_edit_black), contentDescription = null)
+                Icon(
+                    painter = painterResource(Res.drawable.ic_mode_edit_black),
+                    contentDescription = "Edit Player",
+                    tint = Nero
+                )
             }
         }
         IconButton(onClick = { clickEvent(PlayerClickEvent.DeletePlayer(player)) }) {
-            Icon(painter = painterResource(id = R.drawable.ic_delete_black), contentDescription = null)
+            Icon(
+                painter = painterResource(Res.drawable.ic_delete_black),
+                contentDescription = "Delete Player",
+                tint = Nero
+            )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PlayerItemPreView() {
-    PlayerItem(index = 0, player = Player(name = "hello"), clickEvent = {})
-}
-
-@Preview
-@Composable
-private fun PlayerPreview() {
-    PlayerScreen(
-        scaffoldState = rememberScaffoldState(),
-        uiState = PlayerUiState(),
-    ) {}
 }

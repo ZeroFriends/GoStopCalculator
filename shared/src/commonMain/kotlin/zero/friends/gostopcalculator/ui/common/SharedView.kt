@@ -7,11 +7,12 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -33,7 +34,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.painterResource
 import zero.friends.domain.model.PlayerResult
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.ic_topbar_back
+import zero.friends.gostopcalculator.theme.Gray
+import zero.friends.gostopcalculator.theme.Nero
+import zero.friends.gostopcalculator.theme.OrangeyRed
 
 @Composable
 fun CenterTextTopBar(
@@ -70,7 +77,11 @@ fun CenterTextTopBar(
                 Box(modifier = iconModifier, contentAlignment = Alignment.Center) {
                     if (onBack != null) {
                         IconButton(onClick = { onBack() }) {
-                            Text("<", color = iconColor, fontWeight = FontWeight.Bold)
+                            Icon(
+                                painter = painterResource(Res.drawable.ic_topbar_back),
+                                contentDescription = "Back",
+                                tint = iconColor
+                            )
                         }
                     }
                 }
@@ -99,9 +110,8 @@ fun CenterTextTopBar(
                     }
                 }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding(),
+            modifier = Modifier.fillMaxWidth(),
+            windowInsets = WindowInsets.statusBars,
             backgroundColor = Color.Transparent,
             contentColor = if (isRed) Color.White else Color.Black,
             elevation = 0.dp
