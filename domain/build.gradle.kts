@@ -31,7 +31,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlin.coroutines.core)
             implementation(libs.kotlin.serialization.json)
-            implementation(libs.kotlin.inject.runtime)
+            api(libs.kotlin.inject.runtime)
         }
         androidMain.dependencies {
             implementation(libs.javax.inject)

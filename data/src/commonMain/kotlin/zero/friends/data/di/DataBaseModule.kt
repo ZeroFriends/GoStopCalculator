@@ -35,11 +35,23 @@ abstract class DataComponent {
         Preference()
     }
 
-    val playerDao: PlayerDao get() = dataBase.PlayerDao()
-    val gameDao: GameDao get() = dataBase.GameDao()
-    val ruleDao: RuleDao get() = dataBase.RuleDao()
-    val gamerDao: GamerDao get() = dataBase.GamerDao()
-    val roundDao: RoundDao get() = dataBase.roundDao()
+    @Provides
+    fun provideGameDao(): GameDao = dataBase.GameDao()
+
+    @Provides
+    fun providePlayerDao(): PlayerDao = dataBase.PlayerDao()
+
+    @Provides
+    fun provideRuleDao(): RuleDao = dataBase.RuleDao()
+
+    @Provides
+    fun provideGamerDao(): GamerDao = dataBase.GamerDao()
+
+    @Provides
+    fun provideRoundDao(): RoundDao = dataBase.roundDao()
+
+    @Provides
+    fun provideAppPreference(): AppPreference = appPreference
 
     @Provides
     fun providePlayerRepository(impl: PlayerRepositoryImpl): PlayerRepository = impl
@@ -59,5 +71,3 @@ abstract class DataComponent {
     @Provides
     fun provideManualRepository(impl: ManualRepositoryImpl): ManualRepository = impl
 }
-
-

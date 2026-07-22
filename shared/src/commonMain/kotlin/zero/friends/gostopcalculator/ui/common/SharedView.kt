@@ -1,8 +1,5 @@
 package zero.friends.gostopcalculator.ui.common
 
-
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,19 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import zero.friends.domain.model.PlayerResult
-import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
-import zero.friends.gostopcalculator.util.getMoneyColor
 
 @Composable
 fun CenterTextTopBar(
@@ -57,10 +46,9 @@ fun CenterTextTopBar(
 ) {
     val iconModifier = Modifier
         .defaultMinSize(60.dp, 60.dp)
-        .background(Color.Transparent)
 
     val iconColor = if (isRed) Color.White else Color.Black
-    val topBarBackgroundColor = if (isRed) colorResource(id = R.color.orangey_red) else Color.White
+    val topBarBackgroundColor = if (isRed) OrangeyRed else Color.White
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -82,11 +70,7 @@ fun CenterTextTopBar(
                 Box(modifier = iconModifier, contentAlignment = Alignment.Center) {
                     if (onBack != null) {
                         IconButton(onClick = { onBack() }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_topbar_back),
-                                contentDescription = "Back",
-                                tint = iconColor
-                            )
+                            Text("<", color = iconColor, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -109,7 +93,7 @@ fun CenterTextTopBar(
                                     .clickable(onClick = onAction),
                                 color = Color.Transparent
                             ) {
-                                Text(text = actionText, fontSize = 14.sp, color = colorResource(id = R.color.orangey_red))
+                                Text(text = actionText, fontSize = 14.sp, color = OrangeyRed)
                             }
                         }
                     }
@@ -124,7 +108,6 @@ fun CenterTextTopBar(
         )
     }
 }
-
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -149,19 +132,19 @@ fun ContentsCard(
 
 @Composable
 fun EmptyHistory(
-    painter: Painter = painterResource(id = R.drawable.ic_onodofu),
-    title: String = stringResource(id = R.string.empty_game),
-    subTitle: String = stringResource(id = R.string.info_new_game_start)
+    painter: Painter? = null,
+    title: String = "진행중인 게임이 없습니다.",
+    subTitle: String = "새로운 게임을 시작해보세요!"
 ) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Image(
-                painter = painter,
-                contentDescription = null,
-                alignment = Alignment.Center,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.padding(bottom = 9.dp)
-            )
+            if (painter != null) {
+                androidx.compose.foundation.Image(
+                    painter = painter,
+                    contentDescription = null,
+                    modifier = Modifier.padding(bottom = 9.dp)
+                )
+            }
             Text(
                 text = title,
                 fontSize = 16.sp,
@@ -172,7 +155,8 @@ fun EmptyHistory(
             Text(
                 text = subTitle,
                 fontSize = 12.sp,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = Gray
             )
         }
     }
@@ -181,19 +165,16 @@ fun EmptyHistory(
 @Composable
 fun DescriptionBox(modifier: Modifier = Modifier, mainText: String, subText: String) {
     ContentsCard(
-        modifier = modifier
-            .fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier
-                .padding(vertical = 36.dp, horizontal = 14.dp)
-                .then(TabKeyboardDownModifier()),
+            modifier = Modifier.padding(vertical = 36.dp, horizontal = 14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = mainText,
                 fontSize = 20.sp,
-                color = colorResource(id = R.color.nero),
+                color = Nero,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
@@ -201,7 +182,7 @@ fun DescriptionBox(modifier: Modifier = Modifier, mainText: String, subText: Str
             Text(
                 text = subText,
                 fontSize = 14.sp,
-                color = colorResource(id = R.color.nero),
+                color = Nero,
                 textAlign = TextAlign.Center
             )
         }
@@ -211,7 +192,11 @@ fun DescriptionBox(modifier: Modifier = Modifier, mainText: String, subText: Str
 @Composable
 fun PlayerItem(index: Int, playerResult: PlayerResult) {
     val moneyColor by remember(playerResult.account) {
-        derivedStateOf { playerResult.account.getMoneyColor() }
+        derivedStateOf {
+            if (playerResult.account > 0) Color(0xFFFF5252)
+            else if (playerResult.account < 0) Color(0xFF1E88E5)
+            else Color.Gray
+        }
     }
     Row(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
@@ -221,63 +206,26 @@ fun PlayerItem(index: Int, playerResult: PlayerResult) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = (index + 1).toString(),
-                modifier = Modifier
-                    .align(Alignment.CenterVertically),
+                modifier = Modifier.align(Alignment.CenterVertically),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.orangey_red)
+                color = OrangeyRed
             )
             Spacer(modifier = Modifier.padding(4.dp))
             Text(
                 text = playerResult.name,
                 fontSize = 14.sp,
-                color = colorResource(id = R.color.nero),
+                color = Nero,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
         }
 
         Text(
-            text = String.format(stringResource(id = R.string.price), playerResult.account),
+            text = "${playerResult.account}원",
             textAlign = TextAlign.Center,
             fontSize = 12.sp,
             modifier = Modifier.align(Alignment.CenterVertically),
             color = moneyColor
         )
     }
-}
-
-@Preview
-@Composable
-private fun PlayerItemPreview() {
-    PlayerItem(index = 0, playerResult = PlayerResult("zero.dev", 1000))
-}
-
-@Preview
-@Composable
-private fun DescriptionBoxPreview() {
-    DescriptionBox(
-        mainText = stringResource(id = R.string.start),
-        subText = stringResource(id = R.string.start_description)
-    )
-}
-
-@Preview
-@Composable
-private fun EmptyHistoryPreview() {
-    EmptyHistory()
-}
-
-@Preview
-@Composable
-private fun CenterTextTopBarPreview() {
-    CenterTextTopBar("hello")
-}
-
-
-@Preview
-@Composable
-private fun ContentsCardPreview() {
-    ContentsCard(boxContents = {
-        Text(text = "card")
-    })
 }

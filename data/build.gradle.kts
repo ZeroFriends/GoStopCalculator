@@ -71,6 +71,7 @@ dependencies {
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
 
+    add("kspCommonMainMetadata", libs.kotlin.inject.compiler.ksp)
     add("kspAndroid", libs.kotlin.inject.compiler.ksp)
     add("kspIosX64", libs.kotlin.inject.compiler.ksp)
     add("kspIosArm64", libs.kotlin.inject.compiler.ksp)

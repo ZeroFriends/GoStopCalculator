@@ -1,31 +1,43 @@
 package zero.friends.gostopcalculator.ui.history
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import zero.friends.domain.model.Game
-import zero.friends.gostopcalculator.BuildConfig
-import zero.friends.gostopcalculator.R
-import zero.friends.gostopcalculator.ui.common.*
+import zero.friends.gostopcalculator.ui.common.EmptyHistory
+import zero.friends.gostopcalculator.ui.common.GoStopButton
+import zero.friends.gostopcalculator.ui.common.GoStopDivider
+import zero.friends.gostopcalculator.ui.common.RoundedCornerText
+import zero.friends.gostopcalculator.ui.common.SubTitleText
+import zero.friends.gostopcalculator.ui.common.TitleText
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 import zero.friends.gostopcalculator.ui.history.guide.GuideFullScreenDialog
 
@@ -38,7 +50,7 @@ private sealed class HistoryEvent {
 
 @Composable
 fun HistoryScreen(
-    viewModel: HistoryViewModel = hiltViewModel(),
+    viewModel: HistoryViewModel,
     onStartGame: () -> Unit = {},
     onShowRound: (Game) -> Unit = {},
     isDebugAdEnabled: Boolean = true,
@@ -60,8 +72,8 @@ fun HistoryScreen(
                 viewModel.deleteGame(value)
                 dialogGameId = null
             },
-            confirmText = stringResource(R.string.delete),
-            titleText = stringResource(R.string.delete_dialog_title)
+            confirmText = "삭제",
+            titleText = "게임을 삭제하시겠습니까?"
         )
     }
 
@@ -122,50 +134,48 @@ private fun NewGame(
     onToggleDebugAd: (() -> Unit)? = null
 ) {
     Column(Modifier.padding(16.dp)) {
-        SubTitleText(stringResource(R.string.new_game))
+        SubTitleText("새로운 게임")
         Spacer(modifier = Modifier.height(4.dp))
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TitleText(text = stringResource(id = R.string.today_game))
+            TitleText(text = "오늘의 게임")
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (BuildConfig.DEBUG && onToggleDebugAd != null) {
+                if (onToggleDebugAd != null) {
                     RoundedCornerText(
                         text = if (isDebugAdEnabled) "Ad ON" else "Ad OFF",
-                        color = if (isDebugAdEnabled) colorResource(id = R.color.orangey_red) else colorResource(id = R.color.dusty_gray),
+                        color = if (isDebugAdEnabled) Color(0xFFFF5252) else Color(0xFF9E9E9E),
                         fontSize = 14.sp,
                         onClick = onToggleDebugAd
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 }
                 RoundedCornerText(
-                    text = stringResource(id = R.string.guide),
-                    color = colorResource(id = R.color.orangey_red),
+                    text = "가이드",
+                    color = Color(0xFFFF5252),
                     fontSize = 14.sp,
                     onClick = { event(HistoryEvent.ShowGuide) }
                 )
             }
         }
         Spacer(modifier = Modifier.padding(18.dp))
-        GoStopButton(stringResource(id = R.string.start), onClick = { event(HistoryEvent.StartGame) })
+        GoStopButton("시작하기", onClick = { event(HistoryEvent.StartGame) })
     }
 }
-
 
 @Composable
 private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: (Game) -> Unit) {
     Column(
         Modifier.padding(16.dp)
     ) {
-        SubTitleText(text = stringResource(id = R.string.history))
-        TitleText(text = stringResource(id = R.string.progress))
+        SubTitleText(text = "기록")
+        TitleText(text = "진행중인 게임")
         if (games.isEmpty()) {
             EmptyHistory(
-                painter = painterResource(id = R.drawable.ic_onodofu),
-                title = stringResource(id = R.string.empty_game),
-                subTitle = stringResource(id = R.string.info_new_game_start)
+                title = "진행중인 게임이 없습니다.",
+                subTitle = "새로운 게임을 시작해보세요!"
             )
         } else {
             LazyColumn(
@@ -202,49 +212,24 @@ private fun RoundLog(game: Game, onClick: () -> Unit = {}, onClickMore: () -> Un
             Column {
                 Row {
                     Text(
-                        text = stringResource(R.string.created_at),
-                        color = colorResource(id = R.color.gray),
+                        text = "생성일",
+                        color = Color.Gray,
                         fontSize = 14.sp
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
-                    Text(text = game.createdAt, color = colorResource(id = R.color.gray), fontSize = 14.sp)
+                    Text(text = game.createdAt, color = Color.Gray, fontSize = 14.sp)
                 }
                 Spacer(modifier = Modifier.padding(2.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = game.name,
-                        color = colorResource(id = R.color.nero),
+                        color = Color.Black,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.padding(4.dp))
                 }
-
             }
-            Icon(
-                painter = painterResource(id = R.drawable.ic_more_black),
-                contentDescription = null,
-                modifier = Modifier.clickable(onClick = onClickMore)
-            )
         }
     }
-}
-
-
-@Preview("HistoryPreview", showBackground = true)
-@Composable
-private fun HistoryPreview() {
-    HistoryScreenContent(HistoryUiState())
-}
-
-@Preview("HistoryPreviewWithItem", showBackground = true)
-@Composable
-private fun HistoryPreviewWithItem() {
-    HistoryScreenContent(
-        HistoryUiState(
-            games = listOf(
-                Game(1, "즐거운 고스톱", "2022-01-01")
-            )
-        )
-    )
 }

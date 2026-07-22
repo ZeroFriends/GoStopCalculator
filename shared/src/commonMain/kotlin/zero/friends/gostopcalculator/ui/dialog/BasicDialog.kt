@@ -6,10 +6,8 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.ui.common.OrangeyRed
 
 @Composable
 fun BasicDialog(
@@ -31,7 +29,7 @@ fun BasicDialog(
                     .clickable { onClick() }
                     .padding(10.dp),
                 text = confirmText,
-                color = colorResource(id = R.color.orangey_red)
+                color = OrangeyRed
             )
         },
         dismissButton = {
@@ -39,8 +37,8 @@ fun BasicDialog(
                 modifier = Modifier
                     .clickable { onDismiss() }
                     .padding(10.dp),
-                text = stringResource(R.string.cancel),
-                color = colorResource(id = R.color.orangey_red)
+                text = "취소",
+                color = OrangeyRed
             )
         }
     )

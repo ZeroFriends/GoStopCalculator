@@ -2,21 +2,25 @@ package zero.friends.gostopcalculator.ui.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.Game
 import zero.friends.domain.preference.AppPreference
 import zero.friends.domain.repository.GameRepository
-import javax.inject.Inject
+
+import me.tatarka.inject.annotations.Inject
 
 data class HistoryUiState(
     val games: List<Game> = emptyList(),
     val isFirstStart: Boolean = false
 )
 
-@HiltViewModel
-class HistoryViewModel @Inject constructor(
+@Inject
+class HistoryViewModel(
     private val gameRepository: GameRepository,
     appPreference: AppPreference
 ) : ViewModel() {
@@ -42,5 +46,4 @@ class HistoryViewModel @Inject constructor(
             gameRepository.deleteGame(gameId)
         }
     }
-
 }

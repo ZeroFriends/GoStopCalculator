@@ -97,7 +97,7 @@
 				Base,
 			);
 			mainGroup = 9B0000072C50000000000001;
-			productRefGroup = 9B0000092C50000000000001;
+			productRefGroup = 9B0000092C50000000000001 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -123,7 +123,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\nexport GRADLE_OPTS=\"-Xss256m\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode -Dkotlin.native.disablePhases=CastsOptimization\n";
+			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT/..\"\nexport GRADLE_OPTS=\"-Xss256m\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode -Dkotlin.native.disablePhases=CastsOptimization";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -293,11 +293,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(BUILT_PRODUCTS_DIR)",
-				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-framework",
-					"SharedUI",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

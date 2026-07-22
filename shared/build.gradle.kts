@@ -4,6 +4,7 @@ plugins {
     kotlin("plugin.compose")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.android.library)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -25,6 +26,7 @@ kotlin {
 
     androidTarget()
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -39,6 +41,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            api(project(":domain"))
+            api(project(":data"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
@@ -46,6 +50,15 @@ kotlin {
             implementation(compose.components.resources)
             implementation(libs.compottie)
             implementation(libs.kotlin.serialization.json)
+            implementation(libs.androidx.lifecycle.viewmodel.kmp)
+            implementation(libs.kotlin.inject.runtime)
         }
     }
+}
+
+dependencies {
+    add("kspAndroid", libs.kotlin.inject.compiler.ksp)
+    add("kspIosX64", libs.kotlin.inject.compiler.ksp)
+    add("kspIosArm64", libs.kotlin.inject.compiler.ksp)
+    add("kspIosSimulatorArm64", libs.kotlin.inject.compiler.ksp)
 }

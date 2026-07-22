@@ -11,7 +11,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
+import androidx.compose.runtime.remember
 import zero.friends.domain.util.Const
+import zero.friends.gostopcalculator.di.AppComponent
+import zero.friends.gostopcalculator.di.createAppComponent
 import zero.friends.gostopcalculator.ui.board.main.BoardScreen
 import zero.friends.gostopcalculator.ui.board.prepare.PrepareScreen
 import zero.friends.gostopcalculator.ui.board.result.CalculateScreen
@@ -20,6 +23,7 @@ import zero.friends.gostopcalculator.ui.board.rule.RuleLogScreen
 import zero.friends.gostopcalculator.ui.board.score.ScoreCoordinator
 import zero.friends.gostopcalculator.ui.board.score.end.EndScreen
 import zero.friends.gostopcalculator.ui.history.HistoryScreen
+import zero.friends.gostopcalculator.ui.history.HistoryViewModel
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
 import zero.friends.gostopcalculator.ui.splash.SplashScreen
@@ -69,9 +73,10 @@ typealias endAds = () -> Unit
 
 @Composable
 fun Navigator(
-    onBackPressed: () -> Unit,
+    onBackPressed: () -> Unit = {},
     isDebugAdEnabled: Boolean = true,
     onToggleDebugAd: (() -> Unit)? = null,
+    appComponent: AppComponent = remember { createAppComponent() },
     showAds: (endAds) -> Unit
 ) {
     val navController = rememberNavController()
@@ -84,7 +89,9 @@ fun Navigator(
             }
         }
         composable(Navigate.History.destination()) {
+            val historyViewModel = remember { appComponent.historyViewModel }
             HistoryScreen(
+                viewModel = historyViewModel,
                 onStartGame = {
                     navController.navigate(Navigate.Precondition.Player.route())
                 },

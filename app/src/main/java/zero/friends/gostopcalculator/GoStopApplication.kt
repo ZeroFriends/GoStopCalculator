@@ -6,6 +6,9 @@ import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import dagger.hilt.android.HiltAndroidApp
+import zero.friends.data.source.initAssetContext
+import zero.friends.data.source.initDatabaseContext
+import zero.friends.data.source.preference.initPreferenceContext
 import zero.friends.gostopcalculator.work.EmptyRoundCleanupWorker
 import javax.inject.Inject
 
@@ -22,6 +25,10 @@ class GoStopApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+
+        initDatabaseContext(this)
+        initAssetContext(this)
+        initPreferenceContext(this)
 
         FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = !BuildConfig.DEBUG
 

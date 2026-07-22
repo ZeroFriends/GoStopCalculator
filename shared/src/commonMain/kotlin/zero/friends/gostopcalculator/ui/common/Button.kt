@@ -11,20 +11,21 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import zero.friends.gostopcalculator.R
+
+val OrangeyRed = Color(0xFFFF5252)
+val Gray = Color(0xFF9E9E9E)
+val Nero = Color(0xFF212121)
 
 @Composable
 fun GoStopButton(text: String, modifier: Modifier = Modifier, buttonEnabled: Boolean = true, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.outlinedButtonColors(
-            backgroundColor = colorResource(id = if (buttonEnabled) R.color.orangey_red else R.color.gray)
+            backgroundColor = if (buttonEnabled) OrangeyRed else Gray
         ),
         shape = RoundedCornerShape(100.dp),
         enabled = buttonEnabled,
@@ -44,7 +45,7 @@ fun GoStopButton(text: String, modifier: Modifier = Modifier, buttonEnabled: Boo
 fun GoStopExtraButton(text: String, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
     OutlinedButton(
         onClick = onClick,
-        border = BorderStroke(1.dp, colorResource(id = R.color.nero)),
+        border = BorderStroke(1.dp, Nero),
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp)
     ) {
@@ -52,23 +53,7 @@ fun GoStopExtraButton(text: String, modifier: Modifier = Modifier, onClick: () -
             text = text,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp,
-            color = colorResource(id = R.color.nero)
+            color = Nero
         )
-    }
-}
-
-@Composable
-@Preview
-private fun GoStopButtonPreView() {
-    GoStopButton(text = "ZeroWorld!!") {
-
-    }
-}
-
-@Composable
-@Preview
-private fun GoStopExtraButtonPreView() {
-    GoStopExtraButton(text = "ZeroWorld!!") {
-
     }
 }

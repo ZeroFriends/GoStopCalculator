@@ -12,14 +12,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import zero.friends.gostopcalculator.R
+
+val DarkGray = Color(0xFF757575)
 
 @Composable
 fun TitleText(modifier: Modifier = Modifier, text: String) {
@@ -37,26 +36,14 @@ fun SubTitleText(text: String) {
         text = text,
         fontSize = 12.sp,
         fontWeight = FontWeight.Bold,
-        color = colorResource(id = R.color.dark_gray)
+        color = DarkGray
     )
-}
-
-@Preview
-@Composable
-fun TitleTextPreview() {
-    TitleText(text = "ZeroWorld!!")
-}
-
-@Preview
-@Composable
-fun SubTitleTextPreview() {
-    SubTitleText(text = "ZeroWorld!!")
 }
 
 @Composable
 fun RoundedCornerText(
     text: String,
-    color: Color = colorResource(id = R.color.orangey_red),
+    color: Color = OrangeyRed,
     fontSize: TextUnit = 14.sp,
     onClick: (() -> Unit)? = null
 ) {
@@ -85,10 +72,4 @@ fun RoundedCornerText(
             fontWeight = FontWeight.Bold,
         )
     }
-}
-
-@Composable
-@Preview
-private fun RoundedCornerTextPreview() {
-    RoundedCornerText(text = "text", color = colorResource(id = R.color.orangey_red), 14.sp)
 }
