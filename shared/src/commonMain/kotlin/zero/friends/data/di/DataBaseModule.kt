@@ -54,20 +54,20 @@ abstract class DataComponent {
     fun provideAppPreference(): AppPreference = appPreference
 
     @Provides
-    fun providePlayerRepository(impl: PlayerRepositoryImpl): PlayerRepository = impl
+    fun providePlayerRepository(dao: PlayerDao): PlayerRepository = PlayerRepositoryImpl(dao)
 
     @Provides
-    fun provideGameRepository(impl: GameRepositoryImpl): GameRepository = impl
+    fun provideGameRepository(dao: GameDao): GameRepository = GameRepositoryImpl(dao)
 
     @Provides
-    fun provideRuleRepository(impl: RuleRepositoryImpl): RuleRepository = impl
+    fun provideRuleRepository(dao: RuleDao): RuleRepository = RuleRepositoryImpl(dao)
 
     @Provides
-    fun provideGamerRepository(impl: GamerRepositoryImpl): GamerRepository = impl
+    fun provideGamerRepository(dao: GamerDao): GamerRepository = GamerRepositoryImpl(dao)
 
     @Provides
-    fun provideRoundRepository(impl: RoundRepositoryImpl): RoundRepository = impl
+    fun provideRoundRepository(dao: RoundDao): RoundRepository = RoundRepositoryImpl(dao)
 
     @Provides
-    fun provideManualRepository(impl: ManualRepositoryImpl): ManualRepository = impl
+    fun provideManualRepository(): ManualRepository = ManualRepositoryImpl()
 }

@@ -102,13 +102,13 @@ kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializat
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
 
 # kotlin-inject
-kotlin-inject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime", version = "0.7.2" }
-kotlin-inject-compiler-ksp = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp", version = "0.7.2" }
+kotlin-inject-runtime = { module = "me.tatarka.inject:kotlin-inject-runtime", version = "0.9.0" }
+kotlin-inject-compiler-ksp = { module = "me.tatarka.inject:kotlin-inject-compiler-ksp", version = "0.9.0" }
 
 # SQLite Bundled (Room KMP)
-androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version = "2.5.0-alpha13" }
+androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version = "2.7.0" }
 
-# Dagger Hilt
+# Dagger HiltA로
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }

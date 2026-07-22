@@ -26,8 +26,6 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":domain"))
-            implementation(project(":data"))
             implementation(project(":shared"))
 
             implementation(libs.compose.multiplatform.runtime)
