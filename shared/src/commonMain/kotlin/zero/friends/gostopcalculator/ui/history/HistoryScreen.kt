@@ -1,6 +1,5 @@
 package zero.friends.gostopcalculator.ui.history
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,7 +30,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Game
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.created_at
+import zero.friends.gostopcalculator.shared.generated.resources.delete
+import zero.friends.gostopcalculator.shared.generated.resources.delete_dialog_title
+import zero.friends.gostopcalculator.shared.generated.resources.empty_game
+import zero.friends.gostopcalculator.shared.generated.resources.guide
+import zero.friends.gostopcalculator.shared.generated.resources.history
+import zero.friends.gostopcalculator.shared.generated.resources.info_new_game_start
+import zero.friends.gostopcalculator.shared.generated.resources.new_game
+import zero.friends.gostopcalculator.shared.generated.resources.progress
+import zero.friends.gostopcalculator.shared.generated.resources.start
+import zero.friends.gostopcalculator.shared.generated.resources.today_game
 import zero.friends.gostopcalculator.ui.common.EmptyHistory
 import zero.friends.gostopcalculator.ui.common.GoStopButton
 import zero.friends.gostopcalculator.ui.common.GoStopDivider
@@ -72,8 +84,8 @@ fun HistoryScreen(
                 viewModel.deleteGame(value)
                 dialogGameId = null
             },
-            confirmText = "삭제",
-            titleText = "게임을 삭제하시겠습니까?"
+            confirmText = stringResource(Res.string.delete),
+            titleText = stringResource(Res.string.delete_dialog_title)
         )
     }
 
@@ -134,14 +146,14 @@ private fun NewGame(
     onToggleDebugAd: (() -> Unit)? = null
 ) {
     Column(Modifier.padding(16.dp)) {
-        SubTitleText("새로운 게임")
+        SubTitleText(stringResource(Res.string.new_game))
         Spacer(modifier = Modifier.height(4.dp))
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TitleText(text = "오늘의 게임")
+            TitleText(text = stringResource(Res.string.today_game))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (onToggleDebugAd != null) {
                     RoundedCornerText(
@@ -153,7 +165,7 @@ private fun NewGame(
                     Spacer(modifier = Modifier.width(8.dp))
                 }
                 RoundedCornerText(
-                    text = "가이드",
+                    text = stringResource(Res.string.guide),
                     color = Color(0xFFFF5252),
                     fontSize = 14.sp,
                     onClick = { event(HistoryEvent.ShowGuide) }
@@ -161,7 +173,7 @@ private fun NewGame(
             }
         }
         Spacer(modifier = Modifier.padding(18.dp))
-        GoStopButton("시작하기", onClick = { event(HistoryEvent.StartGame) })
+        GoStopButton(stringResource(Res.string.start), onClick = { event(HistoryEvent.StartGame) })
     }
 }
 
@@ -170,12 +182,12 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: (Ga
     Column(
         Modifier.padding(16.dp)
     ) {
-        SubTitleText(text = "기록")
-        TitleText(text = "진행중인 게임")
+        SubTitleText(text = stringResource(Res.string.history))
+        TitleText(text = stringResource(Res.string.progress))
         if (games.isEmpty()) {
             EmptyHistory(
-                title = "진행중인 게임이 없습니다.",
-                subTitle = "새로운 게임을 시작해보세요!"
+                title = stringResource(Res.string.empty_game),
+                subTitle = stringResource(Res.string.info_new_game_start)
             )
         } else {
             LazyColumn(
@@ -212,7 +224,7 @@ private fun RoundLog(game: Game, onClick: () -> Unit = {}, onClickMore: () -> Un
             Column {
                 Row {
                     Text(
-                        text = "생성일",
+                        text = stringResource(Res.string.created_at),
                         color = Color.Gray,
                         fontSize = 14.sp
                     )

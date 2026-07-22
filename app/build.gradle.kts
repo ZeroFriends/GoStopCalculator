@@ -30,11 +30,11 @@ kotlin {
             implementation(project(":data"))
             implementation(project(":shared"))
 
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
+            implementation(libs.compose.multiplatform.runtime)
+            implementation(libs.compose.multiplatform.foundation)
+            implementation(libs.compose.multiplatform.material)
+            implementation(libs.compose.multiplatform.ui)
+            implementation(libs.compose.multiplatform.components.resources)
 
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)

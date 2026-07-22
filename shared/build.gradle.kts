@@ -17,6 +17,11 @@ android {
     }
 }
 
+compose.resources {
+    publicResClass = true
+    packageOfResClass = "zero.friends.gostopcalculator.shared.generated.resources"
+}
+
 kotlin {
     compilerOptions {
         languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_4)
@@ -43,11 +48,11 @@ kotlin {
         commonMain.dependencies {
             api(project(":domain"))
             api(project(":data"))
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
+            implementation(libs.compose.multiplatform.runtime)
+            implementation(libs.compose.multiplatform.foundation)
+            implementation(libs.compose.multiplatform.material)
+            implementation(libs.compose.multiplatform.ui)
+            implementation(libs.compose.multiplatform.components.resources)
             implementation(libs.compottie)
             implementation(libs.kotlin.serialization.json)
             implementation(libs.androidx.lifecycle.viewmodel.kmp)

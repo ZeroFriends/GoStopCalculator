@@ -7,6 +7,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.cancel
 import zero.friends.gostopcalculator.ui.common.OrangeyRed
 
 @Composable
@@ -37,7 +40,7 @@ fun BasicDialog(
                 modifier = Modifier
                     .clickable { onDismiss() }
                     .padding(10.dp),
-                text = "취소",
+                text = stringResource(Res.string.cancel),
                 color = OrangeyRed
             )
         }

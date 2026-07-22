@@ -42,11 +42,11 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":domain"))
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
+            implementation(libs.compose.multiplatform.runtime)
+            implementation(libs.compose.multiplatform.foundation)
+            implementation(libs.compose.multiplatform.material)
+            implementation(libs.compose.multiplatform.ui)
+            implementation(libs.compose.multiplatform.components.resources)
             implementation(libs.kotlin.coroutines.core)
             implementation(libs.kotlin.serialization.json)
             implementation(libs.androidx.room.runtime)
