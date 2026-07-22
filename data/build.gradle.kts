@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.multiplatform)
+    kotlin("plugin.compose")
     alias(libs.plugins.android.library)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
@@ -35,17 +37,16 @@ kotlin {
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "SharedData"
-            isStatic = true
-            export(project(":domain"))
-        }
-    }
+    )
 
     sourceSets {
         commonMain.dependencies {
             api(project(":domain"))
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
             implementation(libs.kotlin.coroutines.core)
             implementation(libs.kotlin.serialization.json)
             implementation(libs.androidx.room.runtime)

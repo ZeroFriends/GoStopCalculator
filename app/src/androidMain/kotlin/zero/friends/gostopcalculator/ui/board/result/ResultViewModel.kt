@@ -17,9 +17,9 @@ import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.usecase.calculate.AggregateGamerResultsUseCase
 import zero.friends.domain.usecase.calculate.BuildRoundTraceUseCase
-import zero.friends.gostopcalculator.ui.board.result.ResultActivity.Companion.EXTRA_GAME_ID
-import zero.friends.gostopcalculator.ui.board.result.ResultActivity.Companion.EXTRA_ROUND_ID
-import zero.friends.gostopcalculator.ui.board.result.ResultActivity.Companion.EXTRA_SCREEN_TYPE
+import zero.friends.gostopcalculator.ui.board.result.ResultContract.EXTRA_GAME_ID
+import zero.friends.gostopcalculator.ui.board.result.ResultContract.EXTRA_ROUND_ID
+import zero.friends.gostopcalculator.ui.board.result.ResultContract.EXTRA_SCREEN_TYPE
 import zero.friends.gostopcalculator.util.mapAsync
 import javax.inject.Inject
 
@@ -39,13 +39,13 @@ class ResultViewModel @Inject constructor(
     val uiState: StateFlow<ResultUiState> = _uiState.asStateFlow()
 
     init {
-        val screenType = savedStateHandle.get<ResultActivity.ScreenType>(EXTRA_SCREEN_TYPE)
+        val screenType = savedStateHandle.get<ScreenType>(EXTRA_SCREEN_TYPE)
         if (screenType != null) {
             _uiState.update { it.copy(screenType = screenType) }
         }
         when (screenType) {
-            ResultActivity.ScreenType.CALCULATE -> loadCalculateData()
-            ResultActivity.ScreenType.DETAIL -> loadDetailData()
+            ScreenType.Calculate -> loadCalculateData()
+            ScreenType.Detail -> loadDetailData()
             else -> {}
         }
     }
@@ -87,7 +87,7 @@ class ResultViewModel @Inject constructor(
 }
 
 data class ResultUiState(
-    val screenType: ResultActivity.ScreenType = ResultActivity.ScreenType.CALCULATE,
+    val screenType: ScreenType = ScreenType.Calculate,
     val gameName: String = "",
     val gamers: List<Gamer> = emptyList(),
     val roundTrace: RoundTrace? = null,

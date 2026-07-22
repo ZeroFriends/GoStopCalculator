@@ -16,6 +16,7 @@ import zero.friends.gostopcalculator.util.getMoneyColor
 import java.text.DecimalFormat
 import java.util.Locale
 import javax.inject.Inject
+import zero.friends.gostopcalculator.util.getMoneyColorRes
 import kotlin.math.abs
 
 class RoundTraceFormatter @Inject constructor(
@@ -188,7 +189,7 @@ class RoundTraceFormatter @Inject constructor(
         val start = builder.length
         builder.append(sign).append(amount).append("원")
         val end = builder.length
-        val color = ContextCompat.getColor(context, value.getMoneyColor())
+        val color = ContextCompat.getColor(context, value.getMoneyColorRes())
         builder.setSpan(
             ForegroundColorSpan(color),
             start,

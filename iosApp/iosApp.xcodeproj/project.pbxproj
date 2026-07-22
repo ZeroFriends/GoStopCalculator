@@ -123,7 +123,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\n./gradlew :data:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "cd \"$SRCROOT/..\"\nexport GRADLE_OPTS=\"-Xss256m\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode -Dkotlin.native.disablePhases=CastsOptimization\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

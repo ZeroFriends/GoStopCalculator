@@ -10,7 +10,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun DetailScreen(detailViewModel: DetailViewModel = hiltViewModel(), onBack: () -> Unit = {}) {
-    val context = LocalContext.current
     val uiState by detailViewModel.uiState().collectAsState()
 
     BackHandler(true) {
@@ -19,8 +18,6 @@ fun DetailScreen(detailViewModel: DetailViewModel = hiltViewModel(), onBack: () 
 
     LaunchedEffect(uiState.game.id, uiState.roundId) {
         if (uiState.game.id != 0L && uiState.roundId != 0L) {
-            val intent = ResultActivity.createDetailIntent(context, uiState.game.id, uiState.roundId)
-            context.startActivity(intent)
             onBack()
         }
     }

@@ -241,7 +241,7 @@ fun PlayerItem(index: Int, playerResult: PlayerResult) {
             textAlign = TextAlign.Center,
             fontSize = 12.sp,
             modifier = Modifier.align(Alignment.CenterVertically),
-            color = colorResource(id = moneyColor)
+            color = moneyColor
         )
     }
 }

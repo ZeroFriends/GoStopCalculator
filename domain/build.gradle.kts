@@ -48,5 +48,3 @@ dependencies {
     add("kspIosArm64", libs.kotlin.inject.compiler.ksp)
     add("kspIosSimulatorArm64", libs.kotlin.inject.compiler.ksp)
 }
-
-

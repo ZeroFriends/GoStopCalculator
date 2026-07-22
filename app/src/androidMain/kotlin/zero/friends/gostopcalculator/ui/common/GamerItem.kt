@@ -69,7 +69,7 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
                     Text(
                         text = String.format(stringResource(id = R.string.price), gamer.account),
                         textAlign = TextAlign.Center,
-                        color = colorResource(id = moneyColor.value),
+                        color = moneyColor.value,
                         fontSize = 12.sp,
                         modifier = Modifier
                             .align(Alignment.CenterVertically),

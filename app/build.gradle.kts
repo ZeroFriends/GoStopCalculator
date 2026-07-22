@@ -1,9 +1,10 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
-    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
     id("kotlin-parcelize")
@@ -15,11 +16,76 @@ kotlin {
         apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
     }
     jvmToolchain(21)
+
+    androidTarget()
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    )
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(project(":domain"))
+            implementation(project(":data"))
+            implementation(project(":shared"))
+
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
+
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
+
+            implementation(libs.kotlin.coroutines.core)
+            implementation(libs.kotlin.serialization.json)
+        }
+        androidMain.dependencies {
+            implementation(libs.compose.ui)
+            implementation(libs.compose.material)
+            implementation(libs.compose.ui.tooling)
+            implementation(libs.compose.ui.tooling.preview)
+            implementation(libs.androidx.material)
+            implementation(libs.androidx.core.ktx)
+            implementation(libs.androidx.startup)
+            implementation(libs.androidx.fragment)
+            implementation(libs.androidx.activity)
+            implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.lifecycle.viewmodel)
+            implementation(libs.androidx.lifecycle.viewmodel.compose)
+            implementation(libs.androidx.constraintlayout.compose)
+            implementation(libs.navigation.compose)
+            implementation(libs.hilt.android)
+            implementation(libs.hilt.navigation.compose)
+            implementation(libs.androidx.room.ktx)
+            implementation(libs.androidx.work.runtime.ktx)
+            implementation(libs.androidx.hilt.work)
+            implementation(libs.lottie.compose)
+            implementation(libs.timber)
+            implementation(project.dependencies.platform(libs.firebase.bom))
+            implementation(libs.firebase.analytics)
+            implementation(libs.firebase.crashlytics)
+            implementation(libs.play.services.ads)
+        }
+        iosMain.dependencies {
+
+        }
+    }
 }
 
 android {
     namespace = "zero.friends.gostopcalculator"
     compileSdk = libs.versions.compileSdk.get().toInt()
+
+    sourceSets {
+        getByName("main") {
+            manifest.srcFile("src/main/AndroidManifest.xml")
+            java.srcDirs("src/main/java")
+            res.srcDirs("src/main/res")
+        }
+    }
 
     defaultConfig {
         applicationId = "zero.friends.gostopcalculator"
@@ -79,47 +145,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain"))
-    implementation(project(":data"))
-
-    implementation(libs.compose.ui)
-    implementation(libs.compose.ui.tooling)
-    implementation(libs.compose.material)
-    implementation(libs.lottie.compose)
-
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.startup)
-    implementation(libs.androidx.fragment)
-    implementation(libs.androidx.constraintlayout.compose)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.lifecycle.viewmodel)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.coordinatorlayout)
-    implementation(libs.androidx.recyclerview)
-    implementation(libs.androidx.appcompat)
-
-    implementation(libs.navigation.ui)
-    implementation(libs.navigation.fragment)
-    implementation(libs.navigation.compose)
-
-    implementation(libs.kotlin.coroutines.core)
-    implementation(libs.kotlin.coroutines.android)
-    implementation(libs.kotlin.serialization.json)
-
-    implementation(libs.hilt.android)
-    implementation(libs.hilt.navigation.compose)
-    ksp(libs.hilt.compiler)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.work.runtime.ktx)
-    implementation(libs.androidx.hilt.work)
-    ksp(libs.androidx.hilt.compiler)
-
-    implementation(libs.timber)
-    implementation(libs.kotlin.reflect)
-
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.crashlytics)
-    implementation(libs.play.services.ads)
+    add("kspAndroid", libs.hilt.compiler)
+    add("kspAndroid", libs.androidx.hilt.compiler)
 }

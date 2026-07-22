@@ -127,8 +127,9 @@ private fun ResultContent(
             .padding(16.dp)
     ) {
         val subTitleRes = when (uiState.screenType) {
-            ResultActivity.ScreenType.CALCULATE -> R.string.calculate_history_text
-            ResultActivity.ScreenType.DETAIL -> R.string.detail_text
+            ScreenType.CALCULATE, ScreenType.Calculate -> R.string.calculate_history_text
+            ScreenType.DETAIL, ScreenType.Detail -> R.string.detail_text
+            else -> R.string.calculate_history_text
         }
         Text(
             text = stringResource(id = subTitleRes),
@@ -144,7 +145,7 @@ private fun ResultContent(
         }
 
         val trace = uiState.roundTrace
-        if (uiState.screenType == ResultActivity.ScreenType.DETAIL && trace != null && roundTraceFormatter != null) {
+        if (uiState.screenType == ScreenType.DETAIL && trace != null && roundTraceFormatter != null) {
             val winnerTerm = trace.terms.find { it.gamerId == trace.winnerId }
             val sellerTerms = trace.terms.filter { it.factors.isSeller && it.gamerId != trace.winnerId }
             val loserTerms = trace.terms.filter { it.gamerId != trace.winnerId && !it.factors.isSeller }
@@ -208,7 +209,7 @@ private fun GamerResultCard(index: Int, gamer: Gamer) {
                     text = String.format("%s%,d원", sign, account),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = colorResource(id = account.getMoneyColor())
+                    color = account.getMoneyColor()
                 )
             }
 
@@ -240,7 +241,7 @@ private fun GamerResultCard(index: Int, gamer: Gamer) {
                     gamer.calculate.forEach { target ->
                         val action = if (target.account > 0) "받아야합니다." else "줘야합니다."
                         val amountText = String.format("%,d원", target.account)
-                        val color = colorResource(id = target.account.getMoneyColor())
+                        val color = target.account.getMoneyColor()
 
                         val annotatedString = buildAnnotatedString {
                             append("${target.name}에게 ")
@@ -415,7 +416,7 @@ private fun ResultScreenCalculatePreview() {
 
         ResultScreen(
             uiState = ResultUiState(
-                screenType = ResultActivity.ScreenType.CALCULATE,
+                screenType = ScreenType.CALCULATE,
                 gameName = "즐거운 고스톱",
                 gamers = sampleGamers
             )
@@ -446,7 +447,7 @@ private fun ResultScreenDetailPreview() {
 
         ResultScreen(
             uiState = ResultUiState(
-                screenType = ResultActivity.ScreenType.DETAIL,
+                screenType = ScreenType.DETAIL,
                 gameName = "상세 정산 내역",
                 gamers = sampleGamers
             )

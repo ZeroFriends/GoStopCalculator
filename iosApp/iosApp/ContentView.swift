@@ -1,22 +1,17 @@
 import SwiftUI
+import SharedUI
+
+struct ComposeView: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> UIViewController {
+        MainViewControllerKt.MainViewController()
+    }
+
+    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
+}
 
 struct ContentView: View {
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "calculator")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("GoStopCalculator KMP iOS")
-                .font(.title)
-                .fontWeight(.bold)
-            Text("Domain & Data KMP Core Connected!")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-        }
-        .padding()
+        ComposeView()
+            .ignoresSafeArea(.keyboard)
     }
-}
-
-#Preview {
-    ContentView()
 }
