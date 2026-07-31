@@ -39,7 +39,6 @@ kotlin {
 
     androidTarget()
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
@@ -80,13 +79,11 @@ kotlin {
 dependencies {
     // kotlin-inject KSP
     add("kspAndroid", libs.kotlin.inject.compiler.ksp)
-    add("kspIosX64", libs.kotlin.inject.compiler.ksp)
     add("kspIosArm64", libs.kotlin.inject.compiler.ksp)
     add("kspIosSimulatorArm64", libs.kotlin.inject.compiler.ksp)
 
     // Room KSP
     add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
 }
