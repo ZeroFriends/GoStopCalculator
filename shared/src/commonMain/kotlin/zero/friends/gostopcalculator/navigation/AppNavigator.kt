@@ -36,7 +36,7 @@ fun AppNavigator(
         composable<Route.Splash> {
             SplashScreen()
             LaunchedEffect(Unit) {
-                delay(2.seconds)
+                delay(3.seconds)
                 navController.navigate(Route.History) {
                     popUpTo<Route.Splash> { inclusive = true }
                 }

@@ -66,9 +66,6 @@ kotlin {
             implementation(libs.firebase.crashlytics)
             implementation(libs.play.services.ads)
         }
-        iosMain.dependencies {
-
-        }
     }
 }
 
