@@ -11,7 +11,6 @@ versionName = "1.4.0"
 androidGradlePlugin = "9.3.0"
 kotlin = "2.4.10"
 ksp = "2.2.21-RC-2.0.4"
-hilt = "2.60.1"
 googleServices = "4.5.0"
 crashlytics = "3.0.7"
 
@@ -25,7 +24,6 @@ androidxConstraintCompose = "1.1.1"
 androidxLifecycle = "2.11.0"
 androidxRoom = "2.8.4"
 androidxWork = "2.11.2"
-androidxHilt = "1.4.0"
 
 # Navigation
 navigation = "2.9.8"
@@ -37,9 +35,6 @@ composeMultiplatform = "1.11.1"
 # Kotlin
 coroutines = "1.11.0"
 kotlinxSerialization = "1.11.0"
-
-# Hilt Navigation Compose
-hiltNavigationCompose = "1.4.0"
 
 # Firebase
 firebase = "34.16.0"
@@ -76,8 +71,6 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidxRoom" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidxRoom" }
 androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "androidxWork" }
-androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androidxHilt" }
-androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidxHilt" }
 
 # Navigation
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
@@ -106,11 +99,6 @@ kotlin-inject-compiler-ksp = { module = "me.tatarka.inject:kotlin-inject-compile
 # SQLite Bundled (Room KMP)
 androidx-sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version = "2.7.0" }
 
-# Dagger HiltA로
-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
-
 # Firebase
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics", version.ref = "firebaseAnalytics" }
@@ -137,7 +125,5 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 compose-multiplatform = { id = "org.jetbrains.compose", version = "1.11.1" }
 androidx-room = { id = "androidx.room", version.ref = "androidxRoom" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
-

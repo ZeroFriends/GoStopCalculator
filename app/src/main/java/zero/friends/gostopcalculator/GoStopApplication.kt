@@ -1,38 +1,47 @@
 package zero.friends.gostopcalculator
 
 import android.app.Application
-import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
-import androidx.work.WorkManager
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import dagger.hilt.android.HiltAndroidApp
+import zero.friends.data.di.create
 import zero.friends.data.source.initAssetContext
 import zero.friends.data.source.initDatabaseContext
 import zero.friends.data.source.preference.initPreferenceContext
+import zero.friends.gostopcalculator.di.AndroidAppComponent
+import zero.friends.gostopcalculator.di.AppComponent
+import zero.friends.gostopcalculator.di.create
+import zero.friends.gostopcalculator.di.createAppComponent
 import zero.friends.gostopcalculator.work.EmptyRoundCleanupWorker
-import javax.inject.Inject
 
-@HiltAndroidApp
 class GoStopApplication : Application(), Configuration.Provider {
 
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
+    lateinit var appComponent: AppComponent
+        private set
+
+    lateinit var androidAppComponent: AndroidAppComponent
+        private set
 
     override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .build()
+        get() = Configuration.Builder().build()
 
     override fun onCreate() {
         super.onCreate()
+        instance = this
 
         initDatabaseContext(this)
         initAssetContext(this)
         initPreferenceContext(this)
 
+        appComponent = createAppComponent()
+        androidAppComponent = AndroidAppComponent::class.create(appComponent.dataComponent)
+
         FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = !BuildConfig.DEBUG
 
-        WorkManager.initialize(this, workManagerConfiguration)
         EmptyRoundCleanupWorker.enqueue(applicationContext)
+    }
+
+    companion object {
+        lateinit var instance: GoStopApplication
+            private set
     }
 }

@@ -1,7 +1,6 @@
 package zero.friends.gostopcalculator.work
 
 import android.content.Context
-import androidx.hilt.work.HiltWorker
 import androidx.room.withTransaction
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
@@ -9,24 +8,21 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import zero.friends.data.source.DataBase
-import zero.friends.data.source.dao.GamerDao
-import zero.friends.data.source.dao.RoundDao
+import zero.friends.gostopcalculator.GoStopApplication
 import zero.friends.gostopcalculator.NonCrashReport
 
-@HiltWorker
-class EmptyRoundCleanupWorker @AssistedInject constructor(
-    @Assisted appContext: Context,
-    @Assisted workerParams: WorkerParameters,
-    private val dataBase: DataBase,
-    private val roundDao: RoundDao,
-    private val gamerDao: GamerDao
+class EmptyRoundCleanupWorker(
+    appContext: Context,
+    workerParams: WorkerParameters
 ) : CoroutineWorker(appContext, workerParams) {
+
+    private val dataComponent get() = GoStopApplication.instance.appComponent.dataComponent
+    private val dataBase get() = dataComponent.dataBase
+    private val roundDao get() = dataComponent.provideRoundDao()
+    private val gamerDao get() = dataComponent.provideGamerDao()
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
@@ -42,7 +38,6 @@ class EmptyRoundCleanupWorker @AssistedInject constructor(
                     }
 
                     if (shouldDeleteRound) {
-                        // RoundTrace rows cascade-delete via FK on RoundEntity.
                         roundDao.deleteRound(round.id)
                         deletedRounds++
                         deletedRoundIds += round.id

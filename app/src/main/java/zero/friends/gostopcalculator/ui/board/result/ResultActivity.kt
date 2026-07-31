@@ -5,11 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import dagger.hilt.android.AndroidEntryPoint
-import zero.friends.domain.model.Game
-import zero.friends.domain.model.Round
 
-@AndroidEntryPoint
 class ResultActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
