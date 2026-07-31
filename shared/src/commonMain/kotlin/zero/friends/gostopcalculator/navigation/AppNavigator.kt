@@ -10,6 +10,12 @@ import kotlinx.serialization.json.Json
 import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.di.AppComponent
 import zero.friends.gostopcalculator.di.createAppComponent
+import zero.friends.gostopcalculator.ui.board.main.BoardScreen
+import zero.friends.gostopcalculator.ui.board.main.BoardViewModel
+import zero.friends.gostopcalculator.ui.board.prepare.PrepareScreen
+import zero.friends.gostopcalculator.ui.board.prepare.PrepareViewModel
+import zero.friends.gostopcalculator.ui.board.rule.RuleLogScreen
+import zero.friends.gostopcalculator.ui.board.rule.RuleLogViewModel
 import zero.friends.gostopcalculator.ui.history.HistoryScreen
 import zero.friends.gostopcalculator.ui.history.HistoryViewModel
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
@@ -65,16 +71,13 @@ fun AppNavigator(
         }
 
         composable<Route.Precondition.Rule> {
-            val route = navController.currentRoute as? Route.Precondition.Rule
-            val ruleViewModel: RuleViewModel = viewModel { appComponent.ruleViewModel }
+            val route = requireNotNull(navController.currentRoute as? Route.Precondition.Rule)
+            val players: List<Player> = runCatching {
+                Json.decodeFromString<List<Player>>(route.playersJson)
+            }.getOrDefault(emptyList())
 
-            LaunchedEffect(route) {
-                if (route != null) {
-                    val players: List<Player> = runCatching {
-                        Json.decodeFromString<List<Player>>(route.playersJson)
-                    }.getOrDefault(emptyList())
-                    ruleViewModel.initData(players, route.gameName)
-                }
+            val ruleViewModel: RuleViewModel = viewModel(key = route.playersJson + route.gameName) {
+                appComponent.ruleViewModelFactory(players, route.gameName)
             }
 
             RuleScreen(
@@ -84,6 +87,68 @@ fun AppNavigator(
                         popUpTo<Route.History> { inclusive = false }
                     }
                 },
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable<Route.Board.Main> {
+            val route = requireNotNull(navController.currentRoute as? Route.Board.Main)
+
+            val boardViewModel: BoardViewModel = viewModel(key = route.gameId.toString()) {
+                appComponent.boardViewModelFactory(route.gameId)
+            }
+
+            BoardScreen(
+                boardViewModel = boardViewModel,
+                onNext = { gameId ->
+                    navController.navigate(Route.Board.Prepare(gameId))
+                },
+                onBack = {
+                    navController.popBackStack()
+                },
+                openDetailScreen = { gameId, roundId ->
+                    navController.navigate(Route.Board.Detail(gameId, roundId))
+                },
+                openCalculated = { gameId ->
+                    navController.navigate(Route.Board.Calculate(gameId))
+                },
+                openRule = { gameId ->
+                    navController.navigate(Route.Board.RuleLog(gameId))
+                }
+            )
+        }
+
+        composable<Route.Board.Prepare> {
+            val route = requireNotNull(navController.currentRoute as? Route.Board.Prepare)
+
+            val prepareViewModel: PrepareViewModel = viewModel(key = route.gameId.toString()) {
+                appComponent.prepareViewModelFactory(route.gameId)
+            }
+
+            PrepareScreen(
+                prepareViewModel = prepareViewModel,
+                onComplete = { gameId, roundId ->
+                    navController.navigate(Route.Board.Score(gameId, roundId)) {
+                        popUpTo<Route.Board.Main> { inclusive = false }
+                    }
+                },
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable<Route.Board.RuleLog> {
+            val route = requireNotNull(navController.currentRoute as? Route.Board.RuleLog)
+
+            val ruleLogViewModel: RuleLogViewModel = viewModel(key = route.gameId.toString()) {
+                appComponent.ruleLogViewModelFactory(route.gameId)
+            }
+
+            RuleLogScreen(
+                ruleLogViewModel = ruleLogViewModel,
                 onBack = {
                     navController.popBackStack()
                 }

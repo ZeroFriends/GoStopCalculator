@@ -31,6 +31,7 @@ kotlin {
     compilerOptions {
         languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_4)
         apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_4)
+
         optIn.add("kotlinx.cinterop.ExperimentalForeignApi")
         optIn.add("kotlinx.coroutines.ExperimentalCoroutinesApi")
     }

@@ -1,25 +1,26 @@
 package zero.friends.gostopcalculator.ui.common
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import zero.friends.domain.model.Gamer
-import zero.friends.domain.model.LoserOption
-import zero.friends.domain.model.ScoreOption
-import zero.friends.domain.model.SellerOption
-import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.theme.Nero
+import zero.friends.gostopcalculator.theme.OrangeyRed
 import zero.friends.gostopcalculator.util.getMoneyColor
 
 @Composable
@@ -29,7 +30,7 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        val moneyColor = remember(gamer.account) {
+        val moneyColor by remember(gamer.account) {
             derivedStateOf { gamer.account.getMoneyColor() }
         }
         Text(
@@ -38,13 +39,12 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
                 .align(Alignment.CenterVertically),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = colorResource(id = R.color.orangey_red)
+            color = OrangeyRed
         )
         Row(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-
             Spacer(modifier = Modifier.padding(4.dp))
             Column(
                 modifier = Modifier.align(Alignment.CenterVertically),
@@ -52,7 +52,7 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
                 horizontalAlignment = Alignment.Start,
             ) {
                 Text(
-                    text = gamer.winnerOption?.korean ?: (" " + gamer.sellerOption?.korean),
+                    text = gamer.winnerOption?.korean ?: (" " + (gamer.sellerOption?.korean ?: "")),
                     fontSize = 8.sp,
                     modifier = Modifier.alpha(if (gamer.isWinner()) 1f else 0f)
                 )
@@ -64,12 +64,12 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
                     Text(
                         text = gamer.name,
                         fontSize = 16.sp,
-                        color = colorResource(id = R.color.nero),
+                        color = Nero,
                     )
                     Text(
-                        text = String.format(stringResource(id = R.string.price), gamer.account),
+                        text = "${gamer.account}원",
                         textAlign = TextAlign.Center,
-                        color = moneyColor.value,
+                        color = moneyColor,
                         fontSize = 12.sp,
                         modifier = Modifier
                             .align(Alignment.CenterVertically),
@@ -87,41 +87,5 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
                 )
             }
         }
-
-    }
-}
-
-@Preview(showBackground = true, widthDp = 200)
-@Composable
-fun GamerItemPreview() {
-    Column {
-        GamerItem(
-            index = 0,
-            gamer = Gamer(
-                name = "조재영",
-                sellerOption = SellerOption.Seller,
-                loserOption = LoserOption.values().toList(),
-                scoreOption = ScoreOption.values().toList(),
-                account = 1000000000
-            )
-        )
-        GamerItem(
-            index = 0,
-            gamer = Gamer(
-                name = "조재영",
-                sellerOption = SellerOption.Seller,
-                loserOption = LoserOption.values().toList(),
-                account = 1000000000
-            )
-        )
-        GamerItem(
-            index = 0,
-            gamer = Gamer(
-                name = "조재영",
-                sellerOption = SellerOption.Seller,
-                scoreOption = ScoreOption.values().toList(),
-                account = 1000000000
-            )
-        )
     }
 }

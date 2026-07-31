@@ -199,7 +199,7 @@ private fun RuleLazyColumn(
     clickEvent: (RuleClickEvent) -> Unit,
     onUpdateRule: (rule: Rule, score: Long) -> Unit = { _, _ -> }
 ) {
-    LazyColumn(contentPadding = PaddingValues(top = 35.dp, bottom = 12.dp)) {
+    LazyColumn(contentPadding = PaddingValues(top = 10.dp, bottom = 12.dp)) {
         item {
             AmountSettingBlock { clickEvent(RuleClickEvent.Helper) }
         }
@@ -219,19 +219,21 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
     val isFirstDdadak = rule.name == Const.Rule.FirstDdadak
 
     Row(
-        Modifier.fillMaxWidth(),
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1.2f)
         ) {
             Text(
                 text = (index + 1).toString(),
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .padding(16.dp),
+                    .padding(end = 12.dp, start = 4.dp),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = OrangeyRed
@@ -267,7 +269,7 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
 
         NumberTextField(
             text = rule.score.toString(),
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(0.8f),
             endText = stringResource(Res.string.won),
             isEnable = !isFirstDdadak,
             hintColor = if (isFirstDdadak) DustyGray else Nero
@@ -280,7 +282,7 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
 @Composable
 private fun AmountSettingBlock(modifier: Modifier = Modifier, onHelperClick: () -> Unit) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().padding(bottom = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

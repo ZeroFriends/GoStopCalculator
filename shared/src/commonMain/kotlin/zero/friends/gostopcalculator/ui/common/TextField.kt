@@ -110,7 +110,10 @@ fun NumberTextField(
     val resolvedInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
     val displayText = text.takeUnless { it == "0" } ?: ""
 
-    Box(modifier = modifier) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.CenterEnd
+    ) {
         TextField(
             value = displayText,
             onValueChange = {
@@ -140,7 +143,7 @@ fun NumberTextField(
                 keyboardController?.hide()
             }),
             modifier = Modifier
-                .padding(end = 3.dp)
+                .padding(end = 24.dp)
                 .fillMaxWidth(),
             interactionSource = resolvedInteractionSource,
             placeholder = {
@@ -152,7 +155,7 @@ fun NumberTextField(
         Text(
             text = endText,
             textAlign = TextAlign.Center,
-            modifier = Modifier.align(Alignment.CenterEnd),
+            modifier = Modifier.padding(bottom = 4.dp),
             color = hintColor
         )
     }

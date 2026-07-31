@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import zero.friends.domain.model.Player
 import zero.friends.domain.model.Rule
@@ -25,6 +26,8 @@ data class RuleUiState(
 )
 
 class RuleViewModel @Inject constructor(
+    @Assisted private val players: List<Player>,
+    @Assisted private val gameName: String,
     private val getDefaultRuleUseCase: GetDefaultRuleUseCase,
     private val startNewGame: StartNewGameUseCase
 ) : ViewModel() {
@@ -35,12 +38,7 @@ class RuleViewModel @Inject constructor(
     private val _toast = MutableSharedFlow<String?>()
     fun toast() = _toast.asSharedFlow()
 
-    private var players: List<Player> = emptyList()
-    private var gameName: String = ""
-
-    fun initData(players: List<Player>, gameName: String) {
-        this.players = players
-        this.gameName = gameName
+    init {
         viewModelScope.launch {
             val rules = getDefaultRuleUseCase(playerCount = players.size)
             val verify = rules.filter { it.isEssential }.any { it.score > 0 }

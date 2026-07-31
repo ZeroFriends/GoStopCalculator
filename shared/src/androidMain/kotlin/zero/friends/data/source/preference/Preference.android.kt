@@ -2,6 +2,7 @@ package zero.friends.data.source.preference
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import androidx.core.content.edit
 import zero.friends.domain.preference.AppPreference
 
 private lateinit var preferenceContext: Context
@@ -16,9 +17,8 @@ actual class Preference actual constructor() : AppPreference {
     }
 
     override fun setFirstStart() {
-        with(preferences.edit()) {
+        preferences.edit(commit = true) {
             putBoolean("IS_FIRST_START", false)
-            commit()
         }
     }
 

@@ -1,15 +1,15 @@
 package zero.friends.gostopcalculator.ui.board.main
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Assisted
+import me.tatarka.inject.annotations.Inject
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.PlayerResult
@@ -17,8 +17,6 @@ import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.RoundRepository
 import zero.friends.domain.usecase.ObservePlayerResultsUseCase
 import zero.friends.domain.usecase.round.ObserveRoundListUseCase
-import zero.friends.domain.util.Const
-import javax.inject.Inject
 
 data class BoardUiState(
     val game: Game = Game(),
@@ -26,15 +24,13 @@ data class BoardUiState(
     val playerResults: List<PlayerResult> = emptyList(),
 )
 
-@HiltViewModel
 class BoardViewModel @Inject constructor(
-    gameRepository: GameRepository,
+    @Assisted private val gameId: Long,
+    private val gameRepository: GameRepository,
     private val observePlayerResultsUseCase: ObservePlayerResultsUseCase,
     private val observeRoundListUseCase: ObserveRoundListUseCase,
-    private val roundRepository: RoundRepository,
-    savedStateHandle: SavedStateHandle
+    private val roundRepository: RoundRepository
 ) : ViewModel() {
-    private val gameId: Long = requireNotNull(savedStateHandle.get(Const.GameId))
     private val _uiState = MutableStateFlow(BoardUiState(Game(gameId)))
     fun getUiState() = _uiState.asStateFlow()
 
@@ -49,7 +45,6 @@ class BoardViewModel @Inject constructor(
                     _uiState.update { it.copy(gameHistories = roundLists) }
                 }
                 .launchIn(this)
-
         }
 
         gameRepository.observeGame(gameId)
@@ -65,7 +60,4 @@ class BoardViewModel @Inject constructor(
             roundRepository.deleteRound(roundId)
         }
     }
-
 }
-
-

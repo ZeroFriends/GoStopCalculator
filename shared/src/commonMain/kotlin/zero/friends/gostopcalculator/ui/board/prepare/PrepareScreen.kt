@@ -1,7 +1,5 @@
 package zero.friends.gostopcalculator.ui.board.prepare
 
-import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,19 +27,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Player
-import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.complete
+import zero.friends.gostopcalculator.shared.generated.resources.ic_check_circle_24_dp
+import zero.friends.gostopcalculator.shared.generated.resources.ic_unchecked_circle_24_dp
+import zero.friends.gostopcalculator.shared.generated.resources.player_list
+import zero.friends.gostopcalculator.shared.generated.resources.start
+import zero.friends.gostopcalculator.shared.generated.resources.start_description
+import zero.friends.gostopcalculator.theme.Nero
+import zero.friends.gostopcalculator.theme.OrangeyRed
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.DescriptionBox
 import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
@@ -54,17 +55,13 @@ private sealed interface PrepareEvent {
 
 @Composable
 fun PrepareScreen(
-    prepareViewModel: PrepareViewModel = hiltViewModel(),
+    prepareViewModel: PrepareViewModel,
     onComplete: (gameId: Long, roundId: Long) -> Unit = { _, _ -> },
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    onShowToast: (String) -> Unit = {}
 ) {
-    val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
     val uiState by prepareViewModel.uiState().collectAsState()
-
-    BackHandler(true) {
-        onBack()
-    }
 
     PrepareScreen(
         scaffoldState = scaffoldState,
@@ -81,7 +78,7 @@ fun PrepareScreen(
                 }
                 is PrepareEvent.OnClickPlayer -> {
                     prepareViewModel.onClickPlayer(event.isCheck, event.player) {
-                        Toast.makeText(context, context.getString(R.string.fail_over_gamer), Toast.LENGTH_SHORT).show()
+                        onShowToast("4명을 초과할 수 없습니다.")
                     }
                 }
             }
@@ -107,20 +104,20 @@ private fun PrepareScreen(
     ) { innerPadding ->
         GoStopButtonBackground(
             modifier = Modifier.padding(innerPadding),
-            buttonString = stringResource(id = R.string.complete),
+            buttonString = stringResource(Res.string.complete),
             buttonEnabled = uiState.selectedPlayers.size >= 2,
             onClick = { event(PrepareEvent.Complete) },
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                    DescriptionBox(
-                        mainText = stringResource(id = R.string.start),
-                        subText = stringResource(id = R.string.start_description)
-                    )
-                    Spacer(modifier = Modifier.padding(22.dp))
-                    PlayerPickList(
-                        uiState = uiState,
-                        event = event
-                    )
+                DescriptionBox(
+                    mainText = stringResource(Res.string.start),
+                    subText = stringResource(Res.string.start_description)
+                )
+                Spacer(modifier = Modifier.padding(22.dp))
+                PlayerPickList(
+                    uiState = uiState,
+                    event = event
+                )
             }
         }
     }
@@ -136,9 +133,9 @@ private fun PlayerPickList(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            text = stringResource(R.string.player_list),
+            text = stringResource(Res.string.player_list),
             fontSize = 16.sp,
-            color = colorResource(id = R.color.nero),
+            color = Nero,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.padding(9.dp))
@@ -159,7 +156,7 @@ private fun PlayerPickList(
 private fun PlayerPickItem(index: Int, player: Player, isCheck: Boolean = true, onClick: (Boolean) -> Unit = {}) {
     val shape = remember { RoundedCornerShape(18.dp) }
     val modifier = if (isCheck) Modifier.background(
-        color = colorResource(id = R.color.orangey_red).copy(alpha = 0.1f),
+        color = OrangeyRed.copy(alpha = 0.1f),
         shape = shape
     )
     else Modifier
@@ -178,7 +175,7 @@ private fun PlayerPickItem(index: Int, player: Player, isCheck: Boolean = true, 
                 text = (index + 1).toString(),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.orangey_red)
+                color = OrangeyRed
             )
             Spacer(modifier = Modifier.padding(8.dp))
             Text(text = player.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
@@ -189,38 +186,16 @@ private fun PlayerPickItem(index: Int, player: Player, isCheck: Boolean = true, 
         ) {
             if (isCheck) {
                 Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_check_circle_24_dp),
-                    modifier = Modifier.background(color = colorResource(id = R.color.orangey_red).copy(alpha = 0.1f)),
+                    painter = painterResource(Res.drawable.ic_check_circle_24_dp),
+                    modifier = Modifier.background(color = OrangeyRed.copy(alpha = 0.1f)),
                     contentDescription = null
                 )
             } else {
                 Image(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_unchecked_circle_24_dp),
+                    painter = painterResource(Res.drawable.ic_unchecked_circle_24_dp),
                     contentDescription = null
                 )
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PickItemPreview() {
-    PlayerPickItem(index = 1, player = Player(1, "zero"))
-}
-
-@Preview
-@Composable
-private fun PrepareScreenPreview() {
-    PrepareScreen(
-        rememberScaffoldState(),
-        PrepareUiState(
-            game = Game(1, "gameName"),
-            players = listOf(
-                Player(1, "zero"),
-                Player(2, "hello"),
-                Player(3, "조재영"),
-            )
-        )
-    )
 }

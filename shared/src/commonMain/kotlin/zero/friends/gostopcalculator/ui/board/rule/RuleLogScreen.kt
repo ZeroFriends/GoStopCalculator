@@ -1,7 +1,10 @@
 package zero.friends.gostopcalculator.ui.board.rule
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
@@ -11,37 +14,34 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import zero.friends.domain.model.Game
+import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Rule
-import zero.friends.domain.util.Const
-import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.rule_title_text
+import zero.friends.gostopcalculator.theme.Nero
+import zero.friends.gostopcalculator.theme.OrangeyRed
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.ContentsCard
 import zero.friends.gostopcalculator.ui.common.GridItems
 import zero.friends.gostopcalculator.ui.common.TitleText
 
 @Composable
-fun RuleLogScreen(ruleLogViewModel: RuleLogViewModel = hiltViewModel(), onBack: () -> Unit) {
+fun RuleLogScreen(
+    ruleLogViewModel: RuleLogViewModel,
+    onBack: () -> Unit
+) {
     val scaffoldState = rememberScaffoldState()
     val uiState by ruleLogViewModel.uiState().collectAsState()
-    BackHandler(true) {
-        onBack()
-    }
 
     RuleLogScreen(
         scaffoldState = scaffoldState,
         uiState = uiState,
         onBack = onBack
     )
-
 }
 
 @Composable
@@ -50,7 +50,6 @@ private fun RuleLogScreen(
     uiState: RuleLogUiState,
     onBack: () -> Unit = {}
 ) {
-
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = { CenterTextTopBar(text = uiState.game.name, isRed = false, onBack = onBack) },
@@ -58,7 +57,7 @@ private fun RuleLogScreen(
         Column(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)) {
             TitleText(
                 modifier = Modifier.padding(top = 34.dp, start = 18.dp),
-                text = stringResource(id = R.string.rule_title_text)
+                text = stringResource(Res.string.rule_title_text)
             )
             Spacer(modifier = Modifier.padding(8.dp))
             ContentsCard {
@@ -88,39 +87,22 @@ fun RuleLogItem(index: Int = 0, rule: Rule = Rule()) {
                     .align(Alignment.CenterVertically),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.orangey_red)
+                color = OrangeyRed
             )
             Spacer(modifier = Modifier.padding(4.dp))
             Text(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 text = rule.name.displayName,
                 fontSize = 16.sp,
-                color = colorResource(id = R.color.nero),
+                color = Nero,
             )
         }
         Text(
-            text = String.format(stringResource(id = R.string.price), rule.score),
+            text = "${rule.score}원",
             textAlign = TextAlign.Center,
-            color = colorResource(id = R.color.nero),
+            color = Nero,
             fontSize = 12.sp,
             modifier = Modifier.align(Alignment.CenterVertically)
         )
     }
-
-}
-
-@Preview
-@Composable
-private fun Preview() {
-    RuleLogScreen(
-        uiState = RuleLogUiState(
-            Game(name = "hello world"),
-            listOf(
-                Rule(name = Const.Rule.Score),
-                Rule(name = Const.Rule.Fuck),
-                Rule(name = Const.Rule.Sell),
-                Rule(name = Const.Rule.FirstDdadak),
-            )
-        )
-    )
 }

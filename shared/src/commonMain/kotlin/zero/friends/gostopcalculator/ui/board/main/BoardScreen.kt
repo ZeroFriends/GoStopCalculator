@@ -1,6 +1,5 @@
 package zero.friends.gostopcalculator.ui.board.main
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,20 +34,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.PlayerResult
-import zero.friends.domain.model.ScoreOption
-import zero.friends.domain.model.SellerOption
-import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.calculate_history
+import zero.friends.gostopcalculator.shared.generated.resources.delete
+import zero.friends.gostopcalculator.shared.generated.resources.delete_dialog_title
+import zero.friends.gostopcalculator.shared.generated.resources.empty_game_log
+import zero.friends.gostopcalculator.shared.generated.resources.game_history
+import zero.friends.gostopcalculator.shared.generated.resources.ic_error_outline_black
+import zero.friends.gostopcalculator.shared.generated.resources.income_history
+import zero.friends.gostopcalculator.shared.generated.resources.info_game_start
+import zero.friends.gostopcalculator.shared.generated.resources.rule_title_text
+import zero.friends.gostopcalculator.shared.generated.resources.start_game
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.ContentsCard
 import zero.friends.gostopcalculator.ui.common.EmptyHistory
@@ -69,7 +73,7 @@ private sealed interface BoardEvent {
 
 @Composable
 fun BoardScreen(
-    boardViewModel: BoardViewModel = hiltViewModel(),
+    boardViewModel: BoardViewModel,
     onNext: (gameId: Long) -> Unit = {},
     onBack: () -> Unit = {},
     openDetailScreen: (gameId: Long, roundId: Long) -> Unit = { _, _ -> },
@@ -82,9 +86,6 @@ fun BoardScreen(
         mutableStateOf<Long?>(null)
     }
 
-    BackHandler(true) {
-        onBack()
-    }
     BoardScreen(
         scaffoldState = scaffoldState,
         uiState = uiState
@@ -116,11 +117,10 @@ fun BoardScreen(
                 boardViewModel.deleteRound(roundId)
                 openDialog = null
             },
-            confirmText = stringResource(R.string.delete),
-            titleText = stringResource(R.string.delete_dialog_title)
+            confirmText = stringResource(Res.string.delete),
+            titleText = stringResource(Res.string.delete_dialog_title)
         )
     }
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -141,14 +141,14 @@ private fun BoardScreen(
                 text = uiState.game.name,
                 onBack = { event(BoardEvent.Back) },
                 isRed = false,
-                actionText = stringResource(id = R.string.rule_title_text),
+                actionText = stringResource(Res.string.rule_title_text),
                 onAction = { event(BoardEvent.OpenRule) }
             )
         }
     ) { innerPadding ->
         GoStopButtonBackground(
             modifier = Modifier.padding(innerPadding),
-            buttonString = stringResource(id = R.string.start_game),
+            buttonString = stringResource(Res.string.start_game),
             onClick = { event(BoardEvent.StartGame) },
             showGradient = showBottomGradient,
         ) {
@@ -168,7 +168,7 @@ private fun BoardScreen(
                 item {
                     Spacer(modifier = Modifier.height(6.dp))
                     Text(
-                        text = stringResource(id = R.string.game_history),
+                        text = stringResource(Res.string.game_history),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                     )
@@ -177,9 +177,9 @@ private fun BoardScreen(
                 if (uiState.gameHistories.isEmpty()) {
                     item {
                         EmptyHistory(
-                            painter = painterResource(id = R.drawable.ic_error_outline_black),
-                            title = stringResource(R.string.empty_game_log),
-                            subTitle = stringResource(R.string.info_game_start)
+                            painter = painterResource(Res.drawable.ic_error_outline_black),
+                            title = stringResource(Res.string.empty_game_log),
+                            subTitle = stringResource(Res.string.info_game_start)
                         )
                     }
                 } else {
@@ -239,12 +239,12 @@ private fun IncomeHistory(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = stringResource(id = R.string.income_history),
+                        text = stringResource(Res.string.income_history),
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
                     RoundedCornerText(
-                        text = stringResource(id = R.string.calculate_history),
+                        text = stringResource(Res.string.calculate_history),
                         onClick = onClickCalculated
                     )
                 }
@@ -258,49 +258,5 @@ private fun IncomeHistory(
                 }
             }
         }
-    )
-}
-
-@Composable
-@Preview
-private fun BoardScreenPreview() {
-    BoardScreen(
-        uiState = BoardUiState(
-            game = Game(createdAt = "2020.11.26"),
-            gameHistories = mapOf(
-                0L to listOf(Gamer(name = "zero"), Gamer(name = "hello")),
-                1L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas"), Gamer(name = "zerowolrd")),
-                2L to listOf(
-                    Gamer(name = "world"),
-                    Gamer(name = "Asdasdas"),
-                    Gamer(
-                        name = "zerowolrd",
-                        sellerOption = SellerOption.Seller,
-                        scoreOption = listOf(ScoreOption.FirstFuck)
-                    ),
-                    Gamer(name = "zzzzz")
-                ),
-                3L to listOf(
-                    Gamer(name = "world"),
-                    Gamer(name = "Asdasdas"),
-                    Gamer(name = "zerowolrd"),
-                    Gamer(name = "zzzzz"),
-                    Gamer(name = "sdlakfdsfkl")
-                ),
-                4L to listOf(Gamer(name = "world"), Gamer(name = "Asdasdas")),
-            ),
-            playerResults = listOf(PlayerResult("hPlayer1", 200), PlayerResult("HPlayer2", -100))
-        )
-    )
-}
-
-@Composable
-@Preview
-private fun BoardScreenPreview2() {
-    BoardScreen(
-        uiState = BoardUiState(
-            game = Game(createdAt = "2020.11.26"),
-            playerResults = listOf(PlayerResult("hPlayer1", 200), PlayerResult("HPlayer2", -100))
-        )
     )
 }
