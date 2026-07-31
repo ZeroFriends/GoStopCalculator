@@ -9,16 +9,16 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.core.content.FileProvider
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.tatarka.inject.annotations.Inject
 import timber.log.Timber
+import zero.friends.gostopcalculator.GoStopApplication
 import java.io.File
-import javax.inject.Inject
 
-class ScreenCaptureManager @Inject constructor(
-    @ActivityContext private val context: Context,
-) {
+@Inject
+class ScreenCaptureManager {
+    private val context: Context get() = GoStopApplication.instance
 
     private var capturedFile: File? = null
 
@@ -79,5 +79,3 @@ class ScreenCaptureManager @Inject constructor(
             }
         }
 }
-
-

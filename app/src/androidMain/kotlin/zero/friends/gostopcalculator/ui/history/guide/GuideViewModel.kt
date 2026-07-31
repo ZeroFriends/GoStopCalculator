@@ -1,11 +1,10 @@
 package zero.friends.gostopcalculator.ui.history.guide
 
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import me.tatarka.inject.annotations.Inject
 import zero.friends.gostopcalculator.R
-import javax.inject.Inject
 
 data class GuideUiState(
     val pagerList: List<Int> = listOf(
@@ -16,11 +15,10 @@ data class GuideUiState(
         R.drawable.guide_5,
         R.drawable.guide_6,
     )
-
 )
 
-@HiltViewModel
-class GuideViewModel @Inject constructor() : ViewModel() {
+@Inject
+class GuideViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(GuideUiState())
     fun uiState() = _uiState.asStateFlow()
 }

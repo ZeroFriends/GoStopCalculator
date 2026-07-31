@@ -8,20 +8,19 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import androidx.core.content.ContextCompat
-import dagger.hilt.android.qualifiers.ApplicationContext
+import me.tatarka.inject.annotations.Inject
 import zero.friends.domain.model.CalculationFactors
 import zero.friends.domain.model.RoundTraceTerm
 import zero.friends.domain.util.Const
-import zero.friends.gostopcalculator.util.getMoneyColor
+import zero.friends.gostopcalculator.GoStopApplication
+import zero.friends.gostopcalculator.util.getMoneyColorRes
 import java.text.DecimalFormat
 import java.util.Locale
-import javax.inject.Inject
-import zero.friends.gostopcalculator.util.getMoneyColorRes
 import kotlin.math.abs
 
-class RoundTraceFormatter @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
+@Inject
+class RoundTraceFormatter {
+    private val context: Context get() = GoStopApplication.instance
 
     data class TraceLine(
         val title: String,
@@ -101,7 +100,6 @@ class RoundTraceFormatter @Inject constructor(
         val divider = factors.receiverCount.coerceAtLeast(1)
         var partCount = 0
 
-        // 1. 기본 점수 파트
         val baseScorePart = mutableListOf<String>()
         val totalScore = factors.baseScore + factors.goCount
         if (totalScore > 0) {
@@ -116,20 +114,17 @@ class RoundTraceFormatter @Inject constructor(
             partCount++
         }
 
-        // "고" 배율 추가
         if (factors.goCount >= 3) {
             if (builder.isNotEmpty()) builder.append("\n")
             builder.append("x 2${(factors.goCount - 2).toSuperscript()}(${factors.goCount}고)")
             partCount++
         }
-        // "박" 배율 추가
         if (factors.bakCount > 0) {
             if (builder.isNotEmpty()) builder.append("\n")
             builder.append("x 2${factors.bakCount.toSuperscript()}(${factors.bakCount}박)")
             partCount++
         }
 
-        // 2. 추가 점수 파트 (뻑, 따닥, 광팔기)
         if (factors.fuckAmount != 0) {
             if (builder.isNotEmpty()) builder.append("\n")
             builder.append("${formatSigned(factors.fuckAmount / divider)}원 (${Const.Rule.Fuck.displayName})")
@@ -146,14 +141,12 @@ class RoundTraceFormatter @Inject constructor(
             partCount++
         }
 
-        // 3. 중간 계산 결과
         val intermediateAmount = totalAmount / divider
         if (partCount > 1) {
             builder.append("\n  ➡️ ")
             builder.bold { append("= ${formatNumber(intermediateAmount)}원") }
         }
 
-        // 4. 최종 계산 (인원 수)
         if (factors.receiverCount > 1) {
             if (builder.isNotEmpty()) builder.append("\n")
             builder.append("  ➡️ ${formatNumber(intermediateAmount)}원 x ${factors.receiverCount}명 ")

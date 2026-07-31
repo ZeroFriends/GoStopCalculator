@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import zero.friends.domain.model.Gamer
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
@@ -29,7 +28,7 @@ import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
 
 @Composable
 fun EndScreen(
-    endViewModel: EndViewModel = hiltViewModel(),
+    endViewModel: EndViewModel,
     onComplete: (gameId: Long) -> Unit = {}
 ) {
     val uiState by endViewModel.endUiState().collectAsState()
@@ -94,7 +93,6 @@ private fun FinishScreen(modifier: Modifier = Modifier) {
         )
     }
 }
-
 
 @Preview
 @Composable

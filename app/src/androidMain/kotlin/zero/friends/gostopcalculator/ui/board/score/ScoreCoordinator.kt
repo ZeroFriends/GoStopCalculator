@@ -5,7 +5,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import zero.friends.gostopcalculator.R
@@ -16,13 +15,9 @@ import zero.friends.gostopcalculator.ui.board.score.selling.SellingScreen
 import zero.friends.gostopcalculator.ui.board.score.winner.WinnerScreen
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 
-/**
- * Score 관련 화면들의 Coordinator
- * Phase에 따라 적절한 Screen으로 라우팅
- */
 @Composable
 fun ScoreCoordinator(
-    scoreViewModel: ScoreViewModel = hiltViewModel(),
+    scoreViewModel: ScoreViewModel,
     onBack: (gameId: Long?) -> Unit,
     onExit: (gameId: Long) -> Unit,
     onComplete: (gameId: Long, roundId: Long) -> Unit
@@ -34,7 +29,6 @@ fun ScoreCoordinator(
     var threeFuckDialog by remember { mutableStateOf(false) }
     var completeDialog by remember { mutableStateOf(false) }
 
-    // ViewModel Events 처리
     LaunchedEffect(Unit) {
         scoreViewModel.escapeEvent()
             .onEach {
@@ -48,10 +42,8 @@ fun ScoreCoordinator(
             }.launchIn(this)
     }
 
-    // 뒤로가기 처리
     BackHandler(true, scoreViewModel::onBackPhase)
 
-    // Extra Dialog 표시
     if (openExtraDialog) {
         when (uiState.phase) {
             is Selling -> SellingInfoDialog { openExtraDialog = false }
@@ -59,7 +51,6 @@ fun ScoreCoordinator(
         }
     }
 
-    // 완료 Dialog
     if (completeDialog) {
         BasicDialog(
             confirmText = stringResource(id = android.R.string.ok),
@@ -74,7 +65,6 @@ fun ScoreCoordinator(
         )
     }
 
-    // 쓰리박 Dialog
     if (threeFuckDialog) {
         BasicDialog(
             confirmText = stringResource(id = android.R.string.ok),
@@ -94,7 +84,6 @@ fun ScoreCoordinator(
         )
     }
 
-    // Phase에 따른 Screen 라우팅
     when (val phase = uiState.phase) {
         is Selling -> {
             SellingScreen(
@@ -164,4 +153,3 @@ fun ScoreCoordinator(
         }
     }
 }
-

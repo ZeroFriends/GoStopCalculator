@@ -5,11 +5,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
-fun CalculateScreen(calculateViewModel: CalculateViewModel = hiltViewModel(), onBack: () -> Unit = {}) {
+fun CalculateScreen(
+    calculateViewModel: CalculateViewModel,
+    onBack: () -> Unit = {}
+) {
     val uiState by calculateViewModel.uiState().collectAsState()
 
     BackHandler(true) {

@@ -1,72 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
     id("kotlin-parcelize")
-}
-
-kotlin {
-    compilerOptions {
-        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-    }
-    jvmToolchain(21)
-
-    androidTarget()
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    )
-
-    sourceSets {
-        commonMain.dependencies {
-            implementation(project(":shared"))
-
-            implementation(libs.compose.multiplatform.runtime)
-            implementation(libs.compose.multiplatform.foundation)
-            implementation(libs.compose.multiplatform.material)
-            implementation(libs.compose.multiplatform.ui)
-            implementation(libs.compose.multiplatform.components.resources)
-
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.androidx.sqlite.bundled)
-
-            implementation(libs.kotlin.coroutines.core)
-            implementation(libs.kotlin.serialization.json)
-        }
-        androidMain.dependencies {
-            implementation(libs.compose.ui)
-            implementation(libs.compose.material)
-            implementation(libs.compose.ui.tooling)
-            implementation(libs.compose.ui.tooling.preview)
-            implementation(libs.androidx.material)
-            implementation(libs.androidx.core.ktx)
-            implementation(libs.androidx.startup)
-            implementation(libs.androidx.fragment)
-            implementation(libs.androidx.activity)
-            implementation(libs.androidx.activity.compose)
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.viewmodel.compose)
-            implementation(libs.androidx.constraintlayout.compose)
-            implementation(libs.navigation.compose)
-            implementation(libs.hilt.android)
-            implementation(libs.hilt.navigation.compose)
-            implementation(libs.androidx.room.ktx)
-            implementation(libs.androidx.work.runtime.ktx)
-            implementation(libs.androidx.hilt.work)
-            implementation(libs.lottie.compose)
-            implementation(libs.timber)
-            implementation(project.dependencies.platform(libs.firebase.bom))
-            implementation(libs.firebase.analytics)
-            implementation(libs.firebase.crashlytics)
-            implementation(libs.play.services.ads)
-        }
-    }
 }
 
 android {
@@ -76,7 +16,11 @@ android {
     sourceSets {
         getByName("main") {
             manifest.srcFile("src/main/AndroidManifest.xml")
-            java.srcDirs("src/main/java")
+            java.srcDirs(
+                "src/main/java",
+                "src/androidMain/kotlin",
+                "src/commonMain/kotlin"
+            )
             res.srcDirs("src/main/res")
         }
     }
@@ -89,12 +33,11 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
     }
 
-
     signingConfigs {
         create("release") {
             keyAlias = "key"
             keyPassword = "zerofriends"
-            storeFile = file("keystore/keystore.jks")
+ storeFile = file("keystore/keystore.jks")
             storePassword = "zerofriends"
         }
     }
@@ -139,6 +82,43 @@ android {
 }
 
 dependencies {
-    add("ksp", libs.hilt.compiler)
-    add("ksp", libs.androidx.hilt.compiler)
+    implementation(project(":shared"))
+
+    implementation(libs.compose.multiplatform.runtime)
+    implementation(libs.compose.multiplatform.foundation)
+    implementation(libs.compose.multiplatform.material)
+    implementation(libs.compose.multiplatform.ui)
+    implementation(libs.compose.multiplatform.components.resources)
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.sqlite.bundled)
+
+    implementation(libs.kotlin.coroutines.core)
+    implementation(libs.kotlin.serialization.json)
+
+    implementation(libs.compose.ui)
+    implementation(libs.compose.material)
+    implementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.androidx.material)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.startup)
+    implementation(libs.androidx.fragment)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.constraintlayout.compose)
+    implementation(libs.navigation.compose)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.lottie.compose)
+    implementation(libs.timber)
+    implementation(libs.kotlin.inject.runtime)
+    implementation(project.dependencies.platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.play.services.ads)
+
+    ksp(libs.kotlin.inject.compiler.ksp)
 }

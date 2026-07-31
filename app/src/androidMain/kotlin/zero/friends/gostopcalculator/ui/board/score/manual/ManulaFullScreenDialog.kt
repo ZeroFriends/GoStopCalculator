@@ -31,13 +31,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import kotlinx.coroutines.launch
 import zero.friends.domain.model.FullImage
 import zero.friends.domain.model.Image
 import zero.friends.domain.model.Manual
 import zero.friends.domain.model.Script
 import zero.friends.domain.model.Text
+import zero.friends.gostopcalculator.GoStopApplication
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.GoStopDivider
@@ -45,8 +45,10 @@ import zero.friends.gostopcalculator.ui.common.GridItems
 import zero.friends.gostopcalculator.ui.dialog.FullScreenDialog
 
 @Composable
-fun ManualFullScreenDialog(manualViewModel: ManualViewModel = hiltViewModel(), onDismiss: () -> Unit = {}) {
-
+fun ManualFullScreenDialog(
+    manualViewModel: ManualViewModel = GoStopApplication.instance.androidAppComponent.manualViewModel,
+    onDismiss: () -> Unit = {}
+) {
     val uiState by manualViewModel.uiState().collectAsState()
     val pagerState = rememberPagerState(pageCount = { uiState.manuals.size })
     val scope = rememberCoroutineScope()
@@ -96,7 +98,6 @@ fun ManualFullScreenDialog(manualViewModel: ManualViewModel = hiltViewModel(), o
                     }
                 }
             }
-
         }
     }
 }
