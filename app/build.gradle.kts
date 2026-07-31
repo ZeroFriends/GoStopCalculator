@@ -139,6 +139,6 @@ android {
 }
 
 dependencies {
-    add("kspAndroid", libs.hilt.compiler)
-    add("kspAndroid", libs.androidx.hilt.compiler)
+    add("ksp", libs.hilt.compiler)
+    add("ksp", libs.androidx.hilt.compiler)
 }
