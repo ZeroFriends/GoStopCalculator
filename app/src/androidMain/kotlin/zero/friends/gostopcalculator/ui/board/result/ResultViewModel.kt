@@ -1,9 +1,7 @@
 package zero.friends.gostopcalculator.ui.board.result
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,38 +9,34 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Assisted
+import me.tatarka.inject.annotations.Inject
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.RoundTrace
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.usecase.calculate.AggregateGamerResultsUseCase
 import zero.friends.domain.usecase.calculate.BuildRoundTraceUseCase
-import zero.friends.gostopcalculator.ui.board.result.ResultContract.EXTRA_GAME_ID
-import zero.friends.gostopcalculator.ui.board.result.ResultContract.EXTRA_ROUND_ID
-import zero.friends.gostopcalculator.ui.board.result.ResultContract.EXTRA_SCREEN_TYPE
 import zero.friends.gostopcalculator.util.mapAsync
-import javax.inject.Inject
 
-@HiltViewModel
-class ResultViewModel @Inject constructor(
+@Inject
+class ResultViewModel(
     private val gameRepository: GameRepository,
     private val gamerRepository: GamerRepository,
     private val aggregateGamerResultsUseCase: AggregateGamerResultsUseCase,
     private val buildRoundTraceUseCase: BuildRoundTraceUseCase,
-    private val savedStateHandle: SavedStateHandle,
+    @Assisted private val gameId: Long,
+    @Assisted private val roundId: Long,
+    @Assisted private val initialScreenType: ScreenType?
 ) : ViewModel() {
-
-    private val gameId by lazy { savedStateHandle[EXTRA_GAME_ID] ?: -1L }
-    private val roundId by lazy { savedStateHandle[EXTRA_ROUND_ID] ?: -1L }
 
     private val _uiState = MutableStateFlow(ResultUiState())
     val uiState: StateFlow<ResultUiState> = _uiState.asStateFlow()
 
     init {
-        val screenType = savedStateHandle.get<ScreenType>(EXTRA_SCREEN_TYPE)
-        if (screenType != null) {
-            _uiState.update { it.copy(screenType = screenType) }
-        }
+        val screenType = initialScreenType ?: ScreenType.Calculate
+        _uiState.update { it.copy(screenType = screenType) }
+
         when (screenType) {
             ScreenType.Calculate -> loadCalculateData()
             ScreenType.Detail -> loadDetailData()

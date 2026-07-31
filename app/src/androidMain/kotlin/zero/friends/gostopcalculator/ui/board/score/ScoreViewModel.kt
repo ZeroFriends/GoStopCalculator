@@ -1,13 +1,12 @@
 package zero.friends.gostopcalculator.ui.board.score
 
 import android.content.Context
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import me.tatarka.inject.annotations.Assisted
+import me.tatarka.inject.annotations.Inject
 import zero.friends.domain.model.*
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.GamerRepository
@@ -17,10 +16,9 @@ import zero.friends.domain.usecase.option.SellingUseCase
 import zero.friends.domain.usecase.option.ToggleLoserOptionUseCase
 import zero.friends.domain.usecase.option.ToggleScoreOptionUseCase
 import zero.friends.domain.usecase.option.UpdateWinnerUseCase
-import zero.friends.domain.util.Const
+import zero.friends.gostopcalculator.GoStopApplication
 import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.util.separateComma
-import javax.inject.Inject
 
 data class ScoreUiState(
     val game: Game = Game(),
@@ -31,9 +29,8 @@ data class ScoreUiState(
     val threeFuckGamer: Gamer? = null
 )
 
-@HiltViewModel
-class ScoreViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+@Inject
+class ScoreViewModel(
     private val gameRepository: GameRepository,
     private val toggleScoreOptionUseCase: ToggleScoreOptionUseCase,
     private val toggleLoserOption: ToggleLoserOptionUseCase,
@@ -42,9 +39,10 @@ class ScoreViewModel @Inject constructor(
     private val sellingUseCase: SellingUseCase,
     private val roundRepository: RoundRepository,
     private val gamerRepository: GamerRepository,
-    savedStateHandle: SavedStateHandle
+    @Assisted val gameId: Long,
+    @Assisted val roundId: Long
 ) : ViewModel() {
-    val roundId: Long = requireNotNull(savedStateHandle[Const.RoundId])
+    private val context: Context get() = GoStopApplication.instance
 
     private val _uiState = MutableStateFlow(ScoreUiState())
     fun uiState() = _uiState.asStateFlow()
@@ -60,7 +58,7 @@ class ScoreViewModel @Inject constructor(
             val gamers = gamerRepository.getRoundGamers(roundId)
             _uiState.update {
                 it.copy(
-                    game = gameRepository.getGame(requireNotNull(savedStateHandle[Const.GameId])),
+                    game = gameRepository.getGame(gameId),
                     playerResults = gamers,
                     phase = if (gamers.count() != 4) Scoring else Selling(false),
                 )
@@ -72,9 +70,7 @@ class ScoreViewModel @Inject constructor(
                         it.copy(playerResults = roundGamers)
                     }
                 }.launchIn(this)
-
         }
-
     }
 
     fun selectScore(gamer: Gamer, option: ScoreOption, checkThreeFuck: (Boolean) -> Unit = {}) {
@@ -109,7 +105,6 @@ class ScoreViewModel @Inject constructor(
         }
     }
 
-
     fun onBackPhase() {
         viewModelScope.launch {
             if (uiState().value.phase is Selling) {
@@ -132,7 +127,6 @@ class ScoreViewModel @Inject constructor(
                                 } else {
                                     it.copy(score = 0, go = 0)
                                 }
-
                             }
                             is Winner -> state.playerResults
                             Loser -> state.playerResults.map {
@@ -149,7 +143,6 @@ class ScoreViewModel @Inject constructor(
             }
         }
     }
-
 
     fun updateSeller(seller: Gamer, count: Long) {
         viewModelScope.launch {
