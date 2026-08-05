@@ -1,9 +1,10 @@
 package zero.friends.domain.usecase.calculate
 
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
 import zero.friends.domain.mock.MockGamerRepository
 import zero.friends.domain.mock.MockRuleRepository
 import zero.friends.domain.model.Gamer
@@ -19,8 +20,9 @@ class CalculateGoStopMassTest {
     private lateinit var ruleRepository: MockRuleRepository
     private lateinit var gamerRepository: MockGamerRepository
 
-    @Before
+    @BeforeTest
     fun setup() {
+
         ruleRepository = MockRuleRepository()
         gamerRepository = MockGamerRepository()
         useCase = CalculateGameResultUseCase(

@@ -11,13 +11,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import zero.friends.gostopcalculator.R
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.complete
+import zero.friends.gostopcalculator.shared.generated.resources.selling_info
 
 @Composable
 fun SellingInfoDialog(onClose: () -> Unit = {}) {
@@ -28,7 +29,7 @@ fun SellingInfoDialog(onClose: () -> Unit = {}) {
                 .padding(12.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.selling_info),
+                painter = painterResource(Res.drawable.selling_info),
                 contentDescription = null
             )
             Spacer(modifier = Modifier.padding(13.dp))
@@ -37,7 +38,7 @@ fun SellingInfoDialog(onClose: () -> Unit = {}) {
                     .fillMaxWidth(), onClick = onClose
             ) {
                 Text(
-                    text = stringResource(id = android.R.string.ok),
+                    text = stringResource(Res.string.complete),
                     color = Color.White,
                     fontSize = 16.sp
                 )

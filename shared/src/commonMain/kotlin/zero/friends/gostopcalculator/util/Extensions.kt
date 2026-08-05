@@ -18,3 +18,6 @@ fun Int.separateComma(): String {
     val formatted = absVal.toString().reversed().chunked(3).joinToString(",").reversed()
     return "$sign$formatted"
 }
+
+fun Long.separateComma(): String = this.toInt().separateComma()
+

@@ -13,12 +13,18 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.Gamer
-import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.go
+import zero.friends.gostopcalculator.shared.generated.resources.manual
+import zero.friends.gostopcalculator.shared.generated.resources.next_step_2
+import zero.friends.gostopcalculator.shared.generated.resources.point
+import zero.friends.gostopcalculator.shared.generated.resources.winner_main_text
+import zero.friends.gostopcalculator.shared.generated.resources.winner_sub_text
+import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.ui.board.score.common.BaseGamerItem
 import zero.friends.gostopcalculator.ui.board.score.common.GamerListHeader
 import zero.friends.gostopcalculator.ui.board.score.common.ScorePhaseLayout
@@ -38,9 +44,9 @@ fun WinnerScreen(
 ) {
     ScorePhaseLayout(
         gameTitle = game.name,
-        mainText = stringResource(R.string.winner_main_text),
-        subText = stringResource(R.string.winner_sub_text),
-        buttonText = stringResource(R.string.next_step_2),
+        mainText = stringResource(Res.string.winner_main_text),
+        subText = stringResource(Res.string.winner_sub_text),
+        buttonText = stringResource(Res.string.next_step_2),
         buttonEnabled = isNextEnabled,
         onBack = onBack,
         onExit = onExit,
@@ -64,7 +70,7 @@ private fun WinnerGamerList(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         GamerListHeader(
-            buttonText = stringResource(R.string.manual),
+            buttonText = stringResource(Res.string.manual),
             onButtonClick = onShowManual
         )
         Spacer(modifier = Modifier.padding(9.dp))
@@ -78,7 +84,6 @@ private fun WinnerGamerList(
                 key = { _, item -> item.id }
             ) { index, gamer ->
                 if (gamer.id == seller?.id) {
-                    // Seller는 비활성화 상태로 표시
                     BaseGamerItem(
                         index = index,
                         gamer = seller,
@@ -86,7 +91,6 @@ private fun WinnerGamerList(
                         badge = seller.sellerOption?.korean
                     )
                 } else {
-                    // 일반 플레이어는 승자 점수 입력 가능
                     WinnerGamerItem(
                         index = index,
                         gamer = gamer,
@@ -117,9 +121,9 @@ private fun WinnerGamerItem(
             NumberTextField(
                 modifier = Modifier.weight(1f),
                 text = gamer.score.toString(),
-                endText = stringResource(R.string.point),
+                endText = stringResource(Res.string.point),
                 isEnable = true,
-                hintColor = colorResource(id = R.color.nero),
+                hintColor = Nero,
                 onValueChange = { point ->
                     onUpdateWinner(gamer, point, gamer.go.toLong())
                 }
@@ -127,9 +131,9 @@ private fun WinnerGamerItem(
             NumberTextField(
                 modifier = Modifier.width(88.dp),
                 text = gamer.go.toString(),
-                endText = stringResource(R.string.go),
+                endText = stringResource(Res.string.go),
                 isEnable = true,
-                hintColor = colorResource(id = R.color.nero),
+                hintColor = Nero,
                 onValueChange = { go ->
                     onUpdateWinner(gamer, gamer.score.toLong(), go)
                 }

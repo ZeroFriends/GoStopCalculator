@@ -1,9 +1,11 @@
 package zero.friends.gostopcalculator.ui.board.score.end
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
@@ -13,15 +15,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import zero.friends.domain.model.Gamer
-import zero.friends.gostopcalculator.R
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.congratulation
+import zero.friends.gostopcalculator.shared.generated.resources.end_description
+import zero.friends.gostopcalculator.shared.generated.resources.end_game
+import zero.friends.gostopcalculator.shared.generated.resources.ic_confetti
+import zero.friends.gostopcalculator.shared.generated.resources.save
+import zero.friends.gostopcalculator.theme.Gray38
+import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.RoundBox
 import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
@@ -33,9 +39,6 @@ fun EndScreen(
 ) {
     val uiState by endViewModel.endUiState().collectAsState()
     val scaffoldState = rememberScaffoldState()
-    BackHandler {
-        onComplete(uiState.game.id)
-    }
     EndScreen(
         scaffoldState = scaffoldState,
         uiState = uiState,
@@ -43,7 +46,6 @@ fun EndScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun EndScreen(
     scaffoldState: ScaffoldState,
@@ -54,14 +56,14 @@ private fun EndScreen(
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(
-                text = stringResource(id = R.string.end_game),
+                text = stringResource(Res.string.end_game),
                 isRed = false,
             )
         }
     ) { innerPadding ->
         GoStopButtonBackground(
             modifier = Modifier.padding(innerPadding),
-            buttonString = stringResource(id = R.string.save),
+            buttonString = stringResource(Res.string.save),
             onClick = { onClick() }
         ) {
             FinishScreen(Modifier.align(Alignment.Center))
@@ -77,37 +79,19 @@ private fun FinishScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Image(painter = painterResource(id = R.drawable.ic_confetti), contentDescription = null)
+        Image(painter = painterResource(Res.drawable.ic_confetti), contentDescription = null)
         Spacer(modifier = Modifier.padding(6.dp))
         Text(
-            text = stringResource(R.string.congratulation),
+            text = stringResource(Res.string.congratulation),
             fontSize = 24.sp,
-            color = colorResource(id = R.color.nero),
+            color = Nero,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.padding(2.dp))
         Text(
-            text = stringResource(R.string.end_description),
+            text = stringResource(Res.string.end_description),
             fontSize = 14.sp,
-            color = colorResource(id = R.color.gray38)
+            color = Gray38
         )
     }
-}
-
-@Preview
-@Composable
-private fun Preview() {
-    EndScreen(
-        scaffoldState = rememberScaffoldState(),
-        uiState = EndUiState(
-            gamers = listOf(
-                Gamer(name = "zero", account = 1000),
-                Gamer(name = "하이", account = -1000),
-                Gamer(name = "재영", account = +1000),
-                Gamer(name = "준영", account = -1000),
-                Gamer(name = "준영", account = -500),
-                Gamer(name = "준영", account = -12300),
-            )
-        )
-    )
 }

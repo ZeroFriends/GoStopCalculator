@@ -7,12 +7,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import zero.friends.gostopcalculator.R
+import org.jetbrains.compose.resources.stringResource
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.player_list
+import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 
 @Composable
@@ -26,9 +26,9 @@ fun GamerListHeader(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = stringResource(R.string.player_list),
+            text = stringResource(Res.string.player_list),
             fontSize = 16.sp,
-            color = colorResource(id = R.color.nero),
+            color = Nero,
             fontWeight = FontWeight.Bold
         )
         RoundedCornerText(
@@ -37,13 +37,3 @@ fun GamerListHeader(
         )
     }
 }
-
-@Preview
-@Composable
-private fun GameListHeaderPreview() {
-    GamerListHeader(
-        buttonText = "Edit",
-        onButtonClick = {}
-    )
-}
-

@@ -1,13 +1,23 @@
 package zero.friends.gostopcalculator.ui.board.score
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
-import zero.friends.domain.model.*
+import zero.friends.domain.model.Gamer
+import zero.friends.domain.model.Game
+import zero.friends.domain.model.LoserOption
+import zero.friends.domain.model.ScoreOption
+import zero.friends.domain.model.SellerOption
+import zero.friends.domain.model.WinnerOption
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.repository.RoundRepository
@@ -16,8 +26,6 @@ import zero.friends.domain.usecase.option.SellingUseCase
 import zero.friends.domain.usecase.option.ToggleLoserOptionUseCase
 import zero.friends.domain.usecase.option.ToggleScoreOptionUseCase
 import zero.friends.domain.usecase.option.UpdateWinnerUseCase
-import zero.friends.gostopcalculator.GoStopApplication
-import zero.friends.gostopcalculator.R
 import zero.friends.gostopcalculator.util.separateComma
 
 data class ScoreUiState(
@@ -42,7 +50,6 @@ class ScoreViewModel(
     @Assisted val gameId: Long,
     @Assisted val roundId: Long
 ) : ViewModel() {
-    private val context: Context get() = GoStopApplication.instance
 
     private val _uiState = MutableStateFlow(ScoreUiState())
     fun uiState() = _uiState.asStateFlow()
@@ -98,7 +105,7 @@ class ScoreViewModel(
                         is Selling -> Scoring
                         is Scoring -> Winner(false)
                         is Winner -> Loser
-                        else -> throw IllegalStateException("${context.getString(R.string.error_msg_phase_not_exist)} ${it.phase}")
+                        else -> throw IllegalStateException("해당 페이즈가 존재하지 않습니다: ${it.phase}")
                     }
                 )
             }
@@ -118,7 +125,7 @@ class ScoreViewModel(
                             is Scoring -> Selling(true)
                             is Winner -> Scoring
                             Loser -> Winner(true)
-                            else -> throw IllegalStateException("${context.getString(R.string.error_msg_phase_not_exist)} ${state.phase}")
+                            else -> throw IllegalStateException("해당 페이즈가 존재하지 않습니다: ${state.phase}")
                         },
                         playerResults = when (state.phase) {
                             is Scoring -> state.playerResults.map {
@@ -136,7 +143,7 @@ class ScoreViewModel(
                                     it.copy(score = 0, go = 0)
                                 }
                             }
-                            else -> throw IllegalStateException("${context.getString(R.string.error_msg_phase_not_exist)} ${state.phase}")
+                            else -> throw IllegalStateException("해당 페이즈가 존재하지 않습니다: ${state.phase}")
                         }
                     )
                 }
@@ -148,7 +155,7 @@ class ScoreViewModel(
         viewModelScope.launch {
             runCatching {
                 require(count <= MAX_SELL_COUNT) {
-                    context.getString(R.string.over_page_alert, MAX_SELL_COUNT)
+                    "광팔기는 최대 ${MAX_SELL_COUNT}장까지 가능합니다."
                 }
             }.onFailure {
                 _toast.emit(it.message)
@@ -179,7 +186,7 @@ class ScoreViewModel(
         viewModelScope.launch {
             runCatching {
                 require(point <= MAX_POINT) {
-                    context.getString(R.string.over_point_alert, MAX_POINT.separateComma())
+                    "최대 점수를 초과하였습니다. (최대: ${MAX_POINT.separateComma()}점)"
                 }
             }.onFailure {
                 _toast.emit(it.message)

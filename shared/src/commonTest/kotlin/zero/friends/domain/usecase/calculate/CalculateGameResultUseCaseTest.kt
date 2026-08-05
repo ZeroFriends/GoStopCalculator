@@ -1,9 +1,10 @@
 package zero.friends.domain.usecase.calculate
 
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
 import zero.friends.domain.mock.MockGamerRepository
 import zero.friends.domain.mock.MockRuleRepository
 import zero.friends.domain.model.Gamer
@@ -25,8 +26,9 @@ class CalculateGameResultUseCaseTest {
     private lateinit var ruleRepository: MockRuleRepository
     private lateinit var gamerRepository: MockGamerRepository
 
-    @Before
+    @BeforeTest
     fun setup() {
+
         ruleRepository = MockRuleRepository()
         gamerRepository = MockGamerRepository()
 
@@ -160,7 +162,8 @@ class CalculateGameResultUseCaseTest {
     }
 
     @Test
-    fun `4인 고스톱 - 고박, 피박, 광팔기, 첫뻑 시나리오`() = runTest {
+    fun `4인 고스톱 - 고박 피박 광팔기 첫뻑 시나리오`() = runTest {
+
         val gameId = 4L
         val roundId = 4L
 

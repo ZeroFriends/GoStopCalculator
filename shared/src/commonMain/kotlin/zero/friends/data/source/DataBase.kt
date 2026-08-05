@@ -42,7 +42,10 @@ abstract class DataBase : RoomDatabase() {
 }
 
 @Suppress("NO_ACTUAL_FOR_EXPECT")
-expect object DataBaseConstructor : RoomDatabaseConstructor<DataBase>
+expect object DataBaseConstructor : RoomDatabaseConstructor<DataBase> {
+    override fun initialize(): DataBase
+}
+
 
 fun getRoomDatabase(
     builder: RoomDatabase.Builder<DataBase>

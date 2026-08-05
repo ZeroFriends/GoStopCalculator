@@ -1,22 +1,24 @@
 package zero.friends.gostopcalculator.ui.board.score.common
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import zero.friends.domain.model.Gamer
-import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.theme.Gray
+import zero.friends.gostopcalculator.theme.Nero
+import zero.friends.gostopcalculator.theme.OrangeyRed
 
-/**
- * 게이머 아이템의 기본 레이아웃
- * 번호, 이름, 배지(옵션) 표시하고 오른쪽 content 영역 제공
- */
 @Composable
 fun BaseGamerItem(
     index: Int,
@@ -41,7 +43,7 @@ fun BaseGamerItem(
                     .padding(10.dp),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = colorResource(id = if (isEnabled) R.color.orangey_red else R.color.gray)
+                color = if (isEnabled) OrangeyRed else Gray
             )
             Column(
                 modifier = Modifier
@@ -55,13 +57,13 @@ fun BaseGamerItem(
                     Text(
                         text = gamer.name,
                         fontSize = 16.sp,
-                        color = colorResource(id = if (isEnabled) R.color.nero else R.color.gray)
+                        color = if (isEnabled) Nero else Gray
                     )
                     if (badge != null) {
                         Spacer(modifier = Modifier.padding(3.dp))
                         OptionBox(
                             text = badge,
-                            color = colorResource(id = R.color.gray)
+                            color = Gray
                         )
                     }
                 }
@@ -71,4 +73,3 @@ fun BaseGamerItem(
         content?.invoke(this)
     }
 }
-

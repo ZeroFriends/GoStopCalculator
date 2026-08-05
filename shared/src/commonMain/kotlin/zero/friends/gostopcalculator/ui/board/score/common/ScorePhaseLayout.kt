@@ -7,18 +7,15 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import zero.friends.gostopcalculator.R
+import org.jetbrains.compose.resources.painterResource
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.ic_topbar_close
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.DescriptionBox
 import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
 import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
 
-/**
- * Score Phase 화면들의 공통 레이아웃
- * Scaffold + TopBar + ButtonBackground + DescriptionBox를 포함
- */
 @Composable
 fun ScorePhaseLayout(
     gameTitle: String,
@@ -41,7 +38,7 @@ fun ScorePhaseLayout(
                 text = gameTitle,
                 onBack = onBack,
                 onAction = onExit,
-                actionIcon = painterResource(id = R.drawable.ic_topbar_close),
+                actionIcon = painterResource(Res.drawable.ic_topbar_close),
                 isRed = false
             )
         }
@@ -63,4 +60,3 @@ fun ScorePhaseLayout(
         }
     }
 }
-

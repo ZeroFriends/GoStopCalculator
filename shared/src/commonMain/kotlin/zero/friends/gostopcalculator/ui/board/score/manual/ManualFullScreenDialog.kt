@@ -1,12 +1,22 @@
 package zero.friends.gostopcalculator.ui.board.score.manual
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,24 +31,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.FullImage
 import zero.friends.domain.model.Image
 import zero.friends.domain.model.Manual
 import zero.friends.domain.model.Script
 import zero.friends.domain.model.Text
-import zero.friends.gostopcalculator.GoStopApplication
-import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.all_card
+import zero.friends.gostopcalculator.shared.generated.resources.manual
+import zero.friends.gostopcalculator.shared.generated.resources.manual_title
+import zero.friends.gostopcalculator.theme.Gray
+import zero.friends.gostopcalculator.theme.Line
+import zero.friends.gostopcalculator.theme.ManualBackground
+import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.GoStopDivider
 import zero.friends.gostopcalculator.ui.common.GridItems
@@ -46,16 +58,12 @@ import zero.friends.gostopcalculator.ui.dialog.FullScreenDialog
 
 @Composable
 fun ManualFullScreenDialog(
-    manualViewModel: ManualViewModel = GoStopApplication.instance.androidAppComponent.manualViewModel,
+    manualViewModel: ManualViewModel,
     onDismiss: () -> Unit = {}
 ) {
     val uiState by manualViewModel.uiState().collectAsState()
     val pagerState = rememberPagerState(pageCount = { uiState.manuals.size })
     val scope = rememberCoroutineScope()
-
-    BackHandler {
-        onDismiss()
-    }
 
     FullScreenDialog(onDismiss = onDismiss) {
         Scaffold(
@@ -63,7 +71,7 @@ fun ManualFullScreenDialog(
             scaffoldState = rememberScaffoldState(),
             topBar = {
                 CenterTextTopBar(
-                    text = stringResource(id = R.string.manual_title),
+                    text = stringResource(Res.string.manual_title),
                     onBack = onDismiss,
                     isRed = false
                 )
@@ -76,9 +84,9 @@ fun ManualFullScreenDialog(
             ) {
                 Text(
                     modifier = Modifier.padding(16.dp),
-                    text = stringResource(R.string.manual),
+                    text = stringResource(Res.string.manual),
                     fontSize = 24.sp,
-                    color = colorResource(id = R.color.nero),
+                    color = Nero,
                     fontWeight = FontWeight.Bold
                 )
                 ManualGrids(
@@ -88,12 +96,12 @@ fun ManualFullScreenDialog(
                 )
                 GoStopDivider()
                 HorizontalPager(
-                    modifier = Modifier.background(color = colorResource(id = R.color.manual_background)),
+                    modifier = Modifier.background(color = ManualBackground),
                     state = pagerState
                 ) { page ->
-                    when (uiState.manuals[page]) {
-                        is Image -> ImageManual(uiState.manuals[page].script, uiState.images)
-                        is Text -> TextManual(uiState.manuals[page].script)
+                    when (val manual = uiState.manuals[page]) {
+                        is Image -> ImageManual(manual.script, uiState.images)
+                        is Text -> TextManual(manual.script)
                         is FullImage -> AllCardManual()
                     }
                 }
@@ -108,14 +116,13 @@ fun AllCardManual() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        painter = painterResource(R.drawable.all_card),
+        painter = painterResource(Res.drawable.all_card),
         contentDescription = null
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ImageManual(script: List<Script>, imageRes: List<Int>) {
+fun ImageManual(script: List<Script>, imageRes: List<DrawableResource>) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
         columns = GridCells.Fixed(2),
@@ -132,7 +139,7 @@ fun ImageManual(script: List<Script>, imageRes: List<Int>) {
             ) {
                 Spacer(modifier = Modifier.padding(10.dp))
                 Image(
-                    painter = rememberVectorPainter(image = ImageVector.vectorResource(id = imageRes[index])),
+                    painter = painterResource(imageRes[index]),
                     contentDescription = null
                 )
                 Spacer(modifier = Modifier.padding(7.dp))
@@ -140,12 +147,12 @@ fun ImageManual(script: List<Script>, imageRes: List<Int>) {
                     text = item.header,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = colorResource(id = R.color.nero)
+                    color = Nero
                 )
                 Text(
                     text = item.body,
                     fontSize = 8.sp,
-                    color = colorResource(id = R.color.nero)
+                    color = Nero
                 )
                 Spacer(modifier = Modifier.padding(4.dp))
             }
@@ -167,12 +174,12 @@ private fun TextManual(items: List<Script>) {
                     text = item.header,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = colorResource(id = R.color.nero)
+                    color = Nero
                 )
                 Text(
                     text = item.body,
                     fontSize = 14.sp,
-                    color = colorResource(id = R.color.nero)
+                    color = Nero
                 )
             }
         }
@@ -185,7 +192,7 @@ private fun ManualGrids(manuals: List<Manual>, focusIndex: Int, onClick: (index:
         Box(
             modifier = Modifier
                 .clickable { onClick(index) }
-                .border(1.dp, color = colorResource(id = R.color.line))
+                .border(1.dp, color = Line)
                 .padding(vertical = 12.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -194,22 +201,8 @@ private fun ManualGrids(manuals: List<Manual>, focusIndex: Int, onClick: (index:
                 text = manual.title,
                 fontSize = 14.sp,
                 fontWeight = if (focusIndex == index) FontWeight.Bold else FontWeight.Normal,
-                color = colorResource(id = if (focusIndex == index) R.color.nero else R.color.gray)
+                color = if (focusIndex == index) Nero else Gray
             )
         }
     }
-}
-
-@Preview
-@Composable
-private fun TextPreview() {
-    TextManual(items = listOf(Script("피박", "승자가 피 10장 이상을 모아 점수를 얻었는데 피가 5장 이하인 경우. 승자에게 2배의 돈을 지불한다.")))
-}
-
-@Preview
-@Composable
-private fun ImagePreview() {
-    ImageManual(
-        script = listOf(Script("10장•1점", "1장 추가 시 1점씩 추가\n/ 쌍피 2점, 쓰리피 3점추가")), listOf(R.drawable.pees)
-    )
 }

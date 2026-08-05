@@ -1,30 +1,40 @@
 package zero.friends.gostopcalculator.ui.board.score
 
-import android.widget.Toast
-import androidx.activity.compose.BackHandler
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import zero.friends.gostopcalculator.R
+import org.jetbrains.compose.resources.stringResource
+import zero.friends.domain.model.ScoreOption
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.complete
+import zero.friends.gostopcalculator.shared.generated.resources.dialog_text_complete
+import zero.friends.gostopcalculator.shared.generated.resources.three_fuck_text
+import zero.friends.gostopcalculator.shared.generated.resources.three_fuck_title
 import zero.friends.gostopcalculator.ui.board.score.loser.LoserScreen
 import zero.friends.gostopcalculator.ui.board.score.manual.ManualFullScreenDialog
+import zero.friends.gostopcalculator.ui.board.score.manual.ManualViewModel
 import zero.friends.gostopcalculator.ui.board.score.scoring.ScoringScreen
 import zero.friends.gostopcalculator.ui.board.score.selling.SellingScreen
 import zero.friends.gostopcalculator.ui.board.score.winner.WinnerScreen
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 
 @Composable
-fun ScoreCoordinator(
+fun ScoreScreen(
     scoreViewModel: ScoreViewModel,
+    manualViewModel: ManualViewModel,
     onBack: (gameId: Long?) -> Unit,
     onExit: (gameId: Long) -> Unit,
-    onComplete: (gameId: Long, roundId: Long) -> Unit
+    onComplete: (gameId: Long, roundId: Long) -> Unit,
+    onShowToast: (String) -> Unit = {}
 ) {
-    val context = LocalContext.current
     val uiState by scoreViewModel.uiState().collectAsState()
-    
+
     var openExtraDialog by remember { mutableStateOf(false) }
     var threeFuckDialog by remember { mutableStateOf(false) }
     var completeDialog by remember { mutableStateOf(false) }
@@ -37,24 +47,27 @@ fun ScoreCoordinator(
             }.launchIn(this)
 
         scoreViewModel.toast()
-            .onEach {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            .onEach { message ->
+                if (message != null) {
+                    onShowToast(message)
+                }
             }.launchIn(this)
     }
-
-    BackHandler(true, scoreViewModel::onBackPhase)
 
     if (openExtraDialog) {
         when (uiState.phase) {
             is Selling -> SellingInfoDialog { openExtraDialog = false }
-            else -> ManualFullScreenDialog { openExtraDialog = false }
+            else -> ManualFullScreenDialog(
+                manualViewModel = manualViewModel,
+                onDismiss = { openExtraDialog = false }
+            )
         }
     }
 
     if (completeDialog) {
         BasicDialog(
-            confirmText = stringResource(id = android.R.string.ok),
-            titleText = stringResource(R.string.dialog_text_complete),
+            confirmText = stringResource(Res.string.complete),
+            titleText = stringResource(Res.string.dialog_text_complete),
             onClick = {
                 scoreViewModel.calculateGameResult()
                 onComplete(uiState.game.id, scoreViewModel.roundId)
@@ -67,13 +80,13 @@ fun ScoreCoordinator(
 
     if (threeFuckDialog) {
         BasicDialog(
-            confirmText = stringResource(id = android.R.string.ok),
-            titleText = stringResource(id = R.string.three_fuck_title),
-            text = stringResource(id = R.string.three_fuck_text),
+            confirmText = stringResource(Res.string.complete),
+            titleText = stringResource(Res.string.three_fuck_title),
+            text = stringResource(Res.string.three_fuck_text),
             onDismiss = {
                 threeFuckDialog = false
                 uiState.threeFuckGamer?.let { gamer ->
-                    scoreViewModel.selectScore(gamer, zero.friends.domain.model.ScoreOption.ThreeFuck)
+                    scoreViewModel.selectScore(gamer, ScoreOption.ThreeFuck)
                 }
             },
             onClick = {
@@ -92,9 +105,9 @@ fun ScoreCoordinator(
                 isNextEnabled = phase.getEnableNext(),
                 onNext = scoreViewModel::onNextPhase,
                 onBack = scoreViewModel::onBackPhase,
-                onExit = { 
+                onExit = {
                     scoreViewModel.deleteRound()
-                    onExit(uiState.game.id) 
+                    onExit(uiState.game.id)
                 },
                 onUpdateSeller = scoreViewModel::updateSeller,
                 onShowInfo = { openExtraDialog = true }

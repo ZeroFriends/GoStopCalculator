@@ -11,7 +11,6 @@ sealed interface Phase {
     sealed interface Editable : Phase
 }
 
-
 class Selling(private val enable: Boolean) : Phase.Editable {
     override fun getButtonText(): String = "다음"
 
@@ -22,11 +21,9 @@ class Selling(private val enable: Boolean) : Phase.Editable {
     override fun getSubText(): String = "4인 플레이경우 한명이 필수로 광을 팔아야 플레이가 가능합니다. 광을 판 플레이어를 선택해주세요."
 
     override fun extraButtonText(): String = "광팔 수 있는 패"
-
 }
 
 object Scoring : Phase.Toggleable {
-
     override fun getButtonText(): String = "다음 (1/3)"
 
     override fun getEnableNext(): Boolean = true

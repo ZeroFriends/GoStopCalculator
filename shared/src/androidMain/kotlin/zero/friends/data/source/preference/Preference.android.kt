@@ -16,13 +16,14 @@ actual class Preference actual constructor() : AppPreference {
         preferenceContext.getSharedPreferences("app_preference", MODE_PRIVATE)
     }
 
-    override fun setFirstStart() {
+    actual override fun setFirstStart() {
         preferences.edit(commit = true) {
             putBoolean("IS_FIRST_START", false)
         }
     }
 
-    override fun isFistStart(): Boolean {
+    actual override fun isFistStart(): Boolean {
         return preferences.getBoolean("IS_FIRST_START", true)
     }
+
 }

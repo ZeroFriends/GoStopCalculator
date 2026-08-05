@@ -12,9 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import zero.friends.gostopcalculator.R
+import zero.friends.gostopcalculator.theme.OrangeyRed
 
 @Composable
 fun OptionBox(
@@ -28,9 +27,9 @@ fun OptionBox(
         shape = shape,
         border = BorderStroke(
             width = 1.dp,
-            color = if (isSelected) colorResource(id = R.color.orangey_red) else color
+            color = if (isSelected) OrangeyRed else color
         ),
-        color = if (isSelected) colorResource(id = R.color.orangey_red) else MaterialTheme.colors.surface,
+        color = if (isSelected) OrangeyRed else MaterialTheme.colors.surface,
         modifier = Modifier
             .clip(shape)
             .clickable(onClick = { onClick?.invoke(isSelected) }, enabled = onClick != null),
@@ -42,4 +41,3 @@ fun OptionBox(
         )
     }
 }
-
