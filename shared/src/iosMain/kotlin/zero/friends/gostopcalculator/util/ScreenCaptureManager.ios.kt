@@ -22,7 +22,7 @@ actual class ScreenCaptureManager actual constructor() {
         fileNamePrefix: String
     ) {
         try {
-            val imageBitmap = graphicsLayer.toImageBitmap()
+            val imageBitmap = runCatching { graphicsLayer.toImageBitmap() }.getOrNull() ?: return
             val uiImage = imageBitmap.toUIImage() ?: return
 
             val activityViewController = UIActivityViewController(
@@ -36,8 +36,8 @@ actual class ScreenCaptureManager actual constructor() {
                 animated = true,
                 completion = null
             )
-        } catch (e: Exception) {
-            // ignore
+        } catch (e: Throwable) {
+            // ignore all exceptions and errors
         }
     }
 }
@@ -52,7 +52,7 @@ private fun ImageBitmap.toUIImage(): UIImage? {
             NSData.dataWithBytes(pinned.addressOf(0), bytes.size.toULong())
         }
         UIImage.imageWithData(nsData)
-    } catch (e: Exception) {
+    } catch (e: Throwable) {
         null
     }
 }

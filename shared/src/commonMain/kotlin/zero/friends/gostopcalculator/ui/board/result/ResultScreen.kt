@@ -29,16 +29,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Gamer
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.calculate_history_text
 import zero.friends.gostopcalculator.shared.generated.resources.detail_text
 import zero.friends.gostopcalculator.shared.generated.resources.formula
-import zero.friends.gostopcalculator.shared.generated.resources.ic_more_black
 import zero.friends.gostopcalculator.shared.generated.resources.player_with_condition
 import zero.friends.gostopcalculator.shared.generated.resources.result
+import zero.friends.gostopcalculator.shared.generated.resources.share
 import zero.friends.gostopcalculator.theme.DustyGray
 import zero.friends.gostopcalculator.theme.Gallery
 import zero.friends.gostopcalculator.theme.ManualBackground
@@ -77,7 +76,7 @@ fun ResultScreen(
                 isRed = true,
                 onBack = onBackClick,
                 onAction = { onShareClick(graphicsLayer) },
-                actionIcon = painterResource(Res.drawable.ic_more_black)
+                actionText = stringResource(Res.string.share)
             )
         }
     ) { innerPadding ->
