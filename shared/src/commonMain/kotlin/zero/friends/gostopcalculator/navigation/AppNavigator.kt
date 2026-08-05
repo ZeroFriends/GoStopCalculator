@@ -25,14 +25,18 @@ import zero.friends.gostopcalculator.ui.precondition.RuleViewModel
 import zero.friends.gostopcalculator.ui.splash.SplashScreen
 import kotlin.time.Duration.Companion.seconds
 
+import zero.friends.gostopcalculator.theme.GoStopTheme
+
 @Composable
 fun AppNavigator(
     appComponent: AppComponent = remember { createAppComponent() },
 ) {
-    val navController = rememberNavController(startDestination = Route.Splash)
-    NavHost(
-        navController = navController
-    ) {
+    GoStopTheme {
+        val navController = rememberNavController(startDestination = Route.Splash)
+        NavHost(
+            navController = navController
+        ) {
+
         composable<Route.Splash> {
             SplashScreen()
             LaunchedEffect(Unit) {
@@ -155,4 +159,6 @@ fun AppNavigator(
             )
         }
     }
+}
+
 }
