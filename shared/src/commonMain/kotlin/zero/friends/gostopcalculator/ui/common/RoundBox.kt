@@ -48,7 +48,8 @@ fun RoundBox(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = stringResource(Res.string.round, index + 1))
+                    Text(text = "${index + 1} ${stringResource(Res.string.round)}")
+
 
                     Surface(modifier = Modifier.clickable { onClickMore?.invoke() }) {
                         Image(
