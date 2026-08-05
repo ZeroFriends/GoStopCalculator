@@ -38,9 +38,8 @@ class ResultViewModel(
         _uiState.update { it.copy(screenType = screenType) }
 
         when (screenType) {
-            ScreenType.Calculate -> loadCalculateData()
-            ScreenType.Detail -> loadDetailData()
-            else -> {}
+            ScreenType.Calculate, ScreenType.CALCULATE -> loadCalculateData()
+            ScreenType.Detail, ScreenType.DETAIL, ScreenType.Result, ScreenType.RESULT -> loadDetailData()
         }
     }
 

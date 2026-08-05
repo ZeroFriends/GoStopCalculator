@@ -29,15 +29,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Gamer
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.calculate_history_text
 import zero.friends.gostopcalculator.shared.generated.resources.detail_text
 import zero.friends.gostopcalculator.shared.generated.resources.formula
+import zero.friends.gostopcalculator.shared.generated.resources.ic_more_black
 import zero.friends.gostopcalculator.shared.generated.resources.player_with_condition
 import zero.friends.gostopcalculator.shared.generated.resources.result
-import zero.friends.gostopcalculator.shared.generated.resources.share
 import zero.friends.gostopcalculator.theme.DustyGray
 import zero.friends.gostopcalculator.theme.Gallery
 import zero.friends.gostopcalculator.theme.ManualBackground
@@ -57,7 +58,6 @@ fun Modifier.drawGraphicsLayer(graphicsLayer: GraphicsLayer): Modifier =
     }
 
 @Composable
-
 fun ResultScreen(
     uiState: ResultUiState,
     roundTraceFormatter: RoundTraceFormatter? = null,
@@ -70,15 +70,14 @@ fun ResultScreen(
 
     val graphicsLayer = rememberGraphicsLayer()
 
-
     Scaffold(
         topBar = {
             CenterTextTopBar(
                 text = uiState.gameName,
-                isRed = false,
+                isRed = true,
                 onBack = onBackClick,
                 onAction = { onShareClick(graphicsLayer) },
-                actionText = stringResource(Res.string.share)
+                actionIcon = painterResource(Res.drawable.ic_more_black)
             )
         }
     ) { innerPadding ->
@@ -113,11 +112,17 @@ private fun ResultContent(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-        val subTitleRes = when (uiState.screenType) {
-            ScreenType.CALCULATE, ScreenType.Calculate -> Res.string.calculate_history_text
-            ScreenType.DETAIL, ScreenType.Detail -> Res.string.detail_text
-            else -> Res.string.calculate_history_text
+        val isCalculateMode = when (uiState.screenType) {
+            ScreenType.CALCULATE, ScreenType.Calculate -> true
+            else -> false
         }
+
+        val subTitleRes = if (isCalculateMode) {
+            Res.string.calculate_history_text
+        } else {
+            Res.string.detail_text
+        }
+
         Text(
             text = stringResource(subTitleRes),
             fontSize = 18.sp,
@@ -127,12 +132,12 @@ private fun ResultContent(
         )
 
         uiState.gamers.forEachIndexed { index, gamer ->
-            GamerResultCard(index = index, gamer = gamer)
+            GamerResultCard(index = index, gamer = gamer, showOptions = !isCalculateMode)
             Spacer(modifier = Modifier.height(12.dp))
         }
 
         val trace = uiState.roundTrace
-        if (uiState.screenType == ScreenType.DETAIL && trace != null && roundTraceFormatter != null) {
+        if (!isCalculateMode && trace != null && roundTraceFormatter != null) {
             val winnerTerm = trace.terms.find { it.gamerId == trace.winnerId }
             val sellerTerms = trace.terms.filter { it.factors.isSeller && it.gamerId != trace.winnerId }
             val loserTerms = trace.terms.filter { it.gamerId != trace.winnerId && !it.factors.isSeller }
@@ -161,7 +166,7 @@ private fun ResultContent(
 }
 
 @Composable
-private fun GamerResultCard(index: Int, gamer: Gamer) {
+private fun GamerResultCard(index: Int, gamer: Gamer, showOptions: Boolean) {
     ContentsCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
@@ -200,23 +205,25 @@ private fun GamerResultCard(index: Int, gamer: Gamer) {
                 )
             }
 
-            val options = remember(gamer) {
-                buildList {
-                    gamer.winnerOption?.korean?.let { add(it) }
-                    gamer.loserOption.forEach { add(it.korean) }
-                    gamer.scoreOption.forEach { add(it.korean) }
-                    gamer.sellerOption?.korean?.let { add(it) }
+            if (showOptions) {
+                val options = remember(gamer) {
+                    buildList {
+                        gamer.winnerOption?.korean?.let { add(it) }
+                        gamer.loserOption.forEach { add(it.korean) }
+                        gamer.scoreOption.forEach { add(it.korean) }
+                        gamer.sellerOption?.korean?.let { add(it) }
+                    }
                 }
-            }
 
-            if (options.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = options.joinToString(" / "),
-                    fontSize = 12.sp,
-                    color = DustyGray,
-                    modifier = Modifier.padding(horizontal = 6.dp)
-                )
+                if (options.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = options.joinToString(" / "),
+                        fontSize = 12.sp,
+                        color = DustyGray,
+                        modifier = Modifier.padding(horizontal = 6.dp)
+                    )
+                }
             }
 
             if (gamer.calculate.isNotEmpty()) {
