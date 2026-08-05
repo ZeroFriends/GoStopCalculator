@@ -60,9 +60,12 @@ import zero.friends.gostopcalculator.ui.common.PlayerItem
 import zero.friends.gostopcalculator.ui.common.RoundBox
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
+import zero.friends.gostopcalculator.ui.common.BackHandler
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 
 private sealed interface BoardEvent {
+
+
     object Back : BoardEvent
     object StartGame : BoardEvent
     class Detail(val roundId: Long) : BoardEvent
@@ -80,7 +83,12 @@ fun BoardScreen(
     openCalculated: (gameId: Long) -> Unit = {},
     openRule: (gameId: Long) -> Unit = {},
 ) {
+    BackHandler(enabled = true) {
+        onBack()
+    }
+
     val scaffoldState = rememberScaffoldState()
+
     val uiState by boardViewModel.getUiState().collectAsState()
     var openDialog by remember {
         mutableStateOf<Long?>(null)

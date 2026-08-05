@@ -47,13 +47,16 @@ import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.theme.OrangeyRed
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.GoStopExtraButton
+import zero.friends.gostopcalculator.ui.common.BackHandler
 import zero.friends.gostopcalculator.ui.common.TitleOutlinedTextField
 import zero.friends.gostopcalculator.ui.common.background.AprilBackground
 import zero.friends.gostopcalculator.ui.dialog.NameEditDialog
 import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
 
 private sealed interface PlayerClickEvent {
+
     object Back : PlayerClickEvent
+
     object AddPlayer : PlayerClickEvent
     class DeletePlayer(val player: Player) : PlayerClickEvent
     class EditPlayer(val player: Player) : PlayerClickEvent
@@ -66,7 +69,12 @@ fun PlayerScreen(
     onNext: (players: List<Player>, gameName: String) -> Unit,
     onBack: () -> Unit
 ) {
+    BackHandler(enabled = true) {
+        onBack()
+    }
+
     val scaffoldState = rememberScaffoldState()
+
     val uiState by viewModel.getUiState().collectAsState()
 
     var editingPlayer by remember {

@@ -35,6 +35,12 @@ import zero.friends.gostopcalculator.ui.precondition.RuleViewModel
 import zero.friends.gostopcalculator.ui.splash.SplashScreen
 import kotlin.time.Duration.Companion.seconds
 
+fun NavController.safePopBackStack(onCloseApp: () -> Unit = {}) {
+    if (!popBackStack()) {
+        onCloseApp()
+    }
+}
+
 @Composable
 fun AppNavigator(
     appComponent: AppComponent = remember { createAppComponent() },
@@ -72,7 +78,6 @@ fun AppNavigator(
                 )
             }
 
-
             composable<Route.Precondition.Player> {
                 val playerViewModel: PlayerViewModel = viewModel { appComponent.playerViewModel }
                 PlayerScreen(
@@ -82,7 +87,7 @@ fun AppNavigator(
                         navController.navigate(Route.Precondition.Rule(playersJson = playersJson, gameName = gameName))
                     },
                     onBack = {
-                        navController.popBackStack()
+                        navController.safePopBackStack(onCloseApp)
                     }
                 )
             }
@@ -105,7 +110,7 @@ fun AppNavigator(
                         }
                     },
                     onBack = {
-                        navController.popBackStack()
+                        navController.safePopBackStack(onCloseApp)
                     }
                 )
             }
@@ -123,7 +128,7 @@ fun AppNavigator(
                         navController.navigate(Route.Board.Prepare(gameId))
                     },
                     onBack = {
-                        navController.popBackStack()
+                        navController.safePopBackStack(onCloseApp)
                     },
                     openDetailScreen = { gameId, roundId ->
                         navController.navigate(Route.Board.Detail(gameId, roundId))
@@ -152,7 +157,7 @@ fun AppNavigator(
                         }
                     },
                     onBack = {
-                        navController.popBackStack()
+                        navController.safePopBackStack(onCloseApp)
                     }
                 )
             }
@@ -168,7 +173,7 @@ fun AppNavigator(
                     scoreViewModel = scoreViewModel,
                     manualViewModel = appComponent.manualViewModel,
                     onBack = {
-                        navController.popBackStack()
+                        navController.safePopBackStack(onCloseApp)
                     },
                     onExit = { gameId ->
                         navController.navigate(Route.Board.Main(gameId)) {
@@ -183,7 +188,6 @@ fun AppNavigator(
                 )
             }
 
-
             composable<Route.Board.Calculate> {
                 val route = requireNotNull(navController.currentRoute as? Route.Board.Calculate)
 
@@ -196,7 +200,7 @@ fun AppNavigator(
                     uiState = uiState,
                     roundTraceFormatter = appComponent.roundTraceFormatter,
                     onBackClick = {
-                        navController.popBackStack()
+                        navController.safePopBackStack(onCloseApp)
                     },
                     onShareClick = { graphicsLayer ->
                         coroutineScope.launch {
@@ -218,7 +222,7 @@ fun AppNavigator(
                     uiState = uiState,
                     roundTraceFormatter = appComponent.roundTraceFormatter,
                     onBackClick = {
-                        navController.popBackStack()
+                        navController.safePopBackStack(onCloseApp)
                     },
                     onShareClick = { graphicsLayer ->
                         coroutineScope.launch {
@@ -238,7 +242,7 @@ fun AppNavigator(
                 RuleLogScreen(
                     ruleLogViewModel = ruleLogViewModel,
                     onBack = {
-                        navController.popBackStack()
+                        navController.safePopBackStack(onCloseApp)
                     }
                 )
             }

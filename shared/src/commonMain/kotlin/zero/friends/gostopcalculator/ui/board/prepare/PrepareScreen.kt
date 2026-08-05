@@ -43,11 +43,14 @@ import zero.friends.gostopcalculator.shared.generated.resources.start
 import zero.friends.gostopcalculator.shared.generated.resources.start_description
 import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.theme.OrangeyRed
+import zero.friends.gostopcalculator.ui.common.BackHandler
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.DescriptionBox
 import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
 
 private sealed interface PrepareEvent {
+
+
     object Back : PrepareEvent
     object Complete : PrepareEvent
     class OnClickPlayer(val player: Player, val isCheck: Boolean) : PrepareEvent
@@ -60,6 +63,9 @@ fun PrepareScreen(
     onBack: () -> Unit = {},
     onShowToast: (String) -> Unit = {}
 ) {
+    BackHandler(enabled = true) {
+        onBack()
+    }
     val scaffoldState = rememberScaffoldState()
     val uiState by prepareViewModel.uiState().collectAsState()
 

@@ -24,6 +24,8 @@ import zero.friends.gostopcalculator.ui.board.score.selling.SellingScreen
 import zero.friends.gostopcalculator.ui.board.score.winner.WinnerScreen
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 
+import zero.friends.gostopcalculator.ui.common.BackHandler
+
 @Composable
 fun ScoreScreen(
     scoreViewModel: ScoreViewModel,
@@ -33,7 +35,12 @@ fun ScoreScreen(
     onComplete: (gameId: Long, roundId: Long) -> Unit,
     onShowToast: (String) -> Unit = {}
 ) {
+    BackHandler(enabled = true) {
+        onBack(null)
+    }
+
     val uiState by scoreViewModel.uiState().collectAsState()
+
 
     var openExtraDialog by remember { mutableStateOf(false) }
     var threeFuckDialog by remember { mutableStateOf(false) }

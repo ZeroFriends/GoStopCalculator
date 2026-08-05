@@ -29,12 +29,19 @@ import zero.friends.gostopcalculator.ui.common.ContentsCard
 import zero.friends.gostopcalculator.ui.common.GridItems
 import zero.friends.gostopcalculator.ui.common.TitleText
 
+import zero.friends.gostopcalculator.ui.common.BackHandler
+
 @Composable
 fun RuleLogScreen(
     ruleLogViewModel: RuleLogViewModel,
     onBack: () -> Unit
 ) {
+    BackHandler(enabled = true) {
+        onBack()
+    }
+
     val scaffoldState = rememberScaffoldState()
+
     val uiState by ruleLogViewModel.uiState().collectAsState()
 
     RuleLogScreen(

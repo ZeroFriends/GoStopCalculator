@@ -57,6 +57,7 @@ import zero.friends.gostopcalculator.theme.Gray
 import zero.friends.gostopcalculator.theme.Gray38
 import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.theme.OrangeyRed
+import zero.friends.gostopcalculator.ui.common.BackHandler
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.NumberTextField
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
@@ -75,7 +76,12 @@ fun RuleScreen(
     onNext: (gameId: Long) -> Unit,
     onBack: () -> Unit
 ) {
+    BackHandler(enabled = true) {
+        onBack()
+    }
+
     val scaffoldState = rememberScaffoldState()
+
     val uiState by ruleViewModel.getUiState().collectAsState()
     val scope = rememberCoroutineScope()
 
