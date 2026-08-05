@@ -19,6 +19,9 @@ import zero.friends.gostopcalculator.ui.history.HistoryViewModel
 import zero.friends.gostopcalculator.ui.precondition.PlayerViewModel
 import zero.friends.gostopcalculator.ui.precondition.RuleViewModel
 
+import zero.friends.gostopcalculator.ui.history.guide.GuideViewModel
+import zero.friends.gostopcalculator.util.ScreenCaptureManager
+
 @Component
 abstract class AppComponent(
     @Component val dataComponent: DataComponent
@@ -26,7 +29,10 @@ abstract class AppComponent(
     abstract val historyViewModel: HistoryViewModel
     abstract val playerViewModel: PlayerViewModel
     abstract val manualViewModel: ManualViewModel
+    abstract val guideViewModel: GuideViewModel
+    abstract val screenCaptureManager: ScreenCaptureManager
     abstract val roundTraceFormatter: RoundTraceFormatter
+
     abstract val ruleViewModelFactory: (players: List<Player>, gameName: String) -> RuleViewModel
     abstract val boardViewModelFactory: (gameId: Long) -> BoardViewModel
     abstract val prepareViewModelFactory: (gameId: Long) -> PrepareViewModel

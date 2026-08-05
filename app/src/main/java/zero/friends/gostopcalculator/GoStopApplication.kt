@@ -31,6 +31,8 @@ class GoStopApplication : Application(), Configuration.Provider {
         initDatabaseContext(this)
         initAssetContext(this)
         initPreferenceContext(this)
+        zero.friends.gostopcalculator.util.ApplicationContextProvider.init(this)
+
 
         appComponent = createAppComponent()
         androidAppComponent = AndroidAppComponent::class.create(appComponent.dataComponent)
