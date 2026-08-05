@@ -1,6 +1,5 @@
 package zero.friends.gostopcalculator.ui.board.result
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -12,10 +11,6 @@ fun DetailScreen(
     onBack: () -> Unit = {}
 ) {
     val uiState by detailViewModel.uiState().collectAsState()
-
-    BackHandler(true) {
-        onBack()
-    }
 
     LaunchedEffect(uiState.game.id, uiState.roundId) {
         if (uiState.game.id != 0L && uiState.roundId != 0L) {
