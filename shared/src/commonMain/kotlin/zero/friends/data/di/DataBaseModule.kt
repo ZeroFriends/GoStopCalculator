@@ -70,4 +70,14 @@ abstract class DataComponent {
 
     @Provides
     fun provideManualRepository(): ManualRepository = ManualRepositoryImpl()
+
+    @Provides
+    fun provideCleanEmptyRoundsUseCase(
+        gameRepository: GameRepository,
+        roundRepository: RoundRepository,
+        gamerRepository: GamerRepository
+    ): zero.friends.domain.usecase.CleanEmptyRoundsUseCase =
+        zero.friends.domain.usecase.CleanEmptyRoundsUseCase(gameRepository, roundRepository, gamerRepository)
+
 }
+

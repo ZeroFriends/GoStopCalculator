@@ -40,12 +40,14 @@ fun AppNavigator(
         composable<Route.Splash> {
             SplashScreen()
             LaunchedEffect(Unit) {
+                appComponent.cleanEmptyRoundsUseCase()
                 delay(3.seconds)
                 navController.navigate(Route.History) {
                     popUpTo<Route.Splash> { inclusive = true }
                 }
             }
         }
+
 
         composable<Route.History> {
             val historyViewModel: HistoryViewModel = viewModel { appComponent.historyViewModel }

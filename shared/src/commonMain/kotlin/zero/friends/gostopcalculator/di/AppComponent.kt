@@ -32,6 +32,8 @@ abstract class AppComponent(
     abstract val guideViewModel: GuideViewModel
     abstract val screenCaptureManager: ScreenCaptureManager
     abstract val roundTraceFormatter: RoundTraceFormatter
+    abstract val cleanEmptyRoundsUseCase: zero.friends.domain.usecase.CleanEmptyRoundsUseCase
+
 
     abstract val ruleViewModelFactory: (players: List<Player>, gameName: String) -> RuleViewModel
     abstract val boardViewModelFactory: (gameId: Long) -> BoardViewModel

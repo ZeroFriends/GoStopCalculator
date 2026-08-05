@@ -1,7 +1,6 @@
 package zero.friends.gostopcalculator.work
 
 import android.content.Context
-import androidx.room.withTransaction
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -11,6 +10,7 @@ import androidx.work.workDataOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import zero.friends.domain.usecase.CleanEmptyRoundsUseCase
 import zero.friends.gostopcalculator.GoStopApplication
 import zero.friends.gostopcalculator.NonCrashReport
 
@@ -20,43 +20,26 @@ class EmptyRoundCleanupWorker(
 ) : CoroutineWorker(appContext, workerParams) {
 
     private val dataComponent get() = GoStopApplication.instance.appComponent.dataComponent
-    private val dataBase get() = dataComponent.dataBase
-    private val roundDao get() = dataComponent.provideRoundDao()
-    private val gamerDao get() = dataComponent.provideGamerDao()
+    private val cleanEmptyRoundsUseCase by lazy {
+        CleanEmptyRoundsUseCase(
+            gameRepository = dataComponent.provideGameRepository(dataComponent.provideGameDao()),
+            roundRepository = dataComponent.provideRoundRepository(dataComponent.provideRoundDao()),
+            gamerRepository = dataComponent.provideGamerRepository(dataComponent.provideGamerDao())
+        )
+    }
+
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         try {
-            val rounds = roundDao.getAllRounds()
-            var deletedRounds = 0
-            val deletedRoundIds = mutableListOf<Long>()
-
-            rounds.forEach { round ->
-                dataBase.withTransaction {
-                    val gamers = gamerDao.getRoundGamers(round.id)
-                    val shouldDeleteRound = gamers.isEmpty() || gamers.all { gamer ->
-                        gamer.score == 0 && gamer.account == 0 && gamer.target.isEmpty()
-                    }
-
-                    if (shouldDeleteRound) {
-                        roundDao.deleteRound(round.id)
-                        deletedRounds++
-                        deletedRoundIds += round.id
-                    }
-                }
-            }
-
-            if (deletedRoundIds.isNotEmpty()) {
+            val deletedCount = cleanEmptyRoundsUseCase()
+            if (deletedCount > 0) {
                 NonCrashReport.send(
-                    message = "EmptyRoundCleanup deleted ${deletedRoundIds.size} rounds",
-                    extras = mapOf(
-                        "roundIds" to deletedRoundIds.joinToString(","),
-                        "reason" to "gamers empty or all score/account zero with empty targets"
-                    )
+                    message = "EmptyRoundCleanup deleted $deletedCount rounds",
+                    extras = mapOf("reason" to "gamers empty or all score/account zero with empty targets")
                 )
             }
-
-            Timber.i("EmptyRoundCleanupWorker deleted %d rounds", deletedRounds)
-            Result.success(workDataOf(KEY_DELETED_ROUNDS to deletedRounds))
+            Timber.i("EmptyRoundCleanupWorker deleted %d rounds", deletedCount)
+            Result.success(workDataOf(KEY_DELETED_ROUNDS to deletedCount))
         } catch (t: Throwable) {
             Timber.e(t, "EmptyRoundCleanupWorker failed")
             Result.retry()
