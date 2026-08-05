@@ -44,6 +44,7 @@ import zero.friends.gostopcalculator.shared.generated.resources.new_game
 import zero.friends.gostopcalculator.shared.generated.resources.progress
 import zero.friends.gostopcalculator.shared.generated.resources.start
 import zero.friends.gostopcalculator.shared.generated.resources.today_game
+import zero.friends.gostopcalculator.ui.common.BackHandler
 import zero.friends.gostopcalculator.ui.common.EmptyHistory
 import zero.friends.gostopcalculator.ui.common.GoStopButton
 import zero.friends.gostopcalculator.ui.common.GoStopDivider
@@ -54,6 +55,8 @@ import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 import zero.friends.gostopcalculator.ui.history.guide.GuideFullScreenDialog
 
 private sealed class HistoryEvent {
+
+
     object StartGame : HistoryEvent()
     object ShowGuide : HistoryEvent()
     class ShowRound(val game: Game) : HistoryEvent()
@@ -65,9 +68,14 @@ fun HistoryScreen(
     viewModel: HistoryViewModel,
     onStartGame: () -> Unit = {},
     onShowRound: (Game) -> Unit = {},
+    onCloseApp: () -> Unit = {},
     isDebugAdEnabled: Boolean = true,
     onToggleDebugAd: (() -> Unit)? = null
 ) {
+    BackHandler(enabled = true) {
+        onCloseApp()
+    }
+
     val uiState by viewModel.getUiState().collectAsState()
     var dialogGameId by remember {
         mutableStateOf<Long?>(null)

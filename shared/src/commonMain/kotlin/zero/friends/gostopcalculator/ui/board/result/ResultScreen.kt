@@ -42,6 +42,7 @@ import zero.friends.gostopcalculator.theme.DustyGray
 import zero.friends.gostopcalculator.theme.Gallery
 import zero.friends.gostopcalculator.theme.ManualBackground
 import zero.friends.gostopcalculator.theme.Nero
+import zero.friends.gostopcalculator.ui.common.BackHandler
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.ContentsCard
 import zero.friends.gostopcalculator.util.getMoneyColor
@@ -56,13 +57,19 @@ fun Modifier.drawGraphicsLayer(graphicsLayer: GraphicsLayer): Modifier =
     }
 
 @Composable
+
 fun ResultScreen(
     uiState: ResultUiState,
     roundTraceFormatter: RoundTraceFormatter? = null,
     onBackClick: () -> Unit = {},
     onShareClick: (GraphicsLayer) -> Unit = {}
 ) {
+    BackHandler(enabled = true) {
+        onBackClick()
+    }
+
     val graphicsLayer = rememberGraphicsLayer()
+
 
     Scaffold(
         topBar = {
