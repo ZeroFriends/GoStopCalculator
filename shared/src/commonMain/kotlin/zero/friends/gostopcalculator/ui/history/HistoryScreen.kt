@@ -101,6 +101,9 @@ fun HistoryScreen(
         GuideFullScreenDialog(onDismiss = { showGuide = false })
     }
 
+    var isDebugAdEnabledState by remember { mutableStateOf(isDebugAdEnabled) }
+    val toggleAd = onToggleDebugAd ?: { isDebugAdEnabledState = !isDebugAdEnabledState }
+
     HistoryScreenContent(
         uiState = uiState,
         event = { event ->
@@ -111,8 +114,8 @@ fun HistoryScreen(
                 is HistoryEvent.ShowMore -> dialogGameId = event.game.id
             }
         },
-        isDebugAdEnabled = isDebugAdEnabled,
-        onToggleDebugAd = onToggleDebugAd
+        isDebugAdEnabled = isDebugAdEnabledState,
+        onToggleDebugAd = toggleAd
     )
 }
 

@@ -90,7 +90,7 @@ class BuildRoundTraceUseCase @Inject constructor(
 
             RoundTraceTerm(
                 gamerId = gamer.id,
-                label = "${gamer.name}$roleLabel",
+                label = if (roleLabel.isNotEmpty()) "${gamer.name}\n$roleLabel" else gamer.name,
                 amount = contribution.total(),
                 factors = factors
             )
