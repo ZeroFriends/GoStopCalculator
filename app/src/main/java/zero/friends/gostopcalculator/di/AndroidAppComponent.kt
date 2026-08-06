@@ -15,6 +15,6 @@ abstract class AndroidAppComponent(
     @Provides
     fun provideContext(): Context = GoStopApplication.instance
 
-    abstract val googleAdmob: GoogleAdmob
-    abstract val netWorkChecker: NetWorkChecker
+    val netWorkChecker: NetWorkChecker by lazy { NetWorkChecker(provideContext()) }
+    val googleAdmob: GoogleAdmob by lazy { GoogleAdmob(provideContext(), netWorkChecker) }
 }

@@ -8,8 +8,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Scaffold
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -35,7 +37,6 @@ import zero.friends.gostopcalculator.ui.precondition.PlayerViewModel
 import zero.friends.gostopcalculator.ui.precondition.RuleScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleViewModel
 import zero.friends.gostopcalculator.ui.splash.SplashScreen
-import kotlin.time.Duration.Companion.seconds
 
 fun NavController.safePopBackStack(onCloseApp: () -> Unit = {}) {
     if (!popBackStack()) {
@@ -46,7 +47,8 @@ fun NavController.safePopBackStack(onCloseApp: () -> Unit = {}) {
 @Composable
 fun AppNavigator(
     appComponent: AppComponent = remember { createAppComponent() },
-    onCloseApp: () -> Unit = {}
+    onCloseApp: () -> Unit = {},
+    onShowAd: (onCompleted: () -> Unit) -> Unit = { it() }
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -145,13 +147,19 @@ fun AppNavigator(
                         navController.navigate(Route.Board.Prepare(gameId))
                     },
                     onBack = {
-                        navController.safePopBackStack(onCloseApp)
+                        navController.navigate(Route.History) {
+                            popUpTo<Route.History> { inclusive = true }
+                        }
                     },
                     openDetailScreen = { gameId, roundId ->
-                        navController.navigate(Route.Board.Detail(gameId, roundId))
+                        onShowAd {
+                            navController.navigate(Route.Board.Detail(gameId, roundId))
+                        }
                     },
                     openCalculated = { gameId ->
-                        navController.navigate(Route.Board.Calculate(gameId))
+                        onShowAd {
+                            navController.navigate(Route.Board.Calculate(gameId))
+                        }
                     },
                     openRule = { gameId ->
                         navController.navigate(Route.Board.RuleLog(gameId))
@@ -198,8 +206,10 @@ fun AppNavigator(
                         }
                     },
                     onComplete = { gameId, roundId ->
-                        navController.navigate(Route.Board.Detail(gameId, roundId)) {
-                            popUpTo<Route.Board.Main> { inclusive = false }
+                        onShowAd {
+                            navController.navigate(Route.Board.Detail(gameId, roundId)) {
+                                popUpTo<Route.Board.Main> { inclusive = false }
+                            }
                         }
                     }
                 )
@@ -222,6 +232,7 @@ fun AppNavigator(
                     onShareClick = { graphicsLayer ->
                         coroutineScope.launch {
                             appComponent.screenCaptureManager.captureAndShare(graphicsLayer)
+                            onShowAd { }
                         }
                     }
                 )
@@ -246,6 +257,7 @@ fun AppNavigator(
                     onShareClick = { graphicsLayer ->
                         coroutineScope.launch {
                             appComponent.screenCaptureManager.captureAndShare(graphicsLayer)
+                            onShowAd { }
                         }
                     }
                 )

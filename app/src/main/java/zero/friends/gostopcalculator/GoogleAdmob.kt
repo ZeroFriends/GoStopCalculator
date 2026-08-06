@@ -11,7 +11,8 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.*
 import me.tatarka.inject.annotations.Inject
-import timber.log.Timber
+import zero.friends.gostopcalculator.util.AdConfig
+import zero.friends.gostopcalculator.util.log
 
 sealed interface AdCallback {
     object OnError : AdCallback
@@ -38,21 +39,23 @@ class GoogleAdmob(
     companion object {
         var isDebugAdEnabled: Boolean = false
         private var lastAdDismissedTime: Long = 0L
-        private const val AD_COOLDOWN_MILLIS: Long = 30_000L
+        private const val AD_COOLDOWN_MILLIS: Long = 10_000L
     }
 
     init {
-        netWorkChecker(
-            onAvailable = {
-                isConnect = true
-                reload()
-            },
-            onLost = {
+        isConnect = netWorkChecker.isCurrentlyConnected()
+
+        netWorkChecker { connected ->
+            isConnect = connected
+            if (connected) {
+                if (interstitialAd == null) {
+                    reload()
+                }
+            } else {
                 cancelRetry()
                 interstitialAd = null
-                isConnect = false
             }
-        )
+        }
     }
 
     private fun cancelRetry() {
@@ -78,7 +81,7 @@ class GoogleAdmob(
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     isLoading = false
                     interstitialAd = null
-                    Timber.tag("🔥GoogleAdmob").e("onAdFailedToLoad: $adError")
+                    log.e("onAdFailedToLoad: code=${adError.code}, message=${adError.message}")
                     FirebaseCrashlytics.getInstance().recordException(
                         AdException("AD_UNIT_ID = $adUnitId / code : ${adError.code} / ${adError.message}")
                     )
@@ -100,20 +103,26 @@ class GoogleAdmob(
                     retryCount = 0
                     cancelRetry()
                     interstitialAd = ad
-                    Timber.tag("🔥GoogleAdmob").d("onAdLoaded Success")
+                    log.d("onAdLoaded Success")
                 }
             }
         )
     }
 
-    fun showAd(adCallback: (AdCallback) -> Unit) {
-        if (BuildConfig.DEBUG && !isDebugAdEnabled) {
+    fun showAd(activity: Activity, adCallback: (AdCallback) -> Unit) {
+        val debugEnabled = AdConfig.isDebugAdEnabled
+
+        if (BuildConfig.DEBUG && !debugEnabled) {
+            log.d("Skipping ad: DEBUG mode and isDebugAdEnabled is FALSE.")
             adCallback(AdCallback.OnSuccess)
             return
         }
 
         val currentTime = System.currentTimeMillis()
-        if (currentTime - lastAdDismissedTime < AD_COOLDOWN_MILLIS) {
+        val elapsedTime = currentTime - lastAdDismissedTime
+
+        if (elapsedTime < AD_COOLDOWN_MILLIS) {
+            log.d("Skipping ad: Cooldown active.")
             adCallback(AdCallback.OnSuccess)
             return
         }
@@ -124,6 +133,7 @@ class GoogleAdmob(
             currentAd.fullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
                     super.onAdDismissedFullScreenContent()
+                    log.d("onAdDismissedFullScreenContent: User closed ad.")
                     lastAdDismissedTime = System.currentTimeMillis()
                     interstitialAd = null
                     adCallback(AdCallback.OnSuccess)
@@ -133,7 +143,7 @@ class GoogleAdmob(
                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                     super.onAdFailedToShowFullScreenContent(adError)
                     interstitialAd = null
-                    Timber.tag("🔥GoogleAdmob").e("onAdFailedToShow: ${adError.message}")
+                    log.e("onAdFailedToShow: code=${adError.code}, message=${adError.message}")
                     FirebaseCrashlytics.getInstance().recordException(
                         AdException("Failed to show ad: ${adError.message}")
                     )
@@ -141,14 +151,16 @@ class GoogleAdmob(
                     reload()
                 }
             }
-            val activity = context as? Activity
-            if (activity != null && !activity.isFinishing && !activity.isDestroyed) {
+            if (!activity.isFinishing && !activity.isDestroyed) {
+                log.d("Showing ad on ${activity.localClassName}")
                 currentAd.show(activity)
             } else {
+                log.e("Activity is finishing or destroyed: isFinishing=${activity.isFinishing}, isDestroyed=${activity.isDestroyed}")
                 adCallback(AdCallback.OnError)
                 reload()
             }
         } else {
+            log.e("No ad ready to show! isConnect=$isConnect")
             if (isConnect) {
                 adCallback(AdCallback.OnError)
             } else {
