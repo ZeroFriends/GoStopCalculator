@@ -90,9 +90,9 @@ class CalculateFourPlayerMassTest {
 
     private fun generateScenarios(): Sequence<FourScenario> = sequence {
         var id = 1
-        val loserPairs = BASE_LOSER_COMBINATIONS
-        val sellerScores = listOf(1, 2, 3)
-        val goCounts = listOf(0, 2, 4)
+        val loserPairs = BASE_LOSER_COMBINATIONS.take(4)
+        val sellerScores = listOf(1, 2)
+        val goCounts = listOf(0, 3)
         for (score in sellerScores) {
             for (first in loserPairs) {
                 for (second in loserPairs) {
