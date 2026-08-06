@@ -4,15 +4,19 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asSkiaBitmap
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.ObjCSignatureOverride
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
 import me.tatarka.inject.annotations.Inject
 import org.jetbrains.skia.Image
 import platform.Foundation.NSData
 import platform.Foundation.dataWithBytes
+import platform.UIKit.UIActivityItemSourceProtocol
+import platform.UIKit.UIActivityType
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 import platform.UIKit.UIImage
+import platform.darwin.NSObject
 
 @Inject
 actual class ScreenCaptureManager actual constructor() {
@@ -25,8 +29,9 @@ actual class ScreenCaptureManager actual constructor() {
             val imageBitmap = runCatching { graphicsLayer.toImageBitmap() }.getOrNull() ?: return
             val uiImage = imageBitmap.toUIImage() ?: return
 
+            val itemSource = ImageActivityItemSource(uiImage)
             val activityViewController = UIActivityViewController(
-                activityItems = listOf(uiImage),
+                activityItems = listOf(itemSource),
                 applicationActivities = null
             )
 
@@ -39,6 +44,31 @@ actual class ScreenCaptureManager actual constructor() {
         } catch (e: Throwable) {
             // ignore all exceptions and errors
         }
+    }
+}
+
+private class ImageActivityItemSource(
+    private val image: UIImage
+) : NSObject(), UIActivityItemSourceProtocol {
+
+    override fun activityViewControllerPlaceholderItem(activityViewController: UIActivityViewController): Any {
+        return image
+    }
+
+    @ObjCSignatureOverride
+    override fun activityViewController(
+        activityViewController: UIActivityViewController,
+        itemForActivityType: UIActivityType?
+    ): Any? {
+        return image
+    }
+
+    @ObjCSignatureOverride
+    override fun activityViewController(
+        activityViewController: UIActivityViewController,
+        dataTypeIdentifierForActivityType: UIActivityType?
+    ): String {
+        return "public.png"
     }
 }
 

@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.util
 
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -13,7 +14,6 @@ import java.io.File
 @Inject
 actual class ScreenCaptureManager actual constructor() {
     private val context: Context get() = ApplicationContextProvider.getContext() as Context
-
 
     actual suspend fun captureAndShare(
         graphicsLayer: GraphicsLayer,
@@ -35,10 +35,14 @@ actual class ScreenCaptureManager actual constructor() {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "image/png"
                 putExtra(Intent.EXTRA_STREAM, uri)
+                clipData = ClipData.newRawUri("Result Image", uri)
+                putExtra(Intent.EXTRA_TITLE, "고스톱 정산 결과")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             context.startActivity(Intent.createChooser(shareIntent, "공유하기").apply {
+                clipData = ClipData.newRawUri("Result Image", uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             })
         } catch (e: Exception) {
