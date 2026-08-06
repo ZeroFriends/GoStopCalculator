@@ -11,6 +11,7 @@ import zero.friends.gostopcalculator.di.AndroidAppComponent
 import zero.friends.gostopcalculator.di.AppComponent
 import zero.friends.gostopcalculator.di.create
 import zero.friends.gostopcalculator.di.createAppComponent
+import zero.friends.gostopcalculator.util.ApplicationContextProvider
 import zero.friends.gostopcalculator.work.EmptyRoundCleanupWorker
 
 class GoStopApplication : Application(), Configuration.Provider {
@@ -31,11 +32,15 @@ class GoStopApplication : Application(), Configuration.Provider {
         initDatabaseContext(this)
         initAssetContext(this)
         initPreferenceContext(this)
-        zero.friends.gostopcalculator.util.ApplicationContextProvider.init(this)
+        ApplicationContextProvider.init(this)
 
 
         appComponent = createAppComponent()
         androidAppComponent = AndroidAppComponent::class.create(appComponent.dataComponent)
+
+        if (BuildConfig.DEBUG) {
+            timber.log.Timber.plant(timber.log.Timber.DebugTree())
+        }
 
         FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = !BuildConfig.DEBUG
 
