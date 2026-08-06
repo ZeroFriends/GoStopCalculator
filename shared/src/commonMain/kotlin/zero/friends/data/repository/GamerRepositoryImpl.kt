@@ -116,9 +116,9 @@ class GamerRepositoryImpl @Inject constructor(
         withContext(Dispatchers.Default) {
             val targetMap = gamerDao.getGamer(gamer.id).target.associateBy { it.playerId }.toMutableMap()
 
-            val targetGamer = targetMap[target.id]
+            val targetGamer = targetMap[target.playerId]
             if (targetGamer == null) {
-                targetMap[target.id] = Target(target.id, target.name, account)
+                targetMap[target.playerId] = Target(target.playerId, target.name, account)
             } else {
                 targetGamer.account += account
             }
