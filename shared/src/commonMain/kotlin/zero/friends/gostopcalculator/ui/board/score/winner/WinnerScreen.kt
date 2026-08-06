@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -115,11 +116,13 @@ private fun WinnerGamerItem(
     ) {
         Row(
             modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             NumberTextField(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .height(44.dp),
                 text = gamer.score.toString(),
                 endText = stringResource(Res.string.point),
                 isEnable = true,
@@ -129,7 +132,9 @@ private fun WinnerGamerItem(
                 }
             )
             NumberTextField(
-                modifier = Modifier.width(88.dp),
+                modifier = Modifier
+                    .width(84.dp)
+                    .height(44.dp),
                 text = gamer.go.toString(),
                 endText = stringResource(Res.string.go),
                 isEnable = true,

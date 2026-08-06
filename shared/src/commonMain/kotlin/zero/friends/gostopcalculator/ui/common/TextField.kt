@@ -1,11 +1,17 @@
 package zero.friends.gostopcalculator.ui.common
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.LocalTextStyle
@@ -110,53 +116,58 @@ fun NumberTextField(
     val resolvedInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
     val displayText = text.takeUnless { it == "0" } ?: ""
 
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.CenterEnd
+    Row(
+        modifier = modifier
+            .background(
+                color = Color.LightGray,
+                shape = RoundedCornerShape(10.dp)
+            )
+            .padding(horizontal = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.End
     ) {
-        TextField(
-            value = displayText,
-            onValueChange = {
-                when {
-                    it.isBlank() -> onValueChange(0)
-                    it.all(Char::isDigit) -> it.toLongOrNull()?.let(onValueChange)
-                }
-            },
-            enabled = isEnable,
-            singleLine = true,
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.Transparent,
-                cursorColor = Color.Black,
-                focusedIndicatorColor = OrangeyRed,
-                disabledTextColor = hintColor,
-                disabledIndicatorColor = hintColor.copy(alpha = 0.38f)
-            ),
-            textStyle = LocalTextStyle.current.copy(
-                textAlign = TextAlign.End,
-                color = textColor
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(onDone = {
-                keyboardController?.hide()
-            }),
-            modifier = Modifier
-                .padding(end = 24.dp)
-                .fillMaxWidth(),
-            interactionSource = resolvedInteractionSource,
-            placeholder = {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                    Text(text = "0", textAlign = TextAlign.End, color = hintColor)
-                }
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            if (displayText.isEmpty()) {
+                Text(
+                    text = "0",
+                    color = hintColor.copy(alpha = 0.4f),
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.End
+                )
             }
-        )
+            BasicTextField(
+                value = displayText,
+                onValueChange = { input ->
+                    onValueChange(input.toLongOrNull() ?: 0L)
+                },
+                enabled = isEnable,
+                singleLine = true,
+                textStyle = LocalTextStyle.current.copy(
+                    textAlign = TextAlign.End,
+                    color = textColor,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                ),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = {
+                    keyboardController?.hide()
+                }),
+                modifier = Modifier.fillMaxWidth(),
+                interactionSource = resolvedInteractionSource
+            )
+        }
+        Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = endText,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 4.dp),
-            color = hintColor
+            color = textColor,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold
         )
     }
 }

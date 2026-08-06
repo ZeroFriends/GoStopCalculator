@@ -34,7 +34,7 @@ fun BaseGamerItem(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.padding(end = 8.dp)
         ) {
             Text(
                 text = (index + 1).toString(),
