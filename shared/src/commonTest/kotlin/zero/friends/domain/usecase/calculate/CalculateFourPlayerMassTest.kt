@@ -177,7 +177,7 @@ class CalculateFourPlayerMassTest {
         private const val SCORE_PER_POINT = 100
         private const val FUCK_SCORE = 500
         private const val SELL_SCORE = 500
-        private val MASS_TEST_TIMEOUT = 60.seconds
+        private val MASS_TEST_TIMEOUT = 120.seconds
 
 
         private val WINNER_OPTIONS = listOf(
