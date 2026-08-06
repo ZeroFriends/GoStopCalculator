@@ -225,15 +225,19 @@ private fun GamerResultCard(index: Int, gamer: Gamer, showOptions: Boolean) {
                 }
             }
 
-            if (gamer.calculate.isNotEmpty()) {
+            val validCalculates = remember(gamer.calculate) {
+                gamer.calculate.filter { it.account != 0 }
+            }
+
+            if (validCalculates.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Divider(color = Gallery)
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Column(modifier = Modifier.padding(horizontal = 6.dp)) {
-                    gamer.calculate.forEach { target ->
+                    validCalculates.forEach { target ->
                         val action = if (target.account > 0) "받아야합니다." else "줘야합니다."
-                        val amountText = "${target.account.separateComma()}원"
+                        val amountText = "${kotlin.math.abs(target.account).separateComma()}원"
                         val color = target.account.getMoneyColor()
 
                         val annotatedString = buildAnnotatedString {
@@ -248,7 +252,7 @@ private fun GamerResultCard(index: Int, gamer: Gamer, showOptions: Boolean) {
                             text = annotatedString,
                             fontSize = 14.sp,
                             color = Nero,
-                            modifier = Modifier.padding(vertical = 4.dp)
+                            modifier = Modifier.padding(vertical = 2.dp)
                         )
                     }
                 }

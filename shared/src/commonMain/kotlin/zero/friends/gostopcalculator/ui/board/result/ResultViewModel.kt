@@ -65,16 +65,19 @@ class ResultViewModel(
     private fun loadDetailData() {
         viewModelScope.launch {
             val game = gameRepository.getGame(gameId)
-            val gamers = gamerRepository.getRoundGamers(roundId)
-            val trace = buildRoundTraceUseCase(gameId = gameId, roundId = roundId)
 
-            _uiState.update {
-                it.copy(
-                    gameName = game.name,
-                    gamers = gamers,
-                    roundTrace = trace
-                )
-            }
+            gamerRepository.observeRoundGamers(roundId)
+                .onEach { gamers ->
+                    val trace = buildRoundTraceUseCase(gameId = gameId, roundId = roundId)
+                    _uiState.update {
+                        it.copy(
+                            gameName = game.name,
+                            gamers = gamers,
+                            roundTrace = trace
+                        )
+                    }
+                }
+                .launchIn(this)
         }
     }
 }

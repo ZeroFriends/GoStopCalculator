@@ -53,6 +53,7 @@ import zero.friends.gostopcalculator.ui.common.SubTitleText
 import zero.friends.gostopcalculator.ui.common.TitleText
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 import zero.friends.gostopcalculator.ui.history.guide.GuideFullScreenDialog
+import zero.friends.gostopcalculator.util.AdConfig
 
 private sealed class HistoryEvent {
 
@@ -69,7 +70,6 @@ fun HistoryScreen(
     onStartGame: () -> Unit = {},
     onShowRound: (Game) -> Unit = {},
     onCloseApp: () -> Unit = {},
-    isDebugAdEnabled: Boolean = true,
     onToggleDebugAd: (() -> Unit)? = null
 ) {
     BackHandler(enabled = true) {
@@ -101,8 +101,9 @@ fun HistoryScreen(
         GuideFullScreenDialog(onDismiss = { showGuide = false })
     }
 
-    var isDebugAdEnabledState by remember { mutableStateOf(isDebugAdEnabled) }
-    val toggleAd = onToggleDebugAd ?: { isDebugAdEnabledState = !isDebugAdEnabledState }
+    val toggleAd = onToggleDebugAd ?: {
+        AdConfig.isDebugAdEnabled = !AdConfig.isDebugAdEnabled
+    }
 
     HistoryScreenContent(
         uiState = uiState,
@@ -114,7 +115,6 @@ fun HistoryScreen(
                 is HistoryEvent.ShowMore -> dialogGameId = event.game.id
             }
         },
-        isDebugAdEnabled = isDebugAdEnabledState,
         onToggleDebugAd = toggleAd
     )
 }
@@ -123,7 +123,6 @@ fun HistoryScreen(
 private fun HistoryScreenContent(
     uiState: HistoryUiState,
     event: (HistoryEvent) -> Unit = {},
-    isDebugAdEnabled: Boolean = true,
     onToggleDebugAd: (() -> Unit)? = null
 ) {
     Scaffold { innerPadding ->
@@ -135,7 +134,6 @@ private fun HistoryScreenContent(
         ) {
             NewGame(
                 event = event,
-                isDebugAdEnabled = isDebugAdEnabled,
                 onToggleDebugAd = onToggleDebugAd
             )
 
@@ -153,7 +151,6 @@ private fun HistoryScreenContent(
 @Composable
 private fun NewGame(
     event: (HistoryEvent) -> Unit,
-    isDebugAdEnabled: Boolean = true,
     onToggleDebugAd: (() -> Unit)? = null
 ) {
     Column(Modifier.padding(16.dp)) {
@@ -166,15 +163,17 @@ private fun NewGame(
         ) {
             TitleText(text = stringResource(Res.string.today_game))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (onToggleDebugAd != null) {
-                    RoundedCornerText(
-                        text = if (isDebugAdEnabled) "Ad ON" else "Ad OFF",
-                        color = if (isDebugAdEnabled) Color(0xFFFF5252) else Color(0xFF9E9E9E),
-                        fontSize = 14.sp,
-                        onClick = onToggleDebugAd
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                val isDebugAdEnabled = AdConfig.isDebugAdEnabled
+                val onToggle = onToggleDebugAd ?: {
+                    AdConfig.isDebugAdEnabled = !AdConfig.isDebugAdEnabled
                 }
+                RoundedCornerText(
+                    text = if (isDebugAdEnabled) "Ad ON" else "Ad OFF",
+                    color = if (isDebugAdEnabled) Color(0xFFFF5252) else Color(0xFF9E9E9E),
+                    fontSize = 14.sp,
+                    onClick = onToggle
+                )
+                Spacer(modifier = Modifier.width(8.dp))
                 RoundedCornerText(
                     text = stringResource(Res.string.guide),
                     color = Color(0xFFFF5252),
