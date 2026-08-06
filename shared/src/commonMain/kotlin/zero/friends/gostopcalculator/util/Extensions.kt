@@ -12,12 +12,6 @@ fun Int.getMoneyColor(): Color = when {
     else -> Nero
 }
 
-fun Int.separateComma(): String {
-    val sign = if (this < 0) "-" else ""
-    val absVal = abs(this)
-    val formatted = absVal.toString().reversed().chunked(3).joinToString(",").reversed()
-    return "$sign$formatted"
-}
-
-fun Long.separateComma(): String = this.toInt().separateComma()
+expect fun Int.separateComma(): String
+expect fun Long.separateComma(): String
 

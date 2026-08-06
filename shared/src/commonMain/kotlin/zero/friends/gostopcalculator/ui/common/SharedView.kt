@@ -41,6 +41,7 @@ import zero.friends.gostopcalculator.shared.generated.resources.ic_topbar_back
 import zero.friends.gostopcalculator.theme.Gray
 import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.theme.OrangeyRed
+import zero.friends.gostopcalculator.util.separateComma
 
 @Composable
 fun CenterTextTopBar(
@@ -236,12 +237,14 @@ fun PlayerItem(index: Int, playerResult: PlayerResult) {
             )
         }
 
+        val accountText = when {
+            playerResult.account > 0 -> "+${playerResult.account.separateComma()}원"
+            else -> "${playerResult.account.separateComma()}원"
+        }
         Text(
-            text = "${playerResult.account}원",
-            textAlign = TextAlign.Center,
-            fontSize = 12.sp,
-            modifier = Modifier.align(Alignment.CenterVertically),
-            color = moneyColor
+            text = accountText,
+            color = moneyColor,
+            fontSize = 14.sp
         )
     }
 }

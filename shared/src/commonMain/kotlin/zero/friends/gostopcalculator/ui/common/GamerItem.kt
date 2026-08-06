@@ -22,6 +22,7 @@ import zero.friends.domain.model.Gamer
 import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.theme.OrangeyRed
 import zero.friends.gostopcalculator.util.getMoneyColor
+import zero.friends.gostopcalculator.util.separateComma
 
 @Composable
 fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
@@ -66,8 +67,12 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
                         fontSize = 16.sp,
                         color = Nero,
                     )
+                    val accountText = when {
+                        gamer.account > 0 -> "+${gamer.account.separateComma()}원"
+                        else -> "${gamer.account.separateComma()}원"
+                    }
                     Text(
-                        text = "${gamer.account}원",
+                        text = accountText,
                         textAlign = TextAlign.Center,
                         color = moneyColor,
                         fontSize = 12.sp,
