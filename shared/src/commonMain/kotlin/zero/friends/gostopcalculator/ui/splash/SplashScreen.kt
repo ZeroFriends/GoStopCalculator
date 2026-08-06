@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,13 +27,21 @@ import zero.friends.gostopcalculator.shared.generated.resources.Res
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun SplashScreen() {
+fun SplashScreen(
+    onSplashFinished: () -> Unit = {}
+) {
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(
             Res.readBytes("files/gostop_splash.json").decodeToString()
         )
     }
     val progress by animateLottieCompositionAsState(composition)
+
+    LaunchedEffect(progress) {
+        if (progress == 1f) {
+            onSplashFinished()
+        }
+    }
 
     Box(
         modifier = Modifier

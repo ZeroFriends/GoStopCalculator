@@ -4,8 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -54,13 +56,28 @@ fun AppNavigator(
             navController = navController
         ) {
             composable<Route.Splash> {
-                SplashScreen()
+                var isCleanUpDone by remember { mutableStateOf(false) }
+                var isSplashAnimDone by remember { mutableStateOf(false) }
+
+                fun tryNavigateToHistory() {
+                    if (isCleanUpDone && isSplashAnimDone) {
+                        navController.navigate(Route.History) {
+                            popUpTo<Route.Splash> { inclusive = true }
+                        }
+                    }
+                }
+
+                SplashScreen(
+                    onSplashFinished = {
+                        isSplashAnimDone = true
+                        tryNavigateToHistory()
+                    }
+                )
+
                 LaunchedEffect(Unit) {
                     appComponent.cleanEmptyRoundsUseCase()
-                    delay(3.seconds)
-                    navController.navigate(Route.History) {
-                        popUpTo<Route.Splash> { inclusive = true }
-                    }
+                    isCleanUpDone = true
+                    tryNavigateToHistory()
                 }
             }
 
@@ -181,7 +198,7 @@ fun AppNavigator(
                         }
                     },
                     onComplete = { gameId, roundId ->
-                        navController.navigate(Route.Board.Calculate(gameId)) {
+                        navController.navigate(Route.Board.Detail(gameId, roundId)) {
                             popUpTo<Route.Board.Main> { inclusive = false }
                         }
                     }
@@ -222,7 +239,9 @@ fun AppNavigator(
                     uiState = uiState,
                     roundTraceFormatter = appComponent.roundTraceFormatter,
                     onBackClick = {
-                        navController.safePopBackStack(onCloseApp)
+                        navController.navigate(Route.Board.Main(route.gameId)) {
+                            popUpTo<Route.Board.Main> { inclusive = true }
+                        }
                     },
                     onShareClick = { graphicsLayer ->
                         coroutineScope.launch {

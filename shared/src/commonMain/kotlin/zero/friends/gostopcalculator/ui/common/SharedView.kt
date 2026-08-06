@@ -98,13 +98,19 @@ fun CenterTextTopBar(
                                 )
                             }
                         } else if (actionText != null) {
+                            val actionTextColor = if (isRed) Color.White else OrangeyRed
                             Surface(
                                 modifier = Modifier
                                     .padding(end = 16.dp)
                                     .clickable(onClick = onAction),
                                 color = Color.Transparent
                             ) {
-                                Text(text = actionText, fontSize = 14.sp, color = OrangeyRed)
+                                Text(
+                                    text = actionText,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = actionTextColor
+                                )
                             }
                         }
                     }
