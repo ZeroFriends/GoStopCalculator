@@ -11,8 +11,8 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.coroutines.*
 import me.tatarka.inject.annotations.Inject
-import zero.friends.gostopcalculator.util.AdConfig
 import zero.friends.gostopcalculator.util.log
+import zero.friends.gostopcalculator.util.GoogleAdmob as SharedGoogleAdmob
 
 sealed interface AdCallback {
     object OnError : AdCallback
@@ -37,7 +37,11 @@ class GoogleAdmob(
     private var isLoading = false
 
     companion object {
-        var isDebugAdEnabled: Boolean = false
+        var isDebugAdEnabled: Boolean
+            get() = SharedGoogleAdmob.isDebugAdEnabled
+            set(value) {
+                SharedGoogleAdmob.isDebugAdEnabled = value
+            }
         private var lastAdDismissedTime: Long = 0L
         private const val AD_COOLDOWN_MILLIS: Long = 10_000L
     }
@@ -110,7 +114,7 @@ class GoogleAdmob(
     }
 
     fun showAd(activity: Activity, adCallback: (AdCallback) -> Unit) {
-        val debugEnabled = AdConfig.isDebugAdEnabled
+        val debugEnabled = isDebugAdEnabled
 
         if (BuildConfig.DEBUG && !debugEnabled) {
             log.d("Skipping ad: DEBUG mode and isDebugAdEnabled is FALSE.")

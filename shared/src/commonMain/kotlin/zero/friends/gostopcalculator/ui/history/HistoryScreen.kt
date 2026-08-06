@@ -53,7 +53,7 @@ import zero.friends.gostopcalculator.ui.common.SubTitleText
 import zero.friends.gostopcalculator.ui.common.TitleText
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 import zero.friends.gostopcalculator.ui.history.guide.GuideFullScreenDialog
-import zero.friends.gostopcalculator.util.AdConfig
+import zero.friends.gostopcalculator.util.GoogleAdmob
 
 private sealed class HistoryEvent {
 
@@ -102,7 +102,7 @@ fun HistoryScreen(
     }
 
     val toggleAd = onToggleDebugAd ?: {
-        AdConfig.isDebugAdEnabled = !AdConfig.isDebugAdEnabled
+        GoogleAdmob.isDebugAdEnabled = !GoogleAdmob.isDebugAdEnabled
     }
 
     HistoryScreenContent(
@@ -163,9 +163,9 @@ private fun NewGame(
         ) {
             TitleText(text = stringResource(Res.string.today_game))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                val isDebugAdEnabled = AdConfig.isDebugAdEnabled
+                val isDebugAdEnabled = GoogleAdmob.isDebugAdEnabled
                 val onToggle = onToggleDebugAd ?: {
-                    AdConfig.isDebugAdEnabled = !AdConfig.isDebugAdEnabled
+                    GoogleAdmob.isDebugAdEnabled = !GoogleAdmob.isDebugAdEnabled
                 }
                 RoundedCornerText(
                     text = if (isDebugAdEnabled) "Ad ON" else "Ad OFF",

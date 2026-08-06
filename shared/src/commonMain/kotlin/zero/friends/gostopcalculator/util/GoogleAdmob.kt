@@ -4,6 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 
-object AdConfig {
+object GoogleAdmob {
     var isDebugAdEnabled by mutableStateOf(false)
 }
