@@ -1,9 +1,10 @@
-package zero.friends.domain.usecase.calculate
+package zero.friends.domain.usecase.calculate.integration
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.Target
+import zero.friends.domain.usecase.calculate.AggregateGamerResultsUseCase
 
 class AggregateGamerResultsUseCaseTest {
 

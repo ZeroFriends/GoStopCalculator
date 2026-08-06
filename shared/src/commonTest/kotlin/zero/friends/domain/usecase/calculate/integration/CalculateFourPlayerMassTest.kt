@@ -1,4 +1,4 @@
-package zero.friends.domain.usecase.calculate
+package zero.friends.domain.usecase.calculate.integration
 
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -10,13 +10,15 @@ import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.LoserOption
 import zero.friends.domain.model.Rule
 import zero.friends.domain.model.ScoreOption
+import zero.friends.domain.usecase.calculate.CalculateGameResultUseCase
+import zero.friends.domain.usecase.calculate.CalculateLoserScoreUseCase
+import zero.friends.domain.usecase.calculate.CalculateScoreOptionUseCase
+import zero.friends.domain.usecase.calculate.CalculateSellScoreUseCase
+import zero.friends.domain.usecase.calculate.UpdateAccountUseCase
+import zero.friends.domain.usecase.calculate.calculateGoScore
 import zero.friends.domain.util.Const
 import kotlin.time.Duration.Companion.seconds
 
-/**
- * 4인 게임(광팔기 포함) 시나리오 분할 및 병렬 검증 테스트
- * - 병렬화 및 분수 분할을 위해 시나리오 카테고리별 개별 @Test 로 분리
- */
 class CalculateFourPlayerMassTest {
 
     private fun createIsolatedUseCase(): Triple<CalculateGameResultUseCase, MockRuleRepository, MockGamerRepository> {

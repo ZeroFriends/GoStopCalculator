@@ -1,7 +1,8 @@
-package zero.friends.domain.usecase.calculate
+package zero.friends.domain.model
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import zero.friends.domain.usecase.calculate.calculateGoScore
 
 class GoPointsTest {
 
