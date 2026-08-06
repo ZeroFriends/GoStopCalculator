@@ -129,8 +129,8 @@ class MockGamerRepository : GamerRepository {
     
     override suspend fun updateTarget(gamer: Gamer, account: Int, target: Gamer) {
         val gamerTargets = targetMap.getOrPut(gamer.id) { mutableMapOf() }
-        val currentAmount = gamerTargets[target.id] ?: 0
-        gamerTargets[target.id] = currentAmount + account
+        val currentAmount = gamerTargets[target.playerId] ?: 0
+        gamerTargets[target.playerId] = currentAmount + account
     }
     
     override fun observeRoundGamers(roundId: Long): Flow<List<Gamer>> {

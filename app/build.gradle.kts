@@ -79,6 +79,15 @@ android {
     lint {
         abortOnError = false
     }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+        unitTests.all {
+            it.filter {
+                isFailOnNoMatchingTests = false
+            }
+        }
+    }
 }
 
 dependencies {
@@ -121,4 +130,5 @@ dependencies {
     implementation(libs.play.services.ads)
 
     ksp(libs.kotlin.inject.compiler.ksp)
+    testImplementation(libs.junit)
 }
