@@ -5,8 +5,3 @@ enum class ScreenType {
     CALCULATE, DETAIL, RESULT
 }
 
-object ResultContract {
-    const val EXTRA_GAME_ID = "EXTRA_GAME_ID"
-    const val EXTRA_ROUND_ID = "EXTRA_ROUND_ID"
-    const val EXTRA_SCREEN_TYPE = "EXTRA_SCREEN_TYPE"
-}
