@@ -12,18 +12,14 @@ import zero.friends.gostopcalculator.di.AppComponent
 import zero.friends.gostopcalculator.di.create
 import zero.friends.gostopcalculator.di.createAppComponent
 import zero.friends.gostopcalculator.util.ApplicationContextProvider
-import zero.friends.gostopcalculator.work.EmptyRoundCleanupWorker
 
-class GoStopApplication : Application(), Configuration.Provider {
+class GoStopApplication : Application() {
 
     lateinit var appComponent: AppComponent
         private set
 
     lateinit var androidAppComponent: AndroidAppComponent
         private set
-
-    override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder().build()
 
     override fun onCreate() {
         super.onCreate()
@@ -43,8 +39,6 @@ class GoStopApplication : Application(), Configuration.Provider {
         }
 
         FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = !BuildConfig.DEBUG
-
-        EmptyRoundCleanupWorker.enqueue(applicationContext)
     }
 
     companion object {

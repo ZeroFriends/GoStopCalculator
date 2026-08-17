@@ -26,23 +26,6 @@
         </activity>
 
         <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            android:exported="false"
-            tools:node="merge">
-            <meta-data
-                android:name="androidx.work.WorkManagerInitializer"
-                tools:node="remove" />
-            <meta-data
-                android:name="zero.friends.gostopcalculator.initailizer.TimberInitializer"
-                android:value="androidx.startup" />
-
-            <meta-data
-                android:name="zero.friends.gostopcalculator.initailizer.MobileAdsInitializer"
-                android:value="androidx.startup" />
-        </provider>
-
-        <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="zero.friends.gostopcalculator.fileprovider"
             android:exported="false"
