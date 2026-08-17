@@ -53,7 +53,7 @@ android {
                 ),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "AD_UNIT_ID", "\"ca-app-pub-1663298612263181/4159961076\"")
+            buildConfigField("String", "AD_UNIT_ID", "\"ca-app-pub-4169469417741632/1919936924\"")
             signingConfig = signingConfigs.getByName("release")
         }
     }

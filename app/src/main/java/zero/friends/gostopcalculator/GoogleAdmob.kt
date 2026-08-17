@@ -38,7 +38,7 @@ class GoogleAdmob @Inject constructor(
     companion object {
         var isDebugAdEnabled: Boolean = false
         private var lastAdDismissedTime: Long = 0L
-        private const val AD_COOLDOWN_MILLIS: Long = 30_000L
+        private const val AD_COOLDOWN_MILLIS: Long = 10_000L
     }
 
     init {
