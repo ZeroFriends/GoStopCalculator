@@ -4,8 +4,8 @@ compileSdk = "37"
 buildTools = "30.0.3"
 minSdk = "26"
 targetSdk = "36"
-versionCode = "21"
-versionName = "1.4.1"
+versionCode = "22"
+versionName = "1.5.0"
 
 # Plugin Versions
 androidGradlePlugin = "9.3.0"
