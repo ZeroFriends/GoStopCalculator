@@ -21,6 +21,7 @@ import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,8 @@ import zero.friends.domain.model.Rule
 import zero.friends.domain.util.Const
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.complete
+import zero.friends.gostopcalculator.shared.generated.resources.confirm
+import zero.friends.gostopcalculator.shared.generated.resources.game_setting_title
 import zero.friends.gostopcalculator.shared.generated.resources.help
 import zero.friends.gostopcalculator.shared.generated.resources.help_ddaddak
 import zero.friends.gostopcalculator.shared.generated.resources.help_ddaddak_sub
@@ -81,6 +84,14 @@ fun RuleScreen(
     }
 
     val scaffoldState = rememberScaffoldState()
+
+    LaunchedEffect(Unit) {
+        ruleViewModel.toast().collect { message ->
+            if (message != null) {
+                scaffoldState.snackbarHostState.showSnackbar(message)
+            }
+        }
+    }
 
     val uiState by ruleViewModel.getUiState().collectAsState()
     val scope = rememberCoroutineScope()
@@ -160,7 +171,7 @@ private fun RuleHelpDialog(
                 onClick = onClose
             ) {
                 Text(
-                    text = "확인",
+                    text = stringResource(Res.string.confirm),
                     color = Color.White,
                     fontSize = 16.sp
                 )
@@ -181,7 +192,7 @@ private fun RuleScreen(
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(
-                text = "게임 설정 (2/2)",
+                text = stringResource(Res.string.game_setting_title, 2),
                 onBack = { clickEvent(RuleClickEvent.Back) },
             )
         }

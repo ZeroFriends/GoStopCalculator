@@ -23,8 +23,10 @@ import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.duplicate_player_name_alert
 import zero.friends.gostopcalculator.shared.generated.resources.edit
 import zero.friends.gostopcalculator.shared.generated.resources.edit_name
+import zero.friends.gostopcalculator.shared.generated.resources.over_player_name_alert
 import zero.friends.gostopcalculator.ui.common.GoStopButton
 import zero.friends.gostopcalculator.ui.common.GoStopOutLinedTextField
 import zero.friends.gostopcalculator.ui.precondition.PlayerViewModel
@@ -43,11 +45,14 @@ fun NameEditDialog(
         mutableStateOf("")
     }
 
+    val duplicateNameAlert = stringResource(Res.string.duplicate_player_name_alert)
+    val overPlayerNameAlert = stringResource(Res.string.over_player_name_alert)
+
     val editPlayer: () -> Unit = {
         runCatching {
             viewModel.editPlayer(player, editPlayerName.text)
         }.onFailure {
-            error = it.message.orEmpty()
+            error = duplicateNameAlert
         }.onSuccess {
             onClose()
         }
@@ -80,7 +85,7 @@ fun NameEditDialog(
                             editPlayerName = it
                             error = ""
                         } else {
-                            error = "8자를 초과할 수 없습니다."
+                            error = overPlayerNameAlert
                         }
                     },
                     error = error.ifEmpty { null },

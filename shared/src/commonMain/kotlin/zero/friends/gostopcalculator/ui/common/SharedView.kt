@@ -35,9 +35,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.PlayerResult
 import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.empty_playing_game
 import zero.friends.gostopcalculator.shared.generated.resources.ic_topbar_back
+import zero.friends.gostopcalculator.shared.generated.resources.start_new_game_prompt
+import zero.friends.gostopcalculator.shared.generated.resources.won
 import zero.friends.gostopcalculator.theme.Gray
 import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.theme.OrangeyRed
@@ -150,8 +154,8 @@ fun ContentsCard(
 @Composable
 fun EmptyHistory(
     painter: Painter? = null,
-    title: String = "진행중인 게임이 없습니다.",
-    subTitle: String = "새로운 게임을 시작해보세요!"
+    title: String = stringResource(Res.string.empty_playing_game),
+    subTitle: String = stringResource(Res.string.start_new_game_prompt)
 ) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -237,9 +241,10 @@ fun PlayerItem(index: Int, playerResult: PlayerResult) {
             )
         }
 
+        val won = stringResource(Res.string.won)
         val accountText = when {
-            playerResult.account > 0 -> "+${playerResult.account.separateComma()}원"
-            else -> "${playerResult.account.separateComma()}원"
+            playerResult.account > 0 -> "+${playerResult.account.separateComma()}$won"
+            else -> "${playerResult.account.separateComma()}$won"
         }
         Text(
             text = accountText,

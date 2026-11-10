@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import org.jetbrains.compose.resources.getString
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.Game
 import zero.friends.domain.model.LoserOption
@@ -26,6 +27,9 @@ import zero.friends.domain.usecase.option.SellingUseCase
 import zero.friends.domain.usecase.option.ToggleLoserOptionUseCase
 import zero.friends.domain.usecase.option.ToggleScoreOptionUseCase
 import zero.friends.domain.usecase.option.UpdateWinnerUseCase
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.max_sell_count_alert
+import zero.friends.gostopcalculator.shared.generated.resources.over_point_alert
 import zero.friends.gostopcalculator.util.separateComma
 
 data class ScoreUiState(
@@ -153,46 +157,39 @@ class ScoreViewModel(
 
     fun updateSeller(seller: Gamer, count: Long) {
         viewModelScope.launch {
-            runCatching {
-                require(count <= MAX_SELL_COUNT) {
-                    "광팔기는 최대 ${MAX_SELL_COUNT}장까지 가능합니다."
-                }
-            }.onFailure {
-                _toast.emit(it.message)
-            }.onSuccess {
-                _uiState.update { state ->
-                    val newGamers = state.playerResults.map {
-                        if (it.name == seller.name) {
-                            it.copy(score = count.toInt(), go = 0)
-                        } else {
-                            it.copy(score = 0, go = 0)
-                        }
+            if (count > MAX_SELL_COUNT) {
+                _toast.emit(getString(Res.string.max_sell_count_alert, MAX_SELL_COUNT.toInt()))
+                return@launch
+            }
+            _uiState.update { state ->
+                val newGamers = state.playerResults.map {
+                    if (it.name == seller.name) {
+                        it.copy(score = count.toInt(), go = 0)
+                    } else {
+                        it.copy(score = 0, go = 0)
                     }
-                    state.copy(
-                        phase = Selling(newGamers.any { it.score != 0 }),
-                        seller = if (count != 0L) seller.copy(
-                            score = count.toInt(),
-                            go = 0,
-                            sellerOption = SellerOption.Seller
-                        ) else null,
-                        playerResults = newGamers
-                    )
                 }
+                state.copy(
+                    phase = Selling(newGamers.any { it.score != 0 }),
+                    seller = if (count != 0L) seller.copy(
+                        score = count.toInt(),
+                        go = 0,
+                        sellerOption = SellerOption.Seller
+                    ) else null,
+                    playerResults = newGamers
+                )
             }
         }
     }
 
     fun updateWinner(gamer: Gamer, point: Long, go: Long) {
         viewModelScope.launch {
-            runCatching {
-                require(point <= MAX_POINT) {
-                    "최대 점수를 초과하였습니다. (최대: ${MAX_POINT.separateComma()}점)"
-                }
-            }.onFailure {
-                _toast.emit(it.message)
-            }.onSuccess {
-                _uiState.update { state ->
-                    val goValue = go.toInt()
+            if (point > MAX_POINT) {
+                _toast.emit(getString(Res.string.over_point_alert, MAX_POINT.separateComma()))
+                return@launch
+            }
+            _uiState.update { state ->
+                val goValue = go.toInt()
                     val newGamers = state.playerResults.map {
                         if (it.name == gamer.name) {
                             it.copy(score = point.toInt(), go = goValue)
@@ -213,7 +210,6 @@ class ScoreViewModel(
                 }
             }
         }
-    }
 
     fun calculateGameResult() {
         viewModelScope.launch {

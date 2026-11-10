@@ -22,6 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.close
+import zero.friends.gostopcalculator.shared.generated.resources.guide_title
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun GuideFullScreenDialog(
@@ -43,7 +47,7 @@ fun GuideFullScreenDialog(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "고스톱 계산기 이용 가이드",
+                    text = stringResource(Res.string.guide_title),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -64,7 +68,7 @@ fun GuideFullScreenDialog(
                     shape = RoundedCornerShape(100.dp)
                 ) {
                     Text(
-                        text = "닫기",
+                        text = stringResource(Res.string.close),
                         color = Color(0xFFFF5252),
                         fontWeight = FontWeight.Bold
                     )

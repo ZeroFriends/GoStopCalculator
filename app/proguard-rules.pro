@@ -154,3 +154,4 @@
 # ==============================================================================
 -keep class zero.friends.domain.model.** { *; }
 -keep class zero.friends.data.entity.** { *; }
+-keep class zero.friends.domain.util.Const** { *; }

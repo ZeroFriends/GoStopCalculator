@@ -35,6 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.add_new_player
+import zero.friends.gostopcalculator.shared.generated.resources.game_setting_title
 import zero.friends.gostopcalculator.shared.generated.resources.group_name
 import zero.friends.gostopcalculator.shared.generated.resources.ic_delete_black
 import zero.friends.gostopcalculator.shared.generated.resources.ic_mode_edit_black
@@ -74,6 +75,12 @@ fun PlayerScreen(
     }
 
     val scaffoldState = rememberScaffoldState()
+
+    LaunchedEffect(Unit) {
+        viewModel.error().collect {
+            scaffoldState.snackbarHostState.showSnackbar(it)
+        }
+    }
 
     val uiState by viewModel.getUiState().collectAsState()
 
@@ -118,7 +125,7 @@ private fun PlayerScreen(
         scaffoldState = scaffoldState,
         topBar = {
             CenterTextTopBar(
-                text = "게임 설정 (1/2)",
+                text = stringResource(Res.string.game_setting_title, 1),
                 onBack = { clickEvent.invoke(PlayerClickEvent.Back) },
             )
         }

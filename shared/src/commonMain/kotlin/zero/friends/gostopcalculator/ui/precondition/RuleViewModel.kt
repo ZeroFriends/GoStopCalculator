@@ -10,11 +10,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
+import org.jetbrains.compose.resources.getString
 import zero.friends.domain.model.Player
 import zero.friends.domain.model.Rule
 import zero.friends.domain.usecase.StartNewGameUseCase
 import zero.friends.domain.usecase.rule.GetDefaultRuleUseCase
 import zero.friends.domain.util.Const
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.over_score_alert
 import zero.friends.gostopcalculator.util.TimeUtil
 import zero.friends.gostopcalculator.util.separateComma
 
@@ -50,24 +53,20 @@ class RuleViewModel @Inject constructor(
 
     fun updateRuleScore(targetRule: Rule, score: Long) {
         viewModelScope.launch {
-            runCatching {
-                require(score <= MAXIMUM_SCORE) {
-                    "${MAXIMUM_SCORE.separateComma()}점을 초과할 수 없습니다."
-                }
-            }.onFailure {
-                _toast.emit(it.message)
-            }.onSuccess {
-                _uiState.update { state ->
-                    val updatedRules = state.rules.map { rule ->
-                        when {
-                            rule.name == targetRule.name -> rule.copy(score = score.toInt())
-                            targetRule.name == Const.Rule.Score && rule.name == Const.Rule.FirstDdadak -> rule.copy(score = (score * 3).toInt())
-                            else -> rule
-                        }
+            if (score > MAXIMUM_SCORE) {
+                _toast.emit(getString(Res.string.over_score_alert, MAXIMUM_SCORE.separateComma()))
+                return@launch
+            }
+            _uiState.update { state ->
+                val updatedRules = state.rules.map { rule ->
+                    when {
+                        rule.name == targetRule.name -> rule.copy(score = score.toInt())
+                        targetRule.name == Const.Rule.Score && rule.name == Const.Rule.FirstDdadak -> rule.copy(score = (score * 3).toInt())
+                        else -> rule
                     }
-                    val verify = updatedRules.filter { it.isEssential }.any { it.score > 0 }
-                    state.copy(rules = updatedRules, enableComplete = verify)
                 }
+                val verify = updatedRules.filter { it.isEssential }.any { it.score > 0 }
+                state.copy(rules = updatedRules, enableComplete = verify)
             }
         }
     }

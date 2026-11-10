@@ -1,0 +1,52 @@
+appId: ${APP_ID:-zero.friends.gostopcalculator}
+---
+# ==========================================
+# 시나리오: 4인 게임 생성 및 광팔기(Selling) Flow 검증
+# ==========================================
+
+- launchApp:
+    clearState: true
+
+- assertVisible: "시작하기"
+- tapOn: "시작하기"
+
+# 플레이어 4명 추가
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "\\+ 플레이어 추가"
+
+- tapOn: "다음"
+
+# 룰 설정 완료
+- assertVisible: "게임규칙.*"
+- tapOn: "완료"
+
+# 보드 화면 진입 ➔ 판 시작
+- assertVisible: "게임시작"
+- tapOn: "게임시작"
+
+# 4인 라운드 준비 완료
+- assertVisible: "완료"
+- tapOn: "완료"
+
+# 광팔기 화면(Selling) 진입 확인
+- assertVisible: "광팔기"
+- assertVisible: ".*광을 판 플레이어.*"
+
+# 다음 클릭하여 승자 선택 이동
+- tapOn: "다음"
+
+# 승자 선택
+- assertVisible: "승자 점수기록"
+- tapOn: "플레이어 1"
+- tapOn: "다음 \\(1/3\\)"
+
+# 점수 기록
+- tapOn: "다음 \\(2/3\\)"
+
+# 패자 기록 ➔ 저장
+- tapOn: "저장"
+
+# 보드 화면 정상 복귀 검증
+- assertVisible: "1 라운드"
