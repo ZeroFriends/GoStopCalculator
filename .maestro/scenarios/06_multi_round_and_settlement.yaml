@@ -1,0 +1,58 @@
+appId: ${APP_ID:-zero.friends.gostopcalculator}
+---
+# ==========================================
+# 시나리오: 다중 라운드 진행 후 정산내역 및 라운드 상세보기 검증
+# ==========================================
+
+- launchApp:
+    clearState: true
+
+- tapOn: "시작하기"
+
+# 플레이어 3명 추가
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "다음"
+
+# 룰 설정 완료
+- tapOn: "완료"
+
+# [라운드 1] 시작 및 완료
+- tapOn: "게임시작"
+- tapOn: "완료"
+- tapOn: "플레이어 1"
+- tapOn: "다음 \\(1/3\\)"
+- tapOn: "다음 \\(2/3\\)"
+- tapOn: "저장"
+
+# 보드 화면에 1 라운드 표시 확인
+- assertVisible: "1 라운드"
+
+# [라운드 2] 시작 및 완료
+- tapOn: "게임시작"
+- tapOn: "완료"
+- tapOn: "플레이어 2"
+- tapOn: "다음 \\(1/3\\)"
+- tapOn: "다음 \\(2/3\\)"
+- tapOn: "저장"
+
+# 보드 화면에 2 라운드까지 누적 표시 확인
+- assertVisible: "2 라운드"
+
+# 정산내역 확인
+- assertVisible: "정산내역.*"
+- tapOn: "정산내역.*"
+
+# 최종 정산 화면 노출 확인 후 뒤로가기
+- assertVisible: "정산내역"
+- back
+
+# 라운드 상세보기 확인
+- assertVisible: "상세보기.*"
+- tapOn: "상세보기.*"
+- assertVisible: "상세보기"
+- back
+
+# 보드 복귀 확인
+- assertVisible: "진행내역.*"
