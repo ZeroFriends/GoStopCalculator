@@ -10,9 +10,6 @@ fun initAssetContext(context: Context) {
 
 actual fun readAsset(fileName: String): String {
     return assetContext.assets.open(fileName).use { stream ->
-        val size = stream.available()
-        val buffer = ByteArray(size)
-        stream.read(buffer)
-        String(buffer, Charsets.UTF_8)
+        stream.bufferedReader(Charsets.UTF_8).use { it.readText() }
     }
 }

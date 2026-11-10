@@ -51,6 +51,7 @@ fun getRoomDatabase(
     builder: RoomDatabase.Builder<DataBase>
 ): DataBase {
     return builder
+        .fallbackToDestructiveMigration(dropAllTables = true)
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.Default)
         .build()

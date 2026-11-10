@@ -37,7 +37,7 @@ android {
         create("release") {
             keyAlias = "key"
             keyPassword = "zerofriends"
- storeFile = file("keystore/keystore.jks")
+            storeFile = file("keystore/keystore.jks")
             storePassword = "zerofriends"
         }
     }
@@ -58,18 +58,28 @@ android {
                 ),
                 "proguard-rules.pro"
             )
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE"
+            }
             buildConfigField("String", "AD_UNIT_ID", "\"ca-app-pub-4169469417741632/1919936924\"")
             signingConfig = signingConfigs.getByName("release")
+        }
+    }
+
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/LICENSE*",
+                "META-INF/NOTICE*",
+                "META-INF/*.version",
+                "**/*.proto"
+            )
         }
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.get()
     }
 
     buildFeatures {
@@ -121,7 +131,6 @@ dependencies {
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.navigation.compose)
     implementation(libs.androidx.room.ktx)
-    implementation(libs.lottie.compose)
     implementation(libs.timber)
     implementation(libs.kotlin.inject.runtime)
     implementation(project.dependencies.platform(libs.firebase.bom))

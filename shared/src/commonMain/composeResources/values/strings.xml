@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">GoStop Calculator</string>
     <string name="company_name">ZEROFRIENDS</string>
-    <string name="today_game">Today\'s Game 👊</string>
+    <string name="today_game">Today's Game 👊</string>
     <string name="guide">Guide</string>
     <string name="start">Start</string>
     <string name="history">HISTORY</string>
