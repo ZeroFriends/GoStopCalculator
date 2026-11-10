@@ -1,21 +1,156 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.kts.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# ==============================================================================
+# General ProGuard / R8 Configuration
+# ==============================================================================
+-keepattributes *Annotation*, InnerClasses, EnclosingMethod, Signature, Exceptions
+-keepattributes SourceFile, LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# ==============================================================================
+# Kotlin & Coroutines
+# ==============================================================================
+-dontwarn kotlin.**
+-keepclassmembers class **$WhenMappings {
+    <fields>;
+}
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory { *; }
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler { *; }
+-keepclassmembernames class kotlinx.coroutines.** {
+    volatile <fields>;
+}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# ==============================================================================
+# Kotlinx Serialization
+# ==============================================================================
+-dontnote kotlinx.serialization.SerializationKt
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep classes annotated with @Serializable and their members
+-keep @kotlinx.serialization.Serializable class * {
+    *;
+}
+
+# Keep companion objects of @Serializable classes and their serializer methods
+-keepclassmembers class * {
+    @kotlinx.serialization.Serializable <fields>;
+    @kotlinx.serialization.Serializable <methods>;
+}
+
+-keepclassmembers class **$Companion {
+    public kotlinx.serialization.KSerializer serializer(...);
+}
+
+# Keep generated serializer classes and instance
+-keep class * implements kotlinx.serialization.KSerializer {
+    <init>(...);
+    public static *** Companion;
+    public static *** INSTANCE;
+}
+-keep class **$$serializer {
+    *;
+}
+-keepclassmembers class **$$serializer {
+    public static **$$serializer INSTANCE;
+}
+
+# ==============================================================================
+# AndroidX Room
+# ==============================================================================
+-keep class * extends androidx.room.RoomDatabase {
+    <init>(...);
+}
+-keep @androidx.room.Entity class * {
+    <init>(...);
+    <fields>;
+    <methods>;
+}
+-keep @androidx.room.Dao interface * {
+    <methods>;
+}
+-keep class * implements androidx.room.RoomDatabase$Callback
+-keep class * extends androidx.room.migration.Migration
+-keepclassmembers class * {
+    @androidx.room.TypeConverter <methods>;
+}
+-keep class **.*_Impl {
+    <init>(...);
+    public <methods>;
+}
+-keep class **.*Constructor {
+    <init>(...);
+    public <methods>;
+}
+-dontwarn androidx.room.paging.**
+
+# ==============================================================================
+# kotlin-inject
+# ==============================================================================
+-keep @me.tatarka.inject.annotations.Component class * {
+    *;
+}
+-keep @me.tatarka.inject.annotations.Component interface * {
+    *;
+}
+-keep class **.Inject* {
+    *;
+}
+-keep class **.*ComponentImpl {
+    *;
+}
+-keepclasseswithmembers class * {
+    @me.tatarka.inject.annotations.Inject <init>(...);
+}
+-keepclasseswithmembers class * {
+    @me.tatarka.inject.annotations.Provides <methods>;
+}
+
+# ==============================================================================
+# Compose Multiplatform & Resources
+# ==============================================================================
+-keep class androidx.compose.ui.platform.** { *; }
+-keep class androidx.compose.runtime.** { *; }
+-keep class org.jetbrains.compose.resources.** { *; }
+-keep class zero.friends.gostopcalculator.shared.generated.resources.** { *; }
+
+# ==============================================================================
+# Compottie & Lottie
+# ==============================================================================
+-dontwarn io.github.alexzhirkevich.compottie.**
+-keep class io.github.alexzhirkevich.compottie.** { *; }
+-dontwarn com.airbnb.lottie.**
+-keep class com.airbnb.lottie.** { *; }
+
+# ==============================================================================
+# Google Mobile Ads (AdMob) & Play Services
+# ==============================================================================
+-keep public class com.google.android.gms.ads.** {
+    public *;
+}
+-keep public class com.google.ads.** {
+    public *;
+}
+-keep class com.google.android.gms.internal.ads.** { *; }
+-dontwarn com.google.android.gms.ads.**
+
+# ==============================================================================
+# Firebase & Crashlytics
+# ==============================================================================
+-keep public class * extends java.lang.Exception
+-keepclassmembers class * {
+    @com.google.firebase.crashlytics.** *;
+}
+-keepclassmembers class * {
+    @com.google.android.gms.common.annotation.KeepName *;
+}
+-keepnames class * implements java.io.Serializable
+-dontwarn com.google.firebase.**
+
+# ==============================================================================
+# Timber
+# ==============================================================================
+-dontwarn timber.log.**
+-keep class timber.log.** { *; }
+
+# ==============================================================================
+# Domain & Data Models
+# ==============================================================================
+-keep class zero.friends.domain.model.** { *; }
+-keep class zero.friends.data.entity.** { *; }
