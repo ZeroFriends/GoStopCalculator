@@ -1,0 +1,22 @@
+[
+  {
+    "name": "점당",
+    "isEssential": true,
+    "script": "필수 항목입니다."
+  },
+  {
+    "name": "뻑",
+    "isEssential": false,
+    "script": ""
+  },
+  {
+    "name": "첫 따닥",
+    "isEssential": false,
+    "script": ""
+  },
+  {
+    "name": "광팔기",
+    "isEssential": false,
+    "script": "4인 플레이 시에만 적용됩니다."
+  }
+]

@@ -1,25 +1,29 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
     id("kotlin-parcelize")
 }
 
-kotlin {
-    compilerOptions {
-        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_2)
-    }
-    jvmToolchain(21)
-}
-
 android {
     namespace = "zero.friends.gostopcalculator"
     compileSdk = libs.versions.compileSdk.get().toInt()
+
+    sourceSets {
+        getByName("main") {
+            manifest.srcFile("src/main/AndroidManifest.xml")
+            java.srcDirs(
+                "src/main/java",
+                "src/androidMain/kotlin",
+                "src/commonMain/kotlin"
+            )
+            res.srcDirs("src/main/res")
+        }
+    }
 
     defaultConfig {
         applicationId = "zero.friends.gostopcalculator"
@@ -28,7 +32,6 @@ android {
         versionName = libs.versions.versionName.get()
         minSdk = libs.versions.minSdk.get().toInt()
     }
-
 
     signingConfigs {
         create("release") {
@@ -46,6 +49,8 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
         release {
+            isMinifyEnabled = true
+            isShrinkResources = true
             isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile(
@@ -53,18 +58,28 @@ android {
                 ),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "AD_UNIT_ID", "\"ca-app-pub-1663298612263181/4159961076\"")
+            ndk {
+                debugSymbolLevel = "SYMBOL_TABLE"
+            }
+            buildConfigField("String", "AD_UNIT_ID", "\"ca-app-pub-4169469417741632/1919936924\"")
             signingConfig = signingConfigs.getByName("release")
+        }
+    }
+
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/LICENSE*",
+                "META-INF/NOTICE*",
+                "META-INF/*.version",
+                "**/*.proto"
+            )
         }
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.get()
     }
 
     buildFeatures {
@@ -76,50 +91,53 @@ android {
     lint {
         abortOnError = false
     }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+        unitTests.all {
+            it.filter {
+                isFailOnNoMatchingTests = false
+            }
+        }
+    }
 }
 
 dependencies {
-    implementation(project(":domain"))
-    implementation(project(":data"))
+    implementation(project(":shared"))
+
+    implementation(libs.compose.multiplatform.runtime)
+    implementation(libs.compose.multiplatform.foundation)
+    implementation(libs.compose.multiplatform.material)
+    implementation(libs.compose.multiplatform.ui)
+    implementation(libs.compose.multiplatform.components.resources)
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.sqlite.bundled)
+
+    implementation(libs.kotlin.coroutines.core)
+    implementation(libs.kotlin.serialization.json)
 
     implementation(libs.compose.ui)
-    implementation(libs.compose.ui.tooling)
     implementation(libs.compose.material)
-    implementation(libs.lottie.compose)
-
+    implementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.androidx.material)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.startup)
     implementation(libs.androidx.fragment)
-    implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.coordinatorlayout)
-    implementation(libs.androidx.recyclerview)
-    implementation(libs.androidx.appcompat)
-
-    implementation(libs.navigation.ui)
-    implementation(libs.navigation.fragment)
+    implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.navigation.compose)
-
-    implementation(libs.kotlin.coroutines.core)
-    implementation(libs.kotlin.coroutines.android)
-    implementation(libs.kotlin.serialization.json)
-
-    implementation(libs.hilt.android)
-    implementation(libs.hilt.navigation.compose)
-    ksp(libs.hilt.compiler)
     implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.work.runtime.ktx)
-    implementation(libs.androidx.hilt.work)
-    ksp(libs.androidx.hilt.compiler)
-
     implementation(libs.timber)
-    implementation(libs.kotlin.reflect)
-
-    implementation(platform(libs.firebase.bom))
+    implementation(libs.kotlin.inject.runtime)
+    implementation(project.dependencies.platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
     implementation(libs.play.services.ads)
+
+    ksp(libs.kotlin.inject.compiler.ksp)
+    testImplementation(libs.junit)
 }

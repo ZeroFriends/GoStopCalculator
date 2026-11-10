@@ -1,0 +1,207 @@
+package zero.friends.gostopcalculator.ui.board.prepare
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import zero.friends.domain.model.Game
+import zero.friends.domain.model.Player
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.complete
+import zero.friends.gostopcalculator.shared.generated.resources.ic_check_circle_24_dp
+import zero.friends.gostopcalculator.shared.generated.resources.ic_unchecked_circle_24_dp
+import zero.friends.gostopcalculator.shared.generated.resources.player_list
+import zero.friends.gostopcalculator.shared.generated.resources.start
+import zero.friends.gostopcalculator.shared.generated.resources.start_description
+import zero.friends.gostopcalculator.theme.Nero
+import zero.friends.gostopcalculator.theme.OrangeyRed
+import zero.friends.gostopcalculator.ui.common.BackHandler
+import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
+import zero.friends.gostopcalculator.ui.common.DescriptionBox
+import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
+
+private sealed interface PrepareEvent {
+
+
+    object Back : PrepareEvent
+    object Complete : PrepareEvent
+    class OnClickPlayer(val player: Player, val isCheck: Boolean) : PrepareEvent
+}
+
+@Composable
+fun PrepareScreen(
+    prepareViewModel: PrepareViewModel,
+    onComplete: (gameId: Long, roundId: Long) -> Unit = { _, _ -> },
+    onBack: () -> Unit = {},
+    onShowToast: (String) -> Unit = {}
+) {
+    BackHandler(enabled = true) {
+        onBack()
+    }
+    val scaffoldState = rememberScaffoldState()
+    val uiState by prepareViewModel.uiState().collectAsState()
+
+    PrepareScreen(
+        scaffoldState = scaffoldState,
+        uiState = uiState,
+        event = { event ->
+            when (event) {
+                PrepareEvent.Back -> {
+                    onBack()
+                }
+                PrepareEvent.Complete -> {
+                    prepareViewModel.createNewRound { roundId ->
+                        onComplete(uiState.game.id, roundId)
+                    }
+                }
+                is PrepareEvent.OnClickPlayer -> {
+                    prepareViewModel.onClickPlayer(event.isCheck, event.player) {
+                        onShowToast("4명을 초과할 수 없습니다.")
+                    }
+                }
+            }
+        }
+    )
+}
+
+@Composable
+private fun PrepareScreen(
+    scaffoldState: ScaffoldState = rememberScaffoldState(),
+    uiState: PrepareUiState = PrepareUiState(),
+    event: (PrepareEvent) -> Unit = {},
+) {
+    Scaffold(
+        scaffoldState = scaffoldState,
+        topBar = {
+            CenterTextTopBar(
+                text = uiState.game.name,
+                onBack = { event(PrepareEvent.Back) },
+                isRed = false,
+            )
+        }
+    ) { innerPadding ->
+        GoStopButtonBackground(
+            modifier = Modifier.padding(innerPadding),
+            buttonString = stringResource(Res.string.complete),
+            buttonEnabled = uiState.selectedPlayers.size >= 2,
+            onClick = { event(PrepareEvent.Complete) },
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                DescriptionBox(
+                    mainText = stringResource(Res.string.start),
+                    subText = stringResource(Res.string.start_description)
+                )
+                Spacer(modifier = Modifier.padding(22.dp))
+                PlayerPickList(
+                    uiState = uiState,
+                    event = event
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlayerPickList(
+    modifier: Modifier = Modifier,
+    uiState: PrepareUiState,
+    event: (PrepareEvent) -> Unit = {}
+) {
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(Res.string.player_list),
+            fontSize = 16.sp,
+            color = Nero,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.padding(9.dp))
+        LazyColumn(contentPadding = PaddingValues(2.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            itemsIndexed(items = uiState.players, key = { _, player -> player.id }) { index: Int, player: Player ->
+                PlayerPickItem(
+                    index = index,
+                    player = player,
+                    isCheck = uiState.selectedPlayers.any { player.id == it.id },
+                    onClick = { event(PrepareEvent.OnClickPlayer(player, it)) })
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun PlayerPickItem(index: Int, player: Player, isCheck: Boolean = true, onClick: (Boolean) -> Unit = {}) {
+    val shape = remember { RoundedCornerShape(18.dp) }
+    val modifier = if (isCheck) Modifier.background(
+        color = OrangeyRed.copy(alpha = 0.1f),
+        shape = shape
+    )
+    else Modifier
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .clickable { onClick(!isCheck) }
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row {
+            Text(
+                text = (index + 1).toString(),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = OrangeyRed
+            )
+            Spacer(modifier = Modifier.padding(8.dp))
+            Text(text = player.name, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        }
+        Surface(
+            onClick = { onClick(!isCheck) },
+            shape = CircleShape
+        ) {
+            if (isCheck) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_check_circle_24_dp),
+                    modifier = Modifier.background(color = OrangeyRed.copy(alpha = 0.1f)),
+                    contentDescription = null
+                )
+            } else {
+                Image(
+                    painter = painterResource(Res.drawable.ic_unchecked_circle_24_dp),
+                    contentDescription = null
+                )
+            }
+        }
+    }
+}

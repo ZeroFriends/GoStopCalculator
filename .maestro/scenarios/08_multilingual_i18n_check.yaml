@@ -1,0 +1,54 @@
+appId: ${APP_ID:-zero.friends.gostopcalculator}
+---
+# ==========================================
+# 시나리오: 다국어(i18n) - 영어, 일본어, 한국어 로케일 전환 및 텍스트 검증
+# ==========================================
+
+# ----------------------------------------------------
+# 1. 영어(English) 로케일 검증
+# ----------------------------------------------------
+- setLocale: "en-US"
+- launchApp:
+    clearState: true
+
+# 영어 텍스트 렌더링 확인 (Start, Today's Game, New Game 등)
+- assertVisible: "Start"
+- assertVisible: "Today.*Game.*"
+
+# 영어 상태로 플레이어 화면 진입
+- tapOn: "Start"
+- assertVisible: "Player Setup.*"
+- assertVisible: ".*Add Player"
+- back
+
+# ----------------------------------------------------
+# 2. 일본어(Japanese) 로케일 검증
+# ----------------------------------------------------
+- setLocale: "ja-JP"
+- launchApp:
+    clearState: true
+
+# 일본어 텍스트 렌더링 확인 (始める, 本日のゲーム, プレイヤー設定 등)
+- assertVisible: "始める"
+- assertVisible: "本日のゲーム.*"
+
+# 일본어 상태로 플레이어 화면 진입
+- tapOn: "始める"
+- assertVisible: "プレイヤー設定.*"
+- assertVisible: ".*プレイヤー追加"
+- back
+
+# ----------------------------------------------------
+# 3. 한국어(Korean) 로케일 복귀 검증
+# ----------------------------------------------------
+- setLocale: "ko-KR"
+- launchApp:
+    clearState: true
+
+# 한국어 텍스트 정상 복원 확인
+- assertVisible: "시작하기"
+- assertVisible: "오늘의 게임.*"
+- tapOn: "시작하기"
+- assertVisible: "플레이어 설정.*"
+- assertVisible: ".*플레이어 추가"
+- back

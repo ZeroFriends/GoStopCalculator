@@ -1,0 +1,47 @@
+appId: ${APP_ID:-zero.friends.gostopcalculator}
+---
+# ==========================================
+# 시나리오: 피박 + 광박 + 첫뻑 복합 옵션 적용 시나리오
+# ==========================================
+
+- launchApp:
+    clearState: true
+
+- assertVisible: "시작하기"
+- tapOn: "시작하기"
+
+# 플레이어 3명 추가
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "다음"
+
+# 룰 설정 완료
+- tapOn: "완료"
+
+# 보드 진입 ➔ 판 시작
+- tapOn: "게임시작"
+- tapOn: "완료"
+
+# 승자 선택 (플레이어 1)
+- assertVisible: "승자 점수기록"
+- tapOn: "플레이어 1"
+- tapOn: "다음 \\(1/3\\)"
+
+# 점수 기록 단계에서 특수 옵션 토글 (첫 뻑 등)
+- assertVisible: "점수기록"
+# 특수 옵션이 화면에 표시되는지 확인
+- assertVisible: ".*점.*"
+- tapOn: "다음 \\(2/3\\)"
+
+# 패자 기록 단계: 피 박, 광 박 선택
+- assertVisible: "패자 점수기록"
+- tapOn: "피 박"
+- tapOn: "광 박"
+
+# 기록 완료
+- tapOn: "저장"
+
+# 보드 화면에 정상 반영되었는지 확인
+- assertVisible: "진행내역.*"
+- assertVisible: "1 라운드"

@@ -25,29 +25,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".ui.board.result.ResultActivity"
-            android:theme="@style/Theme.GoStopCalculator.Result"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="false" />
-
-        <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            android:exported="false"
-            tools:node="merge">
-            <meta-data
-                android:name="androidx.work.WorkManagerInitializer"
-                tools:node="remove" />
-            <meta-data
-                android:name="zero.friends.gostopcalculator.initailizer.TimberInitializer"
-                android:value="androidx.startup" />
-
-            <meta-data
-                android:name="zero.friends.gostopcalculator.initailizer.MobileAdsInitializer"
-                android:value="androidx.startup" />
-        </provider>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="zero.friends.gostopcalculator.fileprovider"
@@ -60,7 +37,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-1663298612263181~6018153448" />
+            android:value="ca-app-pub-4169469417741632~3686449745" />
 
     </application>
 
