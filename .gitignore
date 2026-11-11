@@ -269,5 +269,8 @@ gradle-app.setting
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
-# End of https://www.toptal.com/developers/gitignore/api/kotlin,android,swift,gradle,java.DS_Store
+# End of https://www.toptal.com/developers/gitignore/api/kotlin,android,swift,gradle,java
+.DS_Store
 .kotlin/
+__pycache__/
+*.py[cod]
