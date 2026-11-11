@@ -71,3 +71,15 @@ xcrun simctl install "$SIM_UDID" build/ios/Build/Products/Debug-iphonesimulator/
 ```
 - 부팅된 Android 에뮬레이터(`emulator-5554`, `emulator-5556`)와 iOS 시뮬레이터에 7개 시나리오가 자동 샤딩되어 **동시에 병렬 실행**됩니다.
 - 각 기기별 로그는 `.maestro/logs/`에 저장되며, 터미널에 요약 결과가 출력됩니다.
+
+---
+
+## 5. GitHub Actions CI 자동화 ([`.github/workflows/maestro-e2e.yml`](.github/workflows/maestro-e2e.yml))
+
+`main` 브랜치 푸시·PR 및 수동 실행(`workflow_dispatch`) 시 아래 3개 Job이 자동으로 실행됩니다.
+
+1. **`i18n-static-audit`** (`ubuntu-latest`): `python3 .maestro/i18n_audit.py` 정적 감사 (약 10초)
+2. **`android-maestro-e2e`** (`ubuntu-latest` + KVM): Android API 34 (`pixel_6`, `x86_64`) 에뮬레이터에서 7개 시나리오 및 `i18n_screen_crawl.py` (13화면 × 3개 언어) 실행
+3. **`ios-maestro-e2e`** (`macos-latest` Apple Silicon): `iosSimulatorArm64` KMP 프레임워크 빌드 후 한국어(`ko-KR`) iPhone 시뮬레이터에서 7개 시나리오 실행 (`run_ios` 옵션으로 수동 제외 가능)
+
+- 실행 결과 로그, 런타임 리포트 및 실패 스크린샷은 `maestro-android-results` / `maestro-ios-results` GitHub Artifact로 14일간 보관됩니다.
