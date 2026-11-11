@@ -21,6 +21,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -107,14 +108,21 @@ def ensure_emulator_serial(device):
 def crawl(device, locale, results):
     ensure_emulator_serial(device)
     s = strings_for(locale)
+    sh(["adb", "-s", device, "shell", "am", "force-stop", PKG])
     sh(["adb", "-s", device, "shell", "pm", "clear", PKG])
+    # Android ActivityTaskManager의 remove-task 정리 타이머(1s) 이후 앱 재기동
+    time.sleep(2)
     sh(["adb", "-s", device, "shell", f"cmd locale set-app-locales {PKG} --locales {locale}"])
     screens = []
     with tempfile.TemporaryDirectory() as tmp:
         for i, (name, commands) in enumerate(build_steps(s)):
             flow = Path(tmp) / f"step_{i:02d}.yaml"
             flow.write_text(f"appId: {PKG}\n---\n{commands}\n", encoding="utf-8")
-            run = sh(["maestro", "--device", device, "test", "--no-reinstall-driver", str(flow)])
+            cmd = ["maestro", "--device", device, "test"]
+            if i > 0:
+                cmd.append("--no-reinstall-driver")
+            cmd.append(str(flow))
+            run = sh(cmd)
             if run.returncode != 0:
                 screens.append({"name": name, "error": "화면 이동 실패 (셀렉터 미발견 등)", "texts": [], "issues": []})
                 print(f"   ❌ [{locale}] {name}: 이동 실패 ➔ 크롤링 중단")

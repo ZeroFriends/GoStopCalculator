@@ -62,17 +62,37 @@ done
 echo "--------------------------------------------------"
 
 # 임시 작업/상태 디렉터리 준비 및 일괄 정리
+ANDROID_WORK_DIR=$(mktemp -d)
 IOS_WORK_DIR=$(mktemp -d)
 DEVICE_STATUS_DIR=$(mktemp -d)
-trap 'rm -rf "$IOS_WORK_DIR" "$DEVICE_STATUS_DIR"' EXIT
+trap 'rm -rf "$ANDROID_WORK_DIR" "$IOS_WORK_DIR" "$DEVICE_STATUS_DIR"' EXIT
 
-cp -R "$SCRIPT_DIR/common" "$IOS_WORK_DIR/common"
-cp -R "$SCRIPT_DIR/scenarios" "$IOS_WORK_DIR/scenarios"
-while IFS= read -r yaml_file; do
-    tmp_yaml=$(mktemp)
-    sed 's/^appId: zero\.friends\.gostopcalculator$/appId: zero.friends.gostopcalculator.iosApp/' "$yaml_file" > "$tmp_yaml"
-    mv "$tmp_yaml" "$yaml_file"
-done < <(find "$IOS_WORK_DIR" -name "*.yaml" -type f)
+prepare_platform_scenarios() {
+    local dest_dir="$1"
+    local sed_expr="$2"
+    cp -R "$SCRIPT_DIR/common" "$dest_dir/common"
+    cp -R "$SCRIPT_DIR/scenarios" "$dest_dir/scenarios"
+    while IFS= read -r yaml_file; do
+        local tmp_yaml
+        tmp_yaml=$(mktemp)
+        sed -E "$sed_expr" "$yaml_file" > "$tmp_yaml"
+        mv "$tmp_yaml" "$yaml_file"
+    done < <(find "$dest_dir" -name "*.yaml" -type f)
+}
+
+# Android는 pm clear와 cmd locale set-app-locales 순서를 러너가 제어하도록 clearState: false로 치환
+prepare_platform_scenarios "$ANDROID_WORK_DIR" 's/^([[:space:]]*clearState:[[:space:]]*)true/\1false/'
+prepare_platform_scenarios "$IOS_WORK_DIR" 's/^appId: zero\.friends\.gostopcalculator$/appId: zero.friends.gostopcalculator.iosApp/'
+
+reset_android_app_state() {
+    local dev="$1"
+    local pkg="zero.friends.gostopcalculator"
+    adb -s "$dev" shell am force-stop "$pkg" > /dev/null 2>&1 || true
+    adb -s "$dev" shell pm clear "$pkg" > /dev/null 2>&1 || true
+    # Android ActivityTaskManager의 remove-task 정리 타이머(1s)와 새 launch 충돌 방지
+    sleep 2
+    adb -s "$dev" shell cmd locale set-app-locales "$pkg" --locales ko-KR > /dev/null 2>&1 || true
+}
 
 # 3. 실행할 시나리오 파일 탐색
 SCENARIOS=($(find "$SCENARIO_DIR" -name "*.yaml" -type f | sort))
@@ -119,31 +139,31 @@ launch_platform_pool() {
 
         (
             sleep "$stagger"
-            if [[ "$platform" == "android" ]]; then
-                adb -s "$dev" shell cmd locale set-app-locales zero.friends.gostopcalculator --locales ko-KR > /dev/null 2>&1 || true
-            fi
             dev_failed=0
             first_run=1
             for sc in "${dev_scenarios[@]}"; do
                 sc_name=$(basename "$sc" .yaml)
                 log_file="$LOG_DIR/${platform}_${sc_name}_${dev}.log"
+                if [[ "$platform" == "android" ]]; then
+                    reset_android_app_state "$dev"
+                    if [[ $first_run -eq 1 ]]; then
+                        applied_locale=$(adb -s "$dev" shell cmd locale get-app-locales zero.friends.gostopcalculator 2>&1 | tr -d '\r' || true)
+                        echo "   🌐 [$platform:$dev] App locale: ${applied_locale:-unknown}"
+                    fi
+                fi
                 echo "   ⏳ [$platform:$dev] 실행 중: $sc_name..."
 
-                if [[ $first_run -eq 1 ]]; then
-                    if maestro --device "$dev" test "$sc" > "$log_file" 2>&1; then
-                        first_run=0
-                        echo "   ✅ [$platform:$dev] 성공: $sc_name"
-                    else
-                        echo "   ❌ [$platform:$dev] 실패: $sc_name (로그: $log_file)"
-                        dev_failed=1
-                    fi
+                extra_flags=()
+                if [[ $first_run -eq 0 ]]; then
+                    extra_flags+=(--no-reinstall-driver)
+                fi
+                first_run=0
+
+                if maestro --device "$dev" test "${extra_flags[@]}" "$sc" > "$log_file" 2>&1; then
+                    echo "   ✅ [$platform:$dev] 성공: $sc_name"
                 else
-                    if maestro --device "$dev" test --no-reinstall-driver "$sc" > "$log_file" 2>&1; then
-                        echo "   ✅ [$platform:$dev] 성공: $sc_name"
-                    else
-                        echo "   ❌ [$platform:$dev] 실패: $sc_name (로그: $log_file)"
-                        dev_failed=1
-                    fi
+                    echo "   ❌ [$platform:$dev] 실패: $sc_name (로그: $log_file)"
+                    dev_failed=1
                 fi
             done
 
@@ -156,7 +176,7 @@ launch_platform_pool() {
     done
 }
 
-launch_platform_pool "android" "$SCENARIO_DIR" "${ANDROID_DEVICES[@]}"
+launch_platform_pool "android" "$ANDROID_WORK_DIR/scenarios" "${ANDROID_DEVICES[@]}"
 launch_platform_pool "ios" "$IOS_WORK_DIR/scenarios" "${IOS_DEVICES[@]}"
 
 echo "--------------------------------------------------"
