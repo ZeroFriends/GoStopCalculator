@@ -23,7 +23,7 @@ appId: zero.friends.gostopcalculator
 - assertVisible: "게임규칙.*"
 - runFlow: ../common/assert_no_broken_text.yaml
 - tapOn:
-    point: "80%,39%"
+    id: "rule_score_input_0"
 - inputText: "100"
 - tapOn: "게임규칙.*"
 - tapOn: "완료"

@@ -22,7 +22,7 @@ appId: zero.friends.gostopcalculator
 
 # 룰 설정 완료
 - tapOn:
-    point: "80%,39%"
+    id: "rule_score_input_0"
 - inputText: "100"
 - tapOn: "게임규칙.*"
 - tapOn: "완료"
@@ -35,7 +35,7 @@ appId: zero.friends.gostopcalculator
 - tapOn: "완료"
 - tapOn: "다음 \\(1/3\\)"
 - tapOn:
-    point: "55%,45%"
+    id: "winner_point_input_0"
 - inputText: "7"
 - tapOn: "승자 점수기록"
 - tapOn: "다음 \\(2/3\\)"

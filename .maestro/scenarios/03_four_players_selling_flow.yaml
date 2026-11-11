@@ -24,7 +24,7 @@ appId: zero.friends.gostopcalculator
 - assertVisible: "게임규칙.*"
 - runFlow: ../common/assert_no_broken_text.yaml
 - tapOn:
-    point: "80%,39%"
+    id: "rule_score_input_0"
 - inputText: "100"
 - tapOn: "게임규칙.*"
 - tapOn: "완료"
@@ -46,7 +46,7 @@ appId: zero.friends.gostopcalculator
 - assertVisible: "광팔기"
 - runFlow: ../common/assert_no_broken_text.yaml
 - tapOn:
-    point: "65%,60%"
+    id: "selling_score_input_3"
 - inputText: "2"
 - tapOn: "광팔기"
 - tapOn: "다음"
@@ -60,7 +60,7 @@ appId: zero.friends.gostopcalculator
 - assertVisible: "승자 점수기록"
 - runFlow: ../common/assert_no_broken_text.yaml
 - tapOn:
-    point: "55%,45%"
+    id: "winner_point_input_0"
 - inputText: "7"
 - tapOn: "승자 점수기록"
 - tapOn: "다음 \\(2/3\\)"

@@ -157,9 +157,9 @@ launch_platform_pool() {
                 if [[ $first_run -eq 0 ]]; then
                     extra_flags+=(--no-reinstall-driver)
                 fi
-                first_run=0
 
                 if maestro --device "$dev" test "${extra_flags[@]}" "$sc" > "$log_file" 2>&1; then
+                    first_run=0
                     echo "   ✅ [$platform:$dev] 성공: $sc_name"
                 else
                     echo "   ❌ [$platform:$dev] 실패: $sc_name (로그: $log_file)"

@@ -3,6 +3,10 @@ package zero.friends.gostopcalculator.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import com.google.android.gms.ads.MobileAds
 import zero.friends.gostopcalculator.GoStopApplication
 import zero.friends.gostopcalculator.navigation.AppNavigator
@@ -18,20 +22,22 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            AppNavigator(
-                onCloseApp = { finish() },
-                onShowAd = { onCompleted ->
-                    val admob = (application as? GoStopApplication)?.androidAppComponent?.googleAdmob
-                    if (admob != null) {
-                        admob.showAd(this@MainActivity) {
+            Box(modifier = Modifier.semantics { testTagsAsResourceId = true }) {
+                AppNavigator(
+                    onCloseApp = { finish() },
+                    onShowAd = { onCompleted ->
+                        val admob = (application as? GoStopApplication)?.androidAppComponent?.googleAdmob
+                        if (admob != null) {
+                            admob.showAd(this@MainActivity) {
+                                onCompleted()
+                            }
+                        } else {
+                            log.e("googleAdmob instance is null in MainActivity!")
                             onCompleted()
                         }
-                    } else {
-                        log.e("googleAdmob instance is null in MainActivity!")
-                        onCompleted()
                     }
-                }
-            )
+                )
+            }
         }
     }
 }
