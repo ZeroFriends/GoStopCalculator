@@ -24,6 +24,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -46,6 +47,7 @@ import zero.friends.domain.model.Text
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.all_card
 import zero.friends.gostopcalculator.shared.generated.resources.manual
+import zero.friends.gostopcalculator.shared.generated.resources.manual_asset_file
 import zero.friends.gostopcalculator.shared.generated.resources.manual_title
 import zero.friends.gostopcalculator.theme.Gray
 import zero.friends.gostopcalculator.theme.Line
@@ -61,6 +63,10 @@ fun ManualFullScreenDialog(
     manualViewModel: ManualViewModel,
     onDismiss: () -> Unit = {}
 ) {
+    val manualAssetFile = stringResource(Res.string.manual_asset_file)
+    LaunchedEffect(manualViewModel, manualAssetFile) {
+        manualViewModel.loadManuals(manualAssetFile)
+    }
     val uiState by manualViewModel.uiState().collectAsState()
     val pagerState = rememberPagerState(pageCount = { uiState.manuals.size })
     val scope = rememberCoroutineScope()

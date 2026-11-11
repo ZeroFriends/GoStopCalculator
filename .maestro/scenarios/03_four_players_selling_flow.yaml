@@ -1,4 +1,4 @@
-appId: ${APP_ID:-zero.friends.gostopcalculator}
+appId: zero.friends.gostopcalculator
 ---
 # ==========================================
 # 시나리오: 4인 게임 생성 및 광팔기(Selling) Flow 검증
@@ -6,8 +6,11 @@ appId: ${APP_ID:-zero.friends.gostopcalculator}
 
 - launchApp:
     clearState: true
+    stopApp: true
 
-- assertVisible: "시작하기"
+- extendedWaitUntil:
+    visible: "시작하기"
+    timeout: 60000
 - tapOn: "시작하기"
 
 # 플레이어 4명 추가
@@ -15,38 +18,62 @@ appId: ${APP_ID:-zero.friends.gostopcalculator}
 - tapOn: "\\+ 플레이어 추가"
 - tapOn: "\\+ 플레이어 추가"
 - tapOn: "\\+ 플레이어 추가"
-
 - tapOn: "다음"
 
-# 룰 설정 완료
+# 룰 설정 (점당 100원 입력)
 - assertVisible: "게임규칙.*"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn:
+    point: "80%,39%"
+- inputText: "100"
+- tapOn: "게임규칙.*"
 - tapOn: "완료"
 
 # 보드 화면 진입 ➔ 판 시작
 - assertVisible: "게임시작"
 - tapOn: "게임시작"
 
-# 4인 라운드 준비 완료
-- assertVisible: "완료"
+# 4인 라운드 준비 (4명 모두 체크 선택)
+- assertVisible: "플레이어 리스트"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn: "플레이어 1"
+- tapOn: "플레이어 2"
+- tapOn: "플레이어 3"
+- tapOn: "플레이어 4"
 - tapOn: "완료"
 
-# 광팔기 화면(Selling) 진입 확인
+# 4인 게임 광팔기 화면 진입 확인 ➔ 4번 플레이어 광 2장 입력 ➔ 다음
 - assertVisible: "광팔기"
-- assertVisible: ".*광을 판 플레이어.*"
-
-# 다음 클릭하여 승자 선택 이동
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn:
+    point: "65%,60%"
+- inputText: "2"
+- tapOn: "광팔기"
 - tapOn: "다음"
 
-# 승자 선택
-- assertVisible: "승자 점수기록"
-- tapOn: "플레이어 1"
+# 점수기록 (Phase 1)
+- assertVisible: "점수기록"
+- runFlow: ../common/assert_no_broken_text.yaml
 - tapOn: "다음 \\(1/3\\)"
 
-# 점수 기록
+# 승자 점수기록 (Phase 2): 1번 플레이어에게 7점 부여
+- assertVisible: "승자 점수기록"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn:
+    point: "55%,45%"
+- inputText: "7"
+- tapOn: "승자 점수기록"
 - tapOn: "다음 \\(2/3\\)"
 
-# 패자 기록 ➔ 저장
-- tapOn: "저장"
+# 패자 점수기록 (Phase 3)
+- assertVisible: "패자 점수기록"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn: "다음 \\(3/3\\)"
 
-# 보드 화면 정상 복귀 검증
+# 다이얼로그 확인 ➔ 완료
+- tapOn: "완료"
+
+# 보드 복귀
+- tapOn: "Back"
 - assertVisible: "1 라운드"
+- runFlow: ../common/assert_no_broken_text.yaml

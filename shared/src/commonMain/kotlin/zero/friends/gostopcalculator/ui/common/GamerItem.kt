@@ -18,10 +18,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Gamer
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.won
 import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.theme.OrangeyRed
 import zero.friends.gostopcalculator.util.getMoneyColor
+import zero.friends.gostopcalculator.util.localizedName
 import zero.friends.gostopcalculator.util.separateComma
 
 @Composable
@@ -53,7 +57,7 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
                 horizontalAlignment = Alignment.Start,
             ) {
                 Text(
-                    text = gamer.winnerOption?.korean ?: (" " + (gamer.sellerOption?.korean ?: "")),
+                    text = gamer.winnerOption?.localizedName() ?: (" " + (gamer.sellerOption?.localizedName() ?: "")),
                     fontSize = 8.sp,
                     modifier = Modifier.alpha(if (gamer.isWinner()) 1f else 0f)
                 )
@@ -67,9 +71,10 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
                         fontSize = 16.sp,
                         color = Nero,
                     )
+                    val won = stringResource(Res.string.won)
                     val accountText = when {
-                        gamer.account > 0 -> "+${gamer.account.separateComma()}원"
-                        else -> "${gamer.account.separateComma()}원"
+                        gamer.account > 0 -> "+${gamer.account.separateComma()}$won"
+                        else -> "${gamer.account.separateComma()}$won"
                     }
                     Text(
                         text = accountText,
@@ -81,13 +86,11 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
                         maxLines = 1,
                     )
                 }
+                val scoreOptionLabels = gamer.scoreOption.map { it.localizedName() }
+                val loserOptionLabels = gamer.loserOption.map { it.localizedName() }
                 Text(
                     modifier = Modifier.alpha(if (gamer.scoreOption.isNotEmpty() || gamer.loserOption.isNotEmpty()) 1f else 0f),
-                    text = gamer.scoreOption.joinToString(", ") { it.korean } +
-                            if (gamer.loserOption.isNotEmpty()) {
-                                val separator = if (gamer.scoreOption.isNotEmpty()) ", " else ""
-                                separator + gamer.loserOption.joinToString(", ") { it.korean }
-                            } else "",
+                    text = (scoreOptionLabels + loserOptionLabels).joinToString(", "),
                     fontSize = 8.sp,
                 )
             }

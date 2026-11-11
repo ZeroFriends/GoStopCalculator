@@ -34,6 +34,7 @@ import zero.friends.gostopcalculator.ui.board.score.common.BaseGamerItem
 import zero.friends.gostopcalculator.ui.board.score.common.GamerListHeader
 import zero.friends.gostopcalculator.ui.board.score.common.OptionBox
 import zero.friends.gostopcalculator.ui.board.score.common.ScorePhaseLayout
+import zero.friends.gostopcalculator.util.localizedName
 
 @Composable
 fun LoserScreen(
@@ -96,7 +97,7 @@ private fun LoserGamerList(
                             index = index,
                             gamer = seller,
                             isEnabled = false,
-                            badge = seller.sellerOption?.korean
+                            badge = seller.sellerOption?.localizedName()
                         )
                     }
                     winner?.id -> {
@@ -104,7 +105,7 @@ private fun LoserGamerList(
                             index = index,
                             gamer = winner,
                             isEnabled = false,
-                            badge = winner.winnerOption?.korean
+                            badge = winner.winnerOption?.localizedName()
                         )
                     }
                     else -> {
@@ -169,7 +170,7 @@ private fun LoserOptionRow(
     ) {
         items(options, key = { it.ordinal }) { option ->
             OptionBox(
-                text = option.korean,
+                text = option.localizedName(),
                 color = NonClick,
                 isSelected = gamer.loserOption.contains(option),
                 onClick = {

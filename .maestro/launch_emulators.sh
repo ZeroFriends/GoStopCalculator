@@ -11,7 +11,7 @@ if [[ ! -f "$EMULATOR_BIN" ]]; then
     exit 1
 fi
 
-AVDS=($("$EMULATOR_BIN" -list-avds))
+AVDS=($("$EMULATOR_BIN" -list-avds | grep -E "^Pixel_" || "$EMULATOR_BIN" -list-avds))
 
 if [[ ${#AVDS[@]} -eq 0 ]]; then
     echo "❌ 등록된 Android AVD가 없습니다. Android Studio에서 AVD를 먼저 생성해주세요."
@@ -36,5 +36,19 @@ else
     echo "ℹ️ 등록된 AVD가 1개뿐입니다. AVD를 1개 더 생성하시면 2대를 동시에 띄울 수 있습니다."
 fi
 
+# 3. iOS 시뮬레이터 부팅 (이미 부팅된 기기가 없을 경우)
+if command -v xcrun &> /dev/null; then
+    BOOTED_IOS=$(xcrun simctl list devices | grep "(Booted)" | head -n 1 || true)
+    if [[ -n "$BOOTED_IOS" ]]; then
+        echo "🍎 이미 실행 중인 iOS 시뮬레이터: $BOOTED_IOS"
+    else
+        IOS_UDID=$(xcrun simctl list devices available | grep -E "iPhone " | head -n 1 | grep -E -o '[0-9A-F-]{36}' || true)
+        if [[ -n "$IOS_UDID" ]]; then
+            echo "🚀 iOS 시뮬레이터 시작 ($IOS_UDID)..."
+            xcrun simctl boot "$IOS_UDID" > /dev/null 2>&1 || true
+        fi
+    fi
+fi
+
 echo ""
-echo "⏳ 에뮬레이터 부팅이 완료될 때까지 잠시 대기하세요 (adb devices 로 확인 가능)."
+echo "⏳ 에뮬레이터/시뮬레이터 부팅이 완료될 때까지 잠시 대기하세요 (adb devices / xcrun simctl list 로 확인 가능)."

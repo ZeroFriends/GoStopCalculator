@@ -10,7 +10,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +27,7 @@ import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.animateLottieCompositionAsState
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 
@@ -30,17 +36,37 @@ import zero.friends.gostopcalculator.shared.generated.resources.Res
 fun SplashScreen(
     onSplashFinished: () -> Unit = {}
 ) {
-    val composition by rememberLottieComposition {
+    val currentOnSplashFinished by rememberUpdatedState(onSplashFinished)
+    val compositionResult = rememberLottieComposition {
         LottieCompositionSpec.JsonString(
             Res.readBytes("files/gostop_splash.json").decodeToString()
         )
     }
-    val progress by animateLottieCompositionAsState(composition)
+    val progressState = animateLottieCompositionAsState(compositionResult.value)
+    var finished by remember { mutableStateOf(false) }
 
-    LaunchedEffect(progress) {
-        if (progress == 1f) {
-            onSplashFinished()
+    val finishSplash: () -> Unit = {
+        if (!finished) {
+            finished = true
+            currentOnSplashFinished()
         }
+    }
+
+    val isSplashDone by remember {
+        derivedStateOf {
+            compositionResult.isFailure || progressState.value >= 1f
+        }
+    }
+
+    LaunchedEffect(isSplashDone) {
+        if (isSplashDone) {
+            finishSplash()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        delay(3_000)
+        finishSplash()
     }
 
     Box(
@@ -50,8 +76,8 @@ fun SplashScreen(
     ) {
         Image(
             painter = rememberLottiePainter(
-                composition = composition,
-                progress = { progress }
+                composition = compositionResult.value,
+                progress = { progressState.value }
             ),
             contentDescription = "Splash Lottie Animation",
             modifier = Modifier

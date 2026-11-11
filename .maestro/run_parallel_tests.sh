@@ -2,7 +2,7 @@
 
 # ==============================================================================
 # Maestro Multi-Device Parallel Test Runner
-# 여러 대의 에뮬레이터/시뮬레이터를 자동 감지하고 시나리오를 병렬로 분산 실행합니다.
+# 각 디바이스에 시나리오를 분배하고 디바이스별로 병렬 실행합니다.
 # ==============================================================================
 
 set -eo pipefail
@@ -13,103 +13,166 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCENARIO_DIR="$SCRIPT_DIR/scenarios"
 LOG_DIR="$SCRIPT_DIR/logs"
 
+rm -rf "$LOG_DIR"
 mkdir -p "$LOG_DIR"
 
 echo "=================================================="
 echo "🚀 Maestro 병렬 테스트 러너 시작"
 echo "=================================================="
 
-# 1. 연결된 Android 디바이스/에뮬레이터 탐색
-DEVICES=()
+# 1. 연결된 Android 에뮬레이터 탐색 (INCLUDE_PHYSICAL=1 시 실기기 포함)
+ANDROID_DEVICES=()
 while IFS= read -r line; do
     device_id=$(echo "$line" | awk '{print $1}')
     if [[ -n "$device_id" && "$device_id" != "List" ]]; then
-        DEVICES+=("$device_id")
+        if [[ "${INCLUDE_PHYSICAL:-0}" == "1" || "$device_id" == emulator-* ]]; then
+            ANDROID_DEVICES+=("$device_id")
+        else
+            echo "ℹ️ 실기기($device_id)는 데이터 보호를 위해 제외됨 (포함하려면 INCLUDE_PHYSICAL=1 사용)"
+        fi
     fi
-done < <(adb devices | grep -w "device")
+done < <(adb devices | grep -w "device" || true)
 
-# 2. 실행 중인 iOS 시뮬레이터 탐색 (설치되어 있는 경우)
+# 2. 실행 중인 iOS 시뮬레이터 탐색
+IOS_DEVICES=()
 if command -v xcrun &> /dev/null; then
     while IFS= read -r sim_udid; do
         if [[ -n "$sim_udid" ]]; then
-            DEVICES+=("$sim_udid")
+            IOS_DEVICES+=("$sim_udid")
         fi
     done < <(xcrun simctl list devices | grep "(Booted)" | grep -E -o '[0-9A-F-]{36}' || true)
 fi
 
-DEVICE_COUNT=${#DEVICES[@]}
+ANDROID_COUNT=${#ANDROID_DEVICES[@]}
+IOS_COUNT=${#IOS_DEVICES[@]}
+TOTAL_DEVICES=$((ANDROID_COUNT + IOS_COUNT))
 
-if [[ $DEVICE_COUNT -eq 0 ]]; then
+if [[ $TOTAL_DEVICES -eq 0 ]]; then
     echo "❌ 실행 중인 에뮬레이터 또는 디바이스가 없습니다."
-    echo "👉 에뮬레이터를 먼저 실행해주세요. (예: ~/Library/Android/sdk/emulator/emulator -avd Pixel_3a_...)"
     exit 1
 fi
 
-echo "📱 감지된 디바이스 ($DEVICE_COUNT대):"
-for dev in "${DEVICES[@]}"; do
-    echo "  - $dev"
+echo "📱 감지된 디바이스 (총 ${TOTAL_DEVICES}대: Android ${ANDROID_COUNT}대 / iOS ${IOS_COUNT}대):"
+for dev in "${ANDROID_DEVICES[@]}"; do
+    echo "  - $dev (Android)"
+done
+for dev in "${IOS_DEVICES[@]}"; do
+    echo "  - $dev (iOS Simulator)"
 done
 echo "--------------------------------------------------"
+
+# 임시 작업/상태 디렉터리 준비 및 일괄 정리
+IOS_WORK_DIR=$(mktemp -d)
+DEVICE_STATUS_DIR=$(mktemp -d)
+trap 'rm -rf "$IOS_WORK_DIR" "$DEVICE_STATUS_DIR"' EXIT
+
+cp -R "$SCRIPT_DIR/common" "$IOS_WORK_DIR/common"
+cp -R "$SCRIPT_DIR/scenarios" "$IOS_WORK_DIR/scenarios"
+while IFS= read -r yaml_file; do
+    tmp_yaml=$(mktemp)
+    sed 's/^appId: zero\.friends\.gostopcalculator$/appId: zero.friends.gostopcalculator.iosApp/' "$yaml_file" > "$tmp_yaml"
+    mv "$tmp_yaml" "$yaml_file"
+done < <(find "$IOS_WORK_DIR" -name "*.yaml" -type f)
 
 # 3. 실행할 시나리오 파일 탐색
 SCENARIOS=($(find "$SCENARIO_DIR" -name "*.yaml" -type f | sort))
 SCENARIO_COUNT=${#SCENARIOS[@]}
 
 if [[ $SCENARIO_COUNT -eq 0 ]]; then
-    echo "❌ 실행할 시나리오 파일(.yaml)이 $SCENARIO_DIR 에 없습니다."
+    echo "❌ 실행할 시나리오 파일이 없습니다."
     exit 1
 fi
 
-echo "📋 실행할 시나리오 ($SCENARIO_COUNT개):"
-for sc in "${SCENARIOS[@]}"; do
-    echo "  - $(basename "$sc")"
-done
+echo "📋 플랫폼별 전체 시나리오(${SCENARIO_COUNT}개)를 각 플랫폼 풀 내에서 병렬 분산 실행합니다."
 echo "=================================================="
 
-PIDS=()
-RESULTS=()
+DEVICE_PIDS=()
+WORKER_STAGGER=0
 
-# 4. 시나리오를 디바이스에 분산하여 병렬 실행
-for i in "${!SCENARIOS[@]}"; do
-    scenario="${SCENARIOS[$i]}"
-    scenario_name=$(basename "$scenario" .yaml)
-    
-    # 라운드로빈 방식으로 디바이스 매핑
-    device_index=$(( i % DEVICE_COUNT ))
-    target_device="${DEVICES[$device_index]}"
-    log_file="$LOG_DIR/${scenario_name}_${target_device}.log"
+launch_platform_pool() {
+    local platform="$1"
+    local scenarios_root="$2"
+    shift 2
+    local pool_devices=("$@")
+    local pool_count=${#pool_devices[@]}
 
-    echo "▶️ [시작] [$scenario_name] ➔ 디바이스: $target_device"
-    
-    # 백그라운드로 Maestro 실행
-    (
-        maestro --device "$target_device" test "$scenario" > "$log_file" 2>&1
-        exit_code=$?
-        if [[ $exit_code -eq 0 ]]; then
-            echo "✅ [성공] [$scenario_name] (디바이스: $target_device)"
-        else
-            echo "❌ [실패] [$scenario_name] (디바이스: $target_device, 로그: $log_file)"
-            exit $exit_code
-        fi
-    ) &
-    
-    PIDS+=($!)
-done
+    [[ $pool_count -eq 0 ]] && return 0
 
-echo "⏳ 모든 병렬 테스트 완료를 기다리는 중..."
-OVERALL_SUCCESS=0
+    for dev_idx in "${!pool_devices[@]}"; do
+        local dev="${pool_devices[$dev_idx]}"
+        local dev_scenarios=()
+        for s_idx in "${!SCENARIOS[@]}"; do
+            if [[ $(( s_idx % pool_count )) -eq $dev_idx ]]; then
+                dev_scenarios+=("$scenarios_root/$(basename "${SCENARIOS[$s_idx]}")")
+            fi
+        done
 
-for pid in "${PIDS[@]}"; do
-    if ! wait "$pid"; then
-        OVERALL_SUCCESS=1
-    fi
+        [[ ${#dev_scenarios[@]} -eq 0 ]] && continue
+
+        echo "▶️ [$platform Worker $dev_idx] 디바이스: $dev (${#dev_scenarios[@]}개 시나리오 할당)"
+        for sc in "${dev_scenarios[@]}"; do
+            echo "    └ $(basename "$sc")"
+        done
+
+        local stagger=$((WORKER_STAGGER * 3))
+        WORKER_STAGGER=$((WORKER_STAGGER + 1))
+
+        (
+            sleep "$stagger"
+            if [[ "$platform" == "android" ]]; then
+                adb -s "$dev" shell cmd locale set-app-locales zero.friends.gostopcalculator --locales ko-KR > /dev/null 2>&1 || true
+            fi
+            dev_failed=0
+            first_run=1
+            for sc in "${dev_scenarios[@]}"; do
+                sc_name=$(basename "$sc" .yaml)
+                log_file="$LOG_DIR/${platform}_${sc_name}_${dev}.log"
+                echo "   ⏳ [$platform:$dev] 실행 중: $sc_name..."
+
+                if [[ $first_run -eq 1 ]]; then
+                    if maestro --device "$dev" test "$sc" > "$log_file" 2>&1; then
+                        first_run=0
+                        echo "   ✅ [$platform:$dev] 성공: $sc_name"
+                    else
+                        echo "   ❌ [$platform:$dev] 실패: $sc_name (로그: $log_file)"
+                        dev_failed=1
+                    fi
+                else
+                    if maestro --device "$dev" test --no-reinstall-driver "$sc" > "$log_file" 2>&1; then
+                        echo "   ✅ [$platform:$dev] 성공: $sc_name"
+                    else
+                        echo "   ❌ [$platform:$dev] 실패: $sc_name (로그: $log_file)"
+                        dev_failed=1
+                    fi
+                fi
+            done
+
+            if [[ $dev_failed -ne 0 ]]; then
+                touch "$DEVICE_STATUS_DIR/failed_${platform}_${dev_idx}"
+            fi
+        ) &
+
+        DEVICE_PIDS+=($!)
+    done
+}
+
+launch_platform_pool "android" "$SCENARIO_DIR" "${ANDROID_DEVICES[@]}"
+launch_platform_pool "ios" "$IOS_WORK_DIR/scenarios" "${IOS_DEVICES[@]}"
+
+echo "--------------------------------------------------"
+echo "⏳ 모든 디바이스 워커의 병렬 실행 완료를 대기 중..."
+
+for pid in "${DEVICE_PIDS[@]}"; do
+    wait "$pid" || true
 done
 
 echo "=================================================="
-if [[ $OVERALL_SUCCESS -eq 0 ]]; then
-    echo "🎉 축하합니다! 모든 시나리오 테스트가 성공적으로 통과했습니다."
+FAILED_COUNT=$(ls -1 "$DEVICE_STATUS_DIR" 2>/dev/null | wc -l | tr -d ' ')
+
+if [[ "$FAILED_COUNT" -eq 0 ]]; then
+    echo "🎉 축하합니다! 모든 플랫폼/시나리오 테스트가 성공적으로 통과했습니다!"
+    exit 0
 else
-    echo "⚠️ 일부 시나리오 테스트가 실패했습니다. $LOG_DIR 폴더의 로그를 확인하세요."
+    echo "⚠️ 일부 시나리오가 실패했습니다. .maestro/logs 폴더의 로그를 확인하세요."
+    exit 1
 fi
-echo "=================================================="
-exit $OVERALL_SUCCESS

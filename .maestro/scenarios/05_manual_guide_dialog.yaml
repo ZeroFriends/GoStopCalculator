@@ -1,4 +1,4 @@
-appId: ${APP_ID:-zero.friends.gostopcalculator}
+appId: zero.friends.gostopcalculator
 ---
 # ==========================================
 # 시나리오: 고스톱 설명서(Manual) 다이얼로그 확인 및 닫기
@@ -6,7 +6,11 @@ appId: ${APP_ID:-zero.friends.gostopcalculator}
 
 - launchApp:
     clearState: true
+    stopApp: true
 
+- extendedWaitUntil:
+    visible: "시작하기"
+    timeout: 60000
 - tapOn: "시작하기"
 
 # 플레이어 3명 추가
@@ -15,27 +19,36 @@ appId: ${APP_ID:-zero.friends.gostopcalculator}
 - tapOn: "\\+ 플레이어 추가"
 - tapOn: "다음"
 
-# 룰 설정 완료
+# 룰 설정 (점당 100원 입력)
+- assertVisible: "게임규칙.*"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn:
+    point: "80%,39%"
+- inputText: "100"
+- tapOn: "게임규칙.*"
 - tapOn: "완료"
 
 # 보드 진입 ➔ 판 시작
 - tapOn: "게임시작"
+- tapOn: "플레이어 1"
+- tapOn: "플레이어 2"
+- tapOn: "플레이어 3"
 - tapOn: "완료"
 
-# 승자 선택
-- tapOn: "플레이어 1"
-- tapOn: "다음 \\(1/3\\)"
-
 # 점수 기록 화면에서 "고스톱 설명서" 클릭
+- assertVisible: "점수기록"
+- runFlow: ../common/assert_no_broken_text.yaml
 - assertVisible: "고스톱 설명서"
 - tapOn: "고스톱 설명서"
 
 # 설명서 전체화면 다이얼로그 노출 확인
 - assertVisible: "점수 계산 법"
+- runFlow: ../common/assert_no_broken_text.yaml
 - assertVisible: "고스톱 설명서"
 
 # 뒤로가기로 설명서 닫기
-- back
+- tapOn: "Back"
 
 # 점수 기록 화면으로 정상 복귀 확인
 - assertVisible: "점수기록"
+- runFlow: ../common/assert_no_broken_text.yaml

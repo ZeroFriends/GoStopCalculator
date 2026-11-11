@@ -203,3 +203,361 @@ val DEFAULT_MANUAL_JSON = """
   }
 ]
 """.trimIndent()
+
+val DEFAULT_MANUAL_EN_JSON = """
+[
+  {
+    "title": "Option Score",
+    "type": "text",
+    "script": [
+      {
+        "header": "Ppeok",
+        "body": "First Ppeok : Immediately earn the configured amount when making a Ppeok on your first turn.\n\nDouble Ppeok : Immediately earn 2x the configured amount when making another Ppeok on the second turn.\n\nTriple Ppeok : Making a third consecutive Ppeok immediately awards 4x the configured amount and ends the game in victory."
+      },
+      {
+        "header": "First Ddadak",
+        "body": "Succeeding in a Ddadak on the first turn immediately awards an amount equivalent to 3 points during the game."
+      }
+    ]
+  },
+  {
+    "title": "Winner Score",
+    "type": "text",
+    "script": [
+      {
+        "header": "Go",
+        "body": "1 Go adds +1 pt, 2 Go adds +2 pts, 3+ Go adds +1 pt per Go and doubles (x2) for each Go from 3 Go onward (e.g., 5 Go = +5 pts and x8, 6 Go = +6 pts and x16)."
+      },
+      {
+        "header": "Shake & Bomb",
+        "body": "Holding 3 cards of the same month allows you to reveal them (Shake) or place all 3 on a matching floor card (Bomb). Winning after Shake or Bomb doubles (x2) your score."
+      },
+      {
+        "header": "Counter Go",
+        "body": "Scoring and calling Go after an opponent has already called Go. Stopping after a Counter Go doubles your score and can inflict Go-bak."
+      },
+      {
+        "header": "Nagari",
+        "body": "If no player reaches 3 points (7 in 2-player Matgo) by the last card, or a player who called Go fails to score an extra point, the round is declared Nagari and the next game is played at 2x score."
+      }
+    ]
+  },
+  {
+    "title": "Loser Penalty",
+    "type": "text",
+    "script": [
+      {
+        "header": "Pi-bak",
+        "body": "When the winner scores with 10+ Pi (junk) cards and a loser has 5 or fewer Pi cards. Doubles (x2) final score."
+      },
+      {
+        "header": "Gwang-bak",
+        "body": "When the winner scores with 3+ Gwang (bright) cards and a loser has 0 Gwang cards. Doubles (x2) final score."
+      },
+      {
+        "header": "Meong-bak",
+        "body": "When the winner scores with Animal (10-pt) cards and a loser has 0 Animal cards. Doubles (x2) final score."
+      },
+      {
+        "header": "Meong-dda",
+        "body": "Winning with 7 or more Animal (10-pt) cards. Doubles (x2) final score."
+      },
+      {
+        "header": "Go-bak",
+        "body": "When a player calls Go but another player reaches the target score and declares Stop.\n2-player (Matgo): The Go-bak player pays 2x.\n3+ players (Go-Stop): The Go-bak player pays on behalf of the other losers as well."
+      }
+    ]
+  },
+  {
+    "title": "Card Scoring",
+    "type": "image",
+    "script": [
+      {
+        "header": "5 Brights • 15 pts",
+        "body": ""
+      },
+      {
+        "header": "4 Brights • 4 pts",
+        "body": ""
+      },
+      {
+        "header": "3 Brights • 3 pts",
+        "body": ""
+      },
+      {
+        "header": "Rain Bright • 2 pts",
+        "body": "2 Brights + Rain Bright"
+      },
+      {
+        "header": "5 Animals • 1 pt",
+        "body": "+1 pt per extra card / Stacks with Godori"
+      },
+      {
+        "header": "5 Ribbons • 1 pt",
+        "body": "+1 pt per extra card\n/ Stacks with Red, Blue, Grass Ribbons"
+      },
+      {
+        "header": "Red Ribbons • 3 pts",
+        "body": ""
+      },
+      {
+        "header": "Blue Ribbons • 3 pts",
+        "body": ""
+      },
+      {
+        "header": "Grass Ribbons • 3 pts",
+        "body": ""
+      },
+      {
+        "header": "Godori • 5 pts",
+        "body": ""
+      },
+      {
+        "header": "10 Junk (Pi) • 1 pt",
+        "body": "+1 pt per extra card\n/ Double Pi counts as 2, Triple Pi as 3"
+      }
+    ]
+  },
+  {
+    "title": "Score x2 Rules",
+    "type": "text",
+    "script": [
+      {
+        "header": "Pi-bak",
+        "body": "Winner scores at least 1 pt from Pi and opponent has 5 or fewer Pi cards."
+      },
+      {
+        "header": "Gwang-bak",
+        "body": "Winner scores from Gwang and opponent has 0 Gwang cards."
+      },
+      {
+        "header": "Go-bak",
+        "body": "A player calls Go, but another player reaches the target score and stops."
+      },
+      {
+        "header": "Meong-bak",
+        "body": "Winner scores from Animal cards and opponent has 0 Animal cards."
+      },
+      {
+        "header": "Shake",
+        "body": "Winning after revealing 3 cards of the same month in hand."
+      },
+      {
+        "header": "Bomb",
+        "body": "Placing 3 cards of the same month from hand onto the 4th matching card on the floor."
+      }
+    ]
+  },
+  {
+    "title": "How to Play",
+    "type": "text",
+    "script": [
+      {
+        "header": "2 Players (Matgo)",
+        "body": "Target score is 7 pts. Deal 8 cards to the floor and 10 cards to each player."
+      },
+      {
+        "header": "3 Players",
+        "body": "Target score is 3 pts. Deal 6 cards to the floor and 7 cards to each player."
+      },
+      {
+        "header": "4 Players",
+        "body": "Target score is 3 pts. Deal 6 cards to the floor and 7 cards to each player.\nOne player sells cards and sits out the round."
+      },
+      {
+        "header": "Game Flow",
+        "body": "1. Determine the dealer (First player) by drawing cards.\n\n2. Shuffle and deal cards counterclockwise.\n\n3. On your turn, play a card from your hand to match a floor card of the same month, then flip the top card of the draw pile.\n\n4. When a player reaches 3+ points (7+ in 2-player), they choose to call 'Go' (continue for higher points/multipliers) or 'Stop' (claim victory and settle scores)."
+      }
+    ]
+  },
+  {
+    "title": "Cards by Month",
+    "type": "full_image",
+    "script": [
+      {
+        "header": "",
+        "body": ""
+      }
+    ]
+  }
+]
+""".trimIndent()
+
+val DEFAULT_MANUAL_JA_JSON = """
+[
+  {
+    "title": "オプション点数",
+    "type": "text",
+    "script": [
+      {
+        "header": "プッ (Ppeok)",
+        "body": "初プッ : 最初のターンにプッをした場合、設定金額を即時獲得。\n\n連プッ : 次のターンに続けてプッをした場合、設定金額の2倍を即時獲得。\n\n三連プッ : 3ターン連続でプッをした場合、設定金額の4倍を即時獲得し勝利となります。"
+      },
+      {
+        "header": "初タダク",
+        "body": "最初のターンにタダクを成功させた場合、3点分の金額を即時獲得します。"
+      }
+    ]
+  },
+  {
+    "title": "勝者点数",
+    "type": "text",
+    "script": [
+      {
+        "header": "ゴー (Go)",
+        "body": "1ゴーは+1点、2ゴーは+2点、3ゴー以上は1点追加と同時に2倍ずつ乗算されます（5ゴーは+5点＆8倍、6ゴーは+6点＆16倍）。"
+      },
+      {
+        "header": "揺らし＆爆弾",
+        "body": "同じ月の札を3枚持っている場合、公開（揺らし）または場の1枚に3枚同時に出す（爆弾）ことができ、勝利時に点数が2倍になります。"
+      },
+      {
+        "header": "逆ゴー",
+        "body": "ゴーを宣言した相手より先に点数を出して逆にゴーを宣言すること。ストップすると点数が2倍になります。"
+      },
+      {
+        "header": "ナガリ (流局)",
+        "body": "最後の札まで誰も規定点数（3点、2人戦は7点）に達しないか、ゴー宣言者が追加点を出せなかった場合は流局となり、次のゲームの点数が2倍になります。"
+      }
+    ]
+  },
+  {
+    "title": "敗者ペナルティ",
+    "type": "text",
+    "script": [
+      {
+        "header": "ピバク",
+        "body": "勝者がカス(ピ)10枚以上で得点し、敗者のカスが5枚以下の場合、最終点数が2倍になります。"
+      },
+      {
+        "header": "光バク",
+        "body": "勝者が光(クァン)3枚以上で得点し、敗者の光が0枚の場合、最終点数が2倍になります。"
+      },
+      {
+        "header": "モンバク",
+        "body": "勝者がタネ(動物)で得点し、敗者のタネが0枚の場合、最終点数が2倍になります。"
+      },
+      {
+        "header": "モンタ",
+        "body": "タネ(動物)を7枚以上集めて勝利した場合、最終点数が2倍になります。"
+      },
+      {
+        "header": "ゴーバク",
+        "body": "ゴーを宣言した後に他のプレイヤーがストップして勝利した場合。\n2人戦：2倍を支払います。\n3人以上：他の敗者の分もまとめて支払います。"
+      }
+    ]
+  },
+  {
+    "title": "花札の点数計算",
+    "type": "image",
+    "script": [
+      {
+        "header": "五光 • 15点",
+        "body": ""
+      },
+      {
+        "header": "四光 • 4点",
+        "body": ""
+      },
+      {
+        "header": "三光 • 3点",
+        "body": ""
+      },
+      {
+        "header": "雨三光 • 2点",
+        "body": "光2枚 + 雨光"
+      },
+      {
+        "header": "タネ5枚 • 1点",
+        "body": "1枚追加ごとに+1点 / ゴドリと重複計算可"
+      },
+      {
+        "header": "短冊5枚 • 1点",
+        "body": "1枚追加ごとに+1点\n/ 赤短・青短・草短と重複計算可"
+      },
+      {
+        "header": "赤短 • 3点",
+        "body": ""
+      },
+      {
+        "header": "青短 • 3点",
+        "body": ""
+      },
+      {
+        "header": "草短 • 3点",
+        "body": ""
+      },
+      {
+        "header": "ゴドリ • 5点",
+        "body": ""
+      },
+      {
+        "header": "カス10枚 • 1点",
+        "body": "1枚追加ごとに+1点\n/ 双ピは2枚分、スリーピは3枚分"
+      }
+    ]
+  },
+  {
+    "title": "点数2倍ルール",
+    "type": "text",
+    "script": [
+      {
+        "header": "ピバク",
+        "body": "カスで1点以上獲得した時、相手のカスが5枚以下の場合"
+      },
+      {
+        "header": "光バク",
+        "body": "光で得点した時、相手の光が1枚もない場合"
+      },
+      {
+        "header": "ゴーバク",
+        "body": "ゴーを宣言したが、他のプレイヤーが規定点に達してストップした場合"
+      },
+      {
+        "header": "モンバク",
+        "body": "タネで得点した時、相手のタネが1枚もない場合"
+      },
+      {
+        "header": "揺らし",
+        "body": "手札に同じ月の札が3枚ある状態で勝利した場合"
+      },
+      {
+        "header": "爆弾",
+        "body": "場に同じ月の札が1枚あり、手札の3枚を同時に出して獲得した場合"
+      }
+    ]
+  },
+  {
+    "title": "ゲームの進め方",
+    "type": "text",
+    "script": [
+      {
+        "header": "2人プレイの場合",
+        "body": "目標点数は7点。場に8枚を並べ、各自10枚ずつ手札を持ちます。"
+      },
+      {
+        "header": "3人プレイの場合",
+        "body": "目標点数は3点。場に6枚を並べ、各自7枚ずつ手札を持ちます。"
+      },
+      {
+        "header": "4人プレイの場合",
+        "body": "目標点数は3点。場に6枚を並べ、各自7枚ずつ手札を持ちます。\n1人は光売りをしてゲームから抜けます。"
+      },
+      {
+        "header": "進行手順",
+        "body": "1. 最初のゲームでは親（先手）を決めます。\n\n2. 親が札を混ぜて反時計回りに配ります。\n\n3. 手番では手札から1枚出し、山札の上から1枚めくります。同じ月の札があれば獲得できます。\n\n4. 3点以上（2人戦は7点以上）に達したら、「ゴー」（続行）か「ストップ」（勝利確定・精算）を選択します。"
+      }
+    ]
+  },
+  {
+    "title": "月別札一覧",
+    "type": "full_image",
+    "script": [
+      {
+        "header": "",
+        "body": ""
+      }
+    ]
+  }
+]
+""".trimIndent()

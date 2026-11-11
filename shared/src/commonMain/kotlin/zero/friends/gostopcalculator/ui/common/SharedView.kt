@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.common
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -137,16 +138,28 @@ fun ContentsCard(
     onClick: (() -> Unit)? = null,
     boxContents: @Composable (BoxScope.() -> Unit)
 ) {
-    Card(
-        modifier = modifier.padding(4.dp),
-        shape = RoundedCornerShape(18.dp),
-        backgroundColor = Color.White,
-        elevation = 6.dp,
-        onClick = onClick ?: {},
-        enabled = onClick != null
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            boxContents()
+    if (onClick != null) {
+        Card(
+            modifier = modifier.padding(4.dp),
+            shape = RoundedCornerShape(18.dp),
+            backgroundColor = Color.White,
+            elevation = 6.dp,
+            onClick = onClick,
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                boxContents()
+            }
+        }
+    } else {
+        Card(
+            modifier = modifier.padding(4.dp),
+            shape = RoundedCornerShape(18.dp),
+            backgroundColor = Color.White,
+            elevation = 6.dp,
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                boxContents()
+            }
         }
     }
 }
@@ -160,7 +173,7 @@ fun EmptyHistory(
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             if (painter != null) {
-                androidx.compose.foundation.Image(
+                Image(
                     painter = painter,
                     contentDescription = null,
                     modifier = Modifier.padding(bottom = 9.dp)

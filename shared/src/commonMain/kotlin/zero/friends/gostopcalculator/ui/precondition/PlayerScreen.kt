@@ -169,7 +169,7 @@ private fun PlayerLazyColumn(
     players: List<Player>,
     clickEvent: (PlayerClickEvent) -> Unit,
 ) {
-    LaunchedEffect(scrollIndex) {
+    LaunchedEffect(scrollIndex, players.size) {
         if (scrollIndex in players.indices) {
             scrollState.scrollToItem(scrollIndex)
         }

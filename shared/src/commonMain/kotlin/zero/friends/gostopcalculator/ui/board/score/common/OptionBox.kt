@@ -32,7 +32,9 @@ fun OptionBox(
         color = if (isSelected) OrangeyRed else MaterialTheme.colors.surface,
         modifier = Modifier
             .clip(shape)
-            .clickable(onClick = { onClick?.invoke(isSelected) }, enabled = onClick != null),
+            .let { modifier ->
+                if (onClick != null) modifier.clickable { onClick(isSelected) } else modifier
+            },
     ) {
         Text(
             modifier = Modifier.padding(vertical = 4.dp, horizontal = 10.dp),

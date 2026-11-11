@@ -30,6 +30,7 @@ import zero.friends.gostopcalculator.ui.board.rule.RuleLogScreen
 import zero.friends.gostopcalculator.ui.board.rule.RuleLogViewModel
 import zero.friends.gostopcalculator.ui.board.score.ScoreScreen
 import zero.friends.gostopcalculator.ui.board.score.ScoreViewModel
+import zero.friends.gostopcalculator.ui.board.score.manual.ManualViewModel
 import zero.friends.gostopcalculator.ui.history.HistoryScreen
 import zero.friends.gostopcalculator.ui.history.HistoryViewModel
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
@@ -193,10 +194,13 @@ fun AppNavigator(
                 val scoreViewModel: ScoreViewModel = viewModel(key = "${route.gameId}_${route.roundId}") {
                     appComponent.scoreViewModelFactory(route.gameId, route.roundId)
                 }
+                val manualViewModel: ManualViewModel = viewModel(key = "${route.gameId}_${route.roundId}_manual") {
+                    appComponent.manualViewModel
+                }
 
                 ScoreScreen(
                     scoreViewModel = scoreViewModel,
-                    manualViewModel = appComponent.manualViewModel,
+                    manualViewModel = manualViewModel,
                     onBack = {
                         navController.safePopBackStack(onCloseApp)
                     },

@@ -2,6 +2,7 @@ package zero.friends.gostopcalculator.ui.board.score.manual
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -49,10 +50,19 @@ class ManualViewModel(
     private val _uiState = MutableStateFlow(ManualUiState())
     fun uiState() = _uiState.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            manualRepository.getManuals()
-                .catch { println("Manual error: $it") }
+    private var loadJob: Job? = null
+    private var loadedFileName: String? = null
+
+    fun loadManuals(fileName: String) {
+        if (loadedFileName == fileName && _uiState.value.manuals.isNotEmpty()) return
+        loadJob?.cancel()
+        loadedFileName = fileName
+        loadJob = viewModelScope.launch {
+            manualRepository.getManuals(fileName)
+                .catch {
+                    loadedFileName = null
+                    println("Manual error: $it")
+                }
                 .collectLatest { manuals ->
                     _uiState.update {
                         it.copy(manuals = manuals)
