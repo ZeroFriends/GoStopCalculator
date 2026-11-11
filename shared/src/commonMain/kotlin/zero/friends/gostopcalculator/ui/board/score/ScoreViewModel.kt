@@ -163,7 +163,7 @@ class ScoreViewModel(
             }
             _uiState.update { state ->
                 val newGamers = state.playerResults.map {
-                    if (it.name == seller.name) {
+                    if (it.id == seller.id) {
                         it.copy(score = count.toInt(), go = 0)
                     } else {
                         it.copy(score = 0, go = 0)
@@ -191,7 +191,7 @@ class ScoreViewModel(
             _uiState.update { state ->
                 val goValue = go.toInt()
                     val newGamers = state.playerResults.map {
-                        if (it.name == gamer.name) {
+                        if (it.id == gamer.id) {
                             it.copy(score = point.toInt(), go = goValue)
                         } else {
                             it.copy(score = 0, go = 0)

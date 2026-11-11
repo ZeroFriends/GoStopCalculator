@@ -1,0 +1,176 @@
+[
+  {
+    "title": "Option Score",
+    "type": "text",
+    "script": [
+      {
+        "header": "Ppeok",
+        "body": "First Ppeok : Immediately earn the configured amount when making a Ppeok on your first turn.\n\nDouble Ppeok : Immediately earn 2x the configured amount when making another Ppeok on the second turn.\n\nTriple Ppeok : Making a third consecutive Ppeok immediately awards 4x the configured amount and ends the game in victory."
+      },
+      {
+        "header": "First Ddadak",
+        "body": "Succeeding in a Ddadak on the first turn immediately awards an amount equivalent to 3 points during the game."
+      }
+    ]
+  },
+  {
+    "title": "Winner Score",
+    "type": "text",
+    "script": [
+      {
+        "header": "Go",
+        "body": "1 Go adds +1 pt, 2 Go adds +2 pts, 3+ Go adds +1 pt per Go and doubles (x2) for each Go from 3 Go onward (e.g., 5 Go = +5 pts and x8, 6 Go = +6 pts and x16)."
+      },
+      {
+        "header": "Shake & Bomb",
+        "body": "Holding 3 cards of the same month allows you to reveal them (Shake) or place all 3 on a matching floor card (Bomb). Winning after Shake or Bomb doubles (x2) your score."
+      },
+      {
+        "header": "Counter Go",
+        "body": "Scoring and calling Go after an opponent has already called Go. Stopping after a Counter Go doubles your score and can inflict Go-bak."
+      },
+      {
+        "header": "Nagari",
+        "body": "If no player reaches 3 points (7 in 2-player Matgo) by the last card, or a player who called Go fails to score an extra point, the round is declared Nagari and the next game is played at 2x score."
+      }
+    ]
+  },
+  {
+    "title": "Loser Penalty",
+    "type": "text",
+    "script": [
+      {
+        "header": "Pi-bak",
+        "body": "When the winner scores with 10+ Pi (junk) cards and a loser has 5 or fewer Pi cards. Doubles (x2) final score."
+      },
+      {
+        "header": "Gwang-bak",
+        "body": "When the winner scores with 3+ Gwang (bright) cards and a loser has 0 Gwang cards. Doubles (x2) final score."
+      },
+      {
+        "header": "Meong-bak",
+        "body": "When the winner scores with Animal (10-pt) cards and a loser has 0 Animal cards. Doubles (x2) final score."
+      },
+      {
+        "header": "Meong-dda",
+        "body": "Winning with 7 or more Animal (10-pt) cards. Doubles (x2) final score."
+      },
+      {
+        "header": "Go-bak",
+        "body": "When a player calls Go but another player reaches the target score and declares Stop.\n2-player (Matgo): The Go-bak player pays 2x.\n3+ players (Go-Stop): The Go-bak player pays on behalf of the other losers as well."
+      }
+    ]
+  },
+  {
+    "title": "Card Scoring",
+    "type": "image",
+    "script": [
+      {
+        "header": "5 Brights • 15 pts",
+        "body": ""
+      },
+      {
+        "header": "4 Brights • 4 pts",
+        "body": ""
+      },
+      {
+        "header": "3 Brights • 3 pts",
+        "body": ""
+      },
+      {
+        "header": "Rain Bright • 2 pts",
+        "body": "2 Brights + Rain Bright"
+      },
+      {
+        "header": "5 Animals • 1 pt",
+        "body": "+1 pt per extra card / Stacks with Godori"
+      },
+      {
+        "header": "5 Ribbons • 1 pt",
+        "body": "+1 pt per extra card\n/ Stacks with Red, Blue, Grass Ribbons"
+      },
+      {
+        "header": "Red Ribbons • 3 pts",
+        "body": ""
+      },
+      {
+        "header": "Blue Ribbons • 3 pts",
+        "body": ""
+      },
+      {
+        "header": "Grass Ribbons • 3 pts",
+        "body": ""
+      },
+      {
+        "header": "Godori • 5 pts",
+        "body": ""
+      },
+      {
+        "header": "10 Junk (Pi) • 1 pt",
+        "body": "+1 pt per extra card\n/ Double Pi counts as 2, Triple Pi as 3"
+      }
+    ]
+  },
+  {
+    "title": "Score x2 Rules",
+    "type": "text",
+    "script": [
+      {
+        "header": "Pi-bak",
+        "body": "Winner scores at least 1 pt from Pi and opponent has 5 or fewer Pi cards."
+      },
+      {
+        "header": "Gwang-bak",
+        "body": "Winner scores from Gwang and opponent has 0 Gwang cards."
+      },
+      {
+        "header": "Go-bak",
+        "body": "A player calls Go, but another player reaches the target score and stops."
+      },
+      {
+        "header": "Meong-bak",
+        "body": "Winner scores from Animal cards and opponent has 0 Animal cards."
+      },
+      {
+        "header": "Shake",
+        "body": "Winning after revealing 3 cards of the same month in hand."
+      },
+      {
+        "header": "Bomb",
+        "body": "Placing 3 cards of the same month from hand onto the 4th matching card on the floor."
+      }
+    ]
+  },
+  {
+    "title": "How to Play",
+    "type": "text",
+    "script": [
+      {
+        "header": "2 Players (Matgo)",
+        "body": "Target score is 7 pts. Deal 8 cards to the floor and 10 cards to each player."
+      },
+      {
+        "header": "3 Players",
+        "body": "Target score is 3 pts. Deal 6 cards to the floor and 7 cards to each player."
+      },
+      {
+        "header": "4 Players",
+        "body": "Target score is 3 pts. Deal 6 cards to the floor and 7 cards to each player.\nOne player sells cards and sits out the round."
+      },
+      {
+        "header": "Game Flow",
+        "body": "1. Determine the dealer (First player) by drawing cards.\n\n2. Shuffle and deal cards counterclockwise.\n\n3. On your turn, play a card from your hand to match a floor card of the same month, then flip the top card of the draw pile.\n\n4. When a player reaches 3+ points (7+ in 2-player), they choose to call 'Go' (continue for higher points/multipliers) or 'Stop' (claim victory and settle scores)."
+      }
+    ]
+  },
+  {
+    "title": "Cards by Month",
+    "type": "full_image",
+    "script": [
+      {
+        "header": "",
+        "body": ""
+      }
+    ]
+  }
+]

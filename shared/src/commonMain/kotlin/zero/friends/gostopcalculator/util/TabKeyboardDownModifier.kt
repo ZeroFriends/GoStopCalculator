@@ -5,14 +5,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun TabKeyboardDownModifier(): Modifier {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
     val tabKeyboardDownModifier = Modifier.pointerInput(Unit) {
         detectTapGestures(onTap = {
+            focusManager.clearFocus()
             keyboardController?.hide()
         })
     }

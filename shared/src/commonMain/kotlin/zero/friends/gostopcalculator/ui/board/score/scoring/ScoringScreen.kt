@@ -34,6 +34,7 @@ import zero.friends.gostopcalculator.ui.board.score.common.BaseGamerItem
 import zero.friends.gostopcalculator.ui.board.score.common.GamerListHeader
 import zero.friends.gostopcalculator.ui.board.score.common.OptionBox
 import zero.friends.gostopcalculator.ui.board.score.common.ScorePhaseLayout
+import zero.friends.gostopcalculator.util.localizedName
 
 @Composable
 fun ScoringScreen(
@@ -92,7 +93,7 @@ private fun ScoringGamerList(
                         index = index,
                         gamer = seller,
                         isEnabled = false,
-                        badge = seller.sellerOption?.korean
+                        badge = seller.sellerOption?.localizedName()
                     )
                 } else {
                     ScoringGamerItem(
@@ -155,7 +156,7 @@ private fun ScoreOptionRow(
     ) {
         items(options, key = { it.ordinal }) { option ->
             OptionBox(
-                text = option.korean,
+                text = option.localizedName(),
                 color = NonClick,
                 isSelected = gamer.scoreOption.contains(option),
                 onClick = {

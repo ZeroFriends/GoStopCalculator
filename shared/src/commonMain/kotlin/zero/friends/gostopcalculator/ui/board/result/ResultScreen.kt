@@ -37,7 +37,14 @@ import zero.friends.gostopcalculator.shared.generated.resources.detail_text
 import zero.friends.gostopcalculator.shared.generated.resources.formula
 import zero.friends.gostopcalculator.shared.generated.resources.player_with_condition
 import zero.friends.gostopcalculator.shared.generated.resources.result
+import zero.friends.gostopcalculator.shared.generated.resources.rule_winner
+import zero.friends.gostopcalculator.shared.generated.resources.settlement_pay_format
+import zero.friends.gostopcalculator.shared.generated.resources.settlement_receive_format
 import zero.friends.gostopcalculator.shared.generated.resources.share
+import zero.friends.gostopcalculator.shared.generated.resources.trace_loser_history
+import zero.friends.gostopcalculator.shared.generated.resources.trace_selling_history
+import zero.friends.gostopcalculator.shared.generated.resources.winner_with_name
+import zero.friends.gostopcalculator.shared.generated.resources.won
 import zero.friends.gostopcalculator.theme.DustyGray
 import zero.friends.gostopcalculator.theme.Gallery
 import zero.friends.gostopcalculator.theme.ManualBackground
@@ -47,6 +54,9 @@ import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.ContentsCard
 import zero.friends.gostopcalculator.util.getMoneyColor
 import zero.friends.gostopcalculator.util.separateComma
+import zero.friends.gostopcalculator.util.stringRes
+import zero.friends.gostopcalculator.util.toRule
+import kotlin.math.abs
 
 fun Modifier.drawGraphicsLayer(graphicsLayer: GraphicsLayer): Modifier =
     this.drawWithContent {
@@ -137,27 +147,28 @@ private fun ResultContent(
 
         val trace = uiState.roundTrace
         if (!isCalculateMode && trace != null && roundTraceFormatter != null) {
+            val traceTexts = rememberTraceTexts()
             val winnerTerm = trace.terms.find { it.gamerId == trace.winnerId }
             val sellerTerms = trace.terms.filter { it.factors.isSeller && it.gamerId != trace.winnerId }
             val loserTerms = trace.terms.filter { it.gamerId != trace.winnerId && !it.factors.isSeller }
 
             if (winnerTerm != null) {
                 val winnerInfo = uiState.gamers.find { it.id == trace.winnerId }
-                val winnerName = winnerInfo?.name ?: "승자"
-                val winnerLines = roundTraceFormatter.toWinnerBreakdown(winnerTerm)
+                val winnerName = winnerInfo?.name ?: stringResource(Res.string.rule_winner)
+                val winnerLines = roundTraceFormatter.toWinnerBreakdown(winnerTerm, traceTexts)
                 WinnerTraceCard(winnerName = winnerName, lines = winnerLines)
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
             if (sellerTerms.isNotEmpty()) {
-                val sellerLines = roundTraceFormatter.toLines(sellerTerms)
-                TraceCard(title = "광팔기 내역", lines = sellerLines)
+                val sellerLines = roundTraceFormatter.toLines(sellerTerms, traceTexts)
+                TraceCard(title = stringResource(Res.string.trace_selling_history), lines = sellerLines)
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
             if (loserTerms.isNotEmpty()) {
-                val loserLines = roundTraceFormatter.toLines(loserTerms)
-                TraceCard(title = "패자 내역", lines = loserLines)
+                val loserLines = roundTraceFormatter.toLines(loserTerms, traceTexts)
+                TraceCard(title = stringResource(Res.string.trace_loser_history), lines = loserLines)
                 Spacer(modifier = Modifier.height(12.dp))
             }
         }
@@ -166,6 +177,7 @@ private fun ResultContent(
 
 @Composable
 private fun GamerResultCard(index: Int, gamer: Gamer, showOptions: Boolean) {
+    val won = stringResource(Res.string.won)
     ContentsCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(
@@ -197,7 +209,7 @@ private fun GamerResultCard(index: Int, gamer: Gamer, showOptions: Boolean) {
                 val account = gamer.account
                 val sign = if (account >= 0) "+" else ""
                 Text(
-                    text = "$sign${account.separateComma()}원",
+                    text = "$sign${account.separateComma()}$won",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = account.getMoneyColor()
@@ -205,14 +217,15 @@ private fun GamerResultCard(index: Int, gamer: Gamer, showOptions: Boolean) {
             }
 
             if (showOptions) {
-                val options = remember(gamer) {
+                val optionResources = remember(gamer) {
                     buildList {
-                        gamer.winnerOption?.korean?.let { add(it) }
-                        gamer.loserOption.forEach { add(it.korean) }
-                        gamer.scoreOption.forEach { add(it.korean) }
-                        gamer.sellerOption?.korean?.let { add(it) }
+                        gamer.winnerOption?.let { add(it.toRule().stringRes()) }
+                        gamer.loserOption.forEach { add(it.toRule().stringRes()) }
+                        gamer.scoreOption.forEach { add(it.toRule().stringRes()) }
+                        gamer.sellerOption?.let { add(it.toRule().stringRes()) }
                     }
                 }
+                val options = optionResources.map { stringResource(it) }
 
                 if (options.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(4.dp))
@@ -234,18 +247,29 @@ private fun GamerResultCard(index: Int, gamer: Gamer, showOptions: Boolean) {
                 Divider(color = Gallery)
                 Spacer(modifier = Modifier.height(8.dp))
 
+                val amountToken = "\u0000AMOUNT\u0000"
                 Column(modifier = Modifier.padding(horizontal = 6.dp)) {
                     validCalculates.forEach { target ->
-                        val action = if (target.account > 0) "받아야합니다." else "줘야합니다."
-                        val amountText = "${kotlin.math.abs(target.account).separateComma()}원"
+                        val amountText = "${abs(target.account).separateComma()}$won"
+                        val formatRes = if (target.account > 0) {
+                            Res.string.settlement_receive_format
+                        } else {
+                            Res.string.settlement_pay_format
+                        }
+                        val template = stringResource(formatRes, target.name, amountToken)
                         val color = target.account.getMoneyColor()
 
                         val annotatedString = buildAnnotatedString {
-                            append("${target.name}에게 ")
-                            pushStyle(SpanStyle(color = color, fontWeight = FontWeight.Bold))
-                            append(amountText)
-                            pop()
-                            append(" 을 $action")
+                            val tokenIndex = template.indexOf(amountToken)
+                            if (tokenIndex >= 0) {
+                                append(template.substring(0, tokenIndex))
+                                pushStyle(SpanStyle(color = color, fontWeight = FontWeight.Bold))
+                                append(amountText)
+                                pop()
+                                append(template.substring(tokenIndex + amountToken.length))
+                            } else {
+                                append(template)
+                            }
                         }
 
                         Text(
@@ -266,7 +290,7 @@ private fun WinnerTraceCard(winnerName: String, lines: List<RoundTraceFormatter.
     ContentsCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "승자 ($winnerName)",
+                text = stringResource(Res.string.winner_with_name, winnerName),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = Nero,
@@ -338,14 +362,17 @@ private fun TraceTableHeader() {
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = Nero,
-            modifier = Modifier.weight(2f)
+            modifier = Modifier
+                .weight(2f)
+                .padding(end = 6.dp)
         )
         Text(
             text = stringResource(Res.string.result),
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
             color = Nero,
-            textAlign = TextAlign.End
+            textAlign = TextAlign.End,
+            modifier = Modifier.weight(1.1f)
         )
     }
 }
@@ -377,7 +404,8 @@ private fun TraceTableRow(line: RoundTraceFormatter.TraceLine) {
         Text(
             text = line.amount,
             fontSize = 12.sp,
-            textAlign = TextAlign.End
+            textAlign = TextAlign.End,
+            modifier = Modifier.weight(1.1f)
         )
     }
 }

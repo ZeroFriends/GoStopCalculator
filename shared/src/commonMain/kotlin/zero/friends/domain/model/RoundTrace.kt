@@ -29,9 +29,23 @@ data class CalculationFactors(
 )
 
 @Serializable
+enum class TraceTag {
+    THREE_FUCK,
+    WINNER,
+    SELLER,
+    LOSER,
+    PEA_BAK,
+    LIGHT_BAK,
+    MONG_BAK,
+    GO_BAK
+}
+
+@Serializable
 data class RoundTraceTerm(
     val gamerId: Long,
     val label: String,
     val amount: Int,
-    val factors: CalculationFactors
+    val factors: CalculationFactors,
+    val playerName: String = "",
+    val traceTags: List<TraceTag> = emptyList()
 )

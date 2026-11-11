@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +56,7 @@ fun GoStopOutLinedTextField(
     showKeyboard: Boolean = false,
     onDone: () -> Unit = {},
 ) {
+    val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester() }
 
@@ -77,6 +79,7 @@ fun GoStopOutLinedTextField(
             textStyle = TextStyle(fontSize = 16.sp, color = Nero),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(onDone = {
+                focusManager.clearFocus()
                 keyboardController?.hide()
                 onDone()
             })
@@ -111,6 +114,7 @@ fun NumberTextField(
     hintColor: Color = Nero,
     onValueChange: (Long) -> Unit = {}
 ) {
+    val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val textColor = if (isEnable) Nero else hintColor
     val resolvedInteractionSource = interactionSource ?: remember { MutableInteractionSource() }
@@ -156,6 +160,7 @@ fun NumberTextField(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(onDone = {
+                    focusManager.clearFocus()
                     keyboardController?.hide()
                 }),
                 modifier = Modifier.fillMaxWidth(),

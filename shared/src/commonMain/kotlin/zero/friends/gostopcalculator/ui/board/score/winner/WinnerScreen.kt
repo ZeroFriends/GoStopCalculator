@@ -30,6 +30,7 @@ import zero.friends.gostopcalculator.ui.board.score.common.BaseGamerItem
 import zero.friends.gostopcalculator.ui.board.score.common.GamerListHeader
 import zero.friends.gostopcalculator.ui.board.score.common.ScorePhaseLayout
 import zero.friends.gostopcalculator.ui.common.NumberTextField
+import zero.friends.gostopcalculator.util.localizedName
 
 @Composable
 fun WinnerScreen(
@@ -89,7 +90,7 @@ private fun WinnerGamerList(
                         index = index,
                         gamer = seller,
                         isEnabled = false,
-                        badge = seller.sellerOption?.korean
+                        badge = seller.sellerOption?.localizedName()
                     )
                 } else {
                     WinnerGamerItem(

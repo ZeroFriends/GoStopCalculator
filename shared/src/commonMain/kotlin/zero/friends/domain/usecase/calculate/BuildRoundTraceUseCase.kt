@@ -2,9 +2,11 @@ package zero.friends.domain.usecase.calculate
 
 import zero.friends.domain.model.CalculationFactors
 import zero.friends.domain.model.Gamer
+import zero.friends.domain.model.LoserOption
 import zero.friends.domain.model.RoundTrace
 import zero.friends.domain.model.RoundTraceTerm
 import zero.friends.domain.model.ScoreOption
+import zero.friends.domain.model.TraceTag
 import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.repository.RuleRepository
 import zero.friends.domain.util.Const
@@ -25,6 +27,8 @@ class BuildRoundTraceUseCase @Inject constructor(
         var sell: Int = 0
     ) {
         fun total(): Int = base + fuck + ddadak + sell
+
+        fun hasAnyContribution(): Boolean = base != 0 || fuck != 0 || ddadak != 0 || sell != 0
     }
 
     suspend operator fun invoke(gameId: Long, roundId: Long): RoundTrace? {
@@ -68,10 +72,10 @@ class BuildRoundTraceUseCase @Inject constructor(
         val baseGo = winner?.go ?: 0
 
         val allTerms = gamers.mapNotNull { gamer ->
-            val roleLabel = buildRoleLabel(gamer, winner, seller)
+            val traceTags = buildTraceTags(gamer, winner, seller)
             val receiverCount = resolveReceiverCount(gamer, winner, seller, gamers.size)
             val contribution = contributions[gamer.id] ?: Contribution()
-            if (contribution.total() == 0) return@mapNotNull null
+            if (!contribution.hasAnyContribution()) return@mapNotNull null
             val isWinner = winner?.id == gamer.id
 
             val bakCount = if (isWinner) 0 else gamer.loserOption.count()
@@ -90,9 +94,11 @@ class BuildRoundTraceUseCase @Inject constructor(
 
             RoundTraceTerm(
                 gamerId = gamer.id,
-                label = if (roleLabel.isNotEmpty()) "${gamer.name}\n$roleLabel" else gamer.name,
+                label = gamer.name,
                 amount = contribution.total(),
-                factors = factors
+                factors = factors,
+                playerName = gamer.name,
+                traceTags = traceTags
             )
         }
         
@@ -176,32 +182,35 @@ class BuildRoundTraceUseCase @Inject constructor(
         }
     }
 
-    private fun buildRoleLabel(
+    private fun buildTraceTags(
         gamer: Gamer,
         winner: Gamer?,
         seller: Gamer?
-    ): String {
-        val tags = mutableListOf<String>()
-        if (winner != null && gamer.id == winner.id) {
-            if (gamer.scoreOption.contains(ScoreOption.ThreeFuck)) {
-                tags += "삼연뻑"
+    ): List<TraceTag> {
+        val tags = mutableListOf<TraceTag>()
+        val isWinner = winner != null && gamer.id == winner.id
+        val isSeller = seller != null && gamer.id == seller.id
+
+        if (gamer.scoreOption.contains(ScoreOption.ThreeFuck)) {
+            tags += TraceTag.THREE_FUCK
+        }
+        if (isWinner) {
+            tags += TraceTag.WINNER
+        }
+        if (isSeller) {
+            tags += TraceTag.SELLER
+        }
+        if (winner != null && !isWinner && !isSeller) {
+            tags += TraceTag.LOSER
+            gamer.loserOption.forEach { option ->
+                tags += when (option) {
+                    LoserOption.PeaBak -> TraceTag.PEA_BAK
+                    LoserOption.LightBak -> TraceTag.LIGHT_BAK
+                    LoserOption.MongBak -> TraceTag.MONG_BAK
+                    LoserOption.GoBak -> TraceTag.GO_BAK
+                }
             }
-            tags += "승자"
-        } else if (gamer.scoreOption.contains(ScoreOption.ThreeFuck)) {
-            tags += "삼연뻑"
         }
-
-        if (seller != null && gamer.id == seller.id) {
-            tags += "광팔이"
-        }
-
-        if (tags.isEmpty()) {
-            tags += "패자"
-            if (gamer.loserOption.isNotEmpty()) {
-                tags += gamer.loserOption.joinToString(separator = ", ") { it.korean }
-            }
-        }
-
-        return if (tags.isEmpty()) "" else "(${tags.joinToString(separator = ", ")})"
+        return tags
     }
 }

@@ -66,6 +66,8 @@ import zero.friends.gostopcalculator.ui.common.NumberTextField
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.ui.common.background.AprilBackground
 import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
+import zero.friends.gostopcalculator.util.localizedName
+import zero.friends.gostopcalculator.util.localizedScript
 
 sealed class RuleClickEvent {
     object Back : RuleClickEvent()
@@ -265,7 +267,7 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
-                        text = rule.name.displayName,
+                        text = rule.name.localizedName(),
                         fontSize = 16.sp,
                         color = if (isFirstDdadak) DustyGray else Nero
                     )
@@ -278,8 +280,9 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
                         )
                     }
                 }
-                if (rule.script.isNotEmpty()) {
-                    Text(text = rule.script, fontSize = 10.sp, color = Gray38)
+                val localizedScript = rule.localizedScript()
+                if (localizedScript.isNotEmpty()) {
+                    Text(text = localizedScript, fontSize = 10.sp, color = Gray38)
                 }
             }
         }

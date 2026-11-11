@@ -36,6 +36,7 @@ import zero.friends.domain.model.Game
 import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.complete
+import zero.friends.gostopcalculator.shared.generated.resources.fail_over_gamer
 import zero.friends.gostopcalculator.shared.generated.resources.ic_check_circle_24_dp
 import zero.friends.gostopcalculator.shared.generated.resources.ic_unchecked_circle_24_dp
 import zero.friends.gostopcalculator.shared.generated.resources.player_list
@@ -68,6 +69,7 @@ fun PrepareScreen(
     }
     val scaffoldState = rememberScaffoldState()
     val uiState by prepareViewModel.uiState().collectAsState()
+    val failOverGamerAlert = stringResource(Res.string.fail_over_gamer)
 
     PrepareScreen(
         scaffoldState = scaffoldState,
@@ -84,7 +86,7 @@ fun PrepareScreen(
                 }
                 is PrepareEvent.OnClickPlayer -> {
                     prepareViewModel.onClickPlayer(event.isCheck, event.player) {
-                        onShowToast("4명을 초과할 수 없습니다.")
+                        onShowToast(failOverGamerAlert)
                     }
                 }
             }

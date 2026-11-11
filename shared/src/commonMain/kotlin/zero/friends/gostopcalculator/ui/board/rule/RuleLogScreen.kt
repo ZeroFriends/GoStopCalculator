@@ -21,7 +21,9 @@ import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Rule
 import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.price
 import zero.friends.gostopcalculator.shared.generated.resources.rule_title_text
+import zero.friends.gostopcalculator.util.localizedName
 import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.theme.OrangeyRed
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
@@ -99,13 +101,13 @@ fun RuleLogItem(index: Int = 0, rule: Rule = Rule()) {
             Spacer(modifier = Modifier.padding(4.dp))
             Text(
                 modifier = Modifier.align(Alignment.CenterVertically),
-                text = rule.name.displayName,
+                text = rule.name.localizedName(),
                 fontSize = 16.sp,
                 color = Nero,
             )
         }
         Text(
-            text = "${rule.score}원",
+            text = stringResource(Res.string.price, rule.score),
             textAlign = TextAlign.Center,
             color = Nero,
             fontSize = 12.sp,

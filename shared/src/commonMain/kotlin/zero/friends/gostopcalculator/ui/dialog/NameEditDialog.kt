@@ -31,6 +31,8 @@ import zero.friends.gostopcalculator.ui.common.GoStopButton
 import zero.friends.gostopcalculator.ui.common.GoStopOutLinedTextField
 import zero.friends.gostopcalculator.ui.precondition.PlayerViewModel
 
+private const val MAX_PLAYER_NAME_LENGTH = 12
+
 @Composable
 fun NameEditDialog(
     viewModel: PlayerViewModel,
@@ -81,7 +83,7 @@ fun NameEditDialog(
                     hint = player.name,
                     color = Color.Black,
                     onValueChange = {
-                        if (it.text.length <= 8) {
+                        if (it.text.length <= MAX_PLAYER_NAME_LENGTH) {
                             editPlayerName = it
                             error = ""
                         } else {
