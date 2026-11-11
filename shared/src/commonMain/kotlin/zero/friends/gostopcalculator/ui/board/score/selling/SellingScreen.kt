@@ -90,6 +90,7 @@ private fun SellingGamerList(
                         endText = stringResource(Res.string.page),
                         isEnable = true,
                         hintColor = Nero,
+                        inputTestTag = "selling_score_input_${index}",
                         onValueChange = { count ->
                             onUpdateSeller(gamer, count)
                         }

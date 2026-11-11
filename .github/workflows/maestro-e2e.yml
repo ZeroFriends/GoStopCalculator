@@ -181,7 +181,7 @@ jobs:
 
       - name: Run Maestro iOS E2E Scenarios
         env:
-          MAESTRO_DRIVER_STARTUP_TIMEOUT: '120000'
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: '300000'
         run: ./.maestro/run_parallel_tests.sh
 
       - name: Upload iOS Maestro Logs & Reports

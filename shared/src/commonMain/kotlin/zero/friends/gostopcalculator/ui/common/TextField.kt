@@ -31,6 +31,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -112,6 +113,7 @@ fun NumberTextField(
     interactionSource: MutableInteractionSource? = null,
     isEnable: Boolean = true,
     hintColor: Color = Nero,
+    inputTestTag: String? = null,
     onValueChange: (Long) -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
@@ -163,7 +165,9 @@ fun NumberTextField(
                     focusManager.clearFocus()
                     keyboardController?.hide()
                 }),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .let { if (inputTestTag != null) it.testTag(inputTestTag) else it },
                 interactionSource = resolvedInteractionSource
             )
         }

@@ -128,6 +128,7 @@ private fun WinnerGamerItem(
                 endText = stringResource(Res.string.point),
                 isEnable = true,
                 hintColor = Nero,
+                inputTestTag = "winner_point_input_${index}",
                 onValueChange = { point ->
                     onUpdateWinner(gamer, point, gamer.go.toLong())
                 }
@@ -140,6 +141,7 @@ private fun WinnerGamerItem(
                 endText = stringResource(Res.string.go),
                 isEnable = true,
                 hintColor = Nero,
+                inputTestTag = "winner_go_input_${index}",
                 onValueChange = { go ->
                     onUpdateWinner(gamer, gamer.score.toLong(), go)
                 }

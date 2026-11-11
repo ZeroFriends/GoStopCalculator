@@ -292,7 +292,8 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
             modifier = Modifier.weight(0.8f),
             endText = stringResource(Res.string.won),
             isEnable = !isFirstDdadak,
-            hintColor = if (isFirstDdadak) DustyGray else Nero
+            hintColor = if (isFirstDdadak) DustyGray else Nero,
+            inputTestTag = "rule_score_input_${index}"
         ) {
             onUpdateScore(it)
         }
