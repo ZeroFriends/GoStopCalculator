@@ -1,53 +1,79 @@
-appId: ${APP_ID:-zero.friends.gostopcalculator}
+appId: zero.friends.gostopcalculator
 ---
 # ==========================================
-# 시나리오: 3인 고스톱 기본 게임 생성 및 1라운드 점수 계산
+# 시나리오: 3인 고스톱 기본 게임 생성 및 1라운드 점수 계산 전체 플로우
 # ==========================================
 
-# 1. 앱 실행 (이전 상태 초기화)
+# 1. 앱 실행 (초기화)
 - launchApp:
     clearState: true
+    stopApp: true
 
-# 2. 히스토리 메인 화면 진입 확인 및 새 게임 시작
-- assertVisible: "시작하기"
+# 2. 스플래시 종료 대기 및 새 게임 시작
+- extendedWaitUntil:
+    visible: "시작하기"
+    timeout: 60000
 - tapOn: "시작하기"
 
-# 3. 플레이어 설정 (3인 추가)
+# 3. 플레이어 3명 추가
 - assertVisible: "플레이어 설정.*"
 - tapOn: "\\+ 플레이어 추가"
 - tapOn: "\\+ 플레이어 추가"
 - tapOn: "\\+ 플레이어 추가"
-
-# 플레이어 3명이 등록되면 다음 버튼 활성화됨
 - tapOn: "다음"
 
-# 4. 게임 규칙 설정
+# 4. 게임 규칙 설정 (점당 100원 입력)
 - assertVisible: "게임규칙.*"
-- assertVisible: "완료"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn:
+    point: "80%,39%"
+- inputText: "100"
+- tapOn: "게임규칙.*"
 - tapOn: "완료"
 
-# 5. 게임 보드 화면 진입 확인
+# 5. 게임 보드 화면 진입 확인 및 판 시작
 - assertVisible: "진행내역.*"
 - assertVisible: "게임시작"
 - tapOn: "게임시작"
 
-# 6. 라운드 준비 (3인 경기 시작)
-- assertVisible: "완료"
+# 6. 라운드 준비 (플레이어 3명 체크 선택 후 완료)
+- assertVisible: "플레이어 리스트"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn: "플레이어 1"
+- tapOn: "플레이어 2"
+- tapOn: "플레이어 3"
 - tapOn: "완료"
 
-# 7. 승자 선택 (Phase 1)
-- assertVisible: "승자 점수기록"
-- tapOn: "플레이어 1"
+# 7. 점수기록 (Phase 1)
+- assertVisible: "점수기록"
+- runFlow: ../common/assert_no_broken_text.yaml
 - tapOn: "다음 \\(1/3\\)"
 
-# 8. 점수 기록 (Phase 2 - Scoring)
-- assertVisible: "점수기록"
+# 8. 승자 점수기록 (Phase 2): 1번 플레이어에게 7점 부여
+- assertVisible: "승자 점수기록"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn:
+    point: "55%,45%"
+- inputText: "7"
+- tapOn: "승자 점수기록"
 - tapOn: "다음 \\(2/3\\)"
 
-# 9. 패자 점수 기록 (Phase 3 - Loser)
+# 9. 패자 점수기록 (Phase 3)
 - assertVisible: "패자 점수기록"
-- tapOn: "저장"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn: "다음 \\(3/3\\)"
 
-# 10. 라운드 완료 및 보드 점수 반영 검증
+# 10. 금액 계산 확인 다이얼로그 ➔ 완료 클릭
+- assertVisible: "해당 라운드의 금액 계산을 하시겠습니까\\?"
+- tapOn: "완료"
+
+# 11. 최종 라운드 결과 화면 (+1,400원 정산 확인) 및 보드 복귀
+- assertVisible: "상세보기"
+- runFlow: ../common/assert_no_broken_text.yaml
+- assertVisible: "\\+1,400원"
+- tapOn: "Back"
+
+# 12. 보드 화면에 1 라운드 정상 반영 검증
 - assertVisible: "진행내역.*"
 - assertVisible: "1 라운드"
+- runFlow: ../common/assert_no_broken_text.yaml

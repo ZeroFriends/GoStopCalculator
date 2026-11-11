@@ -1,0 +1,18 @@
+appId: zero.friends.gostopcalculator
+---
+# ==========================================
+# 공통 가드: 화면에 깨진/미치환 문자열이 노출되지 않는지 검증
+# - 각 시나리오의 주요 화면 진입 직후 runFlow 로 호출한다.
+# - 언어와 무관하게 동작하므로 다국어 플로우에서도 그대로 재사용한다.
+# ==========================================
+
+# 포맷 지정자 미치환: "플레이어 %d", "%1$s원" 등
+- assertNotVisible: "(?s).*%(\\d+\\$)?[dsf].*"
+
+# 리소스/데이터 누락: null, undefined, NaN
+- assertNotVisible: "(?s).*\\bnull\\b.*"
+- assertNotVisible: "(?s).*\\bundefined\\b.*"
+- assertNotVisible: "(?s).*\\bNaN\\b.*"
+
+# 이스케이프 미처리: 리터럴 "\n" 노출
+- assertNotVisible: "(?s).*\\\\n.*"

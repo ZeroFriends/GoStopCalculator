@@ -1,0 +1,16 @@
+appId: zero.friends.gostopcalculator
+---
+# ==========================================
+# 다국어 Smoke 검증 플로우
+# ==========================================
+
+- launchApp:
+    clearState: false
+    stopApp: true
+
+- extendedWaitUntil:
+    visible: "${EXPECTED_START_TEXT}"
+    timeout: 30000
+
+- assertVisible: "${EXPECTED_START_TEXT}"
+- assertVisible: "${EXPECTED_TITLE_TEXT}"
