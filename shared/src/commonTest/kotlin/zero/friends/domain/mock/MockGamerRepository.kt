@@ -20,6 +20,13 @@ class MockGamerRepository : GamerRepository {
     private val targetMap = mutableMapOf<Long, MutableMap<Long, Int>>()
     private val allGamersFlow = MutableStateFlow<List<Gamer>>(emptyList())
     
+    fun clear() {
+        roundGamersMap.clear()
+        accountMap.clear()
+        targetMap.clear()
+        allGamersFlow.value = emptyList()
+    }
+
     /**
      * 테스트용: 라운드의 플레이어 목록 설정
      */
