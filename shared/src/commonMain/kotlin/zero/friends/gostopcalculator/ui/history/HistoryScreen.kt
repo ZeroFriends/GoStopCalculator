@@ -50,6 +50,7 @@ import zero.friends.gostopcalculator.ui.common.GoStopButton
 import zero.friends.gostopcalculator.ui.common.GoStopDivider
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.ui.common.SubTitleText
+import zero.friends.gostopcalculator.ui.common.SystemBarAppearance
 import zero.friends.gostopcalculator.ui.common.TitleText
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 import zero.friends.gostopcalculator.ui.history.guide.GuideFullScreenDialog
@@ -125,6 +126,11 @@ private fun HistoryScreenContent(
     event: (HistoryEvent) -> Unit = {},
     onToggleDebugAd: (() -> Unit)? = null
 ) {
+    SystemBarAppearance(
+        isLightStatusBar = true,
+        isLightNavigationBar = true,
+    )
+
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier

@@ -63,6 +63,11 @@ fun CenterTextTopBar(
     val iconColor = if (isRed) Color.White else Color.Black
     val topBarBackgroundColor = if (isRed) OrangeyRed else Color.White
 
+    SystemBarAppearance(
+        isLightStatusBar = !isRed,
+        isLightNavigationBar = true,
+    )
+
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = topBarBackgroundColor,

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
@@ -63,7 +64,12 @@ private fun RuleLogScreen(
         scaffoldState = scaffoldState,
         topBar = { CenterTextTopBar(text = uiState.game.name, isRed = false, onBack = onBack) },
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .navigationBarsPadding()
+                .padding(horizontal = 16.dp)
+        ) {
             TitleText(
                 modifier = Modifier.padding(top = 34.dp, start = 18.dp),
                 text = stringResource(Res.string.rule_title_text)

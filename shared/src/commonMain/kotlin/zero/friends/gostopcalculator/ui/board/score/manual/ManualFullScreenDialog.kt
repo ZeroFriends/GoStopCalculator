@@ -9,8 +9,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -102,7 +106,9 @@ fun ManualFullScreenDialog(
                 )
                 GoStopDivider()
                 HorizontalPager(
-                    modifier = Modifier.background(color = ManualBackground),
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(color = ManualBackground),
                     state = pagerState
                 ) { page ->
                     when (val manual = uiState.manuals[page]) {
@@ -121,6 +127,7 @@ fun AllCardManual() {
     Image(
         modifier = Modifier
             .fillMaxWidth()
+            .navigationBarsPadding()
             .padding(16.dp),
         painter = painterResource(Res.drawable.all_card),
         contentDescription = null
@@ -129,10 +136,11 @@ fun AllCardManual() {
 
 @Composable
 fun ImageManual(script: List<Script>, imageRes: List<DrawableResource>) {
+    val navBarBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
         columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(vertical = 10.dp)
+        contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp + navBarBottom)
     ) {
         itemsIndexed(script) { index, item ->
             Column(
@@ -168,11 +176,12 @@ fun ImageManual(script: List<Script>, imageRes: List<DrawableResource>) {
 
 @Composable
 private fun TextManual(items: List<Script>) {
+    val navBarBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
-        contentPadding = PaddingValues(vertical = 10.dp)
+        contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp + navBarBottom)
     ) {
         items(items) { item ->
             Column(Modifier.padding(vertical = 10.dp)) {
