@@ -153,17 +153,20 @@ class CalculateGameResultUseCase @Inject constructor(
             if (gamerAmount != 0) {
                 // 이 플레이어의 총 수입/지출을 addAccount로 적용
                 gamerRepository.addAccount(gamer, gamerAmount)
-                
-                // 각 상대방과의 거래 기록
-                // 옵션 소유자는 다른 플레이어들로부터 받음
+            }
+            if (gamer.scoreOption.isNotEmpty()) {
+                // 순수익(gamerAmount)이 다른 플레이어 옵션과 상쇄되어 0이 되더라도,
+                // 본인 옵션에 대한 상대방별 거래 내역(target)은 반드시 기록해야 원장이 일치한다.
                 val others = scoreOptionGamers.filter { it.id != gamer.id }
                 gamer.scoreOption.forEach { option ->
                     val amount = option.calculateScore(fuckScore, scorePerPoint)
-                    others.forEach { other ->
-                        // 옵션 소유자(gamer)가 다른 플레이어(other)로부터 받음
-                        gamerRepository.updateTarget(gamer, amount, other)  // gamer가 other로부터 +amount 받음
-                        // 다른 플레이어(other)가 옵션 소유자(gamer)에게 줌
-                        gamerRepository.updateTarget(other, -amount, gamer)  // other가 gamer에게 -amount 줌
+                    if (amount != 0) {
+                        others.forEach { other ->
+                            // 옵션 소유자(gamer)가 다른 플레이어(other)로부터 받음
+                            gamerRepository.updateTarget(gamer, amount, other)  // gamer가 other로부터 +amount 받음
+                            // 다른 플레이어(other)가 옵션 소유자(gamer)에게 줌
+                            gamerRepository.updateTarget(other, -amount, gamer)  // other가 gamer에게 -amount 줌
+                        }
                     }
                 }
             }
