@@ -8,9 +8,17 @@ appId: zero.friends.gostopcalculator
     clearState: true
     stopApp: true
 
-- extendedWaitUntil:
-    visible: "시작하기"
-    timeout: 60000
+- runFlow: ../common/wait_for_history.yaml
+
+# 히스토리 상단 Guide 버튼 클릭 시 이용 가이드 다이얼로그 노출 및 페이지 전환/닫기 검증
+- tapOn: "Guide"
+- assertVisible: "다음"
+- assertVisible: "Close"
+- tapOn: "다음"
+- assertVisible: "Back"
+- tapOn: "Close"
+- assertVisible: "시작하기"
+
 - tapOn: "시작하기"
 
 # 플레이어 3명 추가

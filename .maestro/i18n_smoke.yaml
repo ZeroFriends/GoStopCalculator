@@ -9,8 +9,14 @@ appId: zero.friends.gostopcalculator
     stopApp: true
 
 - extendedWaitUntil:
-    visible: "${EXPECTED_START_TEXT}"
+    visible: "Close|${EXPECTED_START_TEXT}"
     timeout: 30000
+
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
 
 - assertVisible: "${EXPECTED_START_TEXT}"
 - assertVisible: "${EXPECTED_TITLE_TEXT}"

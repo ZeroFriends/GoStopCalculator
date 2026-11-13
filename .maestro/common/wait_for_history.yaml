@@ -1,0 +1,17 @@
+appId: zero.friends.gostopcalculator
+---
+# ==========================================
+# 공통 헬퍼: 스플래시 종료 후 최초 실행 가이드가 뜨면 닫고 히스토리 홈 대기
+# ==========================================
+
+- extendedWaitUntil:
+    visible: "Close|시작하기"
+    timeout: 60000
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- extendedWaitUntil:
+    visible: "시작하기"
+    timeout: 10000
