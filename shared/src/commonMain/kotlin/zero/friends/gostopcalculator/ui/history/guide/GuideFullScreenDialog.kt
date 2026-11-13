@@ -25,12 +25,18 @@ import androidx.compose.ui.unit.sp
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.close
 import zero.friends.gostopcalculator.shared.generated.resources.guide_title
+import zero.friends.gostopcalculator.ui.common.SystemBarAppearance
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun GuideFullScreenDialog(
     onDismiss: () -> Unit = {},
 ) {
+    SystemBarAppearance(
+        isLightStatusBar = false,
+        isLightNavigationBar = false,
+    )
+
     Scaffold(
         modifier = Modifier,
         scaffoldState = rememberScaffoldState()

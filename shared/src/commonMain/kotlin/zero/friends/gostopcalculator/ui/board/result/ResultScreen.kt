@@ -49,6 +49,8 @@ import zero.friends.gostopcalculator.theme.DustyGray
 import zero.friends.gostopcalculator.theme.Gallery
 import zero.friends.gostopcalculator.theme.ManualBackground
 import zero.friends.gostopcalculator.theme.Nero
+import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
+import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
 import zero.friends.gostopcalculator.ui.common.BackHandler
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.ContentsCard
@@ -78,12 +80,15 @@ fun ResultScreen(
     }
 
     val graphicsLayer = rememberGraphicsLayer()
+    val useNativeNavigation = LocalUseNativeNavigation.current
+    val topBarPadding = if (useNativeNavigation) LocalNativeTopBarHeight.current else 0.dp
 
     Scaffold(
         topBar = {
             CenterTextTopBar(
                 text = uiState.gameName,
                 isRed = true,
+                isRedBackground = !useNativeNavigation,
                 onBack = onBackClick,
                 onAction = { onShareClick(graphicsLayer) },
                 actionText = stringResource(Res.string.share)
@@ -96,6 +101,9 @@ fun ResultScreen(
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
+            if (topBarPadding > 0.dp) {
+                Spacer(modifier = Modifier.height(topBarPadding))
+            }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()

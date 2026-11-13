@@ -108,6 +108,7 @@ fun HistoryScreen(
 
     HistoryScreenContent(
         uiState = uiState,
+        isGuideVisible = showGuide,
         event = { event ->
             when (event) {
                 is HistoryEvent.ShowRound -> onShowRound(event.game)
@@ -123,13 +124,16 @@ fun HistoryScreen(
 @Composable
 private fun HistoryScreenContent(
     uiState: HistoryUiState,
+    isGuideVisible: Boolean = false,
     event: (HistoryEvent) -> Unit = {},
     onToggleDebugAd: (() -> Unit)? = null
 ) {
-    SystemBarAppearance(
-        isLightStatusBar = true,
-        isLightNavigationBar = true,
-    )
+    if (!isGuideVisible) {
+        SystemBarAppearance(
+            isLightStatusBar = true,
+            isLightNavigationBar = true,
+        )
+    }
 
     Scaffold { innerPadding ->
         Column(

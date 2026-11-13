@@ -57,6 +57,8 @@ import zero.friends.gostopcalculator.theme.Gray
 import zero.friends.gostopcalculator.theme.Line
 import zero.friends.gostopcalculator.theme.ManualBackground
 import zero.friends.gostopcalculator.theme.Nero
+import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
+import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.GoStopDivider
 import zero.friends.gostopcalculator.ui.common.GridItems
@@ -67,6 +69,19 @@ fun ManualFullScreenDialog(
     manualViewModel: ManualViewModel,
     onDismiss: () -> Unit = {}
 ) {
+    FullScreenDialog(onDismiss = onDismiss) {
+        ManualScreen(
+            manualViewModel = manualViewModel,
+            onBack = onDismiss,
+        )
+    }
+}
+
+@Composable
+fun ManualScreen(
+    manualViewModel: ManualViewModel,
+    onBack: () -> Unit = {}
+) {
     val manualAssetFile = stringResource(Res.string.manual_asset_file)
     LaunchedEffect(manualViewModel, manualAssetFile) {
         manualViewModel.loadManuals(manualAssetFile)
@@ -74,48 +89,48 @@ fun ManualFullScreenDialog(
     val uiState by manualViewModel.uiState().collectAsState()
     val pagerState = rememberPagerState(pageCount = { uiState.manuals.size })
     val scope = rememberCoroutineScope()
+    val topBarPadding = if (LocalUseNativeNavigation.current) LocalNativeTopBarHeight.current else 0.dp
 
-    FullScreenDialog(onDismiss = onDismiss) {
-        Scaffold(
-            modifier = Modifier,
-            scaffoldState = rememberScaffoldState(),
-            topBar = {
-                CenterTextTopBar(
-                    text = stringResource(Res.string.manual_title),
-                    onBack = onDismiss,
-                    isRed = false
-                )
-            }
-        ) { innerPadding ->
-            Column(
+    Scaffold(
+        modifier = Modifier,
+        scaffoldState = rememberScaffoldState(),
+        topBar = {
+            CenterTextTopBar(
+                text = stringResource(Res.string.manual_title),
+                onBack = onBack,
+                isRed = false
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(top = topBarPadding)
+        ) {
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = stringResource(Res.string.manual),
+                fontSize = 24.sp,
+                color = Nero,
+                fontWeight = FontWeight.Bold
+            )
+            ManualGrids(
+                uiState.manuals,
+                pagerState.currentPage,
+                onClick = { scope.launch { pagerState.scrollToPage(it) } }
+            )
+            GoStopDivider()
+            HorizontalPager(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                Text(
-                    modifier = Modifier.padding(16.dp),
-                    text = stringResource(Res.string.manual),
-                    fontSize = 24.sp,
-                    color = Nero,
-                    fontWeight = FontWeight.Bold
-                )
-                ManualGrids(
-                    uiState.manuals,
-                    pagerState.currentPage,
-                    onClick = { scope.launch { pagerState.scrollToPage(it) } }
-                )
-                GoStopDivider()
-                HorizontalPager(
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(color = ManualBackground),
-                    state = pagerState
-                ) { page ->
-                    when (val manual = uiState.manuals[page]) {
-                        is Image -> ImageManual(manual.script, uiState.images)
-                        is Text -> TextManual(manual.script)
-                        is FullImage -> AllCardManual()
-                    }
+                    .weight(1f)
+                    .background(color = ManualBackground),
+                state = pagerState
+            ) { page ->
+                when (val manual = uiState.manuals[page]) {
+                    is Image -> ImageManual(manual.script, uiState.images)
+                    is Text -> TextManual(manual.script)
+                    is FullImage -> AllCardManual()
                 }
             }
         }

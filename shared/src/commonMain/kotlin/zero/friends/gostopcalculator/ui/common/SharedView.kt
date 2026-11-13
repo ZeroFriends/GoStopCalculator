@@ -24,9 +24,11 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,6 +40,10 @@ import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.PlayerResult
+import zero.friends.gostopcalculator.navigation.LocalNativeTopBarUpdater
+import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
+import zero.friends.gostopcalculator.navigation.NativeTopBarActionType
+import zero.friends.gostopcalculator.navigation.NativeTopBarConfig
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.empty_playing_game
 import zero.friends.gostopcalculator.shared.generated.resources.ic_topbar_back
@@ -55,8 +61,49 @@ fun CenterTextTopBar(
     onBack: (() -> Unit)? = null,
     onAction: (() -> Unit)? = null,
     actionIcon: Painter? = null,
-    actionText: String? = null
+    actionText: String? = null,
+    isRedBackground: Boolean = isRed,
+    swipeBackEnabled: Boolean = true,
 ) {
+    val useNativeNavigation = LocalUseNativeNavigation.current
+    if (useNativeNavigation) {
+        val updateTopBar = LocalNativeTopBarUpdater.current
+        val currentOnBack by rememberUpdatedState(onBack)
+        val currentOnAction by rememberUpdatedState(onAction)
+        val hasAction = onAction != null
+        val actionType = when {
+            !hasAction -> NativeTopBarActionType.NONE
+            actionIcon != null -> NativeTopBarActionType.CLOSE_ICON
+            actionText != null -> NativeTopBarActionType.TEXT
+            else -> NativeTopBarActionType.NONE
+        }
+        val showBack = onBack != null
+
+        LaunchedEffect(
+            text,
+            isRedBackground,
+            showBack,
+            swipeBackEnabled,
+            actionType,
+            actionText,
+            hasAction,
+        ) {
+            updateTopBar(
+                NativeTopBarConfig(
+                    title = text,
+                    isRedBackground = isRedBackground,
+                    showBack = showBack,
+                    swipeBackEnabled = swipeBackEnabled,
+                    actionType = actionType,
+                    actionText = actionText,
+                    onBack = if (showBack) ({ currentOnBack?.invoke() }) else null,
+                    onAction = if (hasAction) ({ currentOnAction?.invoke() }) else null,
+                )
+            )
+        }
+        return
+    }
+
     val iconModifier = Modifier
         .defaultMinSize(60.dp, 60.dp)
 

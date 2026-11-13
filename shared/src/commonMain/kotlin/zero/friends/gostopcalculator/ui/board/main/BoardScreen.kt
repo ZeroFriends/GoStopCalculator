@@ -53,6 +53,8 @@ import zero.friends.gostopcalculator.shared.generated.resources.income_history
 import zero.friends.gostopcalculator.shared.generated.resources.info_game_start
 import zero.friends.gostopcalculator.shared.generated.resources.rule_title_text
 import zero.friends.gostopcalculator.shared.generated.resources.start_game
+import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
+import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.ContentsCard
 import zero.friends.gostopcalculator.ui.common.EmptyHistory
@@ -138,6 +140,8 @@ private fun BoardScreen(
     uiState: BoardUiState = BoardUiState(),
     event: (BoardEvent) -> Unit = {},
 ) {
+    val useNativeNavigation = LocalUseNativeNavigation.current
+    val nativeTopBarHeight = if (useNativeNavigation) LocalNativeTopBarHeight.current else 0.dp
     val historyListState = rememberLazyListState()
     val showBottomGradient by remember { derivedStateOf { historyListState.canScrollForward } }
     val showTopGradient by remember { derivedStateOf { historyListState.canScrollBackward } }
@@ -164,7 +168,12 @@ private fun BoardScreen(
                 state = historyListState,
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
-                contentPadding = PaddingValues(16.dp)
+                contentPadding = PaddingValues(
+                    top = 16.dp + nativeTopBarHeight,
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp,
+                )
             ) {
                 item {
                     IncomeHistory(
@@ -203,7 +212,7 @@ private fun BoardScreen(
                 }
             }
 
-            if (showTopGradient) {
+            if (showTopGradient && !useNativeNavigation) {
                 val topGradientColor = Color.White
                 Box(
                     modifier = Modifier

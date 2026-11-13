@@ -41,5 +41,8 @@ sealed interface Route {
 
         @Serializable
         data class Calculate(val gameId: Long) : Board
+
+        @Serializable
+        data object Manual : Board
     }
 }

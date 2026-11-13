@@ -42,6 +42,8 @@ import zero.friends.gostopcalculator.shared.generated.resources.ic_unchecked_cir
 import zero.friends.gostopcalculator.shared.generated.resources.player_list
 import zero.friends.gostopcalculator.shared.generated.resources.start
 import zero.friends.gostopcalculator.shared.generated.resources.start_description
+import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
+import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
 import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.theme.OrangeyRed
 import zero.friends.gostopcalculator.ui.common.BackHandler
@@ -100,6 +102,8 @@ private fun PrepareScreen(
     uiState: PrepareUiState = PrepareUiState(),
     event: (PrepareEvent) -> Unit = {},
 ) {
+    val topBarPadding = if (LocalUseNativeNavigation.current) LocalNativeTopBarHeight.current else 0.dp
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -116,7 +120,11 @@ private fun PrepareScreen(
             buttonEnabled = uiState.selectedPlayers.size >= 2,
             onClick = { event(PrepareEvent.Complete) },
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(
+                modifier = Modifier
+                    .padding(top = topBarPadding)
+                    .padding(16.dp)
+            ) {
                 DescriptionBox(
                     mainText = stringResource(Res.string.start),
                     subText = stringResource(Res.string.start_description)

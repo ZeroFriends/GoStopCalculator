@@ -16,6 +16,10 @@ import platform.UIKit.UIActivityType
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 import platform.UIKit.UIImage
+import platform.UIKit.UIViewController
+import platform.UIKit.UIWindow
+import platform.UIKit.UIWindowScene
+import platform.UIKit.popoverPresentationController
 import platform.darwin.NSObject
 
 @Inject
@@ -35,8 +39,12 @@ actual class ScreenCaptureManager actual constructor() {
                 applicationActivities = null
             )
 
-            val rootViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
-            rootViewController?.presentViewController(
+            val presenter = topViewController() ?: return
+            activityViewController.popoverPresentationController?.apply {
+                sourceView = presenter.view
+                sourceRect = presenter.view.bounds
+            }
+            presenter.presentViewController(
                 viewControllerToPresent = activityViewController,
                 animated = true,
                 completion = null
@@ -44,6 +52,19 @@ actual class ScreenCaptureManager actual constructor() {
         } catch (e: Throwable) {
             // ignore all exceptions and errors
         }
+    }
+
+    private fun topViewController(): UIViewController? {
+        val window = UIApplication.sharedApplication.connectedScenes
+            .mapNotNull { it as? UIWindowScene }
+            .flatMap { scene -> scene.windows.mapNotNull { it as? UIWindow } }
+            .firstOrNull { it.isKeyWindow() }
+            ?: UIApplication.sharedApplication.keyWindow
+        var top = window?.rootViewController
+        while (top?.presentedViewController != null) {
+            top = top.presentedViewController
+        }
+        return top
     }
 }
 

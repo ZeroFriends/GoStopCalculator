@@ -8,9 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Scaffold
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
@@ -30,6 +27,7 @@ import zero.friends.gostopcalculator.ui.board.rule.RuleLogScreen
 import zero.friends.gostopcalculator.ui.board.rule.RuleLogViewModel
 import zero.friends.gostopcalculator.ui.board.score.ScoreScreen
 import zero.friends.gostopcalculator.ui.board.score.ScoreViewModel
+import zero.friends.gostopcalculator.ui.board.score.manual.ManualScreen
 import zero.friends.gostopcalculator.ui.board.score.manual.ManualViewModel
 import zero.friends.gostopcalculator.ui.history.HistoryScreen
 import zero.friends.gostopcalculator.ui.history.HistoryViewModel
@@ -49,12 +47,29 @@ fun NavController.safePopBackStack(onCloseApp: () -> Unit = {}) {
 fun AppNavigator(
     appComponent: AppComponent = remember { createAppComponent() },
     onCloseApp: () -> Unit = {},
-    onShowAd: (onCompleted: () -> Unit) -> Unit = { it() }
+    onShowAd: (onCompleted: () -> Unit) -> Unit = { it() },
+    onNativeNavigate: ((NativeNavCommand) -> Unit)? = null,
+    onNativePop: (() -> Unit)? = null,
 ) {
-    val coroutineScope = rememberCoroutineScope()
-
     GoStopTheme {
-        val navController = rememberNavController(startDestination = Route.Splash)
+        val navController = rememberNavController(
+            startDestination = Route.Splash,
+            onNativeNavigate = onNativeNavigate,
+            onNativePop = onNativePop,
+        )
+        val navigateRoute: (Route, NativePopTarget, Boolean) -> Unit = { targetRoute, popTarget, inclusive ->
+            navController.navigate(targetRoute) {
+                when (popTarget) {
+                    NativePopTarget.NONE -> Unit
+                    NativePopTarget.HISTORY -> popUpTo<Route.History> { this.inclusive = inclusive }
+                    NativePopTarget.BOARD_MAIN -> popUpTo<Route.Board.Main> { this.inclusive = inclusive }
+                }
+            }
+        }
+        val popRoute: () -> Unit = {
+            navController.safePopBackStack(onCloseApp)
+        }
+
         NavHost(
             navController = navController
         ) {
@@ -98,189 +113,300 @@ fun AppNavigator(
                 )
             }
 
-            composable<Route.Precondition.Player> {
-                val playerViewModel: PlayerViewModel = viewModel { appComponent.playerViewModel }
-                PlayerScreen(
-                    viewModel = playerViewModel,
-                    onNext = { players, gameName ->
-                        val playersJson = Json.encodeToString(players)
-                        navController.navigate(Route.Precondition.Rule(playersJson = playersJson, gameName = gameName))
-                    },
-                    onBack = {
-                        navController.safePopBackStack(onCloseApp)
-                    }
+            composable<Route.Precondition.Player> { route ->
+                RouteScreenContent(
+                    route = route,
+                    appComponent = appComponent,
+                    onNavigate = navigateRoute,
+                    onBack = popRoute,
+                    onShowAd = onShowAd,
                 )
             }
 
-            composable<Route.Precondition.Rule> {
-                val route = requireNotNull(navController.currentRoute as? Route.Precondition.Rule)
-                val players: List<Player> = runCatching {
-                    Json.decodeFromString<List<Player>>(route.playersJson)
-                }.getOrDefault(emptyList())
-
-                val ruleViewModel: RuleViewModel = viewModel(key = route.playersJson + route.gameName) {
-                    appComponent.ruleViewModelFactory(players, route.gameName)
-                }
-
-                RuleScreen(
-                    ruleViewModel = ruleViewModel,
-                    onNext = { gameId ->
-                        navController.navigate(Route.Board.Main(gameId)) {
-                            popUpTo<Route.History> { inclusive = false }
-                        }
-                    },
-                    onBack = {
-                        navController.safePopBackStack(onCloseApp)
-                    }
+            composable<Route.Precondition.Rule> { route ->
+                RouteScreenContent(
+                    route = route,
+                    appComponent = appComponent,
+                    onNavigate = navigateRoute,
+                    onBack = popRoute,
+                    onShowAd = onShowAd,
                 )
             }
 
-            composable<Route.Board.Main> {
-                val route = requireNotNull(navController.currentRoute as? Route.Board.Main)
-
-                val boardViewModel: BoardViewModel = viewModel(key = route.gameId.toString()) {
-                    appComponent.boardViewModelFactory(route.gameId)
-                }
-
-                BoardScreen(
-                    boardViewModel = boardViewModel,
-                    onNext = { gameId ->
-                        navController.navigate(Route.Board.Prepare(gameId))
-                    },
-                    onBack = {
-                        navController.navigate(Route.History) {
-                            popUpTo<Route.History> { inclusive = true }
-                        }
-                    },
-                    openDetailScreen = { gameId, roundId ->
-                        onShowAd {
-                            navController.navigate(Route.Board.Detail(gameId, roundId))
-                        }
-                    },
-                    openCalculated = { gameId ->
-                        onShowAd {
-                            navController.navigate(Route.Board.Calculate(gameId))
-                        }
-                    },
-                    openRule = { gameId ->
-                        navController.navigate(Route.Board.RuleLog(gameId))
-                    }
+            composable<Route.Board.Main> { route ->
+                RouteScreenContent(
+                    route = route,
+                    appComponent = appComponent,
+                    onNavigate = navigateRoute,
+                    onBack = popRoute,
+                    onShowAd = onShowAd,
                 )
             }
 
-            composable<Route.Board.Prepare> {
-                val route = requireNotNull(navController.currentRoute as? Route.Board.Prepare)
-
-                val prepareViewModel: PrepareViewModel = viewModel(key = route.gameId.toString()) {
-                    appComponent.prepareViewModelFactory(route.gameId)
-                }
-
-                PrepareScreen(
-                    prepareViewModel = prepareViewModel,
-                    onComplete = { gameId, roundId ->
-                        navController.navigate(Route.Board.Score(gameId, roundId)) {
-                            popUpTo<Route.Board.Main> { inclusive = false }
-                        }
-                    },
-                    onBack = {
-                        navController.safePopBackStack(onCloseApp)
-                    }
+            composable<Route.Board.Prepare> { route ->
+                RouteScreenContent(
+                    route = route,
+                    appComponent = appComponent,
+                    onNavigate = navigateRoute,
+                    onBack = popRoute,
+                    onShowAd = onShowAd,
                 )
             }
 
-            composable<Route.Board.Score> {
-                val route = requireNotNull(navController.currentRoute as? Route.Board.Score)
-
-                val scoreViewModel: ScoreViewModel = viewModel(key = "${route.gameId}_${route.roundId}") {
-                    appComponent.scoreViewModelFactory(route.gameId, route.roundId)
-                }
-                val manualViewModel: ManualViewModel = viewModel(key = "${route.gameId}_${route.roundId}_manual") {
-                    appComponent.manualViewModel
-                }
-
-                ScoreScreen(
-                    scoreViewModel = scoreViewModel,
-                    manualViewModel = manualViewModel,
-                    onBack = {
-                        navController.safePopBackStack(onCloseApp)
-                    },
-                    onExit = { gameId ->
-                        navController.navigate(Route.Board.Main(gameId)) {
-                            popUpTo<Route.Board.Main> { inclusive = true }
-                        }
-                    },
-                    onComplete = { gameId, roundId ->
-                        onShowAd {
-                            navController.navigate(Route.Board.Detail(gameId, roundId)) {
-                                popUpTo<Route.Board.Main> { inclusive = false }
-                            }
-                        }
-                    }
+            composable<Route.Board.Score> { route ->
+                RouteScreenContent(
+                    route = route,
+                    appComponent = appComponent,
+                    onNavigate = navigateRoute,
+                    onBack = popRoute,
+                    onShowAd = onShowAd,
                 )
             }
 
-            composable<Route.Board.Calculate> {
-                val route = requireNotNull(navController.currentRoute as? Route.Board.Calculate)
-
-                val resultViewModel: ResultViewModel = viewModel(key = "calculate_${route.gameId}") {
-                    appComponent.resultViewModelFactory(route.gameId, 0L, ScreenType.Calculate)
-                }
-                val uiState by resultViewModel.uiState.collectAsState()
-
-                ResultScreen(
-                    uiState = uiState,
-                    roundTraceFormatter = appComponent.roundTraceFormatter,
-                    onBackClick = {
-                        navController.safePopBackStack(onCloseApp)
-                    },
-                    onShareClick = { graphicsLayer ->
-                        coroutineScope.launch {
-                            appComponent.screenCaptureManager.captureAndShare(graphicsLayer)
-                            onShowAd { }
-                        }
-                    }
+            composable<Route.Board.Calculate> { route ->
+                RouteScreenContent(
+                    route = route,
+                    appComponent = appComponent,
+                    onNavigate = navigateRoute,
+                    onBack = popRoute,
+                    onShowAd = onShowAd,
                 )
             }
 
-            composable<Route.Board.Detail> {
-                val route = requireNotNull(navController.currentRoute as? Route.Board.Detail)
-
-                val resultViewModel: ResultViewModel = viewModel(key = "detail_${route.gameId}_${route.roundId}") {
-                    appComponent.resultViewModelFactory(route.gameId, route.roundId, ScreenType.Detail)
-                }
-                val uiState by resultViewModel.uiState.collectAsState()
-
-                ResultScreen(
-                    uiState = uiState,
-                    roundTraceFormatter = appComponent.roundTraceFormatter,
-                    onBackClick = {
-                        navController.navigate(Route.Board.Main(route.gameId)) {
-                            popUpTo<Route.Board.Main> { inclusive = true }
-                        }
-                    },
-                    onShareClick = { graphicsLayer ->
-                        coroutineScope.launch {
-                            appComponent.screenCaptureManager.captureAndShare(graphicsLayer)
-                            onShowAd { }
-                        }
-                    }
+            composable<Route.Board.Detail> { route ->
+                RouteScreenContent(
+                    route = route,
+                    appComponent = appComponent,
+                    onNavigate = navigateRoute,
+                    onBack = popRoute,
+                    onShowAd = onShowAd,
                 )
             }
 
-            composable<Route.Board.RuleLog> {
-                val route = requireNotNull(navController.currentRoute as? Route.Board.RuleLog)
+            composable<Route.Board.RuleLog> { route ->
+                RouteScreenContent(
+                    route = route,
+                    appComponent = appComponent,
+                    onNavigate = navigateRoute,
+                    onBack = popRoute,
+                    onShowAd = onShowAd,
+                )
+            }
 
-                val ruleLogViewModel: RuleLogViewModel = viewModel(key = route.gameId.toString()) {
-                    appComponent.ruleLogViewModelFactory(route.gameId)
-                }
-
-                RuleLogScreen(
-                    ruleLogViewModel = ruleLogViewModel,
-                    onBack = {
-                        navController.safePopBackStack(onCloseApp)
-                    }
+            composable<Route.Board.Manual> { route ->
+                RouteScreenContent(
+                    route = route,
+                    appComponent = appComponent,
+                    onNavigate = navigateRoute,
+                    onBack = popRoute,
+                    onShowAd = onShowAd,
                 )
             }
         }
+    }
+}
+
+@Composable
+fun RouteScreenContent(
+    route: Route,
+    appComponent: AppComponent,
+    onNavigate: (route: Route, popTarget: NativePopTarget, inclusive: Boolean) -> Unit,
+    onBack: () -> Unit,
+    onShowAd: (onCompleted: () -> Unit) -> Unit = { it() },
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val useNativeNavigation = LocalUseNativeNavigation.current
+
+    when (route) {
+        is Route.Precondition.Player -> {
+            val playerViewModel: PlayerViewModel = viewModel { appComponent.playerViewModel }
+            PlayerScreen(
+                viewModel = playerViewModel,
+                onNext = { players, gameName ->
+                    val playersJson = Json.encodeToString(players)
+                    onNavigate(
+                        Route.Precondition.Rule(playersJson = playersJson, gameName = gameName),
+                        NativePopTarget.NONE,
+                        false,
+                    )
+                },
+                onBack = onBack,
+            )
+        }
+
+        is Route.Precondition.Rule -> {
+            val players: List<Player> = runCatching {
+                Json.decodeFromString<List<Player>>(route.playersJson)
+            }.getOrDefault(emptyList())
+
+            val ruleViewModel: RuleViewModel = viewModel(key = route.playersJson + route.gameName) {
+                appComponent.ruleViewModelFactory(players, route.gameName)
+            }
+
+            RuleScreen(
+                ruleViewModel = ruleViewModel,
+                onNext = { gameId ->
+                    onNavigate(
+                        Route.Board.Main(gameId),
+                        NativePopTarget.HISTORY,
+                        false,
+                    )
+                },
+                onBack = onBack,
+            )
+        }
+
+        is Route.Board.Main -> {
+            val boardViewModel: BoardViewModel = viewModel(key = route.gameId.toString()) {
+                appComponent.boardViewModelFactory(route.gameId)
+            }
+
+            BoardScreen(
+                boardViewModel = boardViewModel,
+                onNext = { gameId ->
+                    onNavigate(Route.Board.Prepare(gameId), NativePopTarget.NONE, false)
+                },
+                onBack = {
+                    onNavigate(Route.History, NativePopTarget.HISTORY, true)
+                },
+                openDetailScreen = { gameId, roundId ->
+                    onShowAd {
+                        onNavigate(Route.Board.Detail(gameId, roundId), NativePopTarget.NONE, false)
+                    }
+                },
+                openCalculated = { gameId ->
+                    onShowAd {
+                        onNavigate(Route.Board.Calculate(gameId), NativePopTarget.NONE, false)
+                    }
+                },
+                openRule = { gameId ->
+                    onNavigate(Route.Board.RuleLog(gameId), NativePopTarget.NONE, false)
+                }
+            )
+        }
+
+        is Route.Board.Prepare -> {
+            val prepareViewModel: PrepareViewModel = viewModel(key = route.gameId.toString()) {
+                appComponent.prepareViewModelFactory(route.gameId)
+            }
+
+            PrepareScreen(
+                prepareViewModel = prepareViewModel,
+                onComplete = { gameId, roundId ->
+                    onNavigate(
+                        Route.Board.Score(gameId, roundId),
+                        NativePopTarget.BOARD_MAIN,
+                        false,
+                    )
+                },
+                onBack = onBack,
+            )
+        }
+
+        is Route.Board.Score -> {
+            val scoreViewModel: ScoreViewModel = viewModel(key = "${route.gameId}_${route.roundId}") {
+                appComponent.scoreViewModelFactory(route.gameId, route.roundId)
+            }
+            val manualViewModel: ManualViewModel = viewModel(key = "${route.gameId}_${route.roundId}_manual") {
+                appComponent.manualViewModel
+            }
+
+            ScoreScreen(
+                scoreViewModel = scoreViewModel,
+                manualViewModel = manualViewModel,
+                onBack = { onBack() },
+                onExit = { gameId ->
+                    onNavigate(
+                        Route.Board.Main(gameId),
+                        NativePopTarget.BOARD_MAIN,
+                        true,
+                    )
+                },
+                onComplete = { gameId, roundId ->
+                    onShowAd {
+                        onNavigate(
+                            Route.Board.Detail(gameId, roundId),
+                            NativePopTarget.BOARD_MAIN,
+                            false,
+                        )
+                    }
+                },
+                onOpenManual = if (useNativeNavigation) {
+                    { onNavigate(Route.Board.Manual, NativePopTarget.NONE, false) }
+                } else {
+                    null
+                },
+            )
+        }
+
+        is Route.Board.Calculate -> {
+            val resultViewModel: ResultViewModel = viewModel(key = "calculate_${route.gameId}") {
+                appComponent.resultViewModelFactory(route.gameId, 0L, ScreenType.Calculate)
+            }
+            val uiState by resultViewModel.uiState.collectAsState()
+
+            ResultScreen(
+                uiState = uiState,
+                roundTraceFormatter = appComponent.roundTraceFormatter,
+                onBackClick = onBack,
+                onShareClick = { graphicsLayer ->
+                    coroutineScope.launch {
+                        appComponent.screenCaptureManager.captureAndShare(graphicsLayer)
+                        onShowAd { }
+                    }
+                }
+            )
+        }
+
+        is Route.Board.Detail -> {
+            val resultViewModel: ResultViewModel = viewModel(key = "detail_${route.gameId}_${route.roundId}") {
+                appComponent.resultViewModelFactory(route.gameId, route.roundId, ScreenType.Detail)
+            }
+            val uiState by resultViewModel.uiState.collectAsState()
+
+            ResultScreen(
+                uiState = uiState,
+                roundTraceFormatter = appComponent.roundTraceFormatter,
+                onBackClick = {
+                    onNavigate(
+                        Route.Board.Main(route.gameId),
+                        NativePopTarget.BOARD_MAIN,
+                        true,
+                    )
+                },
+                onShareClick = { graphicsLayer ->
+                    coroutineScope.launch {
+                        appComponent.screenCaptureManager.captureAndShare(graphicsLayer)
+                        onShowAd { }
+                    }
+                }
+            )
+        }
+
+        is Route.Board.RuleLog -> {
+            val ruleLogViewModel: RuleLogViewModel = viewModel(key = route.gameId.toString()) {
+                appComponent.ruleLogViewModelFactory(route.gameId)
+            }
+
+            RuleLogScreen(
+                ruleLogViewModel = ruleLogViewModel,
+                onBack = onBack,
+            )
+        }
+
+        is Route.Board.Manual -> {
+            val manualViewModel: ManualViewModel = viewModel(key = "manual_screen") {
+                appComponent.manualViewModel
+            }
+
+            ManualScreen(
+                manualViewModel = manualViewModel,
+                onBack = onBack,
+            )
+        }
+
+        is Route.Splash,
+        is Route.History,
+        is Route.Board.End -> Unit
     }
 }

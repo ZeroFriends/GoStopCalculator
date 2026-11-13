@@ -33,7 +33,8 @@ fun ScoreScreen(
     onBack: (gameId: Long?) -> Unit,
     onExit: (gameId: Long) -> Unit,
     onComplete: (gameId: Long, roundId: Long) -> Unit,
-    onShowToast: (String) -> Unit = {}
+    onShowToast: (String) -> Unit = {},
+    onOpenManual: (() -> Unit)? = null,
 ) {
     BackHandler(enabled = true) {
         onBack(null)
@@ -45,6 +46,14 @@ fun ScoreScreen(
     var openExtraDialog by remember { mutableStateOf(false) }
     var threeFuckDialog by remember { mutableStateOf(false) }
     var completeDialog by remember { mutableStateOf(false) }
+
+    val openManualAction: () -> Unit = {
+        if (onOpenManual != null) {
+            onOpenManual()
+        } else {
+            openExtraDialog = true
+        }
+    }
 
     LaunchedEffect(Unit) {
         scoreViewModel.escapeEvent()
@@ -136,7 +145,7 @@ fun ScoreScreen(
                         threeFuckDialog = shouldShowDialog
                     }
                 },
-                onShowManual = { openExtraDialog = true }
+                onShowManual = openManualAction
             )
         }
         is Winner -> {
@@ -152,7 +161,7 @@ fun ScoreScreen(
                     onExit(uiState.game.id)
                 },
                 onUpdateWinner = scoreViewModel::updateWinner,
-                onShowManual = { openExtraDialog = true }
+                onShowManual = openManualAction
             )
         }
         is Loser -> {
@@ -168,7 +177,7 @@ fun ScoreScreen(
                     onExit(uiState.game.id)
                 },
                 onSelectLoser = scoreViewModel::selectLoser,
-                onShowManual = { openExtraDialog = true }
+                onShowManual = openManualAction
             )
         }
     }
