@@ -161,6 +161,21 @@ launch_platform_pool() {
                 if maestro --device "$dev" test "${extra_flags[@]}" "$sc" > "$log_file" 2>&1; then
                     first_run=0
                     echo "   ✅ [$platform:$dev] 성공: $sc_name"
+                elif [[ "$platform" == "ios" ]] && {
+                    debug_dir=$(grep -E '^/.*/\.maestro/tests/' "$log_file" | tail -n 1 || true)
+                    grep -qiE 'testHttpServer.*failed|kAXErrorInvalidUIElement|ConnectException|SocketTimeoutException' "$log_file" || \
+                    ([[ -n "$debug_dir" && -d "$debug_dir" ]] && find "$debug_dir" -name "device-xctest.log" -exec grep -qiE 'testHttpServer.*failed|kAXErrorInvalidUIElement' {} + 2>/dev/null)
+                }; then
+                    echo "   🔄 [$platform:$dev] iOS XCTest 드라이버 일시 오류 감지 — 1회 재시도: $sc_name"
+                    sleep 2
+                    if maestro --device "$dev" test "$sc" > "$log_file" 2>&1; then
+                        first_run=0
+                        echo "   ✅ [$platform:$dev] 재시도 성공: $sc_name"
+                    else
+                        first_run=1
+                        echo "   ❌ [$platform:$dev] 실패 (재시도 후): $sc_name (로그: $log_file)"
+                        dev_failed=1
+                    fi
                 else
                     echo "   ❌ [$platform:$dev] 실패: $sc_name (로그: $log_file)"
                     dev_failed=1

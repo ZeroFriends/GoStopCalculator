@@ -6,13 +6,6 @@ appId: zero.friends.gostopcalculator
 # - 언어와 무관하게 동작하므로 다국어 플로우에서도 그대로 재사용한다.
 # ==========================================
 
-# 포맷 지정자 미치환: "플레이어 %d", "%1$s원" 등
-- assertNotVisible: "(?s).*%(\\d+\\$)?[dsf].*"
-
-# 리소스/데이터 누락: null, undefined, NaN
-- assertNotVisible: "(?s).*\\bnull\\b.*"
-- assertNotVisible: "(?s).*\\bundefined\\b.*"
-- assertNotVisible: "(?s).*\\bNaN\\b.*"
-
-# 이스케이프 미처리: 리터럴 "\n" 노출
-- assertNotVisible: "(?s).*\\\\n.*"
+# 포맷 지정자 미치환(%d/%s/%f), 리소스/데이터 누락(null/undefined/NaN), 리터럴 "\n" 노출 일괄 검증
+# 단일 assertNotVisible로 통합해 iOS XCTest viewHierarchy 폴링 부하 및 InputUI teardown 레이스를 줄인다.
+- assertNotVisible: "(?s).*(%(\\d+\\$)?[dsf]|\\b(null|undefined|NaN)\\b|\\\\n).*"
