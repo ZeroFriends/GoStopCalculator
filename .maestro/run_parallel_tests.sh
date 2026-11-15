@@ -94,6 +94,23 @@ reset_android_app_state() {
     adb -s "$dev" shell cmd locale set-app-locales "$pkg" --locales ko-KR > /dev/null 2>&1 || true
 }
 
+has_ios_driver_transient_error() {
+    local log_file="$1"
+    if grep -qiE 'testHttpServer.*failed|kAXErrorInvalidUIElement|ConnectException|SocketTimeoutException' "$log_file"; then
+        return 0
+    fi
+    local debug_dir
+    debug_dir=$(grep -oE '/[^[:space:]]+/\.maestro/tests/[^[:space:]]+' "$log_file" | tail -n 1 || true)
+    if [[ -n "$debug_dir" && -d "$debug_dir" ]]; then
+        while IFS= read -r -d '' xctest_log; do
+            if grep -qiE 'testHttpServer.*failed|kAXErrorInvalidUIElement' "$xctest_log" 2>/dev/null; then
+                return 0
+            fi
+        done < <(find "$debug_dir" -name "device-xctest.log" -type f -print0 2>/dev/null)
+    fi
+    return 1
+}
+
 # 3. 실행할 시나리오 파일 탐색
 SCENARIOS=($(find "$SCENARIO_DIR" -name "*.yaml" -type f | sort))
 SCENARIO_COUNT=${#SCENARIOS[@]}
@@ -161,22 +178,20 @@ launch_platform_pool() {
                 if maestro --device "$dev" test "${extra_flags[@]}" "$sc" > "$log_file" 2>&1; then
                     first_run=0
                     echo "   ✅ [$platform:$dev] 성공: $sc_name"
-                elif [[ "$platform" == "ios" ]] && {
-                    debug_dir=$(grep -E '^/.*/\.maestro/tests/' "$log_file" | tail -n 1 || true)
-                    grep -qiE 'testHttpServer.*failed|kAXErrorInvalidUIElement|ConnectException|SocketTimeoutException' "$log_file" || \
-                    ([[ -n "$debug_dir" && -d "$debug_dir" ]] && find "$debug_dir" -name "device-xctest.log" -exec grep -qiE 'testHttpServer.*failed|kAXErrorInvalidUIElement' {} + 2>/dev/null)
-                }; then
+                elif [[ "$platform" == "ios" ]] && has_ios_driver_transient_error "$log_file"; then
                     echo "   🔄 [$platform:$dev] iOS XCTest 드라이버 일시 오류 감지 — 1회 재시도: $sc_name"
                     sleep 2
-                    if maestro --device "$dev" test "$sc" > "$log_file" 2>&1; then
+                    retry_log_file="${log_file%.log}.retry.log"
+                    if maestro --device "$dev" test "$sc" > "$retry_log_file" 2>&1; then
                         first_run=0
-                        echo "   ✅ [$platform:$dev] 재시도 성공: $sc_name"
+                        echo "   ✅ [$platform:$dev] 재시도 성공: $sc_name (로그: $retry_log_file)"
                     else
                         first_run=1
-                        echo "   ❌ [$platform:$dev] 실패 (재시도 후): $sc_name (로그: $log_file)"
+                        echo "   ❌ [$platform:$dev] 실패 (재시도 후): $sc_name (로그: $retry_log_file)"
                         dev_failed=1
                     fi
                 else
+                    first_run=1
                     echo "   ❌ [$platform:$dev] 실패: $sc_name (로그: $log_file)"
                     dev_failed=1
                 fi

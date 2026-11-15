@@ -86,6 +86,7 @@ fun GuideFullScreenDialog(
                     onAction = onDismiss,
                     actionIcon = painterResource(Res.drawable.ic_topbar_close),
                     isRed = false,
+                    isLightNavigationBar = false,
                     onBack = if (isStartPage) {
                         null
                     } else {
@@ -94,11 +95,6 @@ fun GuideFullScreenDialog(
                 )
             }
         ) { innerPadding ->
-            SystemBarAppearance(
-                isLightStatusBar = true,
-                isLightNavigationBar = false,
-            )
-
             Box(
                 modifier = Modifier
                     .fillMaxSize()

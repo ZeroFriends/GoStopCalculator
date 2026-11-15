@@ -123,9 +123,10 @@ fun BoardScreen(
             },
             onClick = {
                 val roundId = openDialog
-                requireNotNull(roundId)
-                boardViewModel.deleteRound(roundId)
                 openDialog = null
+                if (roundId != null) {
+                    boardViewModel.deleteRound(roundId)
+                }
             },
             confirmText = stringResource(Res.string.delete),
             titleText = stringResource(Res.string.delete_dialog_title)

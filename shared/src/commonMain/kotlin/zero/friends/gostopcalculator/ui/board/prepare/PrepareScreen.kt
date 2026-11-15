@@ -23,13 +23,17 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Game
@@ -72,6 +76,8 @@ fun PrepareScreen(
     val scaffoldState = rememberScaffoldState()
     val uiState by prepareViewModel.uiState().collectAsState()
     val failOverGamerAlert = stringResource(Res.string.fail_over_gamer)
+    val scope = rememberCoroutineScope()
+    var isSubmitting by remember { mutableStateOf(false) }
 
     PrepareScreen(
         scaffoldState = scaffoldState,
@@ -82,13 +88,19 @@ fun PrepareScreen(
                     onBack()
                 }
                 PrepareEvent.Complete -> {
-                    prepareViewModel.createNewRound { roundId ->
-                        onComplete(uiState.game.id, roundId)
+                    if (!isSubmitting) {
+                        isSubmitting = true
+                        prepareViewModel.createNewRound { roundId ->
+                            onComplete(uiState.game.id, roundId)
+                        }
                     }
                 }
                 is PrepareEvent.OnClickPlayer -> {
                     prepareViewModel.onClickPlayer(event.isCheck, event.player) {
                         onShowToast(failOverGamerAlert)
+                        scope.launch {
+                            scaffoldState.snackbarHostState.showSnackbar(failOverGamerAlert)
+                        }
                     }
                 }
             }

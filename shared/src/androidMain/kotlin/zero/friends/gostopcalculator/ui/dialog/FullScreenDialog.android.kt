@@ -3,6 +3,7 @@ package zero.friends.gostopcalculator.ui.dialog
 import android.graphics.Color
 import android.os.Build
 import android.view.ViewParent
+import android.view.WindowManager
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -32,6 +33,15 @@ actual fun FullScreenDialog(onDismiss: () -> Unit, content: @Composable () -> Un
                     }
                     val window = (parent as? DialogWindowProvider)?.window ?: return@SideEffect
                     WindowCompat.setDecorFitsSystemWindows(window, false)
+                    window.attributes = window.attributes.apply {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            layoutInDisplayCutoutMode =
+                                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                            layoutInDisplayCutoutMode =
+                                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                        }
+                    }
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
                         @Suppress("DEPRECATION")
                         window.statusBarColor = Color.TRANSPARENT

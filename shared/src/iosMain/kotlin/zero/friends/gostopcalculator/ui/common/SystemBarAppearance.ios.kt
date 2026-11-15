@@ -16,24 +16,18 @@ actual fun SystemBarAppearance(
     if (LocalUseNativeNavigation.current) return
 
     SideEffect {
-        val targetStyle = if (isLightStatusBar) {
-            UIUserInterfaceStyle.UIUserInterfaceStyleLight
-        } else {
-            UIUserInterfaceStyle.UIUserInterfaceStyleDark
-        }
-
         val windows = UIApplication.sharedApplication.connectedScenes
             .mapNotNull { it as? UIWindowScene }
             .flatMap { scene -> scene.windows.mapNotNull { it as? UIWindow } }
 
         if (windows.isNotEmpty()) {
             windows.forEach { window ->
-                window.overrideUserInterfaceStyle = targetStyle
+                window.overrideUserInterfaceStyle = UIUserInterfaceStyle.UIUserInterfaceStyleLight
                 window.rootViewController?.setNeedsStatusBarAppearanceUpdate()
             }
         } else {
             UIApplication.sharedApplication.keyWindow?.let { keyWindow ->
-                keyWindow.overrideUserInterfaceStyle = targetStyle
+                keyWindow.overrideUserInterfaceStyle = UIUserInterfaceStyle.UIUserInterfaceStyleLight
                 keyWindow.rootViewController?.setNeedsStatusBarAppearanceUpdate()
             }
         }

@@ -64,6 +64,7 @@ fun CenterTextTopBar(
     actionText: String? = null,
     isRedBackground: Boolean = isRed,
     swipeBackEnabled: Boolean = true,
+    isLightNavigationBar: Boolean = true,
 ) {
     val useNativeNavigation = LocalUseNativeNavigation.current
     if (useNativeNavigation) {
@@ -112,7 +113,7 @@ fun CenterTextTopBar(
 
     SystemBarAppearance(
         isLightStatusBar = !isRed,
-        isLightNavigationBar = true,
+        isLightNavigationBar = isLightNavigationBar,
     )
 
     Surface(

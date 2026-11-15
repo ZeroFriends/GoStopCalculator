@@ -188,48 +188,49 @@ class ScoreViewModel(
                 _toast.emit(getString(Res.string.over_point_alert, MAX_POINT.separateComma()))
                 return@launch
             }
+            val boundedGo = go.coerceIn(0L, MAX_GO_COUNT).toInt()
             _uiState.update { state ->
-                val goValue = go.toInt()
-                    val newGamers = state.playerResults.map {
-                        if (it.id == gamer.id) {
-                            it.copy(score = point.toInt(), go = goValue)
-                        } else {
-                            it.copy(score = 0, go = 0)
-                        }
+                val newGamers = state.playerResults.map {
+                    if (it.id == gamer.id) {
+                        it.copy(score = point.toInt(), go = boundedGo)
+                    } else {
+                        it.copy(score = 0, go = 0)
                     }
-                    val hasWinnerInput = newGamers.any { it.score != 0 || it.go != 0 }
-                    state.copy(
-                        phase = Winner(hasWinnerInput),
-                        winner = if (hasWinnerInput) gamer.copy(
-                            score = point.toInt(),
-                            go = goValue,
-                            winnerOption = WinnerOption.Winner
-                        ) else null,
-                        playerResults = newGamers
-                    )
                 }
+                val hasWinnerInput = newGamers.any { it.score != 0 || it.go != 0 }
+                state.copy(
+                    phase = Winner(hasWinnerInput),
+                    winner = if (hasWinnerInput) gamer.copy(
+                        score = point.toInt(),
+                        go = boundedGo,
+                        winnerOption = WinnerOption.Winner
+                    ) else null,
+                    playerResults = newGamers
+                )
             }
         }
+    }
 
-    fun calculateGameResult() {
-        viewModelScope.launch {
-            val seller = _uiState.value.seller
+    suspend fun calculateGameResult() {
+        kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
+            val state = _uiState.value
+            val seller = state.seller
             if (seller != null) sellingUseCase.invoke(seller)
 
-            val winner = _uiState.value.winner
+            val winner = state.winner
             if (winner != null) updateWinnerUseCase.invoke(winner)
 
             calculateGameResultUseCase.invoke(
-                gameId = uiState().value.game.id,
+                gameId = state.game.id,
                 roundId = roundId,
-                seller = uiState().value.seller,
-                winner = uiState().value.winner
+                seller = state.seller,
+                winner = state.winner
             )
         }
     }
 
-    fun deleteRound() {
-        viewModelScope.launch {
+    suspend fun deleteRound() {
+        kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
             roundRepository.deleteRound(roundId)
         }
     }
@@ -237,5 +238,6 @@ class ScoreViewModel(
     companion object {
         private const val MAX_SELL_COUNT = 12
         private const val MAX_POINT = 8_519_680
+        private const val MAX_GO_COUNT = 20L
     }
 }

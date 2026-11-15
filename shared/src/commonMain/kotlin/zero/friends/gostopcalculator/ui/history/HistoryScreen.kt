@@ -74,6 +74,7 @@ fun HistoryScreen(
     onStartGame: () -> Unit = {},
     onShowRound: (Game) -> Unit = {},
     onCloseApp: () -> Unit = {},
+    showDebugAdToggle: Boolean = false,
     onToggleDebugAd: (() -> Unit)? = null
 ) {
     BackHandler(enabled = true) {
@@ -84,9 +85,10 @@ fun HistoryScreen(
     var dialogGameId by remember {
         mutableStateOf<Long?>(null)
     }
-    var showGuide by remember {
-        mutableStateOf(uiState.isFirstStart)
+    var manualShowGuide by remember {
+        mutableStateOf(false)
     }
+    val showGuide = manualShowGuide || uiState.isFirstStart
 
     val value = dialogGameId
     if (value != null) {
@@ -102,7 +104,12 @@ fun HistoryScreen(
     }
 
     if (showGuide) {
-        GuideFullScreenDialog(onDismiss = { showGuide = false })
+        GuideFullScreenDialog(
+            onDismiss = {
+                manualShowGuide = false
+                viewModel.dismissGuide()
+            }
+        )
     }
 
     val toggleAd = onToggleDebugAd ?: {
@@ -112,10 +119,11 @@ fun HistoryScreen(
     HistoryScreenContent(
         uiState = uiState,
         isGuideVisible = showGuide,
+        showDebugAdToggle = showDebugAdToggle,
         event = { event ->
             when (event) {
                 is HistoryEvent.ShowRound -> onShowRound(event.game)
-                HistoryEvent.ShowGuide -> showGuide = true
+                HistoryEvent.ShowGuide -> manualShowGuide = true
                 HistoryEvent.StartGame -> onStartGame()
                 is HistoryEvent.ShowMore -> dialogGameId = event.game.id
             }
@@ -128,6 +136,7 @@ fun HistoryScreen(
 private fun HistoryScreenContent(
     uiState: HistoryUiState,
     isGuideVisible: Boolean = false,
+    showDebugAdToggle: Boolean = false,
     event: (HistoryEvent) -> Unit = {},
     onToggleDebugAd: (() -> Unit)? = null
 ) {
@@ -147,6 +156,7 @@ private fun HistoryScreenContent(
         ) {
             NewGame(
                 event = event,
+                showDebugAdToggle = showDebugAdToggle,
                 onToggleDebugAd = onToggleDebugAd
             )
 
@@ -164,6 +174,7 @@ private fun HistoryScreenContent(
 @Composable
 private fun NewGame(
     event: (HistoryEvent) -> Unit,
+    showDebugAdToggle: Boolean = false,
     onToggleDebugAd: (() -> Unit)? = null
 ) {
     Column(Modifier.padding(16.dp)) {
@@ -176,17 +187,19 @@ private fun NewGame(
         ) {
             TitleText(text = stringResource(Res.string.today_game))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                val isDebugAdEnabled = GoogleAdmob.isDebugAdEnabled
-                val onToggle = onToggleDebugAd ?: {
-                    GoogleAdmob.isDebugAdEnabled = !GoogleAdmob.isDebugAdEnabled
+                if (showDebugAdToggle) {
+                    val isDebugAdEnabled = GoogleAdmob.isDebugAdEnabled
+                    val onToggle = onToggleDebugAd ?: {
+                        GoogleAdmob.isDebugAdEnabled = !GoogleAdmob.isDebugAdEnabled
+                    }
+                    RoundedCornerText(
+                        text = if (isDebugAdEnabled) "Ad ON" else "Ad OFF",
+                        color = if (isDebugAdEnabled) Color(0xFFFF5252) else Color(0xFF9E9E9E),
+                        fontSize = 14.sp,
+                        onClick = onToggle
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                 }
-                RoundedCornerText(
-                    text = if (isDebugAdEnabled) "Ad ON" else "Ad OFF",
-                    color = if (isDebugAdEnabled) Color(0xFFFF5252) else Color(0xFF9E9E9E),
-                    fontSize = 14.sp,
-                    onClick = onToggle
-                )
-                Spacer(modifier = Modifier.width(8.dp))
                 RoundedCornerText(
                     text = stringResource(Res.string.guide),
                     color = Color(0xFFFF5252),

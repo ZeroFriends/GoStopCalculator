@@ -46,6 +46,7 @@ fun NavController.safePopBackStack(onCloseApp: () -> Unit = {}) {
 @Composable
 fun AppNavigator(
     appComponent: AppComponent = remember { createAppComponent() },
+    showDebugAdToggle: Boolean = false,
     onCloseApp: () -> Unit = {},
     onShowAd: (onCompleted: () -> Unit) -> Unit = { it() },
     onNativeNavigate: ((NativeNavCommand) -> Unit)? = null,
@@ -109,7 +110,8 @@ fun AppNavigator(
                     onShowRound = { game ->
                         navController.navigate(Route.Board.Main(game.id))
                     },
-                    onCloseApp = onCloseApp
+                    onCloseApp = onCloseApp,
+                    showDebugAdToggle = showDebugAdToggle,
                 )
             }
 
@@ -307,8 +309,12 @@ fun RouteScreenContent(
             val scoreViewModel: ScoreViewModel = viewModel(key = "${route.gameId}_${route.roundId}") {
                 appComponent.scoreViewModelFactory(route.gameId, route.roundId)
             }
-            val manualViewModel: ManualViewModel = viewModel(key = "${route.gameId}_${route.roundId}_manual") {
-                appComponent.manualViewModel
+            val manualViewModel: ManualViewModel? = if (useNativeNavigation) {
+                null
+            } else {
+                viewModel(key = "${route.gameId}_${route.roundId}_manual") {
+                    appComponent.manualViewModel
+                }
             }
 
             ScoreScreen(
@@ -352,7 +358,6 @@ fun RouteScreenContent(
                 onShareClick = { graphicsLayer ->
                     coroutineScope.launch {
                         appComponent.screenCaptureManager.captureAndShare(graphicsLayer)
-                        onShowAd { }
                     }
                 }
             )
@@ -377,7 +382,6 @@ fun RouteScreenContent(
                 onShareClick = { graphicsLayer ->
                     coroutineScope.launch {
                         appComponent.screenCaptureManager.captureAndShare(graphicsLayer)
-                        onShowAd { }
                     }
                 }
             )

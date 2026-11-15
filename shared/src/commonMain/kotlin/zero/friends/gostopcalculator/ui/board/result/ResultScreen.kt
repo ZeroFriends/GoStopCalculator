@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -65,7 +66,7 @@ fun Modifier.drawGraphicsLayer(graphicsLayer: GraphicsLayer): Modifier =
         graphicsLayer.record {
             this@drawWithContent.drawContent()
         }
-        drawContent()
+        drawLayer(graphicsLayer)
     }
 
 @Composable
@@ -108,6 +109,7 @@ fun ResultScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .drawGraphicsLayer(graphicsLayer)
+                    .background(Color.White)
             ) {
                 ResultContent(
                     uiState = uiState,
