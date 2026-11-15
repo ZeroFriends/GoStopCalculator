@@ -81,15 +81,6 @@ final class NativeHostViewController: UIViewController {
     private var lastActionType: NativeTopBarActionType
     private var lastActionText: String?
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .semibold)
-        label.textAlignment = .center
-        label.lineBreakMode = .byTruncatingTail
-        label.accessibilityTraits = .header
-        return label
-    }()
-
     var swipeBackEnabled: Bool {
         config.swipeBackEnabled
     }
@@ -130,7 +121,6 @@ final class NativeHostViewController: UIViewController {
         self.contentViewController = composeVC
         super.init(nibName: nil, bundle: nil)
         weakSelf = self
-        self.navigationItem.titleView = titleLabel
         self.navigationItem.hidesBackButton = true
     }
 
@@ -210,13 +200,8 @@ final class NativeHostViewController: UIViewController {
                 : .systemBackground
         }
 
-        if titleChanged || appearanceChanged {
-            titleLabel.text = config.title
-            titleLabel.textColor = foregroundColor
-            titleLabel.accessibilityLabel = config.title
-            titleLabel.accessibilityIdentifier = config.title
-            titleLabel.sizeToFit()
-            titleLabel.invalidateIntrinsicContentSize()
+        if titleChanged {
+            navigationItem.title = config.title.isEmpty ? nil : config.title
             if let navBar = navigationController?.navigationBar, navigationController?.topViewController === self {
                 navBar.setNeedsLayout()
             }
@@ -279,18 +264,22 @@ final class NativeHostViewController: UIViewController {
 
         if appearanceChanged {
             let appearance = UINavigationBarAppearance()
+            let titleAttrs: [NSAttributedString.Key: Any] = [
+                .foregroundColor: foregroundColor,
+                .font: UIFont.systemFont(ofSize: 16, weight: .semibold),
+            ]
             if config.isRedBackground {
                 appearance.configureWithTransparentBackground()
                 appearance.backgroundColor = .clear
                 appearance.shadowColor = .clear
-                appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
             } else {
                 appearance.configureWithDefaultBackground()
-                appearance.titleTextAttributes = [.foregroundColor: UIColor.black]
             }
+            appearance.titleTextAttributes = titleAttrs
             navigationItem.standardAppearance = appearance
             navigationItem.scrollEdgeAppearance = appearance
             navigationItem.compactAppearance = appearance
+            navigationItem.compactScrollEdgeAppearance = appearance
 
             if navigationController?.topViewController === self {
                 applyBarAppearance()
