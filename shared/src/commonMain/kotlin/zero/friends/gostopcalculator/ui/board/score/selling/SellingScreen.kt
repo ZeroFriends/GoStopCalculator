@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
@@ -84,7 +85,7 @@ private fun SellingGamerList(
                 ) {
                     NumberTextField(
                         modifier = Modifier
-                            .weight(1f)
+                            .width(132.dp)
                             .height(44.dp),
                         text = gamer.score.toString(),
                         endText = stringResource(Res.string.page),

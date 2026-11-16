@@ -134,4 +134,7 @@
     <string name="bak_unit">박</string>
     <string name="base_label">기본</string>
     <string name="manual_asset_file">manual.json</string>
+    <string name="share_result_title">고스톱 정산 결과</string>
+    <string name="share_chooser_title">공유하기</string>
+    <string name="share_failed">공유에 실패하였습니다.</string>
 </resources>

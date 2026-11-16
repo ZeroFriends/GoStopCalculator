@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
@@ -286,11 +287,18 @@ fun PlayerItem(index: Int, playerResult: PlayerResult) {
         }
     }
     Row(
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 8.dp)
+        ) {
             Text(
                 text = (index + 1).toString(),
                 modifier = Modifier.align(Alignment.CenterVertically),
@@ -303,6 +311,8 @@ fun PlayerItem(index: Int, playerResult: PlayerResult) {
                 text = playerResult.name,
                 fontSize = 14.sp,
                 color = Nero,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )
         }
@@ -315,7 +325,9 @@ fun PlayerItem(index: Int, playerResult: PlayerResult) {
         Text(
             text = accountText,
             color = moneyColor,
-            fontSize = 14.sp
+            fontSize = 14.sp,
+            maxLines = 1,
+            softWrap = false
         )
     }
 }

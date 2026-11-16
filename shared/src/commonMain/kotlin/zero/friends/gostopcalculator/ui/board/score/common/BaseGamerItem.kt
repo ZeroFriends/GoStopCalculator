@@ -1,17 +1,19 @@
 package zero.friends.gostopcalculator.ui.board.score.common
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import zero.friends.domain.model.Gamer
@@ -34,38 +36,37 @@ fun BaseGamerItem(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(end = 8.dp)
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = if (content != null) 12.dp else 0.dp)
         ) {
             Text(
                 text = (index + 1).toString(),
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(10.dp),
+                    .widthIn(min = 30.dp)
+                    .padding(horizontal = 8.dp, vertical = 10.dp),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = if (isEnabled) OrangeyRed else Gray
             )
-            Column(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(end = 6.dp)
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = gamer.name,
-                        fontSize = 16.sp,
-                        color = if (isEnabled) Nero else Gray
+                Text(
+                    text = gamer.name,
+                    fontSize = 16.sp,
+                    color = if (isEnabled) Nero else Gray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+                if (badge != null) {
+                    Spacer(modifier = Modifier.width(6.dp))
+                    OptionBox(
+                        text = badge,
+                        color = Gray
                     )
-                    if (badge != null) {
-                        Spacer(modifier = Modifier.padding(3.dp))
-                        OptionBox(
-                            text = badge,
-                            color = Gray
-                        )
-                    }
                 }
             }
         }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -124,6 +125,7 @@ fun NumberTextField(
 
     Row(
         modifier = modifier
+            .defaultMinSize(minHeight = 44.dp)
             .background(
                 color = Color.LightGray,
                 shape = RoundedCornerShape(10.dp)
@@ -141,6 +143,8 @@ fun NumberTextField(
                     text = "0",
                     color = hintColor.copy(alpha = 0.4f),
                     fontSize = 16.sp,
+                    maxLines = 1,
+                    softWrap = false,
                     textAlign = TextAlign.End
                 )
             }
@@ -176,7 +180,9 @@ fun NumberTextField(
             text = endText,
             color = textColor,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            softWrap = false
         )
     }
 }
