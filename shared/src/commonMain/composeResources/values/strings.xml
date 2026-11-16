@@ -134,4 +134,7 @@
     <string name="bak_unit">bak</string>
     <string name="base_label">Base</string>
     <string name="manual_asset_file">manual_en.json</string>
+    <string name="share_result_title">GoStop Settlement Result</string>
+    <string name="share_chooser_title">Share</string>
+    <string name="share_failed">Failed to share.</string>
 </resources>

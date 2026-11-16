@@ -116,13 +116,12 @@ private fun WinnerGamerItem(
         isEnabled = true
     ) {
         Row(
-            modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             NumberTextField(
                 modifier = Modifier
-                    .weight(1f)
+                    .width(92.dp)
                     .height(44.dp),
                 text = gamer.score.toString(),
                 endText = stringResource(Res.string.point),
@@ -135,7 +134,7 @@ private fun WinnerGamerItem(
             )
             NumberTextField(
                 modifier = Modifier
-                    .width(84.dp)
+                    .width(92.dp)
                     .height(44.dp),
                 text = gamer.go.toString(),
                 endText = stringResource(Res.string.go),

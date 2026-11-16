@@ -134,4 +134,7 @@
     <string name="bak_unit">バク</string>
     <string name="base_label">基本</string>
     <string name="manual_asset_file">manual_ja.json</string>
+    <string name="share_result_title">ゴーストップ精算結果</string>
+    <string name="share_chooser_title">共有</string>
+    <string name="share_failed">共有に失敗しました。</string>
 </resources>

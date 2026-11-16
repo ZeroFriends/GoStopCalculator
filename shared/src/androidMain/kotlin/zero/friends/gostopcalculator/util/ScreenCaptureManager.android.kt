@@ -9,6 +9,11 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.core.content.FileProvider
 import me.tatarka.inject.annotations.Inject
+import org.jetbrains.compose.resources.getString
+import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.shared.generated.resources.share_chooser_title
+import zero.friends.gostopcalculator.shared.generated.resources.share_failed
+import zero.friends.gostopcalculator.shared.generated.resources.share_result_title
 import java.io.File
 
 @Inject
@@ -22,6 +27,8 @@ actual class ScreenCaptureManager actual constructor() {
     ) {
         try {
             clearOldTempFiles()
+            val shareTitle = getString(Res.string.share_result_title)
+            val chooserTitle = getString(Res.string.share_chooser_title)
             val imageBitmap = graphicsLayer.toImageBitmap()
             val bitmap = imageBitmap.asAndroidBitmap()
             val fileName = "${fileNamePrefix}_${System.currentTimeMillis()}.png"
@@ -35,18 +42,20 @@ actual class ScreenCaptureManager actual constructor() {
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "image/png"
                 putExtra(Intent.EXTRA_STREAM, uri)
-                clipData = ClipData.newRawUri("Result Image", uri)
-                putExtra(Intent.EXTRA_TITLE, "고스톱 정산 결과")
+                clipData = ClipData.newRawUri(shareTitle, uri)
+                putExtra(Intent.EXTRA_TITLE, shareTitle)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
-            context.startActivity(Intent.createChooser(shareIntent, "공유하기").apply {
-                clipData = ClipData.newRawUri("Result Image", uri)
+            context.startActivity(Intent.createChooser(shareIntent, chooserTitle).apply {
+                clipData = ClipData.newRawUri(shareTitle, uri)
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             })
         } catch (e: Exception) {
-            Toast.makeText(context, "공유에 실패하였습니다.", Toast.LENGTH_SHORT).show()
+            val failedMessage = runCatching { getString(Res.string.share_failed) }
+                .getOrDefault("Failed to share.")
+            Toast.makeText(context, failedMessage, Toast.LENGTH_SHORT).show()
         }
     }
 

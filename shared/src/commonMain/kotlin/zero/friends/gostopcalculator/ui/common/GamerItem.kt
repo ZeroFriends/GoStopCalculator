@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.stringResource
@@ -47,12 +48,15 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
             color = OrangeyRed
         )
         Row(
+            modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Spacer(modifier = Modifier.padding(4.dp))
             Column(
-                modifier = Modifier.align(Alignment.CenterVertically),
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterVertically),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.Start,
             ) {
@@ -70,6 +74,11 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
                         text = gamer.name,
                         fontSize = 16.sp,
                         color = Nero,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 4.dp)
                     )
                     val won = stringResource(Res.string.won)
                     val accountText = when {
@@ -84,6 +93,7 @@ fun GamerItem(modifier: Modifier = Modifier, index: Int, gamer: Gamer) {
                         modifier = Modifier
                             .align(Alignment.CenterVertically),
                         maxLines = 1,
+                        softWrap = false,
                     )
                 }
                 val scoreOptionLabels = gamer.scoreOption.map { it.localizedName() }

@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
@@ -257,7 +259,9 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.weight(1.2f)
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 12.dp)
         ) {
             Text(
                 text = (index + 1).toString(),
@@ -271,16 +275,16 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
             Column(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
-                    .padding(end = 6.dp)
+                    .weight(1f)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
                         text = rule.name.localizedName(),
                         fontSize = 16.sp,
-                        color = if (isFirstDdadak) DustyGray else Nero
+                        color = if (isFirstDdadak) DustyGray else Nero,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
                     if (rule.isEssential) {
                         Icon(
@@ -300,7 +304,9 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
 
         NumberTextField(
             text = rule.score.toString(),
-            modifier = Modifier.weight(0.8f),
+            modifier = Modifier
+                .width(132.dp)
+                .height(44.dp),
             endText = stringResource(Res.string.won),
             isEnable = !isFirstDdadak,
             hintColor = if (isFirstDdadak) DustyGray else Nero,

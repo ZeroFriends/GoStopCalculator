@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.stringResource
@@ -117,7 +118,12 @@ private fun ScoringGamerItem(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
                 text = (index + 1).toString(),
                 modifier = Modifier
@@ -130,7 +136,10 @@ private fun ScoringGamerItem(
             Text(
                 text = gamer.name,
                 fontSize = 16.sp,
-                color = Nero
+                color = Nero,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
             )
         }
 

@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
@@ -212,7 +213,10 @@ private fun PlayerItem(index: Int, player: Player, clickEvent: (PlayerClickEvent
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f)
+        ) {
             Text(
                 text = (index + 1).toString(),
                 modifier = Modifier
@@ -225,10 +229,12 @@ private fun PlayerItem(index: Int, player: Player, clickEvent: (PlayerClickEvent
                 text = player.name,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
+                    .weight(1f, fill = false)
                     .padding(end = 6.dp),
                 fontSize = 16.sp,
                 color = Nero,
-                maxLines = 1
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             IconButton(onClick = { clickEvent(PlayerClickEvent.EditPlayer(player)) }) {
                 Icon(
