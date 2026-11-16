@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
@@ -22,6 +24,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
+import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
+import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.ic_april
 import zero.friends.gostopcalculator.theme.OrangeyRed
@@ -37,7 +41,14 @@ fun AprilBackground(
     onClick: () -> Unit,
     contents: @Composable () -> Unit,
 ) {
-    Surface(modifier.fillMaxSize()) {
+    val useNativeNavigation = LocalUseNativeNavigation.current
+    val headerTopPadding = if (useNativeNavigation) {
+        LocalNativeTopBarHeight.current + 10.dp
+    } else {
+        30.dp
+    }
+
+    Surface(modifier = modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
                 painter = painterResource(Res.drawable.ic_april),
@@ -49,7 +60,7 @@ fun AprilBackground(
                     .background(OrangeyRed)
             )
 
-            Column(Modifier.padding(top = 30.dp)) {
+            Column(Modifier.padding(top = headerTopPadding)) {
                 val textModifier = Modifier.padding(top = 8.dp, start = 16.dp, end = 16.dp)
                 Text(
                     title,
@@ -72,7 +83,7 @@ fun AprilBackground(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .windowInsetsPadding(WindowInsets.navigationBars)
+                            .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime))
                             .padding(vertical = 20.dp, horizontal = 16.dp)
                     ) {
                         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {

@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -49,6 +50,8 @@ import zero.friends.gostopcalculator.theme.DustyGray
 import zero.friends.gostopcalculator.theme.Gallery
 import zero.friends.gostopcalculator.theme.ManualBackground
 import zero.friends.gostopcalculator.theme.Nero
+import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
+import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
 import zero.friends.gostopcalculator.ui.common.BackHandler
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.ContentsCard
@@ -63,7 +66,7 @@ fun Modifier.drawGraphicsLayer(graphicsLayer: GraphicsLayer): Modifier =
         graphicsLayer.record {
             this@drawWithContent.drawContent()
         }
-        drawContent()
+        drawLayer(graphicsLayer)
     }
 
 @Composable
@@ -78,12 +81,15 @@ fun ResultScreen(
     }
 
     val graphicsLayer = rememberGraphicsLayer()
+    val useNativeNavigation = LocalUseNativeNavigation.current
+    val topBarPadding = if (useNativeNavigation) LocalNativeTopBarHeight.current else 0.dp
 
     Scaffold(
         topBar = {
             CenterTextTopBar(
                 text = uiState.gameName,
                 isRed = true,
+                isRedBackground = !useNativeNavigation,
                 onBack = onBackClick,
                 onAction = { onShareClick(graphicsLayer) },
                 actionText = stringResource(Res.string.share)
@@ -96,10 +102,14 @@ fun ResultScreen(
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
+            if (topBarPadding > 0.dp) {
+                Spacer(modifier = Modifier.height(topBarPadding))
+            }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .drawGraphicsLayer(graphicsLayer)
+                    .background(Color.White)
             ) {
                 ResultContent(
                     uiState = uiState,

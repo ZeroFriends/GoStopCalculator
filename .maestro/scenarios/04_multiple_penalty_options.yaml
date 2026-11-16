@@ -8,9 +8,7 @@ appId: zero.friends.gostopcalculator
     clearState: true
     stopApp: true
 
-- extendedWaitUntil:
-    visible: "시작하기"
-    timeout: 60000
+- runFlow: ../common/wait_for_history.yaml
 - tapOn: "시작하기"
 
 # 플레이어 3명 추가

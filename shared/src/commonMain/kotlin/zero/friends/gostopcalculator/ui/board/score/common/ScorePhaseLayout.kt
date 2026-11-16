@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
+import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
+import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.ic_topbar_close
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
@@ -29,6 +31,7 @@ fun ScorePhaseLayout(
     content: @Composable () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
+    val topBarPadding = if (LocalUseNativeNavigation.current) LocalNativeTopBarHeight.current else 0.dp
 
     Scaffold(
         modifier = TabKeyboardDownModifier(),
@@ -39,7 +42,8 @@ fun ScorePhaseLayout(
                 onBack = onBack,
                 onAction = onExit,
                 actionIcon = painterResource(Res.drawable.ic_topbar_close),
-                isRed = false
+                isRed = false,
+                swipeBackEnabled = false,
             )
         }
     ) { innerPadding ->
@@ -49,7 +53,11 @@ fun ScorePhaseLayout(
             buttonEnabled = buttonEnabled,
             onClick = onButtonClick,
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(
+                modifier = Modifier
+                    .padding(top = topBarPadding)
+                    .padding(16.dp)
+            ) {
                 DescriptionBox(
                     mainText = mainText,
                     subText = subText

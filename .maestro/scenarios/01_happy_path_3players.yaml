@@ -10,9 +10,7 @@ appId: zero.friends.gostopcalculator
     stopApp: true
 
 # 2. 스플래시 종료 대기 및 새 게임 시작
-- extendedWaitUntil:
-    visible: "시작하기"
-    timeout: 60000
+- runFlow: ../common/wait_for_history.yaml
 - tapOn: "시작하기"
 
 # 3. 플레이어 3명 추가

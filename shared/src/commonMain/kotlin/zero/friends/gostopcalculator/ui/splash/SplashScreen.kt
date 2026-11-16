@@ -30,12 +30,17 @@ import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import zero.friends.gostopcalculator.shared.generated.resources.Res
+import zero.friends.gostopcalculator.ui.common.SystemBarAppearance
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SplashScreen(
     onSplashFinished: () -> Unit = {}
 ) {
+    SystemBarAppearance(
+        isLightStatusBar = true,
+        isLightNavigationBar = true,
+    )
     val currentOnSplashFinished by rememberUpdatedState(onSplashFinished)
     val compositionResult = rememberLottieComposition {
         LottieCompositionSpec.JsonString(

@@ -101,6 +101,9 @@ fun RuleScreen(
     var openDialog by remember {
         mutableStateOf(false)
     }
+    var isSubmitting by remember {
+        mutableStateOf(false)
+    }
 
     if (openDialog) {
         RuleHelpDialog(onClose = { openDialog = false })
@@ -113,9 +116,17 @@ fun RuleScreen(
             when (ruleClickEvent) {
                 RuleClickEvent.Back -> onBack()
                 is RuleClickEvent.Complete -> {
-                    scope.launch {
-                        val gameId = ruleViewModel.startGame()
-                        onNext(gameId)
+                    if (!isSubmitting) {
+                        isSubmitting = true
+                        scope.launch {
+                            try {
+                                val gameId = ruleViewModel.startGame()
+                                onNext(gameId)
+                            } catch (e: Throwable) {
+                                isSubmitting = false
+                                throw e
+                            }
+                        }
                     }
                 }
                 RuleClickEvent.Helper -> openDialog = true

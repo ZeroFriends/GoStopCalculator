@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
@@ -24,6 +25,8 @@ import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.price
 import zero.friends.gostopcalculator.shared.generated.resources.rule_title_text
 import zero.friends.gostopcalculator.util.localizedName
+import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
+import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
 import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.theme.OrangeyRed
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
@@ -59,11 +62,19 @@ private fun RuleLogScreen(
     uiState: RuleLogUiState,
     onBack: () -> Unit = {}
 ) {
+    val topBarPadding = if (LocalUseNativeNavigation.current) LocalNativeTopBarHeight.current else 0.dp
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = { CenterTextTopBar(text = uiState.game.name, isRed = false, onBack = onBack) },
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding).padding(horizontal = 16.dp)) {
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(top = topBarPadding)
+                .navigationBarsPadding()
+                .padding(horizontal = 16.dp)
+        ) {
             TitleText(
                 modifier = Modifier.padding(top = 34.dp, start = 18.dp),
                 text = stringResource(Res.string.rule_title_text)

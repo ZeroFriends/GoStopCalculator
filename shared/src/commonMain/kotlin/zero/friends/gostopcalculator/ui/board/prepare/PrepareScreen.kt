@@ -23,13 +23,17 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Game
@@ -42,6 +46,8 @@ import zero.friends.gostopcalculator.shared.generated.resources.ic_unchecked_cir
 import zero.friends.gostopcalculator.shared.generated.resources.player_list
 import zero.friends.gostopcalculator.shared.generated.resources.start
 import zero.friends.gostopcalculator.shared.generated.resources.start_description
+import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
+import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
 import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.theme.OrangeyRed
 import zero.friends.gostopcalculator.ui.common.BackHandler
@@ -70,6 +76,8 @@ fun PrepareScreen(
     val scaffoldState = rememberScaffoldState()
     val uiState by prepareViewModel.uiState().collectAsState()
     val failOverGamerAlert = stringResource(Res.string.fail_over_gamer)
+    val scope = rememberCoroutineScope()
+    var isSubmitting by remember { mutableStateOf(false) }
 
     PrepareScreen(
         scaffoldState = scaffoldState,
@@ -80,13 +88,19 @@ fun PrepareScreen(
                     onBack()
                 }
                 PrepareEvent.Complete -> {
-                    prepareViewModel.createNewRound { roundId ->
-                        onComplete(uiState.game.id, roundId)
+                    if (!isSubmitting) {
+                        isSubmitting = true
+                        prepareViewModel.createNewRound { roundId ->
+                            onComplete(uiState.game.id, roundId)
+                        }
                     }
                 }
                 is PrepareEvent.OnClickPlayer -> {
                     prepareViewModel.onClickPlayer(event.isCheck, event.player) {
                         onShowToast(failOverGamerAlert)
+                        scope.launch {
+                            scaffoldState.snackbarHostState.showSnackbar(failOverGamerAlert)
+                        }
                     }
                 }
             }
@@ -100,6 +114,8 @@ private fun PrepareScreen(
     uiState: PrepareUiState = PrepareUiState(),
     event: (PrepareEvent) -> Unit = {},
 ) {
+    val topBarPadding = if (LocalUseNativeNavigation.current) LocalNativeTopBarHeight.current else 0.dp
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -116,7 +132,11 @@ private fun PrepareScreen(
             buttonEnabled = uiState.selectedPlayers.size >= 2,
             onClick = { event(PrepareEvent.Complete) },
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
+            Column(
+                modifier = Modifier
+                    .padding(top = topBarPadding)
+                    .padding(16.dp)
+            ) {
                 DescriptionBox(
                     mainText = stringResource(Res.string.start),
                     subText = stringResource(Res.string.start_description)

@@ -1,5 +1,7 @@
 package zero.friends.gostopcalculator.ui.history
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +28,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,6 +53,7 @@ import zero.friends.gostopcalculator.ui.common.GoStopButton
 import zero.friends.gostopcalculator.ui.common.GoStopDivider
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.ui.common.SubTitleText
+import zero.friends.gostopcalculator.ui.common.SystemBarAppearance
 import zero.friends.gostopcalculator.ui.common.TitleText
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 import zero.friends.gostopcalculator.ui.history.guide.GuideFullScreenDialog
@@ -70,6 +74,7 @@ fun HistoryScreen(
     onStartGame: () -> Unit = {},
     onShowRound: (Game) -> Unit = {},
     onCloseApp: () -> Unit = {},
+    showDebugAdToggle: Boolean = false,
     onToggleDebugAd: (() -> Unit)? = null
 ) {
     BackHandler(enabled = true) {
@@ -80,9 +85,10 @@ fun HistoryScreen(
     var dialogGameId by remember {
         mutableStateOf<Long?>(null)
     }
-    var showGuide by remember {
-        mutableStateOf(uiState.isFirstStart)
+    var manualShowGuide by remember {
+        mutableStateOf(false)
     }
+    val showGuide = manualShowGuide || uiState.isFirstStart
 
     val value = dialogGameId
     if (value != null) {
@@ -98,7 +104,12 @@ fun HistoryScreen(
     }
 
     if (showGuide) {
-        GuideFullScreenDialog(onDismiss = { showGuide = false })
+        GuideFullScreenDialog(
+            onDismiss = {
+                manualShowGuide = false
+                viewModel.dismissGuide()
+            }
+        )
     }
 
     val toggleAd = onToggleDebugAd ?: {
@@ -107,10 +118,12 @@ fun HistoryScreen(
 
     HistoryScreenContent(
         uiState = uiState,
+        isGuideVisible = showGuide,
+        showDebugAdToggle = showDebugAdToggle,
         event = { event ->
             when (event) {
                 is HistoryEvent.ShowRound -> onShowRound(event.game)
-                HistoryEvent.ShowGuide -> showGuide = true
+                HistoryEvent.ShowGuide -> manualShowGuide = true
                 HistoryEvent.StartGame -> onStartGame()
                 is HistoryEvent.ShowMore -> dialogGameId = event.game.id
             }
@@ -122,9 +135,18 @@ fun HistoryScreen(
 @Composable
 private fun HistoryScreenContent(
     uiState: HistoryUiState,
+    isGuideVisible: Boolean = false,
+    showDebugAdToggle: Boolean = false,
     event: (HistoryEvent) -> Unit = {},
     onToggleDebugAd: (() -> Unit)? = null
 ) {
+    if (!isGuideVisible) {
+        SystemBarAppearance(
+            isLightStatusBar = true,
+            isLightNavigationBar = true,
+        )
+    }
+
     Scaffold { innerPadding ->
         Column(
             modifier = Modifier
@@ -134,6 +156,7 @@ private fun HistoryScreenContent(
         ) {
             NewGame(
                 event = event,
+                showDebugAdToggle = showDebugAdToggle,
                 onToggleDebugAd = onToggleDebugAd
             )
 
@@ -151,6 +174,7 @@ private fun HistoryScreenContent(
 @Composable
 private fun NewGame(
     event: (HistoryEvent) -> Unit,
+    showDebugAdToggle: Boolean = false,
     onToggleDebugAd: (() -> Unit)? = null
 ) {
     Column(Modifier.padding(16.dp)) {
@@ -163,17 +187,19 @@ private fun NewGame(
         ) {
             TitleText(text = stringResource(Res.string.today_game))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                val isDebugAdEnabled = GoogleAdmob.isDebugAdEnabled
-                val onToggle = onToggleDebugAd ?: {
-                    GoogleAdmob.isDebugAdEnabled = !GoogleAdmob.isDebugAdEnabled
+                if (showDebugAdToggle) {
+                    val isDebugAdEnabled = GoogleAdmob.isDebugAdEnabled
+                    val onToggle = onToggleDebugAd ?: {
+                        GoogleAdmob.isDebugAdEnabled = !GoogleAdmob.isDebugAdEnabled
+                    }
+                    RoundedCornerText(
+                        text = if (isDebugAdEnabled) "Ad ON" else "Ad OFF",
+                        color = if (isDebugAdEnabled) Color(0xFFFF5252) else Color(0xFF9E9E9E),
+                        fontSize = 14.sp,
+                        onClick = onToggle
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                 }
-                RoundedCornerText(
-                    text = if (isDebugAdEnabled) "Ad ON" else "Ad OFF",
-                    color = if (isDebugAdEnabled) Color(0xFFFF5252) else Color(0xFF9E9E9E),
-                    fontSize = 14.sp,
-                    onClick = onToggle
-                )
-                Spacer(modifier = Modifier.width(8.dp))
                 RoundedCornerText(
                     text = stringResource(Res.string.guide),
                     color = Color(0xFFFF5252),
@@ -215,18 +241,25 @@ private fun History(games: List<Game>, onClick: (Game) -> Unit, onClickMore: (Ga
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun RoundLog(game: Game, onClick: () -> Unit = {}, onClickMore: () -> Unit = {}) {
+    val hapticFeedback = LocalHapticFeedback.current
     Card(
         elevation = 6.dp,
         shape = RoundedCornerShape(18.dp),
         modifier = Modifier.padding(vertical = 6.dp),
-        onClick = onClick
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .combinedClickable(
+                    onClick = onClick,
+                    onLongClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onClickMore()
+                    }
+                )
                 .padding(start = 12.dp, end = 12.dp, top = 15.dp, bottom = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,

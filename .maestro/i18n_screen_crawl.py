@@ -56,7 +56,15 @@ def build_steps(s):
     tap = lambda t: f'- tapOn: "{rx(t)}"'
     point = lambda p: f'- tapOn:\n    point: "{p}"'
     return [
-        ("01 홈", f'- launchApp:\n    clearState: false\n    stopApp: true\n- extendedWaitUntil:\n    visible: "{rx(s["start"])}"\n    timeout: 60000'),
+        (
+            "01 홈",
+            "\n".join([
+                "- launchApp:\n    clearState: false\n    stopApp: true",
+                f'- extendedWaitUntil:\n    visible: "Close|{rx(s["start"])}"\n    timeout: 60000',
+                '- runFlow:\n    when:\n      visible: "Close"\n    commands:\n      - tapOn: "Close"',
+                f'- extendedWaitUntil:\n    visible: "{rx(s["start"])}"\n    timeout: 10000',
+            ]),
+        ),
         ("02 플레이어 설정", "\n".join([tap(s["start"])] + [tap(s["add_new_player"])] * 3)),
         ("03 게임 규칙", tap(s["next"])),
         ("04 게임 보드(빈 상태)", "\n".join(['- tapOn:\n    id: "rule_score_input_0"', '- inputText: "100"', "- hideKeyboard", tap(s["complete"])])),

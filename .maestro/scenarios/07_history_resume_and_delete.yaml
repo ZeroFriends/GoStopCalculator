@@ -1,17 +1,14 @@
 appId: zero.friends.gostopcalculator
 ---
 # ==========================================
-# 시나리오: 기존 게임 히스토리 복원(이어하기) 검증
-# (참고: 현재 RoundLog UI에 삭제 트리거가 연결되어 있지 않아 복원 흐름만 검증)
+# 시나리오: 기존 게임 히스토리 복원(이어하기), 재시작 초기화 및 롱클릭 삭제 검증
 # ==========================================
 
 - launchApp:
     clearState: true
     stopApp: true
 
-- extendedWaitUntil:
-    visible: "시작하기"
-    timeout: 60000
+- runFlow: ../common/wait_for_history.yaml
 - tapOn: "시작하기"
 
 # 플레이어 3명 추가
@@ -51,9 +48,22 @@ appId: zero.friends.gostopcalculator
 - assertVisible: "생성일자"
 - runFlow: ../common/assert_no_broken_text.yaml
 
+# 다시 시작하기 진입 시 이전 플레이어 캐시가 남아있지 않은지 검증
+- tapOn: "시작하기"
+- assertVisible: "플레이어 추가 버튼으로 플레이어를 등록해주세요."
+- assertNotVisible: "플레이어 1"
+- tapOn: "Back"
+
 # 기존 게임 카드를 탭하여 다시 보드로 이어하기 복원
 - tapOn: "생성일자"
 
 # 보드 화면으로 정상 복귀되었고 이전 라운드 기록이 살아있는지 검증
 - assertVisible: "1 라운드"
 - runFlow: ../common/assert_no_broken_text.yaml
+- tapOn: "Back"
+
+# 진행내역 카드 롱클릭 시 삭제 다이얼로그 노출 및 삭제 동작 검증
+- longPressOn: "생성일자"
+- assertVisible: "삭제하시겠습니까\\?"
+- tapOn: "삭제"
+- assertVisible: "게임을 추가한 내역이 없습니다."

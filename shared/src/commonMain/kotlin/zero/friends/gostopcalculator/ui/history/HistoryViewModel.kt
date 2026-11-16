@@ -41,6 +41,10 @@ class HistoryViewModel(
         }.launchIn(viewModelScope)
     }
 
+    fun dismissGuide() {
+        _uiState.update { it.copy(isFirstStart = false) }
+    }
+
     fun deleteGame(gameId: Long) {
         viewModelScope.launch {
             gameRepository.deleteGame(gameId)

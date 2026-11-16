@@ -9,10 +9,12 @@
         <item name="colorSecondary">@color/orangey_red</item>
         <item name="colorSecondaryVariant">@color/orangey_red</item>
         <item name="colorOnSecondary">@color/orangey_red</item>
-        <!-- Status bar & Navigation bar color -->
+        <!-- Status bar & Navigation bar color (cold start fallback for API < 35; runtime controlled by enableEdgeToEdge) -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="android:windowBackground">@color/white</item>
         <!-- 다크모드 강제 비활성화 -->
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>

@@ -26,6 +26,8 @@ import zero.friends.gostopcalculator.shared.generated.resources.end_description
 import zero.friends.gostopcalculator.shared.generated.resources.end_game
 import zero.friends.gostopcalculator.shared.generated.resources.ic_confetti
 import zero.friends.gostopcalculator.shared.generated.resources.save
+import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
+import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
 import zero.friends.gostopcalculator.theme.Gray38
 import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
@@ -52,6 +54,8 @@ private fun EndScreen(
     uiState: EndUiState,
     onClick: () -> Unit = {},
 ) {
+    val topBarPadding = if (LocalUseNativeNavigation.current) LocalNativeTopBarHeight.current else 0.dp
+
     Scaffold(
         scaffoldState = scaffoldState,
         topBar = {
@@ -62,7 +66,9 @@ private fun EndScreen(
         }
     ) { innerPadding ->
         GoStopButtonBackground(
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(top = topBarPadding),
             buttonString = stringResource(Res.string.save),
             onClick = { onClick() }
         ) {
