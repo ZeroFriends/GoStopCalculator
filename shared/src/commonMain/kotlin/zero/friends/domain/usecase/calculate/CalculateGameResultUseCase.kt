@@ -1,7 +1,6 @@
 package zero.friends.domain.usecase.calculate
 
 import zero.friends.domain.model.Gamer
-import zero.friends.domain.model.LoserOption
 import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.repository.RuleRepository
 import zero.friends.domain.util.Const
@@ -102,9 +101,10 @@ class CalculateGameResultUseCase @Inject constructor(
             gamer.id != winner.id && (seller == null || gamer.id != seller.id)
         }
         
-        // 거래 기록
-        // 고박 케이스와 일반 케이스 구분
-        val goBakGamer = losers.firstOrNull { it.loserOption.contains(LoserOption.GoBak) }
+        // 거래 기록 (고박 독박자 판정은 CalculateLoserScoreUseCase SSOT 결과 사용)
+        val goBakGamer = loserResult.goBakPayerId?.let { payerId ->
+            losers.firstOrNull { it.id == payerId }
+        }
         
         if (goBakGamer != null) {
             // 고박 케이스: 고박자와 승자 간 거래

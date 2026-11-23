@@ -61,9 +61,9 @@ appId: zero.friends.gostopcalculator
 - runFlow: ../common/assert_no_broken_text.yaml
 - tapOn: "다음 \\(3/3\\)"
 
-# 10. 금액 계산 확인 다이얼로그 ➔ 완료 클릭
-- assertVisible: "해당 라운드의 금액 계산을 하시겠습니까\\?"
-- tapOn: "완료"
+# 10. 금액 계산 확인 다이얼로그 ➔ 점수 확정하기 클릭
+- assertVisible: "라운드 점수를 확정할까요\\?"
+- tapOn: "점수 확정하기"
 
 # 11. 최종 라운드 결과 화면 (+1,400원 정산 확인) 및 보드 복귀
 - assertVisible: "상세보기"

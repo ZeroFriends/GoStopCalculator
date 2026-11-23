@@ -332,7 +332,7 @@ val DEFAULT_MANUAL_EN_JSON = """
       },
       {
         "header": "Go-bak",
-        "body": "A player calls Go, but another player reaches the target score and stops."
+        "body": "A player calls Go, but another player reaches the target score and stops. In 2-player Matgo, the Go-bak player pays 2x; in 3+ player Go-Stop, they cover all losers' base round scores."
       },
       {
         "header": "Meong-bak",
@@ -511,7 +511,7 @@ val DEFAULT_MANUAL_JA_JSON = """
       },
       {
         "header": "ゴーバク",
-        "body": "ゴーを宣言したが、他のプレイヤーが規定点に達してストップした場合"
+        "body": "ゴーを宣言したが、他のプレイヤーが規定点に達してストップした場合。2人戦は2倍、3人以上では他敗者の基本点まで立替払いします。"
       },
       {
         "header": "モンバク",

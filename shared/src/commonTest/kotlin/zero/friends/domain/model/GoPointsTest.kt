@@ -31,4 +31,10 @@ class GoPointsTest {
         // 5고: (7 + 5) * 2^(5-2) = 12 * 8 = 96점
         assertEquals(96, calculateGoScore(baseScore = 7, goCount = 5))
     }
+
+    @Test
+    fun `고점수 및 다중 고 입력 시 Int 오버플로우 없이 최대값으로 안전하게 제한된다`() {
+        assertEquals(Int.MAX_VALUE, calculateGoScore(baseScore = 8_519_680, goCount = 20))
+        assertEquals(Int.MAX_VALUE, calculateGoScore(baseScore = 100_000, goCount = 35))
+    }
 }

@@ -7,7 +7,7 @@ sealed interface Phase {
     sealed interface Editable : Phase
 }
 
-class Selling(private val enable: Boolean) : Phase.Editable {
+data class Selling(val enable: Boolean) : Phase.Editable {
     override fun getEnableNext(): Boolean = enable
 }
 
@@ -15,7 +15,7 @@ object Scoring : Phase.Toggleable {
     override fun getEnableNext(): Boolean = true
 }
 
-class Winner(private val enable: Boolean = false) : Phase.Editable {
+data class Winner(val enable: Boolean = false) : Phase.Editable {
     override fun getEnableNext(): Boolean = enable
 }
 

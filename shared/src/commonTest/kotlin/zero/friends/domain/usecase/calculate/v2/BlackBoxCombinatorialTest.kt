@@ -14,9 +14,11 @@ import zero.friends.domain.mock.MockGamerRepository
 import zero.friends.domain.mock.MockRuleRepository
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.LoserOption
+import zero.friends.domain.model.RoundTrace
 import zero.friends.domain.model.Rule
 import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.model.SellerOption
+import zero.friends.domain.model.TraceTag
 import zero.friends.domain.model.WinnerOption
 import zero.friends.domain.usecase.calculate.AggregateGamerResultsUseCase
 import zero.friends.domain.usecase.calculate.BuildRoundTraceUseCase
@@ -26,6 +28,7 @@ import zero.friends.domain.usecase.calculate.CalculateScoreOptionUseCase
 import zero.friends.domain.usecase.calculate.CalculateSellScoreUseCase
 import zero.friends.domain.usecase.calculate.UpdateAccountUseCase
 import zero.friends.domain.util.Const
+import zero.friends.gostopcalculator.ui.board.result.RoundTraceFormatter
 
 /**
  * [Black-Box Combinatorial & Metamorphic Test Suite]
@@ -63,6 +66,7 @@ class BlackBoxCombinatorialTest {
 
     private data class RoundOutcome(
         val gamers: List<Gamer>,
+        val trace: RoundTrace?,
         val traceTotalAmount: Int?,
         val traceTermsByGamerId: Map<Long, Int>?,
         val aggregatedByName: Map<String, Int>
@@ -137,6 +141,7 @@ class BlackBoxCombinatorialTest {
 
             return RoundOutcome(
                 gamers = updatedGamers,
+                trace = trace,
                 traceTotalAmount = trace?.totalAmount,
                 traceTermsByGamerId = trace?.terms?.associate { it.gamerId to it.amount },
                 aggregatedByName = aggregated.associate { it.name to it.account }
@@ -222,6 +227,84 @@ class BlackBoxCombinatorialTest {
                     outcome.traceTotalAmount,
                     "Trace totalAmount mismatch: ${case.tag}"
                 )
+            }
+        }
+
+        // 4-B. 트레이스 내부 수식 분해 항등식 & 포맷터 최종 합계 일치 불변식
+        val trace = outcome.trace
+        if (trace != null) {
+            val declaredWinner = gamers.firstOrNull { it.winnerOption != null }
+            val sellerGamer = gamers.firstOrNull { it.sellerOption != null }
+            val activeLosers = if (declaredWinner != null) {
+                gamers.filter { it.id != declaredWinner.id && it.id != sellerGamer?.id }
+            } else {
+                emptyList()
+            }
+            val goBakLoser = activeLosers.firstOrNull { it.loserOption.contains(LoserOption.GoBak) }
+
+            if (declaredWinner != null) {
+                trace.terms
+                    .filter { it.gamerId != declaredWinner.id && !it.factors.isSeller }
+                    .forEach { term ->
+                        val f = term.factors
+                        assertEquals(
+                            term.amount,
+                            f.selfBaseLoss + f.goBakCoveredAmount + f.fuckAmount + f.ddadakAmount + f.sellAmount,
+                            "Trace factor decomposition mismatch for ${term.playerName}: ${case.tag}"
+                        )
+                        assertEquals(
+                            f.goBakCoveredAmount,
+                            f.coveredLosers.sumOf { it.amount },
+                            "Covered losers sum mismatch for ${term.playerName}: ${case.tag}"
+                        )
+                    }
+            }
+
+            if (declaredWinner != null && activeLosers.size >= 2 && goBakLoser != null && case.rules.scorePerPoint > 0) {
+                val goBakTerm = trace.terms.firstOrNull { it.gamerId == goBakLoser.id }
+                assertNotNull(goBakTerm, "GoBak payer term missing: ${case.tag}")
+                val exemptedLosers = activeLosers.filter { it.id != goBakLoser.id }
+                exemptedLosers.forEach { exempted ->
+                    val exemptedTerm = trace.terms.firstOrNull { it.gamerId == exempted.id }
+                    assertNotNull(exemptedTerm, "Exempted loser ${exempted.name} dropped from trace: ${case.tag}")
+                    assertTrue(
+                        exemptedTerm.traceTags.contains(TraceTag.GO_BAK_EXEMPT),
+                        "Exempted loser ${exempted.name} missing GO_BAK_EXEMPT tag: ${case.tag}"
+                    )
+                }
+                val exemptedSum = exemptedLosers.sumOf { ex ->
+                    trace.terms.first { it.gamerId == ex.id }.factors.goBakExemptedAmount
+                }
+                assertEquals(
+                    goBakTerm.factors.goBakCoveredAmount,
+                    exemptedSum,
+                    "GoBak covered amount != sum of exempted amounts: ${case.tag}"
+                )
+            }
+
+            val nonWinnerTerms = trace.terms.filter { it.gamerId != trace.winnerId }
+            val renderedLines = traceFormatter.toLines(nonWinnerTerms, sampleTraceTexts)
+            renderedLines.forEach { line ->
+                val finalEqIdx = line.formula.text.lastIndexOf("= ")
+                if (finalEqIdx >= 0) {
+                    val rhs = line.formula.text
+                        .substring(finalEqIdx + 2)
+                        .removeSuffix(sampleTraceTexts.wonUnit)
+                        .replace(",", "")
+                        .trim()
+                        .toInt()
+                    val renderedAmount = line.amount.text
+                        .removeSuffix(sampleTraceTexts.wonUnit)
+                        .replace("+", "")
+                        .replace(",", "")
+                        .trim()
+                        .toInt()
+                    assertEquals(
+                        renderedAmount,
+                        rhs,
+                        "Rendered formula RHS ($rhs) != amount ($renderedAmount) in '${line.formula.text}': ${case.tag}"
+                    )
+                }
             }
         }
 
@@ -572,6 +655,89 @@ class BlackBoxCombinatorialTest {
         }
     }
 
+    @Test
+    fun `metamorphic GoBak law doubles in 2P Matgo and conserves total base payout in 3P and 4P GoStop`() = runTest {
+        val harness = IsolatedHarness()
+        val nonGoBakSets = nonGoBakSubsets()
+
+        // 1. 2인 맞고: 고박 추가 시 패자 지불액 및 승자 수령액이 정확히 2배가 된다 (고 0~4 × 비고박 8종 = 40조합)
+        for (go in 0..4) {
+            for (baks in nonGoBakSets) {
+                val withoutGoBak = harness.evaluate(
+                    RoundCase(
+                        tag = "2P-NoGoBak go=$go baks=$baks",
+                        rules = RuleSet(scorePerPoint = 100, fuckScore = 0, sellScore = 0),
+                        players = listOf(
+                            PlayerSpec("W", isWinner = true, goCount = go),
+                            PlayerSpec("L1", loserOptions = baks)
+                        )
+                    )
+                )
+                val withGoBak = harness.evaluate(
+                    RoundCase(
+                        tag = "2P-WithGoBak go=$go baks=$baks",
+                        rules = RuleSet(scorePerPoint = 100, fuckScore = 0, sellScore = 0),
+                        players = listOf(
+                            PlayerSpec("W", isWinner = true, goCount = go),
+                            PlayerSpec("L1", loserOptions = baks + LoserOption.GoBak)
+                        )
+                    )
+                )
+                assertEquals(
+                    withoutGoBak.accountOf("W") * 2,
+                    withGoBak.accountOf("W"),
+                    "2P Matgo GoBak must double winner income: go=$go baks=$baks"
+                )
+                assertEquals(
+                    withoutGoBak.accountOf("L1") * 2,
+                    withGoBak.accountOf("L1"),
+                    "2P Matgo GoBak must double loser payment: go=$go baks=$baks"
+                )
+            }
+        }
+
+        // 2. 3인 및 4인(광팔기 포함/미포함) 고스톱: 고박 발생 시 승자 총 판돈 수령액은 고박이 없을 때와 100% 보존되며,
+        //    고박자가 모든 패자의 판돈 합계를 전액 대납하고 타 패자의 판돈 지불액은 0원이 된다.
+        for (sellCount in listOf(0, 2)) {
+            for (go in listOf(0, 2, 3, 5)) {
+                for (bakA in nonGoBakSets) {
+                    for (bakB in nonGoBakSets) {
+                        val basePlayers = buildList {
+                            if (sellCount > 0) add(PlayerSpec("S", isSeller = true, sellCount = sellCount))
+                            add(PlayerSpec("W", isWinner = true, goCount = go))
+                            add(PlayerSpec("LA", loserOptions = bakA))
+                            add(PlayerSpec("LB", loserOptions = bakB))
+                        }
+                        val goBakPlayers = buildList {
+                            if (sellCount > 0) add(PlayerSpec("S", isSeller = true, sellCount = sellCount))
+                            add(PlayerSpec("W", isWinner = true, goCount = go))
+                            add(PlayerSpec("LA", loserOptions = bakA + LoserOption.GoBak))
+                            add(PlayerSpec("LB", loserOptions = bakB))
+                        }
+                        val rules = RuleSet(scorePerPoint = 100, fuckScore = 500, sellScore = 300)
+                        val withoutGoBak = harness.evaluate(RoundCase("3P+-NoGoBak", rules, basePlayers))
+                        val withGoBak = harness.evaluate(RoundCase("3P+-WithGoBak", rules, goBakPlayers))
+
+                        // 승자 총 정산액은 고박 유무와 무관하게 100% 동일해야 함 (이중 2배 부과 원천 차단)
+                        assertEquals(
+                            withoutGoBak.accountOf("W"),
+                            withGoBak.accountOf("W"),
+                            "3P+ GoBak must conserve winner total payout (sell=$sellCount, go=$go, bakA=$bakA, bakB=$bakB)"
+                        )
+                        // LB의 광값 지불액 외 판돈 부담은 0원이어야 함
+                        val expectedLbAccount = if (sellCount > 0) -(sellCount * rules.sellScore) else 0
+                        assertEquals(expectedLbAccount, withGoBak.accountOf("LB"))
+                        // LA는 고박 없을 때의 (LA + LB) 순합계에서 LB의 광값만 제외한 전액을 부담
+                        assertEquals(
+                            withoutGoBak.accountOf("LA") + withoutGoBak.accountOf("LB") - expectedLbAccount,
+                            withGoBak.accountOf("LA")
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     private fun validScoreOptionSets(): List<List<ScoreOption>> {
         val fuckVariants = listOf(
             null,
@@ -661,6 +827,32 @@ class BlackBoxCombinatorialTest {
         recurse(0, count, emptyList())
         return result
     }
+
+    private val traceFormatter = RoundTraceFormatter()
+    private val sampleTraceTexts = RoundTraceFormatter.TraceTexts(
+        baseScoreTitle = "Base Score",
+        baseLabel = "Base",
+        pointUnit = "pts",
+        goUnit = "Go",
+        bakUnit = "bak",
+        wonUnit = "won",
+        personUnit = "p",
+        fuckName = "Ppeok",
+        firstDdadakName = "First Ddadak",
+        sellName = "Sell Brights",
+        winnerLabel = "Winner",
+        loserLabel = "Loser",
+        sellerRoleLabel = "Seller",
+        threeFuckLabel = "Triple Ppeok",
+        peaBakLabel = "Pi-bak",
+        lightBakLabel = "Gwang-bak",
+        mongBakLabel = "Meong-bak",
+        goBakLabel = "Go-bak",
+        goBakExemptLabel = "Go-bak Exempt",
+        selfBaseLossFormat = "Own base: %1\$s",
+        goBakCoverFormat = "%1\$s Go-bak cover",
+        goBakExemptFormulaFormat = "Exempted (%1\$s Go-bak)"
+    )
 
     companion object {
         private const val WINNER_BASE_SCORE = 10

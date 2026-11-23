@@ -14,6 +14,13 @@ class AggregateGamerResultsUseCase @Inject constructor() {
                 }
             }
         }
+        val uniquePlayerIdByName = playerNameById.entries
+            .groupBy(keySelector = { it.value }, valueTransform = { it.key })
+            .mapNotNull { (name, ids) ->
+                ids.singleOrNull()?.let { name to it }
+            }
+            .toMap()
+
         return gamers
             .groupBy { gamerKey(it.playerId, it.name) }
             .map { (_, samePlayerGamers) ->
@@ -22,25 +29,35 @@ class AggregateGamerResultsUseCase @Inject constructor() {
                     name = first.name,
                     playerId = first.playerId,
                     account = samePlayerGamers.sumOf(Gamer::account),
-                    calculate = mergeTargets(samePlayerGamers, playerNameById)
+                    calculate = mergeTargets(samePlayerGamers, playerNameById, uniquePlayerIdByName)
                 )
             }
     }
 
-    private fun mergeTargets(gamers: List<Gamer>, playerNameById: Map<Long, String>): List<Target> {
+    private fun mergeTargets(
+        gamers: List<Gamer>,
+        playerNameById: Map<Long, String>,
+        uniquePlayerIdByName: Map<String, Long>,
+    ): List<Target> {
         val mergedTargets = buildMap<String, Target> {
             gamers.forEach { gamer ->
                 gamer.calculate.forEach { target ->
-                    // Fallback by name for legacy Target rows whose playerId stored round-local Gamer.id.
+                    // Fallback to unique name->playerId mapping for legacy Target rows whose playerId stored round-local Gamer.id
+                    // so pre-/post-v1.4.1 rounds within the same game merge cleanly without splitting rows.
                     val isKnownPlayerTarget =
                         target.playerId != 0L && playerNameById[target.playerId] == target.name
-                    val key = if (isKnownPlayerTarget) {
-                        "id:${target.playerId}"
+                    val resolvedPlayerId = if (isKnownPlayerTarget) {
+                        target.playerId
+                    } else {
+                        uniquePlayerIdByName[target.name]
+                    }
+                    val key = if (resolvedPlayerId != null) {
+                        "id:$resolvedPlayerId"
                     } else {
                         "name:${target.name}"
                     }
                     val newAccount = (this[key]?.account ?: 0) + target.account
-                    put(key, target.copy(account = newAccount))
+                    put(key, target.copy(playerId = resolvedPlayerId ?: target.playerId, account = newAccount))
                 }
             }
         }

@@ -11,20 +11,13 @@ import androidx.compose.runtime.setValue
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.ScoreOption
-import zero.friends.gostopcalculator.shared.generated.resources.Res
-import zero.friends.gostopcalculator.shared.generated.resources.complete
-import zero.friends.gostopcalculator.shared.generated.resources.dialog_text_complete
-import zero.friends.gostopcalculator.shared.generated.resources.three_fuck_text
-import zero.friends.gostopcalculator.shared.generated.resources.three_fuck_title
 import zero.friends.gostopcalculator.ui.board.score.loser.LoserScreen
 import zero.friends.gostopcalculator.ui.board.score.manual.ManualFullScreenDialog
 import zero.friends.gostopcalculator.ui.board.score.manual.ManualViewModel
 import zero.friends.gostopcalculator.ui.board.score.scoring.ScoringScreen
 import zero.friends.gostopcalculator.ui.board.score.selling.SellingScreen
 import zero.friends.gostopcalculator.ui.board.score.winner.WinnerScreen
-import zero.friends.gostopcalculator.ui.dialog.BasicDialog
 
 import zero.friends.gostopcalculator.ui.common.BackHandler
 
@@ -38,17 +31,19 @@ fun ScoreScreen(
     onShowToast: (String) -> Unit = {},
     onOpenManual: (() -> Unit)? = null,
 ) {
-    BackHandler(enabled = true) {
-        scoreViewModel.onBackPhase()
-    }
-
-    val uiState by scoreViewModel.uiState().collectAsState()
-    val scope = rememberCoroutineScope()
-
     var openExtraDialog by remember { mutableStateOf(false) }
     var threeFuckDialog by remember { mutableStateOf(false) }
     var completeDialog by remember { mutableStateOf(false) }
     var isNavigating by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = true) {
+        if (!isNavigating) {
+            scoreViewModel.onBackPhase()
+        }
+    }
+
+    val uiState by scoreViewModel.uiState().collectAsState()
+    val scope = rememberCoroutineScope()
 
     val openManualAction: () -> Unit = {
         if (onOpenManual != null) {
@@ -63,7 +58,7 @@ fun ScoreScreen(
             isNavigating = true
             scope.launch {
                 scoreViewModel.calculateGameResult()
-                onComplete(uiState.game.id, scoreViewModel.roundId)
+                onComplete(scoreViewModel.gameId, scoreViewModel.roundId)
             }
         }
     }
@@ -73,7 +68,7 @@ fun ScoreScreen(
             isNavigating = true
             scope.launch {
                 scoreViewModel.deleteRound()
-                onExit(uiState.game.id)
+                onExit(scoreViewModel.gameId)
             }
         }
     }
@@ -84,7 +79,7 @@ fun ScoreScreen(
                 if (!isNavigating) {
                     isNavigating = true
                     scoreViewModel.deleteRound()
-                    onBack(uiState.game.id)
+                    onBack(scoreViewModel.gameId)
                 }
             }.launchIn(this)
 
@@ -109,31 +104,32 @@ fun ScoreScreen(
     }
 
     if (completeDialog) {
-        BasicDialog(
-            confirmText = stringResource(Res.string.complete),
-            titleText = stringResource(Res.string.dialog_text_complete),
-            onClick = {
+        RoundConfirmDialog(
+            winner = uiState.winner,
+            seller = uiState.seller,
+            gamers = uiState.playerResults,
+            onRecheck = {
+                completeDialog = false
+            },
+            onConfirm = {
                 completeDialog = false
                 handleComplete()
-            },
-            onDismiss = {
-                completeDialog = false
             }
         )
     }
 
     if (threeFuckDialog) {
-        BasicDialog(
-            confirmText = stringResource(Res.string.complete),
-            titleText = stringResource(Res.string.three_fuck_title),
-            text = stringResource(Res.string.three_fuck_text),
-            onDismiss = {
+        ThreeFuckConfirmDialog(
+            gamer = uiState.threeFuckGamer,
+            onRecheck = {
                 threeFuckDialog = false
-                uiState.threeFuckGamer?.let { gamer ->
-                    scoreViewModel.selectScore(gamer, ScoreOption.ThreeFuck)
+                if (!isNavigating) {
+                    uiState.threeFuckGamer?.let { gamer ->
+                        scoreViewModel.selectScore(gamer, ScoreOption.ThreeFuck)
+                    }
                 }
             },
-            onClick = {
+            onConfirm = {
                 threeFuckDialog = false
                 handleComplete()
             }
@@ -146,10 +142,12 @@ fun ScoreScreen(
                 game = uiState.game,
                 gamers = uiState.playerResults,
                 isNextEnabled = phase.getEnableNext(),
-                onNext = scoreViewModel::onNextPhase,
-                onBack = scoreViewModel::onBackPhase,
+                onNext = { if (!isNavigating) scoreViewModel.onNextPhase(phase) },
+                onBack = { if (!isNavigating) scoreViewModel.onBackPhase() },
                 onExit = handleExit,
-                onUpdateSeller = scoreViewModel::updateSeller,
+                onUpdateSeller = { gamer, count ->
+                    if (!isNavigating) scoreViewModel.updateSeller(gamer, count)
+                },
                 onShowInfo = { openExtraDialog = true }
             )
         }
@@ -158,12 +156,14 @@ fun ScoreScreen(
                 game = uiState.game,
                 gamers = uiState.playerResults,
                 seller = uiState.seller,
-                onNext = scoreViewModel::onNextPhase,
-                onBack = scoreViewModel::onBackPhase,
+                onNext = { if (!isNavigating) scoreViewModel.onNextPhase(phase) },
+                onBack = { if (!isNavigating) scoreViewModel.onBackPhase() },
                 onExit = handleExit,
                 onSelectScore = { gamer, option ->
-                    scoreViewModel.selectScore(gamer, option) { shouldShowDialog ->
-                        threeFuckDialog = shouldShowDialog
+                    if (!isNavigating) {
+                        scoreViewModel.selectScore(gamer, option) { shouldShowDialog ->
+                            threeFuckDialog = shouldShowDialog
+                        }
                     }
                 },
                 onShowManual = openManualAction
@@ -175,10 +175,12 @@ fun ScoreScreen(
                 gamers = uiState.playerResults,
                 seller = uiState.seller,
                 isNextEnabled = phase.getEnableNext(),
-                onNext = scoreViewModel::onNextPhase,
-                onBack = scoreViewModel::onBackPhase,
+                onNext = { if (!isNavigating) scoreViewModel.onNextPhase(phase) },
+                onBack = { if (!isNavigating) scoreViewModel.onBackPhase() },
                 onExit = handleExit,
-                onUpdateWinner = scoreViewModel::updateWinner,
+                onUpdateWinner = { gamer, point, go ->
+                    if (!isNavigating) scoreViewModel.updateWinner(gamer, point, go)
+                },
                 onShowManual = openManualAction
             )
         }
@@ -188,10 +190,12 @@ fun ScoreScreen(
                 gamers = uiState.playerResults,
                 seller = uiState.seller,
                 winner = uiState.winner,
-                onComplete = { completeDialog = true },
-                onBack = scoreViewModel::onBackPhase,
+                onComplete = { if (!isNavigating) completeDialog = true },
+                onBack = { if (!isNavigating) scoreViewModel.onBackPhase() },
                 onExit = handleExit,
-                onSelectLoser = scoreViewModel::selectLoser,
+                onSelectLoser = { gamer, option ->
+                    if (!isNavigating) scoreViewModel.selectLoser(gamer, option)
+                },
                 onShowManual = openManualAction
             )
         }

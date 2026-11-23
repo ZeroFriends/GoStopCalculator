@@ -1,5 +1,6 @@
 package zero.friends.gostopcalculator.ui.precondition
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,17 +10,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
-import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -32,13 +32,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Rule
 import zero.friends.domain.util.Const
@@ -52,19 +55,24 @@ import zero.friends.gostopcalculator.shared.generated.resources.help_ddaddak_sub
 import zero.friends.gostopcalculator.shared.generated.resources.help_fuck
 import zero.friends.gostopcalculator.shared.generated.resources.help_score
 import zero.friends.gostopcalculator.shared.generated.resources.help_selling
-import zero.friends.gostopcalculator.shared.generated.resources.ic_star_red
 import zero.friends.gostopcalculator.shared.generated.resources.price_setting
 import zero.friends.gostopcalculator.shared.generated.resources.rule_subtitle
 import zero.friends.gostopcalculator.shared.generated.resources.rule_title
 import zero.friends.gostopcalculator.shared.generated.resources.won
-import zero.friends.gostopcalculator.theme.DustyGray
 import zero.friends.gostopcalculator.theme.Gray
-import zero.friends.gostopcalculator.theme.Gray38
 import zero.friends.gostopcalculator.theme.Nero
 import zero.friends.gostopcalculator.theme.OrangeyRed
+import zero.friends.gostopcalculator.ui.board.score.common.PlayerIndexBadge
+import zero.friends.gostopcalculator.ui.board.score.common.ScoreDisabledBadgeBg
+import zero.friends.gostopcalculator.ui.board.score.common.ScorePrimaryRed
+import zero.friends.gostopcalculator.ui.board.score.common.ScoreRuleCardBg
+import zero.friends.gostopcalculator.ui.board.score.common.ScoreRuleCardBorder
+import zero.friends.gostopcalculator.ui.board.score.common.ScoreSoftPinkBg
+import zero.friends.gostopcalculator.ui.board.score.common.ScoreSubtleGray
+import zero.friends.gostopcalculator.ui.board.score.common.ScoreTextDark
+import zero.friends.gostopcalculator.ui.board.score.common.StepperNumberField
 import zero.friends.gostopcalculator.ui.common.BackHandler
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
-import zero.friends.gostopcalculator.ui.common.NumberTextField
 import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.ui.common.background.AprilBackground
 import zero.friends.gostopcalculator.util.TabKeyboardDownModifier
@@ -231,7 +239,10 @@ private fun RuleLazyColumn(
     clickEvent: (RuleClickEvent) -> Unit,
     onUpdateRule: (rule: Rule, score: Long) -> Unit = { _, _ -> }
 ) {
-    LazyColumn(contentPadding = PaddingValues(top = 10.dp, bottom = 12.dp)) {
+    LazyColumn(
+        contentPadding = PaddingValues(top = 6.dp, bottom = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
         item {
             AmountSettingBlock { clickEvent(RuleClickEvent.Helper) }
         }
@@ -249,70 +260,91 @@ private fun RuleLazyColumn(
 @Composable
 private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {}) {
     val isFirstDdadak = rule.name == Const.Rule.FirstDdadak
+    val currentScore = rule.score.toLong()
+    val isHighlighted = rule.isEssential && rule.score > 0
+    val localizedScript = rule.localizedScript()
 
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        color = ScoreRuleCardBg,
+        border = BorderStroke(1.dp, ScoreRuleCardBorder)
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .weight(1f)
-                .padding(end = 12.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                text = (index + 1).toString(),
+            Row(
+                verticalAlignment = if (localizedScript.isNotEmpty()) Alignment.Top else Alignment.CenterVertically,
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(end = 12.dp, start = 4.dp),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = OrangeyRed
-            )
-            Column(
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
                     .weight(1f)
+                    .padding(end = 8.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                PlayerIndexBadge(
+                    index = index,
+                    containerColor = if (isFirstDdadak) ScoreDisabledBadgeBg else ScoreSoftPinkBg,
+                    textColor = if (isFirstDdadak) ScoreSubtleGray else ScorePrimaryRed,
+                    size = 24.dp,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                Column(
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .weight(1f)
                 ) {
-                    Text(
-                        text = rule.name.localizedName(),
-                        fontSize = 16.sp,
-                        color = if (isFirstDdadak) DustyGray else Nero,
-                        modifier = Modifier.weight(1f, fill = false)
-                    )
-                    if (rule.isEssential) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_star_red),
-                            contentDescription = "Essential Rule",
-                            tint = Color.Unspecified,
-                            modifier = Modifier.padding(start = 4.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp)
+                    ) {
+                        Text(
+                            text = rule.name.localizedName(),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isFirstDdadak) ScoreSubtleGray else ScoreTextDark,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+                        if (rule.isEssential) {
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(ScorePrimaryRed)
+                            )
+                        }
+                    }
+                    if (localizedScript.isNotEmpty()) {
+                        Text(
+                            text = localizedScript,
+                            fontSize = 11.sp,
+                            color = ScoreSubtleGray,
+                            lineHeight = 14.sp,
+                            modifier = Modifier.padding(top = 2.dp)
                         )
                     }
                 }
-                val localizedScript = rule.localizedScript()
-                if (localizedScript.isNotEmpty()) {
-                    Text(text = localizedScript, fontSize = 10.sp, color = Gray38)
-                }
             }
-        }
 
-        NumberTextField(
-            text = rule.score.toString(),
-            modifier = Modifier
-                .width(132.dp)
-                .height(44.dp),
-            endText = stringResource(Res.string.won),
-            isEnable = !isFirstDdadak,
-            hintColor = if (isFirstDdadak) DustyGray else Nero,
-            inputTestTag = "rule_score_input_${index}"
-        ) {
-            onUpdateScore(it)
+            StepperNumberField(
+                value = currentScore,
+                endText = stringResource(Res.string.won),
+                enabled = !isFirstDdadak,
+                isHighlighted = isHighlighted,
+                filledPlusWhenHighlighted = false,
+                outlinedNeutralButtons = true,
+                centerWidth = 80.dp,
+                centerHeight = 36.dp,
+                buttonSize = 28.dp,
+                spacing = 5.dp,
+                inputTestTag = "rule_score_input_${index}",
+                onDecrement = { onUpdateScore(nextRuleStepDown(currentScore)) },
+                onIncrement = { onUpdateScore(nextRuleStepUp(currentScore)) },
+                onValueChange = { onUpdateScore(it) }
+            )
         }
     }
 }
@@ -320,15 +352,22 @@ private fun RuleItem(index: Int, rule: Rule, onUpdateScore: (Long) -> Unit = {})
 @Composable
 private fun AmountSettingBlock(modifier: Modifier = Modifier, onHelperClick: () -> Unit) {
     Row(
-        modifier = modifier.fillMaxWidth().padding(bottom = 12.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = stringResource(Res.string.price_setting), fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Nero)
+        Text(
+            text = stringResource(Res.string.price_setting),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+            color = ScoreTextDark
+        )
         RoundedCornerText(
             stringResource(Res.string.help),
             OrangeyRed,
-            fontSize = 14.sp,
+            fontSize = 13.sp,
             onClick = onHelperClick
         )
     }

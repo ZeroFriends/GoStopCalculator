@@ -2,12 +2,14 @@ package zero.friends.gostopcalculator.ui.board.score.common
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
 import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
@@ -28,6 +30,8 @@ fun ScorePhaseLayout(
     onBack: () -> Unit,
     onExit: () -> Unit,
     onButtonClick: () -> Unit,
+    heroIcon: DrawableResource? = null,
+    highlightSubText: String? = null,
     content: @Composable () -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState()
@@ -36,6 +40,7 @@ fun ScorePhaseLayout(
     Scaffold(
         modifier = TabKeyboardDownModifier(),
         scaffoldState = scaffoldState,
+        backgroundColor = ScoreCanvasBg,
         topBar = {
             CenterTextTopBar(
                 text = gameTitle,
@@ -51,18 +56,30 @@ fun ScorePhaseLayout(
             modifier = Modifier.padding(innerPadding),
             buttonString = buttonText,
             buttonEnabled = buttonEnabled,
+            showGradient = true,
+            backgroundColor = ScoreCanvasBg,
             onClick = onButtonClick,
         ) {
             Column(
                 modifier = Modifier
                     .padding(top = topBarPadding)
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp, vertical = 14.dp)
             ) {
-                DescriptionBox(
-                    mainText = mainText,
-                    subText = subText
-                )
-                Spacer(modifier = Modifier.padding(22.dp))
+                if (heroIcon != null) {
+                    ScoreHeroCard(
+                        icon = heroIcon,
+                        mainText = mainText,
+                        subText = subText,
+                        highlightText = highlightSubText
+                    )
+                    Spacer(modifier = Modifier.height(18.dp))
+                } else {
+                    DescriptionBox(
+                        mainText = mainText,
+                        subText = subText
+                    )
+                    Spacer(modifier = Modifier.padding(22.dp))
+                }
                 content()
             }
         }

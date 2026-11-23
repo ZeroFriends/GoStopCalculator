@@ -125,7 +125,7 @@
       },
       {
         "header": "Go-bak",
-        "body": "A player calls Go, but another player reaches the target score and stops."
+        "body": "A player calls Go, but another player reaches the target score and stops. In 2-player Matgo, the Go-bak player pays 2x; in 3+ player Go-Stop, they cover all losers' base round scores."
       },
       {
         "header": "Meong-bak",

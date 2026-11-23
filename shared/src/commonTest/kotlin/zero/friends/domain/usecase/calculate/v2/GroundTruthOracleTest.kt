@@ -131,9 +131,10 @@ class GroundTruthOracleTest {
 
         useCase(gameId, roundId, seller = null, winner = winner)
 
-        assertEquals(1600, gamerRepository.getGamerAccount(1))
+        // 나무위키 3인 고스톱 표준: loser1(피박 800원) + goBakLoser(본인 400원) = 1,200원 독박 대납
+        assertEquals(1200, gamerRepository.getGamerAccount(1))
         assertEquals(0, gamerRepository.getGamerAccount(2))
-        assertEquals(-1600, gamerRepository.getGamerAccount(3))
+        assertEquals(-1200, gamerRepository.getGamerAccount(3))
     }
 
     @Test
@@ -187,10 +188,13 @@ class GroundTruthOracleTest {
 
         useCase(gameId, roundId, seller = seller, winner = winner)
 
+        // seller: +500 * 3 = +1,500원
+        // 판 점수: normalLoser(300원) + goBakLoser(300원) = 600원을 goBakLoser가 전액 대납
+        // winner: +600(판돈) - 500(광값) = +100원 / normalLoser: 0 - 500 = -500원 / goBakLoser: -600 - 500 = -1,100원
         assertEquals(1500, gamerRepository.getGamerAccount(1))
-        assertEquals(400, gamerRepository.getGamerAccount(2))
+        assertEquals(100, gamerRepository.getGamerAccount(2))
         assertEquals(-500, gamerRepository.getGamerAccount(3))
-        assertEquals(-1400, gamerRepository.getGamerAccount(4))
+        assertEquals(-1100, gamerRepository.getGamerAccount(4))
     }
 
     @Test
@@ -232,7 +236,7 @@ class GroundTruthOracleTest {
         val gameId = 1L; val roundId = 11L
         // 승자 5점 (500원)
         // loser1(광박): 500 * 2 = 1,000원
-        // goBakLoser(광박+고박): 500 * 2(광박) * 2(고박) = 2,000원 -> 독박: 1,000 + 2,000 = 3,000원 독박 지불
+        // goBakLoser(광박+고박): 본인 광박 500 * 2 = 1,000원 + loser1 대납 1,000원 = 2,000원 독박 지불
         val winner = Gamer(id = 1, roundId = roundId, score = 5)
         val loser1 = Gamer(id = 2, roundId = roundId, loserOption = listOf(LoserOption.LightBak))
         val goBakLoser = Gamer(id = 3, roundId = roundId, loserOption = listOf(LoserOption.LightBak, LoserOption.GoBak))
@@ -242,9 +246,9 @@ class GroundTruthOracleTest {
 
         useCase(gameId, roundId, seller = null, winner = winner)
 
-        assertEquals(3000, gamerRepository.getGamerAccount(1))
+        assertEquals(2000, gamerRepository.getGamerAccount(1))
         assertEquals(0, gamerRepository.getGamerAccount(2))
-        assertEquals(-3000, gamerRepository.getGamerAccount(3))
+        assertEquals(-2000, gamerRepository.getGamerAccount(3))
     }
 
     @Test
@@ -302,5 +306,52 @@ class GroundTruthOracleTest {
         assertEquals(3000, gamerRepository.getGamerAccount(1))
         assertEquals(-1500, gamerRepository.getGamerAccount(2))
         assertEquals(-1500, gamerRepository.getGamerAccount(3))
+    }
+
+    @Test
+    fun `Oracle Case 15 - 맞고 2인 2점 3고 멍박 광박 고박 8배 정산`() = runTest {
+        val gameId = 1L; val roundId = 15L
+        // 2인 맞고: (2점 + 3고) * 2(3고 배수) * 100원 = 1,000원 -> 멍박(2) * 광박(2) * 고박(2) = 8,000원
+        val winner = Gamer(id = 1, roundId = roundId, score = 2, go = 3)
+        val loser = Gamer(
+            id = 2,
+            roundId = roundId,
+            loserOption = listOf(LoserOption.MongBak, LoserOption.LightBak, LoserOption.GoBak)
+        )
+
+        gamerRepository.setRoundGamers(roundId, listOf(winner, loser))
+        setupRules(gameId, score = 100, sell = 0)
+
+        useCase(gameId, roundId, seller = null, winner = winner)
+
+        assertEquals(8000, gamerRepository.getGamerAccount(1))
+        assertEquals(-8000, gamerRepository.getGamerAccount(2))
+    }
+
+    @Test
+    fun `Oracle Case 16 - 4인 중 1인 광팔기 0원 3인 플레이 2점 3고 멍박 광박 고박 독박 정산`() = runTest {
+        val gameId = 1L; val roundId = 16L
+        // 실기기 제보 시나리오: 점당 100원, 광팔기 0원, 4인 중 1명 광팜(3인 현역)
+        // 승자: 2점 3고 = (2+3)*2*100 = 1,000원
+        // 고박 패자(멍박+광박+고박): 본인 1,000 * 4(멍박·광박) = 4,000원 + 일반 패자 1,000원 대납 = -5,000원
+        // 일반 패자(무박): 고박 대납으로 0원
+        val seller = Gamer(id = 1, roundId = roundId, score = 2)
+        val winner = Gamer(id = 2, roundId = roundId, score = 2, go = 3)
+        val goBakLoser = Gamer(
+            id = 3,
+            roundId = roundId,
+            loserOption = listOf(LoserOption.MongBak, LoserOption.LightBak, LoserOption.GoBak)
+        )
+        val exemptedLoser = Gamer(id = 4, roundId = roundId)
+
+        gamerRepository.setRoundGamers(roundId, listOf(seller, winner, goBakLoser, exemptedLoser))
+        setupRules(gameId, score = 100, sell = 0)
+
+        useCase(gameId, roundId, seller = seller, winner = winner)
+
+        assertEquals(0, gamerRepository.getGamerAccount(1))
+        assertEquals(5000, gamerRepository.getGamerAccount(2))
+        assertEquals(-5000, gamerRepository.getGamerAccount(3))
+        assertEquals(0, gamerRepository.getGamerAccount(4))
     }
 }

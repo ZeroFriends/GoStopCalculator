@@ -12,8 +12,10 @@
 사용법: python3 .maestro/i18n_audit.py   (문제 발견 시 exit 1)
 """
 import re
+import struct
 import sys
 import xml.etree.ElementTree as ET
+import zlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -82,6 +84,53 @@ for kt in sorted(KOTLIN_UI.rglob("*.kt")):
         # 도메인 enum 의 한글 라벨(.korean / Rule.displayName)을 그대로 UI 에 노출하는 경우
         if re.search(r"\.korean\b|\.displayName\b", code):
             warnings.append(f"[한글 전용 enum 라벨 노출] {kt.relative_to(ROOT)}:{no}: {code.strip()}")
+
+# 6. prepare_selected_count_format 2-파라미터(%1$d/%2$d) 강제 및 Kotlin stringResource 호출 인자 수 대조
+for loc, strings in resources.items():
+    val = strings.get("prepare_selected_count_format", "")
+    found_specs = sorted(ANY_SPEC.findall(val))
+    if found_specs != [("1", "d"), ("2", "d")]:
+        errors.append(
+            f"[선택 인원 분모 하드코딩 위험] {LOCALES[loc]}:prepare_selected_count_format = '{val}' ➔ 반드시 %1$d/%2$d 2개 인자를 사용해야 함"
+        )
+
+# 7. Compose 라운드 컴포넌트(ScorePlayerCard / Surface) 리플 클리핑(.clip 선행) 정적 감사
+score_card_clickable = re.compile(r"ScorePlayerCard\s*\((?:(?!\)\s*\{).)*?\.clickable\b", re.DOTALL)
+surface_block = re.compile(r"Surface\s*\((.*?)\)\s*\{", re.DOTALL)
+for kt in sorted(KOTLIN_UI.rglob("*.kt")):
+    text = kt.read_text(encoding="utf-8")
+    for m in score_card_clickable.finditer(text):
+        line_no = text[: m.start()].count("\n") + 1
+        errors.append(
+            f"[사각형 리플 오버플로우 위험] {kt.relative_to(ROOT)}:{line_no}: ScorePlayerCard 외부 modifier에 .clickable 직접 전달 금지 (onClick 파라미터 사용 필수)"
+        )
+    for m in surface_block.finditer(text):
+        args_src = m.group(1)
+        if ".clickable" in args_src:
+            clip_idx = args_src.find(".clip(")
+            click_idx = args_src.find(".clickable")
+            if clip_idx == -1 or clip_idx > click_idx:
+                line_no = text[: m.start()].count("\n") + 1
+                errors.append(
+                    f"[사각형 리플 오버플로우 위험] {kt.relative_to(ROOT)}:{line_no}: Surface modifier에서 .clickable 앞에 .clip(shape) 누락"
+                )
+
+# 8. 인앱 이용 가이드 이미지(guide_1.png ~ guide_6.png) 최신성 및 RGBA 투명 배경 무결성 감사
+DRAWABLE = RES / "drawable"
+for i in range(1, 7):
+    gp = DRAWABLE / f"guide_{i}.png"
+    if not gp.exists():
+        errors.append(f"[가이드 이미지 누락] {gp.relative_to(ROOT)}")
+        continue
+    data = gp.read_bytes()
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        errors.append(f"[가이드 이미지 손상] {gp.relative_to(ROOT)}: PNG 시그니처 불일치")
+        continue
+    w, h, bd, ct = struct.unpack(">IIBB", data[16:26])
+    if bd != 8 or ct != 6:
+        errors.append(f"[가이드 이미지 포맷 오류] {gp.relative_to(ROOT)}: 8-bit RGBA(color_type=6)여야 함 (현재 bd={bd}, ct={ct})")
+    if len(data) > 350_000:
+        errors.append(f"[구버전 가이드 이미지 의심] {gp.relative_to(ROOT)}: 용량({len(data)}B)이 구버전(2022) 에셋과 유사함")
 
 print("=" * 60)
 print(f"🌐 i18n 정적 감사: 키 {len(base_keys)}개 × 언어 {len(LOCALES)}개")

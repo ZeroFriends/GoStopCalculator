@@ -27,14 +27,14 @@ fun GoStopButtonBackground(
     buttonString: String,
     buttonEnabled: Boolean = true,
     showGradient: Boolean = false,
+    backgroundColor: Color = Color.White,
     onClick: () -> Unit = {},
     content: @Composable BoxScope.() -> Unit = {},
 ) {
-    val backgroundColor = Color.White
-
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(backgroundColor)
             .windowInsetsPadding(WindowInsets.navigationBars.union(WindowInsets.ime)),
     ) {
         Box(

@@ -56,7 +56,7 @@ appId: zero.friends.gostopcalculator
 - tapOn: "다음 \\(3/3\\)"
 
 # 계산 확인 ➔ 결과 화면에서 복합 옵션 반영 검증
-- tapOn: "완료"
+- tapOn: "점수 확정하기"
 - assertVisible: ".*첫 뻑.*"
 - assertVisible: ".*피 박.*"
 - assertVisible: ".*광 박.*"

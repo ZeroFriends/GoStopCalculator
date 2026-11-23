@@ -17,7 +17,7 @@ actual class Preference actual constructor() : AppPreference {
     }
 
     actual override fun setFirstStart() {
-        preferences.edit(commit = true) {
+        preferences.edit {
             putBoolean("IS_FIRST_START", false)
         }
     }

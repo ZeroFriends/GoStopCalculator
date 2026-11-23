@@ -37,7 +37,7 @@ jobs:
         run: python3 .maestro/i18n_audit.py
 
   android-maestro-e2e:
-    name: Android Maestro E2E & i18n Crawl
+    name: Android Maestro E2E
     needs: i18n-static-audit
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -52,11 +52,6 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: 'gradle'
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
 
       - name: Grant Execute Permissions
         run: chmod +x gradlew .maestro/*.sh
@@ -81,7 +76,7 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Boot Android Emulator & Run Maestro E2E + i18n Crawl
+      - name: Boot Android Emulator & Run Maestro E2E
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34

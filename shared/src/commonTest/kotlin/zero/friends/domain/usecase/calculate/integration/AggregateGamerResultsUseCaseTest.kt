@@ -109,4 +109,37 @@ class AggregateGamerResultsUseCaseTest {
         assertEquals("Bob", alice.calculate.single().name)
         assertEquals(800, alice.calculate.single().account)
     }
+
+    @Test
+    fun testMixedLegacyAndNewTargetsForSamePlayerMergeIntoSingleRow() {
+        // Round 1 (pre-v1.4.1): Target.playerId stored round-local Gamer.id (102)
+        val round1Alice = Gamer(
+            id = 101,
+            playerId = 10,
+            name = "Alice",
+            account = 500,
+            calculate = listOf(Target(playerId = 102, name = "Bob", account = 500))
+        )
+        val round1Bob = Gamer(id = 102, playerId = 20, name = "Bob", account = -500)
+
+        // Round 2 (post-v1.4.1): Target.playerId stores persistent Player.id (20)
+        val round2Alice = Gamer(
+            id = 201,
+            playerId = 10,
+            name = "Alice",
+            account = 700,
+            calculate = listOf(Target(playerId = 20, name = "Bob", account = 700))
+        )
+        val round2Bob = Gamer(id = 202, playerId = 20, name = "Bob", account = -700)
+
+        val result = aggregateGamerResultsUseCase(listOf(round1Alice, round1Bob, round2Alice, round2Bob))
+
+        assertEquals(2, result.size)
+        val alice = result.first { it.playerId == 10L }
+        assertEquals(1200, alice.account)
+        assertEquals(1, alice.calculate.size)
+        assertEquals(20L, alice.calculate.single().playerId)
+        assertEquals("Bob", alice.calculate.single().name)
+        assertEquals(1200, alice.calculate.single().account)
+    }
 }

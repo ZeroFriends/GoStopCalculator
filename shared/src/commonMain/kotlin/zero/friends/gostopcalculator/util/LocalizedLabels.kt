@@ -1,6 +1,7 @@
 package zero.friends.gostopcalculator.util
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.LoserOption
@@ -9,6 +10,8 @@ import zero.friends.domain.model.Rule
 import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.model.SellerOption
 import zero.friends.domain.model.WinnerOption
+import zero.friends.domain.usecase.calculate.calculateBakMultiplier
+import zero.friends.domain.usecase.calculate.effectiveBakOptions
 import zero.friends.domain.util.Const
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.rule_first_ddadak
@@ -67,4 +70,31 @@ fun Rule.localizedScript(): String = when (name) {
     Const.Rule.Score -> if (script.isNotEmpty()) stringResource(Res.string.rule_script_essential) else ""
     Const.Rule.Sell -> if (script.isNotEmpty()) stringResource(Res.string.rule_script_sell_four_players) else ""
     else -> script
+}
+
+data class EffectiveBakSummary(
+    val names: String,
+    val multiplier: Int,
+    val hasEffectiveBaks: Boolean,
+)
+
+@Composable
+fun rememberEffectiveBakSummary(
+    loserOptions: List<LoserOption>,
+    loserCount: Int,
+): EffectiveBakSummary {
+    val effectiveBaks = remember(loserOptions, loserCount) {
+        effectiveBakOptions(loserOptions, loserCount).sortedBy { it.ordinal }
+    }
+    val multiplier = remember(loserOptions, loserCount) {
+        calculateBakMultiplier(loserOptions, loserCount)
+    }
+    val names = effectiveBaks
+        .map { it.localizedName().replace(" ", "") }
+        .joinToString(" · ")
+    return EffectiveBakSummary(
+        names = names,
+        multiplier = multiplier,
+        hasEffectiveBaks = effectiveBaks.isNotEmpty(),
+    )
 }

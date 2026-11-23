@@ -11,6 +11,7 @@ import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.LoserOption
 import zero.friends.domain.model.Rule
 import zero.friends.domain.model.ScoreOption
+import zero.friends.domain.model.SellerOption
 import zero.friends.domain.usecase.calculate.CalculateGameResultUseCase
 import zero.friends.domain.usecase.calculate.CalculateLoserScoreUseCase
 import zero.friends.domain.usecase.calculate.CalculateScoreOptionUseCase
@@ -316,5 +317,53 @@ class PropertyBasedInvariantTest {
         val winnerAccount = gamerRepo.getGamerAccount(1)
         val maxPossibleIncome = (winnerScore + 5) * 8 * baseScorePrice * 8 // 15 * 8 * 100 * 8 = 96,000원 (64배)
         assertTrue(winnerAccount <= maxPossibleIncome, "Multiplier Upper Bound Invariant Broken! Actual: $winnerAccount, Max: $maxPossibleIncome")
+    }
+
+    @Test
+    fun `Invariant 11 - Extreme Score Plus Max ScoreOption And Sell Never Overflows Or Breaks ZeroSum`() = runTest {
+        val (useCase, ruleRepo, gamerRepo) = createIsolatedEnvironment()
+        val gameId = 7000L
+        val roundId = 7000L
+
+        val seller = Gamer(
+            id = 1,
+            roundId = roundId,
+            score = 12,
+            sellerOption = SellerOption.Seller,
+        )
+        val winner = Gamer(
+            id = 2,
+            roundId = roundId,
+            score = 8_519_680,
+            go = 20,
+            scoreOption = listOf(ScoreOption.ThreeFuck, ScoreOption.FirstDdadak),
+        )
+        val goBakLoser = Gamer(
+            id = 3,
+            roundId = roundId,
+            loserOption = listOf(LoserOption.PeaBak, LoserOption.LightBak, LoserOption.MongBak, LoserOption.GoBak),
+        )
+        val otherLoser = Gamer(id = 4, roundId = roundId)
+
+        val gamers = listOf(seller, winner, goBakLoser, otherLoser)
+        gamerRepo.setRoundGamers(roundId, gamers)
+        setupRules(ruleRepo, gameId, score = 1_000_000, fuck = 1_000_000, sell = 1_000_000)
+
+        useCase(gameId, roundId, seller = seller, winner = winner)
+
+        val sellerAccount = gamerRepo.getGamerAccount(1)
+        val winnerAccount = gamerRepo.getGamerAccount(2)
+        val goBakAccount = gamerRepo.getGamerAccount(3)
+        val otherAccount = gamerRepo.getGamerAccount(4)
+
+        assertEquals(36_000_000, sellerAccount)
+        assertTrue(winnerAccount > 0, "Winner account overflowed: $winnerAccount")
+        assertTrue(goBakAccount < 0, "GoBak account overflowed: $goBakAccount")
+        assertEquals(-19_000_000, otherAccount)
+        assertEquals(
+            0L,
+            gamers.sumOf { gamerRepo.getGamerAccount(it.id).toLong() },
+            "Zero-Sum broken under extreme max rules + Sell + ThreeFuck + FirstDdadak"
+        )
     }
 }

@@ -8,11 +8,22 @@ package zero.friends.domain.usecase.calculate
  * - 1~2고: 고할 때마다 +1점씩 가산
  * - 3고 이상: (기본점수 + 고 횟수) × 2^(고-2)
  */
-internal fun calculateGoScore(baseScore: Int, goCount: Int): Int {
-    if (goCount <= 0) return baseScore
-    if (goCount <= 2) return baseScore + goCount
+fun calculateGoMultiplier(goCount: Int): Int {
+    if (goCount <= 2) return 1
+    return 1 shl (goCount - 2).coerceAtMost(30)
+}
 
-    val added = baseScore + goCount
-    val multiplier = 1 shl (goCount - 2)
-    return added * multiplier
+fun calculateGoScore(baseScore: Int, goCount: Int): Int {
+    if (goCount <= 0) return baseScore
+    if (goCount <= 2) {
+        return (baseScore.toLong() + goCount)
+            .coerceIn(Int.MIN_VALUE.toLong(), Int.MAX_VALUE.toLong())
+            .toInt()
+    }
+
+    val added = baseScore.toLong() + goCount
+    val multiplier = calculateGoMultiplier(goCount).toLong()
+    return (added * multiplier)
+        .coerceIn(0L, Int.MAX_VALUE.toLong())
+        .toInt()
 }

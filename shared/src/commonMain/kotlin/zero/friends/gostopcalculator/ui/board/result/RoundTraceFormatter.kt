@@ -29,6 +29,10 @@ import zero.friends.gostopcalculator.shared.generated.resources.rule_seller_role
 import zero.friends.gostopcalculator.shared.generated.resources.rule_three_fuck
 import zero.friends.gostopcalculator.shared.generated.resources.rule_winner
 import zero.friends.gostopcalculator.shared.generated.resources.trace_base_score
+import zero.friends.gostopcalculator.shared.generated.resources.trace_go_bak_cover_format
+import zero.friends.gostopcalculator.shared.generated.resources.trace_go_bak_exempt_formula_format
+import zero.friends.gostopcalculator.shared.generated.resources.trace_go_bak_exempt_tag
+import zero.friends.gostopcalculator.shared.generated.resources.trace_self_base_loss_format
 import zero.friends.gostopcalculator.shared.generated.resources.won
 import zero.friends.gostopcalculator.util.getMoneyColor
 import zero.friends.gostopcalculator.util.separateComma
@@ -54,11 +58,16 @@ fun rememberTraceTexts(): RoundTraceFormatter.TraceTexts {
     val lightBakLabel = stringResource(Res.string.rule_light_bak)
     val mongBakLabel = stringResource(Res.string.rule_mong_bak)
     val goBakLabel = stringResource(Res.string.rule_go_bak)
+    val goBakExemptLabel = stringResource(Res.string.trace_go_bak_exempt_tag)
+    val selfBaseLossFormat = stringResource(Res.string.trace_self_base_loss_format)
+    val goBakCoverFormat = stringResource(Res.string.trace_go_bak_cover_format)
+    val goBakExemptFormulaFormat = stringResource(Res.string.trace_go_bak_exempt_formula_format)
 
     return remember(
         baseScoreTitle, baseLabel, pointUnit, goUnit, bakUnit, wonUnit, personUnit,
         fuckName, firstDdadakName, sellName, winnerLabel, loserLabel, sellerRoleLabel,
-        threeFuckLabel, peaBakLabel, lightBakLabel, mongBakLabel, goBakLabel
+        threeFuckLabel, peaBakLabel, lightBakLabel, mongBakLabel, goBakLabel,
+        goBakExemptLabel, selfBaseLossFormat, goBakCoverFormat, goBakExemptFormulaFormat
     ) {
         RoundTraceFormatter.TraceTexts(
             baseScoreTitle = baseScoreTitle,
@@ -78,7 +87,11 @@ fun rememberTraceTexts(): RoundTraceFormatter.TraceTexts {
             peaBakLabel = peaBakLabel,
             lightBakLabel = lightBakLabel,
             mongBakLabel = mongBakLabel,
-            goBakLabel = goBakLabel
+            goBakLabel = goBakLabel,
+            goBakExemptLabel = goBakExemptLabel,
+            selfBaseLossFormat = selfBaseLossFormat,
+            goBakCoverFormat = goBakCoverFormat,
+            goBakExemptFormulaFormat = goBakExemptFormulaFormat,
         )
     }
 }
@@ -104,7 +117,11 @@ class RoundTraceFormatter {
         val peaBakLabel: String,
         val lightBakLabel: String,
         val mongBakLabel: String,
-        val goBakLabel: String
+        val goBakLabel: String,
+        val goBakExemptLabel: String = "Go-bak Exempt",
+        val selfBaseLossFormat: String = "Own base: %1\$s",
+        val goBakCoverFormat: String = "%1\$s Go-bak cover",
+        val goBakExemptFormulaFormat: String = "Exempted (%1\$s Go-bak)",
     )
 
     data class TraceLine(
@@ -151,7 +168,8 @@ class RoundTraceFormatter {
                 term.amount != 0 ||
                     term.factors.fuckAmount != 0 ||
                     term.factors.ddadakAmount != 0 ||
-                    term.factors.sellAmount != 0
+                    term.factors.sellAmount != 0 ||
+                    term.factors.goBakExemptedAmount != 0
             }
             .map { term ->
                 TraceLine(
@@ -175,6 +193,7 @@ class RoundTraceFormatter {
                 TraceTag.LIGHT_BAK -> texts.lightBakLabel
                 TraceTag.MONG_BAK -> texts.mongBakLabel
                 TraceTag.GO_BAK -> texts.goBakLabel
+                TraceTag.GO_BAK_EXEMPT -> texts.goBakExemptLabel
             }
         }
         return "${term.playerName}\n($roleText)"
@@ -188,7 +207,117 @@ class RoundTraceFormatter {
         if (factors.isSeller) {
             return buildSellerFormula(factors, totalAmount, texts)
         }
+        if (factors.isSoloGoBakMode && factors.goBakExemptedAmount != 0) {
+            return buildGoBakExemptFormula(factors, totalAmount, texts)
+        }
+        if (factors.isSoloGoBakMode && (factors.goBakCoveredAmount != 0 || factors.coveredLosers.isNotEmpty())) {
+            return buildGoBakSoloPayerFormula(factors, totalAmount, texts)
+        }
         return buildDefaultFormula(factors, totalAmount, texts)
+    }
+
+    private fun buildGoBakSoloPayerFormula(
+        factors: CalculationFactors,
+        totalAmount: Int,
+        texts: TraceTexts,
+    ): AnnotatedString {
+        val divider = factors.receiverCount.coerceAtLeast(1)
+        return buildAnnotatedString {
+            appendBaseMultiplierFormula(factors, texts)
+            if (length > 0) append("\n")
+            val selfLossText = "${formatNumber(factors.selfBaseLoss)}${texts.wonUnit}"
+            append("  ➡️ ${texts.selfBaseLossFormat.replace("%1\$s", selfLossText)}")
+
+            factors.coveredLosers.filter { it.amount != 0 }.forEach { covered ->
+                append("\n")
+                val coverLabel = texts.goBakCoverFormat.replace("%1\$s", covered.playerName)
+                append("${formatSigned(covered.amount)}${texts.wonUnit} ($coverLabel)")
+            }
+
+            appendAuxiliaryFactors(factors, divider, texts)
+
+            append("\n  ➡️ ")
+            pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+            append("= ${formatNumber(totalAmount)}${texts.wonUnit}")
+            pop()
+        }
+    }
+
+    private fun buildGoBakExemptFormula(
+        factors: CalculationFactors,
+        totalAmount: Int,
+        texts: TraceTexts,
+    ): AnnotatedString {
+        val divider = factors.receiverCount.coerceAtLeast(1)
+        val hasAux = factors.fuckAmount != 0 || factors.ddadakAmount != 0 || factors.sellAmount != 0
+        return buildAnnotatedString {
+            appendBaseMultiplierFormula(factors, texts)
+            if (length > 0) append("\n")
+            val exemptNote = texts.goBakExemptFormulaFormat.replace("%1\$s", factors.goBakPayerName)
+            append("  ➡️ 0${texts.wonUnit} ($exemptNote)")
+
+            if (hasAux) {
+                appendAuxiliaryFactors(factors, divider, texts)
+                append("\n  ➡️ ")
+                pushStyle(SpanStyle(fontWeight = FontWeight.Bold))
+                append("= ${formatNumber(totalAmount)}${texts.wonUnit}")
+                pop()
+            }
+        }
+    }
+
+    private fun AnnotatedString.Builder.appendBaseMultiplierFormula(
+        factors: CalculationFactors,
+        texts: TraceTexts,
+    ): Int {
+        var partCount = 0
+        val baseScorePart = mutableListOf<String>()
+        val totalScore = factors.baseScore + factors.goCount
+        if (totalScore > 0) {
+            baseScorePart.add("(${texts.baseLabel} ${factors.baseScore}${texts.pointUnit} + ${factors.goCount}${texts.goUnit})")
+            if (factors.scorePerPoint > 0) {
+                baseScorePart.add("x ${formatNumber(factors.scorePerPoint)}${texts.wonUnit}")
+            }
+        }
+        if (baseScorePart.isNotEmpty()) {
+            append(baseScorePart.joinToString(" "))
+            partCount++
+        }
+        if (factors.goCount >= 3) {
+            if (length > 0) append("\n")
+            append("x 2${(factors.goCount - 2).toSuperscript()}(${factors.goCount}${texts.goUnit})")
+            partCount++
+        }
+        if (factors.bakCount > 0) {
+            if (length > 0) append("\n")
+            append("x 2${factors.bakCount.toSuperscript()}(${factors.bakCount}${texts.bakUnit})")
+            partCount++
+        }
+        return partCount
+    }
+
+    private fun AnnotatedString.Builder.appendAuxiliaryFactors(
+        factors: CalculationFactors,
+        divider: Int,
+        texts: TraceTexts,
+    ): Int {
+        var auxCount = 0
+        if (factors.fuckAmount != 0) {
+            if (length > 0) append("\n")
+            append("${formatSigned(factors.fuckAmount / divider)}${texts.wonUnit} (${texts.fuckName})")
+            auxCount++
+        }
+        if (factors.ddadakAmount != 0) {
+            if (length > 0) append("\n")
+            append("${formatSigned(factors.ddadakAmount / divider)}${texts.wonUnit} (${texts.firstDdadakName})")
+            auxCount++
+        }
+        if (factors.sellAmount != 0) {
+            if (length > 0) append("\n")
+            append("${formatSigned(factors.sellAmount / divider)}${texts.wonUnit} (${texts.sellName})")
+            auxCount++
+        }
+        return auxCount
     }
 
     private fun buildSellerFormula(
@@ -223,49 +352,10 @@ class RoundTraceFormatter {
         texts: TraceTexts
     ): AnnotatedString {
         val divider = factors.receiverCount.coerceAtLeast(1)
-        var partCount = 0
 
         return buildAnnotatedString {
-            val baseScorePart = mutableListOf<String>()
-            val totalScore = factors.baseScore + factors.goCount
-            if (totalScore > 0) {
-                baseScorePart.add("(${texts.baseLabel} ${factors.baseScore}${texts.pointUnit} + ${factors.goCount}${texts.goUnit})")
-                if (factors.scorePerPoint > 0) {
-                    baseScorePart.add("x ${formatNumber(factors.scorePerPoint)}${texts.wonUnit}")
-                }
-            }
-
-            if (baseScorePart.isNotEmpty()) {
-                append(baseScorePart.joinToString(" "))
-                partCount++
-            }
-
-            if (factors.goCount >= 3) {
-                if (length > 0) append("\n")
-                append("x 2${(factors.goCount - 2).toSuperscript()}(${factors.goCount}${texts.goUnit})")
-                partCount++
-            }
-            if (factors.bakCount > 0) {
-                if (length > 0) append("\n")
-                append("x 2${factors.bakCount.toSuperscript()}(${factors.bakCount}${texts.bakUnit})")
-                partCount++
-            }
-
-            if (factors.fuckAmount != 0) {
-                if (length > 0) append("\n")
-                append("${formatSigned(factors.fuckAmount / divider)}${texts.wonUnit} (${texts.fuckName})")
-                partCount++
-            }
-            if (factors.ddadakAmount != 0) {
-                if (length > 0) append("\n")
-                append("${formatSigned(factors.ddadakAmount / divider)}${texts.wonUnit} (${texts.firstDdadakName})")
-                partCount++
-            }
-            if (factors.sellAmount != 0) {
-                if (length > 0) append("\n")
-                append("${formatSigned(factors.sellAmount / divider)}${texts.wonUnit} (${texts.sellName})")
-                partCount++
-            }
+            var partCount = appendBaseMultiplierFormula(factors, texts)
+            partCount += appendAuxiliaryFactors(factors, divider, texts)
 
             val intermediateAmount = totalAmount / divider
             if (partCount > 1) {
@@ -312,7 +402,7 @@ class RoundTraceFormatter {
             value < 0 -> "-"
             else -> ""
         }
-        val amount = abs(value).separateComma()
+        val amount = abs(value.toLong()).separateComma()
         val color = value.getMoneyColor()
 
         return buildAnnotatedString {
@@ -328,6 +418,6 @@ class RoundTraceFormatter {
 
     private fun formatSigned(value: Int): String {
         val sign = if (value >= 0) "+" else "-"
-        return "$sign ${formatNumber(abs(value))}"
+        return "$sign ${formatNumber(abs(value.toLong()))}"
     }
 }

@@ -39,7 +39,8 @@ appId: zero.friends.gostopcalculator
 - tapOn: "승자 점수기록"
 - tapOn: "다음 \\(2/3\\)"
 - tapOn: "다음 \\(3/3\\)"
-- tapOn: "완료"
+- tapOn: "점수 확정하기"
+- assertVisible: "상세보기"
 - tapOn: "Back"
 
 # 보드 화면에 1 라운드 표시 확인

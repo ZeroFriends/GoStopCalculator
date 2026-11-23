@@ -81,6 +81,6 @@ class RuleViewModel @Inject constructor(
     }
 
     companion object {
-        private const val MAXIMUM_SCORE = 1_000_000
+        private const val MAXIMUM_SCORE = RULE_MAX_SCORE.toInt()
     }
 }

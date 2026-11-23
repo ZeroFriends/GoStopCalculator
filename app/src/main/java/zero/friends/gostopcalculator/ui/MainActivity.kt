@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.MobileAds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import zero.friends.gostopcalculator.BuildConfig
 import zero.friends.gostopcalculator.GoStopApplication
 import zero.friends.gostopcalculator.navigation.AppNavigator
@@ -31,9 +34,14 @@ class MainActivity : ComponentActivity() {
         )
 
         val app = application as? GoStopApplication
-        MobileAds.initialize(this) { status ->
-            log.d("MobileAds.initialize completed. status=$status")
-            app?.androidAppComponent?.googleAdmob?.reload()
+        val appContext = applicationContext
+        lifecycleScope.launch(Dispatchers.IO) {
+            MobileAds.initialize(appContext) { status ->
+                log.d("MobileAds.initialize completed. status=$status")
+                lifecycleScope.launch(Dispatchers.Main) {
+                    app?.androidAppComponent?.googleAdmob?.reload()
+                }
+            }
         }
 
         setContent {

@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
@@ -159,10 +160,13 @@ fun CenterTextTopBar(
                             }
                         } else if (actionText != null) {
                             val actionTextColor = if (isRed) Color.White else OrangeyRed
+                            val actionShape = RoundedCornerShape(8.dp)
                             Surface(
                                 modifier = Modifier
                                     .padding(end = 16.dp)
+                                    .clip(actionShape)
                                     .clickable(onClick = onAction),
+                                shape = actionShape,
                                 color = Color.Transparent
                             ) {
                                 Text(

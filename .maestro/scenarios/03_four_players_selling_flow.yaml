@@ -68,8 +68,9 @@ appId: zero.friends.gostopcalculator
 - runFlow: ../common/assert_no_broken_text.yaml
 - tapOn: "다음 \\(3/3\\)"
 
-# 다이얼로그 확인 ➔ 완료
-- tapOn: "완료"
+# 다이얼로그 확인 ➔ 점수 확정하기
+- tapOn: "점수 확정하기"
+- assertVisible: "상세보기"
 
 # 보드 복귀
 - tapOn: "Back"

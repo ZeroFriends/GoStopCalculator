@@ -7,22 +7,27 @@ import zero.friends.domain.model.Rule
 import zero.friends.domain.model.Target
 
 class SerializationConverters {
-    @TypeConverter
-    fun listToJson(value: List<Rule>) = Json.encodeToString(value)
+    private val json = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+        coerceInputValues = true
+    }
 
     @TypeConverter
-    fun jsonToList(value: String): List<Rule> = Json.decodeFromString(value)
+    fun listToJson(value: List<Rule>) = json.encodeToString(value)
 
     @TypeConverter
-    fun targetToString(value: List<Target>) = Json.encodeToString(value)
+    fun jsonToList(value: String): List<Rule> = json.decodeFromString(value)
 
     @TypeConverter
-    fun stringToTarget(value: String): List<Target> = Json.decodeFromString(value)
+    fun targetToString(value: List<Target>) = json.encodeToString(value)
 
     @TypeConverter
-    fun roundTraceTermsToString(value: List<RoundTraceTerm>) = Json.encodeToString(value)
+    fun stringToTarget(value: String): List<Target> = json.decodeFromString(value)
 
     @TypeConverter
-    fun stringToRoundTraceTerms(value: String): List<RoundTraceTerm> = Json.decodeFromString(value)
+    fun roundTraceTermsToString(value: List<RoundTraceTerm>) = json.encodeToString(value)
 
+    @TypeConverter
+    fun stringToRoundTraceTerms(value: String): List<RoundTraceTerm> = json.decodeFromString(value)
 }
