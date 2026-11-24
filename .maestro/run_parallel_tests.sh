@@ -111,6 +111,13 @@ has_ios_driver_transient_error() {
     return 1
 }
 
+print_failure_log() {
+    local log_file="$1"
+    echo "   --- 실패 로그 시작 ($(basename "$log_file")) ---"
+    tail -n 60 "$log_file" || true
+    echo "   --- 실패 로그 종료 ($(basename "$log_file")) ---"
+}
+
 # 3. 실행할 시나리오 파일 탐색
 SCENARIOS=($(find "$SCENARIO_DIR" -name "*.yaml" -type f | sort))
 SCENARIO_COUNT=${#SCENARIOS[@]}
@@ -188,11 +195,13 @@ launch_platform_pool() {
                     else
                         first_run=1
                         echo "   ❌ [$platform:$dev] 실패 (재시도 후): $sc_name (로그: $retry_log_file)"
+                        print_failure_log "$retry_log_file"
                         dev_failed=1
                     fi
                 else
                     first_run=1
                     echo "   ❌ [$platform:$dev] 실패: $sc_name (로그: $log_file)"
+                    print_failure_log "$log_file"
                     dev_failed=1
                 fi
             done
