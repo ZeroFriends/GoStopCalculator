@@ -26,8 +26,35 @@ appId: zero.friends.gostopcalculator
 # 3명째 추가
 - tapOn: "\\+ 플레이어 추가"
 - assertVisible: "플레이어 3"
+- assertVisible: "3명"
+
+# 플레이어 1 이름 수정 검증 (NameEditDialog)
+- tapOn:
+    text: "Edit Player"
+    index: 0
+- assertVisible: "이름 수정하기"
+- eraseText: 10
+- inputText: "철수"
+- tapOn: "수정하기"
+- assertVisible: "철수"
+- assertNotVisible: "플레이어 1"
+
+# 첫 번째 플레이어(철수) 삭제 검증 (Android/iOS 동일 인덱스 0 사용)
+- tapOn:
+    text: "Delete Player"
+    index: 0
+- assertNotVisible: "철수"
+- assertVisible: "2명"
 - runFlow: ../common/assert_no_broken_text.yaml
 
-# 뒤로가기 버튼 눌러 히스토리로 정상 복귀되는지 확인
+# 규칙 설정(2/2) 진입 및 도움말 다이얼로그 검증 후 히스토리 복귀
+- tapOn: "다음"
+- assertVisible: "게임규칙.*"
+- assertVisible: "게임 설정 \\(2/2\\)"
+- tapOn: "도움말"
+- assertVisible: "점 당 : .*"
+- tapOn: "확인"
+- assertVisible: "게임규칙.*"
+- tapOn: "Back"
 - tapOn: "Back"
 - assertVisible: "시작하기"
