@@ -7,6 +7,8 @@ import zero.friends.data.di.create
 import zero.friends.data.source.initAssetContext
 import zero.friends.data.source.initDatabaseContext
 import zero.friends.data.source.preference.initPreferenceContext
+import zero.friends.domain.usecase.calculate.audit.CalculationAuditReporterRegistry
+import zero.friends.gostopcalculator.audit.AndroidCrashlyticsCalculationAuditReporter
 import zero.friends.gostopcalculator.di.AndroidAppComponent
 import zero.friends.gostopcalculator.di.AppComponent
 import zero.friends.gostopcalculator.di.create
@@ -39,6 +41,14 @@ class GoStopApplication : Application() {
         }
 
         FirebaseCrashlytics.getInstance().isCrashlyticsCollectionEnabled = !BuildConfig.DEBUG
+
+        CalculationAuditReporterRegistry.install(
+            AndroidCrashlyticsCalculationAuditReporter(
+                isCrashlyticsEnabled = !BuildConfig.DEBUG,
+                appVersionName = BuildConfig.VERSION_NAME,
+                appVersionCode = BuildConfig.VERSION_CODE,
+            )
+        )
     }
 
     companion object {
