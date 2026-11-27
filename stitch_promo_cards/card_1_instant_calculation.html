@@ -1,331 +1,187 @@
 <!DOCTYPE html>
 
-<html lang="ko"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>고스톱 금액계산기 - Google Play Showcase Card</title>
-<!-- Pretendard Font -->
-<link as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
-<!-- Material Symbols Outlined -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@100..900&display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          "colors": {
-            "surface-tint": "#b81d27",
-            "secondary-container": "#47a1ff",
-            "outline": "#EEEEEE",
-            "surface-variant": "#e5e2e1",
-            "error": "#FF5252",
-            "on-error-container": "#93000a",
-            "on-surface-variant": "#5b403e",
-            "surface-bright": "#FFFFFF",
-            "on-secondary-container": "#003663",
-            "on-primary-container": "#fffbff",
-            "on-surface": "#212121",
-            "on-tertiary-fixed": "#001c38",
-            "primary": "#b51925",
-            "tertiary-fixed-dim": "#a2c9ff",
-            "primary-container": "#d8363a",
-            "secondary-fixed": "#d3e4ff",
-            "surface-container-highest": "#e5e2e1",
-            "on-tertiary-fixed-variant": "#004881",
-            "surface-container-high": "#eae7e7",
-            "on-tertiary": "#ffffff",
-            "secondary-fixed-dim": "#a2c9ff",
-            "tertiary": "#005ea4",
-            "surface-dim": "#F8F8F8",
-            "on-primary": "#FFFFFF",
-            "on-secondary-fixed-variant": "#004881",
-            "inverse-surface": "#303030",
-            "outline-variant": "#e3bebb",
-            "surface": "#FFFFFF",
-            "on-primary-fixed-variant": "#930015",
-            "inverse-on-surface": "#f3f0ef",
-            "on-tertiary-container": "#fdfcff",
-            "on-error": "#ffffff",
-            "tertiary-fixed": "#d3e4ff",
-            "primary-fixed": "#ffdad7",
-            "inverse-primary": "#ffb3ae",
-            "background": "#fcf9f8",
-            "tertiary-container": "#0077ce",
-            "error-container": "#FFEBEE",
-            "surface-container-low": "#f6f3f2",
-            "on-secondary-fixed": "#001c38",
-            "primary-fixed-dim": "#ffb3ae",
-            "surface-container-lowest": "#ffffff",
-            "surface-container": "#FFFFFF",
-            "on-primary-fixed": "#410004",
-            "on-secondary": "#ffffff",
-            "secondary": "#0060a8",
-            "on-background": "#1b1c1c"
-          },
-          "borderRadius": {
-            "DEFAULT": "0.25rem",
-            "lg": "0.5rem",
-            "xl": "0.75rem",
-            "full": "9999px"
-          },
-          "spacing": {
-            "gutter": "1rem",
-            "space-sm": "0.5rem",
-            "space-md": "1rem",
-            "margin": "1rem",
-            "space-xs": "0.25rem",
-            "space-lg": "1.5rem",
-            "space-xl": "2rem"
-          },
-          "fontFamily": {
-            "body-lg": ["Pretendard"],
-            "body-md": ["Pretendard"],
-            "display-hero-mobile": ["Pretendard"],
-            "headline-lg": ["Pretendard"],
-            "title-md": ["Pretendard"],
-            "label-md": ["Pretendard"],
-            "headline-md": ["Pretendard"],
-            "display-hero": ["Pretendard"],
-            "label-lg": ["Pretendard"],
-            "label-sm": ["Pretendard"]
-          },
-          "fontSize": {
-            "body-lg": ["15px", { "lineHeight": "22px", "fontWeight": "500" }],
-            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
-            "display-hero-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
-            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
-            "title-md": ["16px", { "lineHeight": "22px", "fontWeight": "700" }],
-            "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
-            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
-            "display-hero": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
-            "label-lg": ["14px", { "lineHeight": "18px", "fontWeight": "700" }],
-            "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }]
-          }
-        }
-      }
-    }
-  </script>
-<style>
-    body {
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f0f2f5;
-    }
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
-      display: inline-block;
-      vertical-align: middle;
-      line-height: 1;
-    }
-    /* Subtle decorative mesh gradient */
-    .showcase-mesh {
-      background-color: #ffffff;
-      background-image: 
-        radial-gradient(circle at 12% 18%, rgba(255, 82, 82, 0.08) 0%, transparent 45%),
-        radial-gradient(circle at 88% 25%, rgba(71, 161, 255, 0.07) 0%, transparent 40%),
-        radial-gradient(circle at 50% 90%, rgba(255, 82, 82, 0.05) 0%, transparent 50%);
-    }
-  </style>
-</head>
-<body class="flex items-center justify-center min-h-screen p-4 md:p-8">
-<!-- ==================== GOOGLE PLAY STORE SHOWCASE CARD (16:9 Aspect Canvas) ==================== -->
-<div class="relative w-full max-w-[1240px] aspect-[16/9] min-h-[700px] showcase-mesh rounded-[32px] border border-outline shadow-2xl overflow-hidden flex flex-col justify-between select-none">
-<!-- Delicate Top Accent Glow Bar -->
-<div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-error via-surface-bright to-secondary-container"></div>
-<!-- Floating Background Geometric Embellishments (Subtle & Clean) -->
-<div class="absolute -top-12 -left-12 w-64 h-64 bg-error-container/40 rounded-full blur-3xl pointer-events-none"></div>
-<div class="absolute top-1/3 -right-20 w-80 h-80 bg-secondary-fixed/30 rounded-full blur-3xl pointer-events-none"></div>
-<!-- ==================== 1. TOP PROMOTIONAL HEADER ==================== -->
-<header class="relative z-10 pt-10 px-12 md:px-16 flex flex-col items-center text-center">
-<!-- Category Chip -->
-<div class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-surface border border-error/30 shadow-sm text-error font-title-md text-label-md tracking-tight mb-4 hover:border-error transition-colors">
-<span class="text-sm">🎴</span>
-<span>화투 • 고스톱 필수 계산기</span>
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=1920, height=1080, initial-scale=1.0" name="viewport"/><meta content="web_blank" name="shell-type"/><link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;font-family:'Pretendard',sans-serif;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"surface-tint":"#b91a24","on-error":"#ffffff","surface":"#f9f9ff","error-container":"#ffdad6","on-primary-fixed-variant":"#930013","inverse-on-surface":"#edf0ff","surface-bright":"#f9f9ff","surface-container-highest":"#dce2f7","tertiary":"#006765","outline":"#8f6f6d","on-secondary-container":"#fffbff","on-surface-variant":"#5b403e","error":"#ba1a1a","on-tertiary-container":"#f3fffd","primary":"#b61722","surface-container-lowest":"#ffffff","surface-container-high":"#e1e8fd","surface-container-low":"#f1f3ff","surface-container":"#e9edff","on-primary-fixed":"#410004","on-tertiary":"#ffffff","on-tertiary-fixed-variant":"#00504e","secondary-fixed":"#ffdad6","secondary-container":"#e02928","tertiary-container":"#008280","on-secondary-fixed-variant":"#93000b","on-error-container":"#93000a","inverse-surface":"#293040","secondary":"#bb0112","secondary-fixed-dim":"#ffb4ab","primary-container":"#da3437","background":"#f9f9ff","outline-variant":"#e4beba","on-surface":"#141b2b","inverse-primary":"#ffb3ad","on-primary":"#ffffff","tertiary-fixed":"#87f4f0","surface-dim":"#d3daef","primary-fixed-dim":"#ffb3ad","on-background":"#141b2b","on-tertiary-fixed":"#00201f","on-primary-container":"#fffbff","on-secondary":"#ffffff","primary-fixed":"#ffdad7","tertiary-fixed-dim":"#69d8d4","on-secondary-fixed":"#410002","surface-variant":"#dce2f7"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter":"1rem","space-xl":"2.25rem","space-lg":"1.5rem","margin-sm":"1rem","gutter-sm":"0.75rem","space-xs":"0.25rem","space-md":"1rem","margin":"1.25rem","space-sm":"0.5rem"},"fontFamily":{"label-sm":["Inter"],"headline-lg":["Plus Jakarta Sans"],"body-lg":["Inter"],"label-md":["Inter"],"display":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"body-sm":["Inter"],"label-lg":["Inter"],"body-md":["Inter"]},"fontSize":{"label-sm":["0.6875rem",{"lineHeight":"0.875rem","letterSpacing":"0.04em","fontWeight":"500"}],"headline-lg":["1.75rem",{"lineHeight":"2.25rem","letterSpacing":"-0.025em","fontWeight":"600"}],"body-lg":["1rem",{"lineHeight":"1.5rem","letterSpacing":"-0.011em","fontWeight":"400"}],"label-md":["0.75rem",{"lineHeight":"1rem","letterSpacing":"0.02em","fontWeight":"600"}],"display":["2.25rem",{"lineHeight":"2.75rem","letterSpacing":"-0.03em","fontWeight":"700"}],"headline-sm":["1.125rem",{"lineHeight":"1.5rem","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-md":["1.25rem",{"lineHeight":"1.75rem","letterSpacing":"-0.015em","fontWeight":"600"}],"body-sm":["0.75rem",{"lineHeight":"1.125rem","letterSpacing":"0em","fontWeight":"400"}],"label-lg":["0.875rem",{"lineHeight":"1.25rem","letterSpacing":"-0.006em","fontWeight":"600"}],"body-md":["0.875rem",{"lineHeight":"1.375rem","letterSpacing":"-0.006em","fontWeight":"400"}]}}}};</script></head><body class="w-[1920px] h-[1080px] m-0 p-0 bg-white overflow-hidden relative flex flex-col justify-between items-center select-none text-on-surface">
+<!-- Top 6px Gradient Bar -->
+<div class="w-full h-[6px] bg-gradient-to-r from-[#FF5252] via-[#FF7676] to-[#1E88E5] shrink-0 relative z-20"></div>
+<!-- Ultra-subtle Dot Grid Background -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none opacity-[0.35] z-0" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern height="28" id="dotGrid" patternunits="userSpaceOnUse" width="28">
+<circle cx="2" cy="2" fill="#CBD5E1" r="1.2"></circle>
+</pattern>
+</defs>
+<rect fill="url(#dotGrid)" height="100%" width="100%"></rect>
+</svg>
+<!-- Soft Ambient Radial Glows -->
+<div class="absolute -left-32 top-1/2 -translate-y-1/2 w-[680px] h-[680px] rounded-full bg-[#FF5252] opacity-[0.07] blur-[140px] pointer-events-none z-0"></div>
+<div class="absolute -right-32 top-1/2 -translate-y-1/2 w-[680px] h-[680px] rounded-full bg-[#1E88E5] opacity-[0.07] blur-[140px] pointer-events-none z-0"></div>
+<!-- Top Header -->
+<div class="pt-7 flex flex-col items-center text-center relative z-10 shrink-0">
+<div class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#FFF5F5] border border-[#FFCDD2] text-[#FF5252] text-[13.5px] font-bold tracking-tight">
+<span>🎴 화투 · 고스톱 필수 계산기</span>
 </div>
-<!-- Main Catchphrase -->
-<h1 class="font-display-hero text-display-hero text-on-surface tracking-tight leading-tight mb-2">
-        복잡한 점수와 돈 계산, <span class="text-error font-extrabold">1초 만에 자동 정산!</span>
+<h1 class="mt-3.5 text-[52px] font-extrabold text-[#212121] leading-[1.18] tracking-[-0.025em]">
+        복잡한 점수와 돈 계산, <span class="text-[#FF5252]">1초 만에 자동 정산!</span>
 </h1>
-<!-- Subtitle -->
-<p class="font-body-lg text-body-lg text-[#616161] max-w-xl">
-        승자 점수, 피박, 광박, 고박까지 터치 한 번으로 오차 없이 정산
+<p class="mt-2.5 text-[17px] font-medium text-[#6B7684] tracking-[-0.01em]">
+        승자 점수, 피박·광박·멍박·고박 독박까지 터치 한 번으로 오차 없이 정산
       </p>
-</header>
-<!-- ==================== 2. CENTER DEVICE SHOWCASE (SMARTPHONE MOCKUP) ==================== -->
-<main class="relative z-10 flex-1 flex items-center justify-center px-4 overflow-visible my-3">
-<!-- Floating Decorative Badges Left & Right of Device -->
-<div class="hidden lg:flex flex-col gap-4 absolute left-14 xl:left-24 top-1/2 -translate-y-1/2">
-<!-- Floating Pill 1: 100% 분쟁 제로 -->
-<div class="bg-surface/95 backdrop-blur-md border border-outline px-4 py-3 rounded-2xl shadow-lg flex items-center gap-3 transform -rotate-2 hover:rotate-0 transition-transform">
-<div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center text-error">
-<span class="material-symbols-outlined text-[20px]" data-icon="verified">verified</span>
 </div>
-<div class="text-left">
-<p class="font-label-md text-label-md text-on-surface">분쟁 없는 게임 나이트</p>
-<p class="font-label-sm text-label-sm text-[#757575]">자동 룰 검증 계산 엔진</p>
+<!-- Center Stage -->
+<div class="max-w-[1720px] w-full flex-1 flex items-center justify-center gap-10 px-12 relative z-10">
+<!-- Left Column -->
+<div class="w-[380px] flex flex-col gap-6 shrink-0">
+<!-- Feature Card 1 -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_10px_30px_-5px_rgba(17,24,39,0.06)] border border-[#E5E7EB]/80 flex items-center gap-5">
+<div class="w-14 h-14 rounded-2xl bg-[#FFF5F5] text-[#FF5252] flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">verified</span>
 </div>
-</div>
-<!-- Floating Pill 2: 박 옵션 완벽 -->
-<div class="bg-surface/95 backdrop-blur-md border border-outline px-4 py-3 rounded-2xl shadow-lg flex items-center gap-3 transform translate-x-4 hover:translate-x-6 transition-transform">
-<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary">
-<span class="material-symbols-outlined text-[20px]" data-icon="calculate">calculate</span>
-</div>
-<div class="text-left">
-<p class="font-label-md text-label-md text-on-surface">피박 • 광박 • 고박</p>
-<p class="font-label-sm text-label-sm text-[#757575]">배수 중첩 완벽 공식 적용</p>
+<div class="flex flex-col min-w-0">
+<div class="text-[20px] font-bold text-[#212121] tracking-tight">분쟁 없는 게임 나이트</div>
+<div class="text-[15px] font-medium text-[#6B7684] mt-1">고박 독박·배수 자동 검증</div>
 </div>
 </div>
+<!-- Feature Card 2 -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_10px_30px_-5px_rgba(17,24,39,0.06)] border border-[#E5E7EB]/80 flex items-center gap-5">
+<div class="w-14 h-14 rounded-2xl bg-[#EFF6FF] text-[#1E88E5] flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">calculate</span>
 </div>
-<div class="hidden lg:flex flex-col gap-4 absolute right-14 xl:right-24 top-1/2 -translate-y-1/2">
-<!-- Floating Pill 3: 실시간 정산표 -->
-<div class="bg-surface/95 backdrop-blur-md border border-outline px-4 py-3 rounded-2xl shadow-lg flex items-center gap-3 transform rotate-2 hover:rotate-0 transition-transform">
-<div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center text-error">
-<span class="material-symbols-outlined text-[20px]" data-icon="payments">payments</span>
-</div>
-<div class="text-left">
-<p class="font-label-md text-label-md text-on-surface">최종 승리 손익</p>
-<p class="font-title-md text-title-md text-error font-bold">+24,000원</p>
-</div>
-</div>
-<!-- Floating Pill 4: 빠른 경기 진행 -->
-<div class="bg-surface/95 backdrop-blur-md border border-outline px-4 py-3 rounded-2xl shadow-lg flex items-center gap-3 transform -translate-x-4 hover:-translate-x-6 transition-transform">
-<div class="w-10 h-10 rounded-full bg-surface-dim border border-outline flex items-center justify-center text-on-surface">
-<span class="material-symbols-outlined text-[20px]" data-icon="bolt">bolt</span>
-</div>
-<div class="text-left">
-<p class="font-label-md text-label-md text-on-surface">원터치 라운드 완료</p>
-<p class="font-label-sm text-label-sm text-[#757575]">패자 지불액 즉각 산출</p>
+<div class="flex flex-col min-w-0">
+<div class="text-[20px] font-bold text-[#212121] tracking-tight">피박 · 광박 · 멍박 · 고박</div>
+<div class="text-[15px] font-medium text-[#6B7684] mt-1">배수 중첩 공식 자동 적용</div>
 </div>
 </div>
 </div>
-<!-- Smartphone Hardware Frame Mockup -->
-<div class="relative w-[340px] md:w-[360px] bg-white rounded-[44px] p-3 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.18),0_0_0_1px_rgba(0,0,0,0.06)] border-[6px] border-[#ECEFF1] transition-transform duration-300 hover:scale-[1.01]">
-<!-- Camera Punch-Hole Screen Bezel (Android Single Center Hole) -->
-<div class="absolute top-5 left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-[#1a1a1a] rounded-full z-30 flex items-center justify-center">
-<div class="w-1.5 h-1.5 bg-[#0f2438] rounded-full"></div>
-</div>
-<!-- Mobile Screen Canvas (Faithful App Replication) -->
-<div class="w-full bg-surface rounded-[34px] overflow-hidden flex flex-col border border-outline/70 pt-5">
-<!-- 1. Top App Bar -->
-<div class="h-11 px-4 flex items-center justify-between border-b border-outline bg-surface">
-<button aria-label="뒤로가기" class="w-8 h-8 flex items-center justify-center text-on-surface active:opacity-70" type="button">
-<span class="material-symbols-outlined text-[20px]" data-icon="arrow_back">arrow_back</span>
-</button>
-<span class="font-title-md text-title-md text-on-surface font-bold">2라운드 점수 계산</span>
-<button aria-label="닫기" class="w-8 h-8 flex items-center justify-center text-on-surface active:opacity-70" type="button">
-<span class="material-symbols-outlined text-[20px]" data-icon="close">close</span>
-</button>
-</div>
-<!-- Screen Scrollable Area -->
-<div class="p-3.5 space-y-3 bg-[#FAFAFA]">
-<!-- Subheader Description Box -->
-<div class="px-1">
-<p class="font-label-lg text-label-lg text-on-surface">승자의 점수와 옵션을 선택해주세요</p>
-<p class="font-label-sm text-label-sm text-[#757575]">각 패자의 지불 금액이 자동 계산됩니다</p>
-</div>
-<!-- Winner Card (High Priority Surface) -->
-<div class="bg-surface rounded-2xl p-3 border border-outline shadow-sm space-y-2.5">
-<div class="flex items-center justify-between">
-<div class="inline-flex items-center gap-1.5 bg-error text-on-primary px-2.5 py-0.5 rounded-full font-label-md text-label-md">
-<span>🏆</span>
-<span>승자 : 철수</span>
-</div>
-<span class="font-label-sm text-label-sm text-[#757575] bg-surface-dim px-2 py-0.5 rounded-md border border-outline">
-                  점당 200원
-                </span>
-</div>
-<!-- Score & Net Profit Earnings Row -->
-<div class="flex items-baseline justify-between pt-0.5">
-<div>
-<span class="font-label-sm text-label-sm text-[#888888] block">합산 점수 (12점+3고)</span>
-<span class="font-headline-lg text-headline-lg text-on-surface font-extrabold tracking-tight">15점</span>
-</div>
-<div class="text-right">
-<span class="font-label-sm text-label-sm text-error block font-semibold">총 획득 정산금</span>
-<span class="font-headline-lg text-headline-lg text-error font-extrabold tracking-tight">+24,000원</span>
+<!-- Center Android Smartphone Frame -->
+<div class="w-[420px] h-[630px] bg-[#111111] rounded-[44px] p-[10px] border-[4px] border-[#2B2F38] shadow-2xl shrink-0 relative">
+<div class="w-full h-full bg-[#F7F8FA] rounded-[36px] flex flex-col overflow-hidden relative">
+<!-- Status Bar -->
+<div class="h-7 px-6 bg-surface-container-lowest flex items-center justify-between text-[11px] font-semibold text-[#111827] shrink-0 relative">
+<span>20:26</span>
+<div class="w-3 h-3 bg-[#111111] rounded-full absolute left-1/2 -translate-x-1/2"></div>
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] font-bold">5G</span>
+<span class="material-symbols-outlined text-[13px]">wifi</span>
+<span class="material-symbols-outlined text-[14px]">battery_full</span>
 </div>
 </div>
+<!-- Top App Bar -->
+<div class="h-[46px] px-4 bg-surface-container-lowest flex items-center justify-between border-b border-[#F3F4F6] shrink-0">
+<span class="material-symbols-outlined text-[20px] text-[#111827]">arrow_back</span>
+<span class="text-[14px] font-bold text-[#111827]">2026-11-17</span>
+<span class="material-symbols-outlined text-[20px] text-[#111827]">close</span>
 </div>
-<!-- Multiplier Option Chips (Horizontal Scroll Style) -->
-<div class="space-y-1">
-<span class="font-label-sm text-label-sm text-[#757575] px-1 font-medium">적용 배수 옵션</span>
-<div class="flex items-center gap-1.5 flex-wrap">
-<span class="inline-flex items-center px-2.5 py-1 rounded-full text-label-sm font-label-sm border border-error bg-error-container text-error font-bold shadow-2xs">
-                  3고 (x2)
-                </span>
-<span class="inline-flex items-center px-2.5 py-1 rounded-full text-label-sm font-label-sm border border-error bg-error-container text-error font-bold shadow-2xs">
-                  피박 (x2)
-                </span>
-<span class="inline-flex items-center px-2 py-1 rounded-full text-label-sm font-label-sm border border-outline bg-surface text-[#9E9E9E]">
-                  고박
-                </span>
-<span class="inline-flex items-center px-2 py-1 rounded-full text-label-sm font-label-sm border border-outline bg-surface text-[#9E9E9E]">
-                  광박
-                </span>
+<!-- App Content -->
+<div class="flex-1 px-3.5 py-2.5 flex flex-col gap-2 overflow-hidden">
+<!-- Hero Card (ScoreHeroCard) -->
+<div class="bg-surface-container-lowest rounded-2xl px-3.5 py-3 shadow-[0_2px_8px_rgba(17,24,39,0.03)] flex flex-col items-center text-center shrink-0">
+<div class="w-9 h-9 rounded-full bg-[#FFF5F5] flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[19px] text-[#FF5252]" style="font-variation-settings: 'FILL' 1;">gavel</span>
 </div>
+<div class="text-[14px] font-bold text-[#111827] mt-1.5">패자 점수기록</div>
+<div class="text-[10.5px] text-[#6B7684] leading-snug mt-0.5">
+                각 패자별로 해당되는 박을 선택하고, <span class="text-[#FF5252] font-semibold">패널티 배수를 확인</span>해주세요.
+              </div>
 </div>
-<!-- Player Settlement Rows List -->
-<div class="space-y-1.5">
-<span class="font-label-sm text-label-sm text-[#757575] px-1 font-medium">플레이어별 최종 정산액</span>
-<!-- Player 1: 철수 (Winner) -->
-<div class="bg-surface rounded-xl p-2.5 border border-outline flex items-center justify-between">
+<!-- Section Row -->
+<div class="flex items-center justify-between px-1 pt-0.5 shrink-0">
+<div class="text-[12px] font-bold text-[#111827]">
+                플레이어 리스트 <span class="text-[#FF5252]">4명</span>
+</div>
+<div class="text-[10.5px] font-semibold text-[#6B7684] bg-surface-container-lowest px-2.5 py-1 rounded-full border border-[#E5E7EB]">
+                ? 고스톱 설명서
+              </div>
+</div>
+<!-- Player 1 Card (Winner) -->
+<div class="bg-surface-container-lowest rounded-2xl p-2.5 border-[1.5px] border-[#FF5252] flex items-center justify-between shrink-0">
 <div class="flex items-center gap-2">
-<div class="w-6 h-6 rounded-full bg-error-container text-error font-bold text-xs flex items-center justify-center">1</div>
-<span class="font-label-md text-label-md text-on-surface font-bold">철수 <span class="text-error text-[11px] font-semibold">(승자)</span></span>
+<div class="w-6 h-6 rounded-full bg-[#FFF5F5] text-[#FF5252] text-[11px] font-bold flex items-center justify-center">1</div>
+<span class="text-[12.5px] font-bold text-[#111827]">플레이어 1</span>
+<span class="bg-[#FF5252] text-white text-[10px] font-bold px-1.5 py-0.5 rounded">승자</span>
 </div>
-<span class="font-title-md text-title-md text-error font-extrabold">+24,000원</span>
+<div class="text-[10.5px] font-bold text-[#FF5252] bg-[#FFF5F5] px-2.5 py-1 rounded-lg">
+                승자 (패널티 면제)
+              </div>
 </div>
-<!-- Player 2: 영희 (Loser - 피박) -->
-<div class="bg-surface rounded-xl p-2.5 border border-outline flex items-center justify-between">
-<div class="flex items-center gap-2">
-<div class="w-6 h-6 rounded-full bg-surface-dim text-[#757575] font-bold text-xs flex items-center justify-center">2</div>
-<span class="font-label-md text-label-md text-on-surface">영희</span>
-<span class="bg-[#E3F2FD] text-[#1E88E5] font-label-sm text-[10px] px-1.5 py-0.5 rounded font-bold">[피박 x2]</span>
+<!-- Player 2 Card (Active) -->
+<div class="bg-surface-container-lowest rounded-2xl p-2.5 shadow-[0_2px_8px_rgba(17,24,39,0.03)] border border-[#E5E7EB] flex flex-col gap-1.5 shrink-0">
+<div class="flex items-center justify-between gap-1">
+<div class="flex items-center gap-1.5 shrink-0">
+<div class="w-6 h-6 rounded-full bg-[#1F2937] text-white text-[11px] font-bold flex items-center justify-center">2</div>
+<span class="text-[12.5px] font-bold text-[#111827]">플레이어 2</span>
+<span class="bg-[#F3F4F6] text-[#6B7684] text-[10px] font-semibold px-1.5 py-0.5 rounded">패자</span>
 </div>
-<span class="font-title-md text-title-md text-[#1E88E5] font-bold">-12,000원</span>
+<div class="text-[10px] font-bold text-[#FF5252] bg-[#FFF5F5] px-2 py-0.5 rounded-full truncate">
+                  • 광박 · 멍박 (x4배) · 고박 독박
+                </div>
 </div>
-<!-- Player 3: 민수 (Loser - 피박) -->
-<div class="bg-surface rounded-xl p-2.5 border border-outline flex items-center justify-between">
-<div class="flex items-center gap-2">
-<div class="w-6 h-6 rounded-full bg-surface-dim text-[#757575] font-bold text-xs flex items-center justify-center">3</div>
-<span class="font-label-md text-label-md text-on-surface">민수</span>
-<span class="bg-[#E3F2FD] text-[#1E88E5] font-label-sm text-[10px] px-1.5 py-0.5 rounded font-bold">[피박 x2]</span>
+<div class="grid grid-cols-4 gap-1.5">
+<div class="bg-[#F3F4F6] text-[#9CA3AF] text-[11px] font-semibold py-1.5 rounded-lg text-center">피 박</div>
+<div class="bg-[#FF5252] text-white text-[11px] font-bold py-1.5 rounded-lg text-center">✓ 광 박</div>
+<div class="bg-[#FF5252] text-white text-[11px] font-bold py-1.5 rounded-lg text-center">✓ 멍 박</div>
+<div class="bg-[#FF5252] text-white text-[11px] font-bold py-1.5 rounded-lg text-center">✓ 고 박</div>
 </div>
-<span class="font-title-md text-title-md text-[#1E88E5] font-bold">-12,000원</span>
+<div class="bg-[#FFF5F5] text-[#FF5252] text-[10px] font-semibold px-2.5 py-1.5 rounded-lg leading-tight">
+                ⚡ 고박 독박: 플레이어 3의 패배 금액까지 전액 대신 지불합니다.
+              </div>
+</div>
+<!-- Player 3 Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-2.5 shadow-[0_2px_8px_rgba(17,24,39,0.03)] border border-[#E5E7EB] flex flex-col gap-1.5 shrink-0">
+<div class="flex items-center justify-between gap-1">
+<div class="flex items-center gap-1.5 shrink-0">
+<div class="w-6 h-6 rounded-full bg-[#1F2937] text-white text-[11px] font-bold flex items-center justify-center">3</div>
+<span class="text-[12.5px] font-bold text-[#111827]">플레이어 3</span>
+<span class="bg-[#F3F4F6] text-[#6B7684] text-[10px] font-semibold px-1.5 py-0.5 rounded">패자</span>
+</div>
+<div class="text-[10px] font-bold text-[#059669] bg-[#ECFDF5] px-2 py-0.5 rounded-full truncate">
+                  고박 면제 (0원 · 플레이어 2 대납)
+                </div>
+</div>
+<div class="grid grid-cols-4 gap-1.5">
+<div class="bg-[#F3F4F6] text-[#9CA3AF] text-[11px] font-semibold py-1.5 rounded-lg text-center">피 박</div>
+<div class="bg-[#F3F4F6] text-[#9CA3AF] text-[11px] font-semibold py-1.5 rounded-lg text-center">광 박</div>
+<div class="bg-[#F3F4F6] text-[#9CA3AF] text-[11px] font-semibold py-1.5 rounded-lg text-center">멍 박</div>
+<div class="bg-[#F3F4F6] text-[#9CA3AF] text-[11px] font-semibold py-1.5 rounded-lg text-center">고 박</div>
 </div>
 </div>
-<!-- In-App Primary Action Button: GoStopButton -->
-<div class="pt-1 pb-1">
-<button class="w-full h-11 bg-error text-on-primary rounded-full font-label-lg text-label-lg font-bold shadow-md shadow-error/25 hover:bg-[#E53935] active:scale-[0.98] transition-all flex items-center justify-center gap-1.5">
-<span class="material-symbols-outlined text-[18px]" data-icon="check_circle">check_circle</span>
-<span>계산 완료</span>
-</button>
 </div>
-</div>
-<!-- Subtle Phone Bottom Navigation Indicator Bar -->
-<div class="h-4 bg-surface flex items-center justify-center">
-<div class="w-24 h-1 bg-[#D1D5DB] rounded-full"></div>
+<!-- Sticky Bottom CTA -->
+<div class="p-3 bg-surface-container-lowest border-t border-[#F3F4F6] shrink-0">
+<div class="w-full bg-[#FF5252] text-white font-bold text-[14px] py-2.5 rounded-full text-center shadow-[0_6px_16px_rgba(255,82,82,0.3)]">
+              다음 (3/3)
+            </div>
 </div>
 </div>
 </div>
-</main>
-<!-- ==================== 3. BOTTOM HIGHLIGHT BANNER ==================== -->
-<footer class="relative z-10 pb-6 px-8 flex justify-center">
-<div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface/90 backdrop-blur-sm border border-outline shadow-sm hover:shadow-md transition-shadow">
-<span class="text-error font-title-md">✨</span>
-<span class="font-label-md text-label-md text-on-surface font-semibold">
-          2인 맞고부터 4인 교대 플레이까지 완벽 지원
-        </span>
-<span class="text-[#BDBDBD] text-xs font-normal">|</span>
-<span class="font-label-sm text-label-sm text-[#757575]">
-          광박 • 피박 • 멍박 • 고박 자동 계산
-        </span>
+<!-- Right Column -->
+<div class="w-[380px] flex flex-col gap-6 shrink-0">
+<!-- Feature Card 3 -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_10px_30px_-5px_rgba(17,24,39,0.06)] border border-[#E5E7EB]/80 flex items-center gap-5">
+<div class="w-14 h-14 rounded-2xl bg-[#FFF5F5] text-[#FF5252] flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">payments</span>
 </div>
-</footer>
+<div class="flex flex-col min-w-0">
+<div class="text-[20px] font-bold text-[#212121] tracking-tight">고박 독박 자동 대납</div>
+<div class="text-[15px] font-medium text-[#6B7684] mt-1">다른 패자 몫까지 원터치 계산</div>
+</div>
+</div>
+<!-- Feature Card 4 -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_10px_30px_-5px_rgba(17,24,39,0.06)] border border-[#E5E7EB]/80 flex items-center gap-5">
+<div class="w-14 h-14 rounded-2xl bg-[#F1F5F9] text-[#334155] flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="text-[20px] font-bold text-[#212121] tracking-tight">빠른 3단계 점수 입력</div>
+<div class="text-[15px] font-medium text-[#6B7684] mt-1">패자 패널티 즉시 확정</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Pill -->
+<div class="pb-6 relative z-10 shrink-0">
+<div class="inline-flex items-center px-6 py-2.5 rounded-full bg-surface-container-lowest/90 border border-[#E5E7EB] shadow-[0_4px_16px_rgba(17,24,39,0.04)] text-[14px] font-semibold text-[#4B5563]">
+        ✨ 2인 맞고부터 4인 교대 플레이까지 완벽 지원  |  광박·피박·멍박·고박 자동 계산
+      </div>
 </div>
 </body></html>

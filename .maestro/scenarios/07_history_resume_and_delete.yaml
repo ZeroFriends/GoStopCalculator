@@ -38,7 +38,7 @@ appId: zero.friends.gostopcalculator
 - tapOn: "다음 \\(2/3\\)"
 - tapOn: "다음 \\(3/3\\)"
 - tapOn: "점수 확정하기"
-- assertVisible: "상세보기"
+- assertVisible: "라운드 상세보기"
 - tapOn: "Back"
 
 # 보드에서 뒤로가기 눌러 히스토리 화면으로 복귀

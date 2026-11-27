@@ -24,6 +24,12 @@ import zero.friends.domain.repository.ManualRepository
 import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.repository.RoundRepository
 import zero.friends.domain.repository.RuleRepository
+import zero.friends.domain.usecase.calculate.audit.AuditDeduplicator
+import zero.friends.domain.usecase.calculate.audit.CalculationAuditReporter
+import zero.friends.domain.usecase.calculate.audit.CalculationAuditReporterRegistry
+import zero.friends.domain.usecase.calculate.audit.CalculationAuditor
+import zero.friends.domain.usecase.calculate.audit.CalculationInvariantValidator
+import zero.friends.domain.usecase.calculate.audit.DefaultCalculationAuditor
 
 @Component
 abstract class DataComponent {
@@ -33,6 +39,10 @@ abstract class DataComponent {
 
     val appPreference: AppPreference by lazy {
         Preference()
+    }
+
+    private val calculationAuditDeduplicator: AuditDeduplicator by lazy {
+        AuditDeduplicator()
     }
 
     @Provides
@@ -78,6 +88,24 @@ abstract class DataComponent {
         gamerRepository: GamerRepository
     ): zero.friends.domain.usecase.CleanEmptyRoundsUseCase =
         zero.friends.domain.usecase.CleanEmptyRoundsUseCase(gameRepository, roundRepository, gamerRepository)
+
+    @Provides
+    fun provideCalculationAuditReporter(): CalculationAuditReporter =
+        CalculationAuditReporterRegistry.delegatingReporter()
+
+    @Provides
+    fun provideCalculationInvariantValidator(): CalculationInvariantValidator =
+        CalculationInvariantValidator()
+
+    @Provides
+    fun provideCalculationAuditor(
+        validator: CalculationInvariantValidator,
+        reporter: CalculationAuditReporter,
+    ): CalculationAuditor = DefaultCalculationAuditor(
+        validator = validator,
+        reporter = reporter,
+        deduplicator = calculationAuditDeduplicator,
+    )
 
 }
 

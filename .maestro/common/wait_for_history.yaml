@@ -5,8 +5,16 @@ appId: zero.friends.gostopcalculator
 # ==========================================
 
 - extendedWaitUntil:
-    visible: "Close|시작하기"
+    visible: "Close|시작하기|Close app"
     timeout: 60000
+- runFlow:
+    when:
+      visible: "Close app"
+    commands:
+      - tapOn: "Close app"
+      - extendedWaitUntil:
+          visible: "Close|시작하기"
+          timeout: 60000
 - runFlow:
     when:
       visible: "Close"

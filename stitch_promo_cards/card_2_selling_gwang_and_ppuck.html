@@ -1,311 +1,469 @@
 <!DOCTYPE html>
-
-<html lang="ko"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>고스톱 금액계산기 - Google Play Showcase 2</title>
-<!-- Pretendard Font -->
-<link as="style" crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
-<!-- Material Symbols Outlined -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@100..900&display=swap" rel="stylesheet"/>
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
+  <title>Play Store Showcase Banner - 광팔기 & 뻑 자동 정산 (16:9)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
     tailwind.config = {
-      darkMode: "class",
       theme: {
         extend: {
-          "colors": {
-            "primary": "#b51925",
-            "outline": "#EEEEEE",
-            "on-secondary-container": "#003663",
-            "on-secondary-fixed-variant": "#004881",
-            "tertiary": "#005ea4",
-            "surface-dim": "#F8F8F8",
-            "secondary-container": "#47a1ff",
-            "on-primary-container": "#fffbff",
-            "tertiary-fixed": "#d3e4ff",
-            "on-primary": "#ffffff",
-            "surface-container": "#f0eded",
-            "on-surface-variant": "#616161",
-            "error-container": "#ffdad6",
-            "on-surface": "#212121",
-            "primary-fixed-dim": "#ffb3ae",
-            "on-primary-fixed": "#410004",
-            "surface-bright": "#fcf9f8",
-            "primary-container": "#d8363a",
-            "inverse-primary": "#ffb3ae",
-            "on-error-container": "#93000a",
-            "error": "#FF5252",
-            "surface": "#FFFFFF",
-            "on-error": "#ffffff",
-            "on-background": "#1b1c1c",
-            "tertiary-container": "#0077ce",
-            "surface-container-low": "#f6f3f2",
-            "surface-variant": "#e5e2e1",
-            "surface-container-highest": "#EEEEEE",
-            "primary-fixed": "#ffdad7",
-            "on-tertiary-container": "#fdfcff",
-            "outline-variant": "#e3bebb",
-            "on-secondary-fixed": "#001c38",
-            "surface-container-lowest": "#ffffff",
-            "surface-container-high": "#F5F5F5",
-            "background": "#fcf9f8",
-            "inverse-surface": "#303030",
-            "on-tertiary-fixed": "#001c38",
-            "surface-tint": "#b81d27",
-            "on-secondary": "#ffffff",
-            "secondary-fixed-dim": "#a2c9ff",
-            "inverse-on-surface": "#f3f0ef",
-            "on-tertiary": "#ffffff",
-            "on-tertiary-fixed-variant": "#004881",
-            "on-primary-fixed-variant": "#930015",
-            "secondary-fixed": "#d3e4ff",
-            "secondary": "#0060a8",
-            "tertiary-fixed-dim": "#a2c9ff"
+          fontFamily: {
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'sans-serif'],
           },
-          "borderRadius": {
-            "DEFAULT": "0.25rem",
-            "lg": "0.5rem",
-            "xl": "0.75rem",
-            "full": "9999px"
-          },
-          "spacing": {
-            "gutter": "1rem",
-            "space-xl": "2rem",
-            "margin": "1rem",
-            "space-xs": "0.25rem",
-            "space-lg": "1.5rem",
-            "space-sm": "0.5rem",
-            "space-md": "1rem"
-          },
-          "fontFamily": {
-            "display-hero": ["Pretendard"],
-            "body-md": ["Pretendard"],
-            "label-sm": ["Pretendard"],
-            "label-lg": ["Pretendard"],
-            "headline-md": ["Pretendard"],
-            "headline-lg": ["Pretendard"],
-            "display-hero-mobile": ["Pretendard"],
-            "label-md": ["Pretendard"],
-            "body-lg": ["Pretendard"],
-            "title-md": ["Pretendard"]
-          },
-          "fontSize": {
-            "display-hero": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
-            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
-            "label-sm": ["11px", { "lineHeight": "14px", "fontWeight": "500" }],
-            "label-lg": ["14px", { "lineHeight": "18px", "fontWeight": "700" }],
-            "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }],
-            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
-            "display-hero-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
-            "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
-            "body-lg": ["15px", { "lineHeight": "22px", "fontWeight": "500" }],
-            "title-md": ["16px", { "lineHeight": "22px", "fontWeight": "700" }]
+          colors: {
+            coral: {
+              DEFAULT: '#FF5252',
+              50: '#FFF5F5',
+              100: '#FFEBEE',
+              200: '#FFCDD2',
+              400: '#FF7070',
+              500: '#FF5252',
+              600: '#F44336',
+              700: '#D32F2F',
+            },
+            royal: {
+              DEFAULT: '#1E88E5',
+              50: '#F0F7FF',
+              100: '#E3F2FD',
+              200: '#BBDEFB',
+              500: '#1E88E5',
+              700: '#0D47A1',
+            },
+            nero: '#212121',
+            subtext: '#616161',
+            bordercol: '#EEEEEE',
+            canvas: '#F8F9FA'
           }
-        },
-      },
+        }
+      }
     }
   </script>
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #FFFFFF;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    .phone-shadow-front {
+      box-shadow: 0 35px 70px -15px rgba(25, 30, 50, 0.28), 0 15px 30px -10px rgba(255, 82, 82, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.06);
+    }
+    .phone-shadow-back {
+      box-shadow: 0 30px 60px -15px rgba(20, 25, 45, 0.20), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    }
+    .badge-float {
+      box-shadow: 0 12px 32px -6px rgba(20, 25, 40, 0.08), 0 4px 12px -2px rgba(0, 0, 0, 0.04), 0 0 0 1px #EEEEEE;
+    }
+    .subtle-grid {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(0, 0, 0, 0.018) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.018) 1px, transparent 1px);
+    }
+  </style>
 </head>
-<body class="bg-[#e9ecef] flex items-center justify-center min-h-screen p-4 md:p-8 font-body-md text-on-surface antialiased selection:bg-error selection:text-white">
-<!-- Master Google Play Showcase Landscape Banner Card (16:9 ratio feel / 1200x675 max desktop format) -->
-<div class="relative w-full max-w-[1120px] aspect-[16/9.5] min-h-[680px] bg-gradient-to-b from-white via-surface-dim to-[#F4F5F7] rounded-[32px] border border-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.08)] overflow-hidden flex flex-col justify-between p-8 md:p-10 select-none">
-<!-- Atmospheric Ambient Color Glow Accents -->
-<div class="absolute -top-24 -left-24 w-96 h-96 bg-[#FF5252]/10 rounded-full blur-3xl pointer-events-none"></div>
-<div class="absolute top-1/3 -right-24 w-96 h-96 bg-[#1E88E5]/10 rounded-full blur-3xl pointer-events-none"></div>
-<div class="absolute -bottom-24 left-1/3 w-80 h-80 bg-[#FF5252]/5 rounded-full blur-3xl pointer-events-none"></div>
-<!-- 1. TOP HEADER AREA (Top ~30%) -->
-<header class="relative z-10 flex flex-col items-center text-center space-y-2.5">
-<!-- Category Pill Chip -->
-<div class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-surface border border-outline shadow-sm">
-<span class="text-sm">🎴</span>
-<span class="font-label-md text-label-md text-error tracking-tight font-bold">4인 고스톱 필수 기능</span>
-</div>
-<!-- Main Catchphrase -->
-<h1 class="font-display-hero text-[34px] md:text-[38px] leading-[44px] text-on-surface tracking-tight font-extrabold">
-        광팔기 &amp; 뻑도 <span class="text-error">완벽 자동 계산!</span>
-</h1>
-<!-- Subtitle -->
-<p class="font-body-lg text-body-lg text-on-surface-variant font-medium max-w-xl">
-        4인 이상 교대 플레이 시 필수! 복잡한 광팔기와 특수 룰 걱정 끝
-      </p>
-</header>
-<!-- 2. CENTER CONTENT & FLOATING CARDS (Center ~60%) -->
-<main class="relative z-10 flex items-center justify-center w-full my-auto">
-<!-- LEFT FLOATING BADGES (Desktop Landscape) -->
-<div class="hidden lg:flex flex-col gap-4 absolute left-4 xl:left-8 top-1/2 -translate-y-1/2 z-20">
-<!-- Badge 1 -->
-<div class="flex items-center gap-3 bg-surface/95 backdrop-blur-md px-4 py-3 rounded-2xl border border-outline shadow-[0_8px_20px_rgba(0,0,0,0.06)] transform hover:-translate-y-1 transition duration-200">
-<div class="w-10 h-10 rounded-full bg-surface-dim flex items-center justify-center text-lg shadow-inner">
-            🔄
+<body class="w-[1920px] h-[1080px] relative bg-white flex flex-col justify-between items-center select-none overflow-hidden">
+
+  <!-- Top Accent Bar -->
+  <div class="w-full h-2.5 bg-gradient-to-r from-coral-500 via-[#FF7575] to-royal-500 absolute top-0 left-0 z-30"></div>
+
+  <!-- Ambient Glowing Background Meshes -->
+  <div class="absolute inset-0 pointer-events-none subtle-grid"></div>
+  <div class="absolute -top-[120px] left-1/2 -translate-x-1/2 w-[1200px] h-[480px] bg-gradient-to-b from-coral-100/60 via-coral-50/30 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute top-[320px] -left-[100px] w-[500px] h-[500px] bg-coral-100/40 rounded-full blur-[100px] pointer-events-none"></div>
+  <div class="absolute top-[360px] -right-[80px] w-[550px] h-[550px] bg-royal-100/50 rounded-full blur-[110px] pointer-events-none"></div>
+  <div class="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-[1400px] h-[350px] bg-gradient-to-t from-gray-100/80 to-transparent rounded-full blur-2xl pointer-events-none"></div>
+
+  <!-- HEADER HERO SECTION -->
+  <div class="relative z-20 flex flex-col items-center text-center pt-10 px-8 max-w-6xl">
+    
+    <!-- Top Pill Chip -->
+    <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white border border-coral-200 shadow-sm text-coral-600 font-bold text-[18px] tracking-tight mb-4 hover:border-coral-400 transition-all">
+      <span class="text-xl">🎴</span>
+      <span>4인 고스톱 필수 기능</span>
+    </div>
+
+    <!-- Main Headline -->
+    <h1 class="text-[54px] font-extrabold text-nero tracking-[-0.03em] leading-[1.18] flex items-center justify-center flex-wrap gap-x-3.5">
+      <span>광팔기 & 뻑도</span>
+      <span class="text-coral-500 drop-shadow-sm font-black">완벽 자동 계산!</span>
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="text-[22px] font-medium text-subtext mt-3 tracking-tight">
+      4인 교대 플레이 광팔기부터 첫 뻑·연 뻑·삼연 뻑·첫 따닥까지 한 번에 기록
+    </p>
+  </div>
+
+  <!-- MAIN CENTER SHOWCASE (2 PHONES + 4 FLOATING BADGES) -->
+  <div class="relative z-20 w-full flex-1 flex items-center justify-center px-12 -mt-2">
+
+    <!-- LEFT FLOATING BADGES CONTAINER -->
+    <div class="w-[380px] flex flex-col gap-6 z-30 mr-[-20px] mb-8">
+      
+      <!-- Left Badge 1: 4인 순환 턴제 모드 -->
+      <div class="badge-float bg-white/95 backdrop-blur-md rounded-2xl p-5 border border-bordercol flex items-center gap-4 transition-transform hover:-translate-y-1">
+        <div class="w-14 h-14 rounded-2xl bg-coral-100 flex items-center justify-center shrink-0 text-coral-500 shadow-inner">
+          <span class="material-symbols-outlined text-[32px]">sync</span>
+        </div>
+        <div class="flex flex-col text-left">
+          <span class="text-[19px] font-extrabold text-nero tracking-tight">순환 턴제 모드</span>
+          <span class="text-[14px] font-medium text-subtext mt-0.5 leading-snug">4인 교대 플레이 · 휴식 자동 제외</span>
+        </div>
+      </div>
+
+      <!-- Left Badge 2: 광 수량 간편 입력 -->
+      <div class="badge-float bg-white/95 backdrop-blur-md rounded-2xl p-5 border border-bordercol flex items-center gap-4 transition-transform hover:-translate-y-1">
+        <div class="w-14 h-14 rounded-2xl bg-royal-100 flex items-center justify-center shrink-0 text-royal-500 shadow-inner">
+          <span class="material-symbols-outlined text-[32px]">style</span>
+        </div>
+        <div class="flex flex-col text-left">
+          <span class="text-[19px] font-extrabold text-nero tracking-tight">광 수량 간편 입력</span>
+          <span class="text-[14px] font-medium text-subtext mt-0.5 leading-snug">장당 금액 × 참여 인원 자동 정산</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CENTER DUAL PHONES CONTAINER -->
+    <div class="relative flex items-center justify-center w-[840px] h-[670px]">
+
+      <!-- ============================================== -->
+      <!-- BACK / LEFT PHONE: 광팔기 선택 (RECESSED, ELEVATED) -->
+      <!-- ============================================== -->
+      <div class="absolute left-[30px] top-[15px] z-10 w-[390px] h-[645px] bg-[#141416] p-[8px] rounded-[48px] phone-shadow-back transition-transform">
+        <!-- Phone Outer Silver Rim & Frame -->
+        <div class="w-full h-full bg-[#FFFFFF] rounded-[40px] overflow-hidden flex flex-col relative border-[2px] border-[#E8EAEE]">
+          
+          <!-- Punch Hole Camera & Speaker -->
+          <div class="absolute top-2.5 left-1/2 -translate-x-1/2 z-40 flex items-center justify-center">
+            <div class="w-3.5 h-3.5 bg-[#0D0E11] rounded-full ring-2 ring-black/10"></div>
           </div>
-<div>
-<span class="block font-label-sm text-label-sm text-on-surface-variant">순환 턴제 모드</span>
-<span class="font-title-md text-title-md text-on-surface font-bold">4인 교대 플레이 완벽 대응</span>
-</div>
-</div>
-<!-- Badge 2 -->
-<div class="flex items-center gap-3 bg-surface/95 backdrop-blur-md px-4 py-3 rounded-2xl border border-outline shadow-[0_8px_20px_rgba(0,0,0,0.06)] transform hover:-translate-y-1 transition duration-200">
-<div class="w-10 h-10 rounded-full bg-surface-dim flex items-center justify-center text-lg shadow-inner">
-            🎴
+
+          <!-- Status Bar -->
+          <div class="w-full h-7 px-6 flex justify-between items-center text-[10px] font-semibold text-nero pt-1 z-30 select-none">
+            <span>20:26</span>
+            <div class="flex items-center gap-1.5">
+              <span>5G</span>
+              <span class="material-symbols-outlined text-[13px]">battery_full</span>
+            </div>
           </div>
-<div>
-<span class="block font-label-sm text-label-sm text-on-surface-variant">광팔기 자동 정산</span>
-<span class="font-title-md text-title-md text-on-surface font-bold">광 수량별 즉시 정산 산출</span>
-</div>
-</div>
-</div>
-<!-- CENTER FLOATING MOBILE MOCKUP -->
-<div class="relative w-[310px] md:w-[330px] bg-surface rounded-[40px] border-[6px] border-[#2C2C2C] shadow-[0_22px_45px_rgba(0,0,0,0.18)] overflow-hidden flex flex-col scale-[0.98] sm:scale-100 transition-transform">
-<!-- Camera Punch-Hole (Android Single Center Hole) -->
-<div class="w-full bg-surface pt-2.5 pb-1 flex justify-center items-center">
-<div class="w-3.5 h-3.5 bg-[#212121] rounded-full flex items-center justify-center">
-<div class="w-1.5 h-1.5 rounded-full bg-[#3D3D3D]"></div>
-</div>
-</div>
-<!-- Inside Phone App Screen Canvas -->
-<div class="bg-surface flex flex-col px-4 pt-1 pb-4 flex-1">
-<!-- Top App Bar (CenterTextTopBar) -->
-<div class="flex justify-between items-center py-2.5 border-b border-outline mb-3">
-<button aria-label="뒤로가기" class="text-on-surface hover:text-primary active:opacity-75">
-<span class="material-symbols-outlined text-[20px] font-bold">arrow_back</span>
-</button>
-<h2 class="font-title-md text-title-md text-on-surface font-bold">광팔기 및 특수 규칙</h2>
-<button aria-label="닫기" class="text-on-surface hover:text-primary active:opacity-75">
-<span class="material-symbols-outlined text-[20px] font-bold">close</span>
-</button>
-</div>
-<!-- Phone Scrollable Body -->
-<div class="flex flex-col gap-2.5">
-<!-- Kwang Selling Card -->
-<div class="bg-surface rounded-xl p-3 border border-outline shadow-sm">
-<div class="flex items-center justify-between pb-1.5 border-b border-[#F5F5F5]">
-<div class="flex items-center gap-1.5">
-<span class="text-sm">🎴</span>
-<span class="font-label-lg text-label-lg text-on-surface font-bold">광팔기 설정</span>
-</div>
-<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-error/10 text-error font-bold">철수 판매 중</span>
-</div>
-<!-- Quantity Selector Display -->
-<div class="flex justify-between items-center mt-2 bg-surface-dim p-2 rounded-lg">
-<span class="font-body-md text-body-md text-on-surface font-medium">광 2장 판매 (장당 100원 × 3명)</span>
-<div class="flex items-center gap-1">
-<span class="w-5 h-5 rounded-full bg-surface border border-outline flex items-center justify-center text-xs font-bold text-on-surface">-</span>
-<span class="w-5 h-5 rounded-full bg-surface border border-outline flex items-center justify-center text-xs font-bold text-error">2</span>
-<span class="w-5 h-5 rounded-full bg-surface border border-outline flex items-center justify-center text-xs font-bold text-on-surface">+</span>
-</div>
-</div>
-<!-- Total Sale Amount Display -->
-<div class="flex justify-between items-baseline mt-2 px-1">
-<span class="font-label-md text-label-md text-on-surface-variant">총 획득 금액</span>
-<span class="font-headline-md text-headline-md text-error font-extrabold tracking-tight">+600원</span>
-</div>
-</div>
-<!-- Special Occurrences Multipliers -->
-<div class="flex flex-col gap-1">
-<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">특수 상황 (뻑 옵션)</span>
-<div class="flex items-center gap-1.5">
-<!-- Active badge -->
-<div class="flex-1 py-1.5 px-2 rounded-lg bg-error/10 border border-error/30 text-center flex items-center justify-center gap-1">
-<span class="font-label-sm text-label-sm font-bold text-error">첫 뻑 (x1)</span>
-</div>
-<!-- Outline badge -->
-<div class="flex-1 py-1.5 px-2 rounded-lg bg-surface border border-outline text-center">
-<span class="font-label-sm text-label-sm font-medium text-on-surface-variant">연 뻑 (x2)</span>
-</div>
-<!-- Subtle badge -->
-<div class="flex-1 py-1.5 px-2 rounded-lg bg-surface border border-outline text-center">
-<span class="font-label-sm text-label-sm font-medium text-on-surface-variant">삼연뻑 (x4)</span>
-</div>
-</div>
-</div>
-<!-- 4-Player Rotation List -->
-<div class="flex flex-col gap-1.5 mt-0.5">
-<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">4인 턴 및 역할 상태</span>
-<!-- 철수 (광 판매) -->
-<div class="flex items-center justify-between p-2 rounded-lg bg-surface border border-outline">
-<div class="flex items-center gap-2">
-<div class="w-6 h-6 rounded-full bg-error/15 text-error flex items-center justify-center font-label-sm text-label-sm font-bold">
-                    철
-                  </div>
-<span class="font-body-md text-body-md font-bold text-on-surface">철수</span>
-</div>
-<div class="flex items-center gap-1">
-<span class="font-label-sm text-label-sm text-error font-bold">광 2장 (+600원)</span>
-</div>
-</div>
-<!-- 영희 -->
-<div class="flex items-center justify-between p-1.5 px-2 rounded-lg bg-surface-dim border border-outline/50">
-<div class="flex items-center gap-2">
-<div class="w-6 h-6 rounded-full bg-surface border border-outline flex items-center justify-center font-label-sm text-label-sm font-bold text-on-surface-variant">
-                    영
-                  </div>
-<span class="font-body-md text-body-md text-on-surface">영희</span>
-</div>
-<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface px-2 py-0.5 rounded border border-outline">참여 플레이어</span>
-</div>
-<!-- 민수 -->
-<div class="flex items-center justify-between p-1.5 px-2 rounded-lg bg-surface-dim border border-outline/50">
-<div class="flex items-center gap-2">
-<div class="w-6 h-6 rounded-full bg-surface border border-outline flex items-center justify-center font-label-sm text-label-sm font-bold text-on-surface-variant">
-                    민
-                  </div>
-<span class="font-body-md text-body-md text-on-surface">민수</span>
-</div>
-<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface px-2 py-0.5 rounded border border-outline">참여 플레이어</span>
-</div>
-<!-- 광수 (대기) -->
-<div class="flex items-center justify-between p-1.5 px-2 rounded-lg bg-surface-dim border border-outline/50 opacity-80">
-<div class="flex items-center gap-2">
-<div class="w-6 h-6 rounded-full bg-surface border border-outline flex items-center justify-center font-label-sm text-label-sm font-bold text-on-surface-variant">
-                    광
-                  </div>
-<span class="font-body-md text-body-md text-on-surface-variant">광수</span>
-</div>
-<span class="font-label-sm text-label-sm text-on-surface-variant/80 bg-surface px-1.5 py-0.5 rounded border border-outline/70">대기 (다음 판)</span>
-</div>
-</div>
-<!-- Bottom Primary Action Button (GoStopButton) -->
-<button class="w-full mt-2 py-2.5 rounded-full bg-error text-white font-title-md text-title-md font-bold shadow-md hover:bg-error/90 active:scale-[0.98] transition">
-              다음 단계
-            </button>
-</div>
-</div>
-</div>
-<!-- RIGHT FLOATING BADGES (Desktop Landscape) -->
-<div class="hidden lg:flex flex-col gap-4 absolute right-4 xl:right-8 top-1/2 -translate-y-1/2 z-20">
-<!-- Badge 3 -->
-<div class="flex items-center gap-3 bg-surface/95 backdrop-blur-md px-4 py-3 rounded-2xl border border-outline shadow-[0_8px_20px_rgba(0,0,0,0.06)] transform hover:-translate-y-1 transition duration-200">
-<div class="w-10 h-10 rounded-full bg-surface-dim flex items-center justify-center text-lg shadow-inner">
-            💰
+
+          <!-- Screen Top Bar -->
+          <div class="w-full h-11 px-4 flex items-center justify-between border-b border-[#F0F0F0] bg-white">
+            <span class="material-symbols-outlined text-[20px] text-nero cursor-pointer">arrow_back</span>
+            <span class="text-[14px] font-bold text-nero tracking-tight">2026-11-17</span>
+            <span class="material-symbols-outlined text-[20px] text-nero cursor-pointer">close</span>
           </div>
-<div>
-<span class="block font-label-sm text-label-sm text-on-surface-variant">정산 결과 연동</span>
-<span class="font-title-md text-title-md text-error font-bold">광팔기 손익 즉시 반영: +600원</span>
-</div>
-</div>
-<!-- Badge 4 -->
-<div class="flex items-center gap-3 bg-surface/95 backdrop-blur-md px-4 py-3 rounded-2xl border border-outline shadow-[0_8px_20px_rgba(0,0,0,0.06)] transform hover:-translate-y-1 transition duration-200">
-<div class="w-10 h-10 rounded-full bg-surface-dim flex items-center justify-center text-lg shadow-inner">
-            ⚡
+
+          <!-- Screen Body Content (광팔기 선택) -->
+          <div class="flex-1 bg-[#F8F9FA] px-3.5 pt-2.5 pb-3 flex flex-col justify-between overflow-hidden">
+            
+            <div class="flex flex-col gap-2">
+              <!-- Top Hero Card -->
+              <div class="bg-white rounded-2xl p-3 border border-[#EAECEF] shadow-sm flex flex-col items-center text-center">
+                <div class="w-9 h-9 rounded-full bg-coral-100 flex items-center justify-center mb-1 text-coral-500">
+                  <span class="material-symbols-outlined text-[20px]">style</span>
+                </div>
+                <h2 class="text-[16px] font-extrabold text-nero tracking-tight">광팔기 선택</h2>
+                <p class="text-[11px] text-subtext leading-tight mt-0.5">
+                  4인 플레이 시 한 명이 필수로 광을 팔고 쉬어가야 합니다.<br>
+                  <span class="font-bold text-coral-500">광을 판 플레이어</span>와 카드 매수를 입력해주세요.
+                </p>
+              </div>
+
+              <!-- List Section Header -->
+              <div class="flex items-center justify-between px-1 mt-0.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[13px] font-bold text-nero">플레이어 목록</span>
+                  <span class="text-[11px] font-semibold text-subtext">4명</span>
+                </div>
+                <div class="px-2.5 py-0.5 rounded-full border border-coral-200 bg-white text-coral-500 font-bold text-[10px] flex items-center gap-1">
+                  <span>?</span>
+                  <span>광팔 수 있는 패</span>
+                </div>
+              </div>
+
+              <!-- Player Cards Stack (1, 2, 3 normal, 4 highlighted) -->
+              <div class="flex flex-col gap-1.5">
+                
+                <!-- Player 1 -->
+                <div class="bg-white rounded-xl p-2 px-2.5 border border-[#ECEEF2] flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-[#ECEFF2] text-subtext text-[11px] font-bold flex items-center justify-center">1</div>
+                    <div class="flex flex-col">
+                      <span class="text-[12px] font-bold text-nero">플레이어 1</span>
+                      <span class="text-[9.5px] text-[#8E95A2]">참여 대기</span>
+                    </div>
+                  </div>
+                  <!-- Stepper -->
+                  <div class="flex items-center gap-1.5">
+                    <button class="w-6 h-6 rounded-lg border border-[#E0E2E7] text-[#9AA0A6] text-[13px] font-bold flex items-center justify-center bg-[#FAFAFA]">-</button>
+                    <span class="text-[11px] font-bold text-subtext w-7 text-center">0장</span>
+                    <button class="w-6 h-6 rounded-lg border border-[#E0E2E7] text-[#9AA0A6] text-[13px] font-bold flex items-center justify-center bg-[#FAFAFA]">+</button>
+                  </div>
+                </div>
+
+                <!-- Player 2 -->
+                <div class="bg-white rounded-xl p-2 px-2.5 border border-[#ECEEF2] flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-[#ECEFF2] text-subtext text-[11px] font-bold flex items-center justify-center">2</div>
+                    <div class="flex flex-col">
+                      <span class="text-[12px] font-bold text-nero">플레이어 2</span>
+                      <span class="text-[9.5px] text-[#8E95A2]">참여 대기</span>
+                    </div>
+                  </div>
+                  <!-- Stepper -->
+                  <div class="flex items-center gap-1.5">
+                    <button class="w-6 h-6 rounded-lg border border-[#E0E2E7] text-[#9AA0A6] text-[13px] font-bold flex items-center justify-center bg-[#FAFAFA]">-</button>
+                    <span class="text-[11px] font-bold text-subtext w-7 text-center">0장</span>
+                    <button class="w-6 h-6 rounded-lg border border-[#E0E2E7] text-[#9AA0A6] text-[13px] font-bold flex items-center justify-center bg-[#FAFAFA]">+</button>
+                  </div>
+                </div>
+
+                <!-- Player 3 -->
+                <div class="bg-white rounded-xl p-2 px-2.5 border border-[#ECEEF2] flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-[#ECEFF2] text-subtext text-[11px] font-bold flex items-center justify-center">3</div>
+                    <div class="flex flex-col">
+                      <span class="text-[12px] font-bold text-nero">플레이어 3</span>
+                      <span class="text-[9.5px] text-[#8E95A2]">참여 대기</span>
+                    </div>
+                  </div>
+                  <!-- Stepper -->
+                  <div class="flex items-center gap-1.5">
+                    <button class="w-6 h-6 rounded-lg border border-[#E0E2E7] text-[#9AA0A6] text-[13px] font-bold flex items-center justify-center bg-[#FAFAFA]">-</button>
+                    <span class="text-[11px] font-bold text-subtext w-7 text-center">0장</span>
+                    <button class="w-6 h-6 rounded-lg border border-[#E0E2E7] text-[#9AA0A6] text-[13px] font-bold flex items-center justify-center bg-[#FAFAFA]">+</button>
+                  </div>
+                </div>
+
+                <!-- Player 4 (Highlighted as Gwang Seller with 2 Cards) -->
+                <div class="bg-white rounded-xl p-2 px-2.5 border-2 border-coral-500 shadow-sm flex items-center justify-between ring-2 ring-coral-100">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-coral-500 text-white text-[11px] font-black flex items-center justify-center">4</div>
+                    <div class="flex flex-col">
+                      <div class="flex items-center gap-1">
+                        <span class="text-[12px] font-extrabold text-nero">플레이어 4</span>
+                        <span class="bg-coral-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-md">광팔기</span>
+                      </div>
+                      <span class="text-[9.5px] font-bold text-coral-500">휴식 (점수 계산 제외)</span>
+                    </div>
+                  </div>
+                  <!-- Stepper -->
+                  <div class="flex items-center gap-1.5">
+                    <button class="w-6 h-6 rounded-lg border border-coral-200 text-coral-500 text-[13px] font-bold flex items-center justify-center bg-white">-</button>
+                    <span class="text-[11px] font-black text-coral-500 bg-coral-50 px-2 py-0.5 rounded-md border border-coral-300">2장</span>
+                    <button class="w-6 h-6 rounded-lg bg-coral-500 text-white text-[13px] font-bold flex items-center justify-center shadow-xs">+</button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Bottom Sticky Action Button -->
+            <div class="w-full pt-2">
+              <button class="w-full h-10 rounded-full bg-coral-500 hover:bg-coral-600 text-white font-bold text-[13.5px] tracking-tight flex items-center justify-center shadow-md">
+                다음
+              </button>
+            </div>
+
           </div>
-<div>
-<span class="block font-label-sm text-label-sm text-on-surface-variant">특수 룰 완벽 지원</span>
-<span class="font-title-md text-title-md text-on-surface font-bold">뻑 배수 및 삼연뻑 즉시 승리 지원</span>
-</div>
-</div>
-</div>
-</main>
-<!-- 3. BOTTOM HIGHLIGHT (Bottom ~10%) -->
-<footer class="relative z-10 flex justify-center items-center pt-2">
-<div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-surface/80 border border-outline backdrop-blur-sm shadow-sm">
-<span class="font-body-md text-body-md text-on-surface font-bold">
-          ✨ 우리 동네 점당 금액, 뻑 배수 100% 맞춤 설정 가능
-        </span>
-</div>
-</footer>
-</div>
-</body></html>
+
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- FRONT / RIGHT PHONE: 점수 기록 (HERO FOCUS, SLIGHT OVERLAP) -->
+      <!-- ============================================== -->
+      <div class="absolute right-[30px] top-[0px] z-20 w-[405px] h-[670px] bg-[#111215] p-[9px] rounded-[52px] phone-shadow-front transition-transform hover:scale-[1.01]">
+        <!-- Phone Outer Silver Rim & Frame -->
+        <div class="w-full h-full bg-[#FFFFFF] rounded-[44px] overflow-hidden flex flex-col relative border-[2.5px] border-[#DFE2E8]">
+          
+          <!-- Punch Hole Camera & Speaker -->
+          <div class="absolute top-2.5 left-1/2 -translate-x-1/2 z-40 flex items-center justify-center">
+            <div class="w-4 h-4 bg-[#0A0B0E] rounded-full ring-2 ring-black/10"></div>
+          </div>
+
+          <!-- Status Bar -->
+          <div class="w-full h-7 px-7 flex justify-between items-center text-[10.5px] font-semibold text-nero pt-1 z-30 select-none">
+            <span>20:26</span>
+            <div class="flex items-center gap-1.5">
+              <span>5G</span>
+              <span class="material-symbols-outlined text-[14px]">battery_full</span>
+            </div>
+          </div>
+
+          <!-- Screen Top Bar -->
+          <div class="w-full h-11 px-5 flex items-center justify-between border-b border-[#F0F0F0] bg-white">
+            <span class="material-symbols-outlined text-[21px] text-nero cursor-pointer">arrow_back</span>
+            <span class="text-[14.5px] font-bold text-nero tracking-tight">2026-11-17</span>
+            <span class="material-symbols-outlined text-[21px] text-nero cursor-pointer">close</span>
+          </div>
+
+          <!-- Screen Body Content (점수 기록 - 뻑 & 특수 룰) -->
+          <div class="flex-1 bg-[#F8F9FA] px-4 pt-2.5 pb-3.5 flex flex-col justify-between overflow-hidden">
+            
+            <div class="flex flex-col gap-2">
+              <!-- Top Hero Card -->
+              <div class="bg-white rounded-2xl p-3 border border-[#EAECEF] shadow-sm flex flex-col items-center text-center">
+                <div class="w-9 h-9 rounded-full bg-coral-100 flex items-center justify-center mb-1 text-coral-500">
+                  <span class="material-symbols-outlined text-[20px]">stars</span>
+                </div>
+                <h2 class="text-[16.5px] font-extrabold text-nero tracking-tight">점수 기록</h2>
+                <p class="text-[11px] text-subtext leading-tight mt-0.5">
+                  운이 좋네요! 해당하는 곳에 체크를 해주세요.<br>
+                  <span class="text-[#88909D]">연 뻑 및 삼연 뻑 보너스도 즉시 적용됩니다.</span>
+                </p>
+              </div>
+
+              <!-- List Section Header -->
+              <div class="flex items-center justify-between px-1 mt-0.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[13.5px] font-bold text-nero">플레이어 리스트</span>
+                  <span class="text-[11px] font-semibold text-subtext">4명</span>
+                </div>
+                <div class="px-2.5 py-0.5 rounded-full border border-coral-200 bg-white text-coral-500 font-bold text-[10.5px] flex items-center gap-1">
+                  <span>📖</span>
+                  <span>고스톱 설명서</span>
+                </div>
+              </div>
+
+              <!-- Player Cards Stack (1 selected with 뻑, 2, 3 inactive, 4 광팜) -->
+              <div class="flex flex-col gap-1.5">
+                
+                <!-- Player 1 (Active with 첫 뻑 Selected) -->
+                <div class="bg-white rounded-xl p-2.5 border border-[#ECEEF2] shadow-xs flex flex-col gap-1.5">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-full bg-coral-100 text-coral-600 text-[11px] font-black flex items-center justify-center">1</div>
+                      <span class="text-[12.5px] font-bold text-nero">플레이어 1</span>
+                    </div>
+                  </div>
+                  <!-- 4 Pill Chips Row -->
+                  <div class="grid grid-cols-4 gap-1.5 pt-0.5">
+                    <!-- 첫 뻑: ACTIVE RED -->
+                    <button class="py-1 px-1 rounded-full bg-coral-500 text-white font-extrabold text-[10.5px] tracking-tight shadow-sm text-center flex items-center justify-center">
+                      <span>첫 뻑</span>
+                    </button>
+                    <!-- 연 뻑: INACTIVE -->
+                    <button class="py-1 px-1 rounded-full bg-white border border-[#E5E7EB] text-[#71717A] font-semibold text-[10px] tracking-tight text-center">
+                      연 뻑
+                    </button>
+                    <!-- 삼연 뻑: INACTIVE -->
+                    <button class="py-1 px-1 rounded-full bg-white border border-[#E5E7EB] text-[#71717A] font-semibold text-[10px] tracking-tight text-center">
+                      삼연 뻑
+                    </button>
+                    <!-- 첫 따닥: INACTIVE -->
+                    <button class="py-1 px-1 rounded-full bg-white border border-[#E5E7EB] text-[#71717A] font-semibold text-[10px] tracking-tight text-center">
+                      첫 따닥
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Player 2 (Inactive Chips) -->
+                <div class="bg-white rounded-xl p-2 px-2.5 border border-[#ECEEF2] flex flex-col gap-1.5">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-coral-100 text-coral-600 text-[11px] font-bold flex items-center justify-center">2</div>
+                    <span class="text-[12px] font-bold text-nero">플레이어 2</span>
+                  </div>
+                  <!-- 4 Pill Chips Row -->
+                  <div class="grid grid-cols-4 gap-1.5">
+                    <button class="py-0.8 px-1 rounded-full bg-[#FAFAFA] border border-[#E5E7EB] text-[#8E95A2] font-medium text-[10px] text-center">첫 뻑</button>
+                    <button class="py-0.8 px-1 rounded-full bg-[#FAFAFA] border border-[#E5E7EB] text-[#8E95A2] font-medium text-[10px] text-center">연 뻑</button>
+                    <button class="py-0.8 px-1 rounded-full bg-[#FAFAFA] border border-[#E5E7EB] text-[#8E95A2] font-medium text-[10px] text-center">삼연 뻑</button>
+                    <button class="py-0.8 px-1 rounded-full bg-[#FAFAFA] border border-[#E5E7EB] text-[#8E95A2] font-medium text-[10px] text-center">첫 따닥</button>
+                  </div>
+                </div>
+
+                <!-- Player 3 (Inactive Chips) -->
+                <div class="bg-white rounded-xl p-2 px-2.5 border border-[#ECEEF2] flex flex-col gap-1.5">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-coral-100 text-coral-600 text-[11px] font-bold flex items-center justify-center">3</div>
+                    <span class="text-[12px] font-bold text-nero">플레이어 3</span>
+                  </div>
+                  <!-- 4 Pill Chips Row -->
+                  <div class="grid grid-cols-4 gap-1.5">
+                    <button class="py-0.8 px-1 rounded-full bg-[#FAFAFA] border border-[#E5E7EB] text-[#8E95A2] font-medium text-[10px] text-center">첫 뻑</button>
+                    <button class="py-0.8 px-1 rounded-full bg-[#FAFAFA] border border-[#E5E7EB] text-[#8E95A2] font-medium text-[10px] text-center">연 뻑</button>
+                    <button class="py-0.8 px-1 rounded-full bg-[#FAFAFA] border border-[#E5E7EB] text-[#8E95A2] font-medium text-[10px] text-center">삼연 뻑</button>
+                    <button class="py-0.8 px-1 rounded-full bg-[#FAFAFA] border border-[#E5E7EB] text-[#8E95A2] font-medium text-[10px] text-center">첫 따닥</button>
+                  </div>
+                </div>
+
+                <!-- Player 4 (Dashed Muted Card - 광팜) -->
+                <div class="bg-[#F8F9FA]/80 rounded-xl p-2 px-2.5 border border-dashed border-[#D1D5DB] flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-[#E5E7EB] text-[#9CA3AF] text-[11px] font-bold flex items-center justify-center">4</div>
+                    <span class="text-[12px] font-medium text-[#9CA3AF]">플레이어 4</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span class="bg-[#ECEEF2] text-[#6B7280] text-[9.5px] font-bold px-2 py-0.5 rounded-full">광팜</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Bottom Sticky Action Button -->
+            <div class="w-full pt-2">
+              <button class="w-full h-10 rounded-full bg-coral-500 hover:bg-coral-600 text-white font-bold text-[13.5px] tracking-tight flex items-center justify-center shadow-md">
+                다음 (1/3)
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT FLOATING BADGES CONTAINER -->
+    <div class="w-[380px] flex flex-col gap-6 z-30 ml-[-20px] mb-8">
+      
+      <!-- Right Badge 1: 특수 룰 원터치 체크 -->
+      <div class="badge-float bg-white/95 backdrop-blur-md rounded-2xl p-5 border border-bordercol flex items-center gap-4 transition-transform hover:-translate-y-1">
+        <div class="w-14 h-14 rounded-2xl bg-coral-100 flex items-center justify-center shrink-0 text-coral-500 shadow-inner">
+          <span class="material-symbols-outlined text-[32px]">stars</span>
+        </div>
+        <div class="flex flex-col text-left">
+          <span class="text-[19px] font-extrabold text-nero tracking-tight">특수 룰 원터치 체크</span>
+          <span class="text-[14px] font-medium text-subtext mt-0.5 leading-snug">첫 뻑 · 연 뻑 · 삼연 뻑 · 첫 따닥</span>
+        </div>
+      </div>
+
+      <!-- Right Badge 2: 삼연 뻑 즉시 승리 -->
+      <div class="badge-float bg-white/95 backdrop-blur-md rounded-2xl p-5 border border-bordercol flex items-center gap-4 transition-transform hover:-translate-y-1">
+        <div class="w-14 h-14 rounded-2xl bg-[#F4F4F5] flex items-center justify-center shrink-0 text-nero shadow-inner">
+          <span class="material-symbols-outlined text-[32px]">bolt</span>
+        </div>
+        <div class="flex flex-col text-left">
+          <span class="text-[19px] font-extrabold text-nero tracking-tight">삼연 뻑 즉시 승리</span>
+          <span class="text-[14px] font-medium text-subtext mt-0.5 leading-snug">특수 상황 자동 분기 처리</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- BOTTOM FOOTER PILL ACCENT -->
+  <div class="relative z-20 pb-8 flex items-center justify-center">
+    <div class="inline-flex items-center gap-2.5 px-7 py-3 rounded-full bg-white/95 border border-[#E5E7EB] shadow-sm text-subtext font-semibold text-[16px] tracking-tight backdrop-blur-sm">
+      <span class="text-coral-500 text-lg">✨</span>
+      <span>우리 동네 점당 금액 · 광팔기 · 뻑 규칙 <span class="text-nero font-extrabold">100% 맞춤 설정 가능</span></span>
+    </div>
+  </div>
+
+</body>
+</html>

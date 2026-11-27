@@ -306,6 +306,35 @@ class BlackBoxCombinatorialTest {
                     )
                 }
             }
+
+            val winnerTermForPot = trace.terms.firstOrNull { it.gamerId == trace.winnerId }
+            val expectsPotSummary = winnerTermForPot != null && (
+                winnerTermForPot.factors.baseScore > 0 ||
+                    winnerTermForPot.factors.goCount > 0 ||
+                    TraceTag.THREE_FUCK in winnerTermForPot.traceTags
+                )
+            val potSummary = traceFormatter.toRoundBasePotSummary(trace, sampleTraceTexts)
+            if (expectsPotSummary) {
+                assertNotNull(potSummary, "RoundBasePotSummary missing: ${case.tag}")
+            }
+
+            trace.terms.forEach { term ->
+                val gamer = gamers.firstOrNull { it.id == term.gamerId }
+                val rows = traceFormatter.toDetailCardBreakdown(
+                    term = term,
+                    gamer = gamer,
+                    trace = trace,
+                    texts = sampleTraceTexts,
+                    gamers = gamers,
+                )
+                if (rows.isNotEmpty()) {
+                    assertEquals(
+                        term.amount,
+                        rows.sumOf { it.amountValue },
+                        "Detail breakdown row sum != term.amount for ${term.playerName}: ${case.tag}"
+                    )
+                }
+            }
         }
 
         // 5. 역할 불변식

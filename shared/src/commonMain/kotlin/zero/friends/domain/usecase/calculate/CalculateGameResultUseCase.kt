@@ -1,8 +1,11 @@
 package zero.friends.domain.usecase.calculate
 
+import kotlinx.coroutines.CancellationException
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.repository.GamerRepository
 import zero.friends.domain.repository.RuleRepository
+import zero.friends.domain.usecase.calculate.audit.AuditPhase
+import zero.friends.domain.usecase.calculate.audit.CalculationAuditor
 import zero.friends.domain.util.Const
 import zero.friends.domain.util.Inject
 
@@ -22,7 +25,8 @@ class CalculateGameResultUseCase @Inject constructor(
     private val updateAccountUseCase: UpdateAccountUseCase,
     private val calculateSellScoreUseCase: CalculateSellScoreUseCase,
     private val calculateLoserScoreUseCase: CalculateLoserScoreUseCase,
-    private val calculateScoreOptionUseCase: CalculateScoreOptionUseCase
+    private val calculateScoreOptionUseCase: CalculateScoreOptionUseCase,
+    private val calculationAuditor: CalculationAuditor = CalculationAuditor.NoOp,
 ) {
     
     /**
@@ -51,6 +55,47 @@ class CalculateGameResultUseCase @Inject constructor(
         
         // 3. 점수옵션 계산 (뻑, 따닥)
         applyScoreOptionAccount(gameId, roundId, seller)
+
+        // 4. 런타임 무결성 감사 (비치명)
+        if (calculationAuditor !== CalculationAuditor.NoOp) {
+            runPostCalculationAudit(
+                gameId = gameId,
+                roundId = roundId,
+                seller = seller,
+                winner = winner,
+            )
+        }
+    }
+
+    private suspend fun runPostCalculationAudit(
+        gameId: Long,
+        roundId: Long,
+        seller: Gamer?,
+        winner: Gamer?,
+    ) {
+        try {
+            val roundGamers = gamerRepository.getRoundGamers(roundId)
+            val rules = ruleRepository.getRules(gameId)
+            val trace = BuildRoundTraceUseCase(
+                ruleRepository = ruleRepository,
+                gamerRepository = gamerRepository,
+                calculateLoserScoreUseCase = calculateLoserScoreUseCase,
+            ).invoke(gameId = gameId, roundId = roundId)
+            calculationAuditor.auditRound(
+                phase = AuditPhase.ROUND_CALCULATE,
+                gameId = gameId,
+                roundId = roundId,
+                gamers = roundGamers,
+                rules = rules,
+                trace = trace,
+                explicitSellerId = seller?.id,
+                explicitWinnerId = winner?.id,
+            )
+        } catch (ce: CancellationException) {
+            throw ce
+        } catch (_: Throwable) {
+            // 감사 실패는 라운드 저장 흐름을 중단시키지 않는다.
+        }
     }
     
     /**

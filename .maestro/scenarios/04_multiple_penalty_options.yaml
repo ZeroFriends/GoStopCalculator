@@ -57,9 +57,12 @@ appId: zero.friends.gostopcalculator
 
 # 계산 확인 ➔ 결과 화면에서 복합 옵션 반영 검증
 - tapOn: "점수 확정하기"
-- assertVisible: ".*첫 뻑.*"
-- assertVisible: ".*피 박.*"
-- assertVisible: ".*광 박.*"
+- assertVisible: "라운드 상세보기"
+- assertVisible: "첫 뻑"
+- scrollUntilVisible:
+    element: ".*피박 ×2.*"
+    direction: DOWN
+- assertVisible: ".*광박 ×2.*"
 - runFlow: ../common/assert_no_broken_text.yaml
 - tapOn: "Back"
 

@@ -1,0 +1,67 @@
+appId: zero.friends.gostopcalculator
+---
+# ==========================================
+# 시나리오: 삼연 뻑 즉시 승리 모달 ('다시 확인' 체크 해제 및 '승리 확정하기' 분기)
+# ==========================================
+
+- launchApp:
+    clearState: true
+    stopApp: true
+
+- runFlow: ../common/wait_for_history.yaml
+- tapOn: "시작하기"
+
+# 플레이어 3명 추가
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "다음"
+
+# 룰 설정 (점당 100원, 뻑 500원)
+- assertVisible: "게임규칙.*"
+- tapOn:
+    id: "rule_score_input_0"
+- inputText: "100"
+- tapOn: "게임규칙.*"
+- tapOn:
+    id: "rule_score_input_1"
+- inputText: "500"
+- tapOn: "게임규칙.*"
+- tapOn: "완료"
+
+# 판 시작 ➔ 3명 선택
+- tapOn: "게임시작"
+- tapOn: "플레이어 1"
+- tapOn: "플레이어 2"
+- tapOn: "플레이어 3"
+- tapOn: "완료"
+
+# 점수기록: 플레이어 1 삼연 뻑 탭 ➔ 즉시 승리 모달 노출 확인 ➔ '다시 확인' 시 취소 & 체크 해제 확인
+- assertVisible: "점수기록"
+- tapOn:
+    text: "삼연 뻑"
+    index: 0
+- assertVisible: "삼연 뻑이 있습니다."
+- assertVisible: "즉시 승리"
+- assertVisible: "설정 금액의 4배 \\(전원 지불\\)"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn: "다시 확인"
+- assertVisible: "점수기록"
+- assertNotVisible: "삼연 뻑이 있습니다."
+
+# 다시 삼연 뻑 선택 후 승리 확정 ➔ 승자/패자 단계를 건너뛰고 즉시 결과 확인 (+4,000원 / -2,000원)
+- tapOn:
+    text: "삼연 뻑"
+    index: 0
+- assertVisible: "삼연 뻑이 있습니다."
+- tapOn: "승리 확정하기"
+- assertVisible: "라운드 상세보기"
+- assertVisible: "삼연 뻑 즉시 승리.*"
+- assertVisible: ".*\\+4,000원.*"
+- assertVisible: ".*-2,000원.*"
+- runFlow: ../common/assert_no_broken_text.yaml
+
+# 보드 복귀
+- tapOn: "Back"
+- assertVisible: "1 라운드"
+- runFlow: ../common/assert_no_broken_text.yaml
