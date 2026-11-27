@@ -19,7 +19,13 @@ interface RoundDao : BaseDao<RoundEntity> {
     suspend fun deleteRound(roundId: Long)
 
     @Query("SELECT * FROM RoundEntity WHERE id = :roundId")
-    suspend fun getRound(roundId: Long): RoundEntity
+    suspend fun getRound(roundId: Long): RoundEntity?
+
+    @Query("SELECT * FROM RoundEntity WHERE id = :roundId")
+    fun observeRoundEntity(roundId: Long): Flow<RoundEntity?>
+
+    @Query("UPDATE RoundEntity SET name = :name WHERE id = :roundId")
+    suspend fun updateRoundName(roundId: Long, name: String)
 
     @Query("SELECT * FROM RoundEntity WHERE id = :roundId")
     fun observeRoundGamers(roundId: Long): Flow<RoundGamers?>

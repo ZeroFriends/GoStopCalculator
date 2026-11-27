@@ -49,6 +49,8 @@ class ScoreViewModelTest {
         override fun observeGameList(): Flow<List<Game>> = emptyFlow()
         override suspend fun getGame(gameId: Long): Game = game
         override fun observeGame(gameId: Long): Flow<Game> = emptyFlow()
+        override suspend fun updateGameName(gameId: Long, name: String) = Unit
+        override suspend fun updateGameOrder(orderedGameIds: List<Long>) = Unit
     }
 
     private class FakeRoundRepository(
@@ -60,6 +62,9 @@ class ScoreViewModelTest {
         override suspend fun deleteRound(roundId: Long) {
             onDeleteRound(roundId)
         }
+        override suspend fun getRound(roundId: Long): Round? = null
+        override fun observeRoundMeta(roundId: Long): Flow<Round?> = emptyFlow()
+        override suspend fun updateRoundName(roundId: Long, name: String) = Unit
     }
 
     @BeforeTest

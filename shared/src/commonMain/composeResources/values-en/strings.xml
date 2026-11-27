@@ -250,4 +250,23 @@
     <string name="confirm_round_special_total_format">%1$s (×%2$d)</string>
     <string name="result_base_pot_special_mult_format">%1$s × %2$dx(%3$s)</string>
     <string name="result_chip_special_x2_format">%1$s ×2</string>
+    <string name="manage_game_label">Manage Game</string>
+    <string name="manage_round_label">Manage Round</string>
+    <string name="rename_game_action">Rename Game</string>
+    <string name="delete_game_action">Delete Game</string>
+    <string name="rename_round_action">Rename Round</string>
+    <string name="delete_round_action">Delete Round</string>
+    <string name="delete_caution_badge">Caution</string>
+    <string name="rename_confirm">Save</string>
+    <string name="rename_game_placeholder">Enter game name</string>
+    <string name="rename_game_helper">Up to %1$d characters</string>
+    <string name="rename_round_placeholder">e.g. Big comeback round</string>
+    <string name="rename_round_helper_format">Leave blank to use default (%1$s)</string>
+    <string name="clear_input_cd">Clear text</string>
+    <string name="round_more_cd_format">More options for %1$s</string>
+    <string name="history_reorder_hint">Long press to reorder</string>
+    <string name="game_more_cd_format">More options for %1$s</string>
+    <string name="round_number_format">Round %1$d</string>
+    <string name="move_up_action">Move up</string>
+    <string name="move_down_action">Move down</string>
 </resources>

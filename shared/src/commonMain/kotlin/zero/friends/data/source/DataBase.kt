@@ -31,7 +31,7 @@ import zero.friends.data.util.SerializationConverters
         GamerEntity::class,
         RoundEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(SerializationConverters::class)
@@ -60,14 +60,28 @@ val MIGRATION_2_3: Migration = object : Migration(2, 3) {
     }
 }
 
+val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
+            "ALTER TABLE RoundEntity ADD COLUMN name TEXT NOT NULL DEFAULT ''"
+        )
+        connection.execSQL(
+            "ALTER TABLE GameEntity ADD COLUMN sortOrder INTEGER NOT NULL DEFAULT 0"
+        )
+        connection.execSQL(
+            "UPDATE GameEntity SET sortOrder = (SELECT COUNT(*) FROM GameEntity AS g2 WHERE g2.id < GameEntity.id)"
+        )
+    }
+}
+
 fun getRoomDatabase(
     builder: RoomDatabase.Builder<DataBase>
 ): DataBase {
     return builder
-        .addMigrations(MIGRATION_2_3)
+        .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
         .fallbackToDestructiveMigration(dropAllTables = true)
         .setDriver(BundledSQLiteDriver())
-        .setQueryCoroutineContext(Dispatchers.Default)
+        .setQueryCoroutineContext(Dispatchers.IO)
         .build()
 }
 

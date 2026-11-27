@@ -250,4 +250,23 @@
     <string name="confirm_round_special_total_format">%1$s (×%2$d倍)</string>
     <string name="result_base_pot_special_mult_format">%1$s × %2$d倍(%3$s)</string>
     <string name="result_chip_special_x2_format">%1$s ×2</string>
+    <string name="manage_game_label">選択中のゲーム管理</string>
+    <string name="manage_round_label">選択中のラウンド管理</string>
+    <string name="rename_game_action">ゲーム名を変更</string>
+    <string name="delete_game_action">ゲームを削除</string>
+    <string name="rename_round_action">ラウンド名を変更</string>
+    <string name="delete_round_action">ラウンドを削除</string>
+    <string name="delete_caution_badge">削除注意</string>
+    <string name="rename_confirm">変更する</string>
+    <string name="rename_game_placeholder">ゲーム名を入力してください</string>
+    <string name="rename_game_helper">最大%1$d文字まで入力できます</string>
+    <string name="rename_round_placeholder">例: 逆転の勝負ラウンド</string>
+    <string name="rename_round_helper_format">空欄にすると既定名(%1$s)で表示</string>
+    <string name="clear_input_cd">入力をクリア</string>
+    <string name="round_more_cd_format">%1$sのメニュー</string>
+    <string name="history_reorder_hint">長押しで並べ替え</string>
+    <string name="game_more_cd_format">%1$sのメニュー</string>
+    <string name="round_number_format">ラウンド%1$d</string>
+    <string name="move_up_action">上へ移動</string>
+    <string name="move_down_action">下へ移動</string>
 </resources>

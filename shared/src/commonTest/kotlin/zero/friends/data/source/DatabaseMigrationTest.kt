@@ -6,9 +6,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.serialization.json.Json
+import zero.friends.data.entity.GameEntity
+import zero.friends.data.entity.GameEntity.Companion.toGame
 import zero.friends.data.entity.GamerEntity
 import zero.friends.data.entity.GamerEntity.Companion.toGamer
 import zero.friends.data.entity.GamerEntity.Companion.toGamerEntity
+import zero.friends.data.entity.RoundEntity
+import zero.friends.data.entity.RoundEntity.Companion.toRound
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.RoundTrace
 import zero.friends.domain.model.WinnerOption
@@ -76,6 +80,34 @@ class DatabaseMigrationTest {
             connection.executedSql
         )
         assertTrue(connection.statements.all { it.stepped && it.closed })
+    }
+
+    @Test
+    fun `MIGRATION_3_4 upgrades v3 to v4 and RoundEntity and GameEntity map custom fields cleanly`() {
+        assertEquals(3, MIGRATION_3_4.startVersion)
+        assertEquals(4, MIGRATION_3_4.endVersion)
+
+        val connection = RecordingConnection()
+        MIGRATION_3_4.migrate(connection)
+
+        assertEquals(
+            listOf(
+                "ALTER TABLE RoundEntity ADD COLUMN name TEXT NOT NULL DEFAULT ''",
+                "ALTER TABLE GameEntity ADD COLUMN sortOrder INTEGER NOT NULL DEFAULT 0",
+                "UPDATE GameEntity SET sortOrder = (SELECT COUNT(*) FROM GameEntity AS g2 WHERE g2.id < GameEntity.id)",
+            ),
+            connection.executedSql
+        )
+        assertTrue(connection.statements.all { it.stepped && it.closed })
+
+        val defaultRound = RoundEntity(id = 1L, gameId = 2L).toRound()
+        assertEquals("", defaultRound.name)
+
+        val namedRound = RoundEntity(id = 3L, gameId = 2L, name = "광박 대역전판").toRound()
+        assertEquals("광박 대역전판", namedRound.name)
+
+        val orderedGame = GameEntity(id = 5L, name = "금요일 밤 고스톱", createdAt = "2026-11-28", sortOrder = 3).toGame()
+        assertEquals(3, orderedGame.sortOrder)
     }
 
     @Test

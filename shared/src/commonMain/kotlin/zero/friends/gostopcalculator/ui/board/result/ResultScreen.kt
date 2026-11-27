@@ -270,6 +270,7 @@ private fun ResultContent(
             }
 
             DetailHeroCard(
+                roundName = uiState.roundName,
                 playerCount = uiState.gamers.size,
                 potSummary = potSummary,
             )
@@ -437,6 +438,7 @@ private fun ResultHeroCard(
 
 @Composable
 private fun DetailHeroCard(
+    roundName: String = "",
     playerCount: Int,
     potSummary: RoundTraceFormatter.RoundBasePotSummary?,
 ) {
@@ -478,14 +480,27 @@ private fun DetailHeroCard(
                         )
                     }
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = stringResource(Res.string.result_detail_title),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = ScoreTextDark,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Column(modifier = Modifier.weight(1f, fill = false)) {
+                        Text(
+                            text = stringResource(Res.string.result_detail_title),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = ScoreTextDark,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        if (roundName.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = roundName,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = ScoreMutedText,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
                 }
 
                 if (playerCount > 0) {

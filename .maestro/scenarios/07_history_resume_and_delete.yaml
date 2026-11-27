@@ -1,7 +1,7 @@
 appId: zero.friends.gostopcalculator
 ---
 # ==========================================
-# 시나리오: 기존 게임 히스토리 복원(이어하기), 재시작 초기화 및 롱클릭 삭제 검증
+# 시나리오: 기존 게임 히스토리 복원(이어하기), 재시작 초기화 및 3점 버튼(⋮) 삭제 검증
 # ==========================================
 
 - launchApp:
@@ -63,8 +63,11 @@ appId: zero.friends.gostopcalculator
 - runFlow: ../common/assert_no_broken_text.yaml
 - tapOn: "Back"
 
-# 진행내역 카드 롱클릭 시 삭제 다이얼로그 노출 및 삭제 동작 검증
-- longPressOn: "생성일자"
+# 진행내역 카드 3점 버튼(⋮) 탭 시 하단 관리 시트 노출 및 게임 삭제 동작 검증
+- tapOn:
+    id: "game_more_button_0"
+- assertVisible: "게임 이름 변경"
+- tapOn: "게임 삭제"
 - assertVisible: "삭제하시겠습니까\\?"
 - tapOn: "삭제"
 - assertVisible: "게임을 추가한 내역이 없습니다."

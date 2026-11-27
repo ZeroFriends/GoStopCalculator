@@ -36,4 +36,16 @@ class RoundRepositoryImpl @Inject constructor(private val roundDao: RoundDao) : 
     override suspend fun deleteRound(roundId: Long) {
         roundDao.deleteRound(roundId)
     }
+
+    override suspend fun getRound(roundId: Long): Round? {
+        return roundDao.getRound(roundId)?.toRound()
+    }
+
+    override fun observeRoundMeta(roundId: Long): Flow<Round?> {
+        return roundDao.observeRoundEntity(roundId).map { it?.toRound() }
+    }
+
+    override suspend fun updateRoundName(roundId: Long, name: String) {
+        roundDao.updateRoundName(roundId, name)
+    }
 }

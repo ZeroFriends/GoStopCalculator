@@ -250,4 +250,23 @@
     <string name="confirm_round_special_total_format">%1$s (×%2$d배)</string>
     <string name="result_base_pot_special_mult_format">%1$s × %2$d배(%3$s)</string>
     <string name="result_chip_special_x2_format">%1$s ×2</string>
+    <string name="manage_game_label">선택된 게임 관리</string>
+    <string name="manage_round_label">선택된 라운드 관리</string>
+    <string name="rename_game_action">게임 이름 변경</string>
+    <string name="delete_game_action">게임 삭제</string>
+    <string name="rename_round_action">라운드 이름 변경</string>
+    <string name="delete_round_action">라운드 삭제</string>
+    <string name="delete_caution_badge">삭제 주의</string>
+    <string name="rename_confirm">변경하기</string>
+    <string name="rename_game_placeholder">게임 이름을 입력해주세요</string>
+    <string name="rename_game_helper">최대 %1$d자까지 입력할 수 있어요</string>
+    <string name="rename_round_placeholder">예: 광박 대역전판</string>
+    <string name="rename_round_helper_format">비워두면 기본 이름(%1$s)으로 표시</string>
+    <string name="clear_input_cd">입력 지우기</string>
+    <string name="round_more_cd_format">%1$s 더보기</string>
+    <string name="history_reorder_hint">길게 눌러 순서 변경</string>
+    <string name="game_more_cd_format">%1$s 더보기</string>
+    <string name="round_number_format">%1$d 라운드</string>
+    <string name="move_up_action">위로 이동</string>
+    <string name="move_down_action">아래로 이동</string>
 </resources>

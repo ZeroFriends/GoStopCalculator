@@ -31,6 +31,8 @@ class PrepareViewModelTest {
         override fun observeGameList(): Flow<List<Game>> = emptyFlow()
         override suspend fun getGame(gameId: Long): Game = game
         override fun observeGame(gameId: Long): Flow<Game> = emptyFlow()
+        override suspend fun updateGameName(gameId: Long, name: String) = Unit
+        override suspend fun updateGameOrder(orderedGameIds: List<Long>) = Unit
     }
 
     private class FakePlayerRepository(private val players: List<Player>) : PlayerRepository {
@@ -46,6 +48,9 @@ class PrepareViewModelTest {
         override fun observeRound(roundId: Long): Flow<List<Gamer>> = emptyFlow()
         override suspend fun createNewRound(gameId: Long): Long = 1L
         override suspend fun deleteRound(roundId: Long) = Unit
+        override suspend fun getRound(roundId: Long): Round? = null
+        override fun observeRoundMeta(roundId: Long): Flow<Round?> = emptyFlow()
+        override suspend fun updateRoundName(roundId: Long, name: String) = Unit
     }
 
     @BeforeTest

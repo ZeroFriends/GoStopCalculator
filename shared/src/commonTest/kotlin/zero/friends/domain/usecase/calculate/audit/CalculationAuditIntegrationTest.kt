@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -21,6 +22,7 @@ import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.LoserOption
 import zero.friends.domain.model.Option
 import zero.friends.domain.model.Player
+import zero.friends.domain.model.Round
 import zero.friends.domain.model.Rule
 import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.model.SellerOption
@@ -28,6 +30,7 @@ import zero.friends.domain.model.Target
 import zero.friends.domain.model.WinnerOption
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.GamerRepository
+import zero.friends.domain.repository.RoundRepository
 import zero.friends.domain.usecase.calculate.AggregateGamerResultsUseCase
 import zero.friends.domain.usecase.calculate.BuildRoundTraceUseCase
 import zero.friends.domain.usecase.calculate.CalculateGameResultUseCase
@@ -66,12 +69,26 @@ class CalculationAuditIntegrationTest {
         }
     }
 
-    private class FakeGameRepository(private val game: Game) : GameRepository {
-        override suspend fun newGame(name: String, createdAt: String): Long = game.id
+    private class FakeGameRepository(initialGame: Game) : GameRepository {
+        val gameFlow = MutableStateFlow(initialGame)
+        override suspend fun newGame(name: String, createdAt: String): Long = gameFlow.value.id
         override suspend fun deleteGame(gameId: Long) = Unit
         override fun observeGameList(): Flow<List<Game>> = emptyFlow()
-        override suspend fun getGame(gameId: Long): Game = game
-        override fun observeGame(gameId: Long): Flow<Game> = emptyFlow()
+        override suspend fun getGame(gameId: Long): Game = gameFlow.value
+        override fun observeGame(gameId: Long): Flow<Game> = gameFlow
+        override suspend fun updateGameName(gameId: Long, name: String) = Unit
+        override suspend fun updateGameOrder(orderedGameIds: List<Long>) = Unit
+    }
+
+    private class FakeRoundRepository : RoundRepository {
+        val roundMetaFlow = MutableStateFlow<Round?>(null)
+        override fun observeAllRound(gameId: Long): Flow<List<Round>> = emptyFlow()
+        override fun observeRound(roundId: Long): Flow<List<Gamer>> = emptyFlow()
+        override suspend fun createNewRound(gameId: Long): Long = 1L
+        override suspend fun deleteRound(roundId: Long) = Unit
+        override suspend fun getRound(roundId: Long): Round? = roundMetaFlow.value
+        override fun observeRoundMeta(roundId: Long): Flow<Round?> = roundMetaFlow
+        override suspend fun updateRoundName(roundId: Long, name: String) = Unit
     }
 
     private class FlowGamerRepository(
@@ -216,10 +233,13 @@ class CalculationAuditIntegrationTest {
         val reporter = RecordingReporter()
         val auditor = DefaultCalculationAuditor(CalculationInvariantValidator(), reporter)
 
+        val roundRepo = FakeRoundRepository()
+
         // 1. 누적 정산 화면 (ScreenType.Calculate): 정상 -> 0건, 깨진 방출 2회 -> 1건(디듀프)
         ResultViewModel(
             gameRepository = FakeGameRepository(game),
             gamerRepository = gamerRepo,
+            roundRepository = roundRepo,
             ruleRepository = ruleRepo,
             aggregateGamerResultsUseCase = AggregateGamerResultsUseCase(),
             buildRoundTraceUseCase = BuildRoundTraceUseCase(ruleRepo, gamerRepo, CalculateLoserScoreUseCase(ruleRepo, gamerRepo)),
@@ -240,10 +260,12 @@ class CalculationAuditIntegrationTest {
         assertEquals(1, reporter.reports.size)
         assertEquals(AuditPhase.GAME_SETTLEMENT, reporter.reports.single().phase)
 
-        // 2. 라운드 상세 화면 (ScreenType.Detail): 정상 -> 추가 0건, 깨진 상세 데이터 -> 1건
-        ResultViewModel(
+        // 2. 라운드 상세 화면 (ScreenType.Detail): 정상 -> 추가 0건, 깨진 상세 데이터 -> 1건 + roundName 실시간 반영
+        roundRepo.roundMetaFlow.value = Round(id = 10L, gameId = 5L, name = "광박 대역전판")
+        val detailViewModel = ResultViewModel(
             gameRepository = FakeGameRepository(game),
             gamerRepository = gamerRepo,
+            roundRepository = roundRepo,
             ruleRepository = ruleRepo,
             aggregateGamerResultsUseCase = AggregateGamerResultsUseCase(),
             buildRoundTraceUseCase = BuildRoundTraceUseCase(ruleRepo, gamerRepo, CalculateLoserScoreUseCase(ruleRepo, gamerRepo)),
@@ -253,6 +275,10 @@ class CalculationAuditIntegrationTest {
             initialScreenType = ScreenType.Detail,
         )
         assertEquals(1, reporter.reports.size)
+        assertEquals("광박 대역전판", detailViewModel.uiState.value.roundName)
+
+        roundRepo.roundMetaFlow.value = Round(id = 10L, gameId = 5L, name = "막판 승부")
+        assertEquals("막판 승부", detailViewModel.uiState.value.roundName)
 
         gamerRepo.roundGamersFlow.value = listOf(
             cleanAll[0].copy(score = 5, account = 999, winnerOption = WinnerOption.Winner),
