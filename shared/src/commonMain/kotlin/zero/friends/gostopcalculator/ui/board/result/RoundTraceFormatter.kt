@@ -1,6 +1,7 @@
 package zero.friends.gostopcalculator.ui.board.result
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -9,7 +10,10 @@ import androidx.compose.ui.text.font.FontWeight
 import me.tatarka.inject.annotations.Inject
 import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.CalculationFactors
+import zero.friends.domain.model.Gamer
+import zero.friends.domain.model.RoundTrace
 import zero.friends.domain.model.RoundTraceTerm
+import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.model.TraceTag
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.bak_unit
@@ -17,13 +21,30 @@ import zero.friends.gostopcalculator.shared.generated.resources.base_label
 import zero.friends.gostopcalculator.shared.generated.resources.go
 import zero.friends.gostopcalculator.shared.generated.resources.person_unit
 import zero.friends.gostopcalculator.shared.generated.resources.point
+import zero.friends.gostopcalculator.shared.generated.resources.result_base_pot_no_go_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_base_pot_with_go_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_base_pot_with_go_mult_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_breakdown_bonus_per_player_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_breakdown_gobak_cover_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_breakdown_gobak_exempt_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_breakdown_own_base_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_breakdown_own_base_mult_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_breakdown_round_win
+import zero.friends.gostopcalculator.shared.generated.resources.result_breakdown_round_win_gobak_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_breakdown_sell_pay_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_seller_badge_cards_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_seller_formula_cards_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_seller_receive_each_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_three_fuck_banner
 import zero.friends.gostopcalculator.shared.generated.resources.rule_first_ddadak
+import zero.friends.gostopcalculator.shared.generated.resources.rule_first_fuck
 import zero.friends.gostopcalculator.shared.generated.resources.rule_fuck
 import zero.friends.gostopcalculator.shared.generated.resources.rule_go_bak
 import zero.friends.gostopcalculator.shared.generated.resources.rule_light_bak
 import zero.friends.gostopcalculator.shared.generated.resources.rule_loser
 import zero.friends.gostopcalculator.shared.generated.resources.rule_mong_bak
 import zero.friends.gostopcalculator.shared.generated.resources.rule_pea_bak
+import zero.friends.gostopcalculator.shared.generated.resources.rule_second_fuck
 import zero.friends.gostopcalculator.shared.generated.resources.rule_sell
 import zero.friends.gostopcalculator.shared.generated.resources.rule_seller_role
 import zero.friends.gostopcalculator.shared.generated.resources.rule_three_fuck
@@ -62,12 +83,34 @@ fun rememberTraceTexts(): RoundTraceFormatter.TraceTexts {
     val selfBaseLossFormat = stringResource(Res.string.trace_self_base_loss_format)
     val goBakCoverFormat = stringResource(Res.string.trace_go_bak_cover_format)
     val goBakExemptFormulaFormat = stringResource(Res.string.trace_go_bak_exempt_formula_format)
+    val firstFuckName = stringResource(Res.string.rule_first_fuck)
+    val secondFuckName = stringResource(Res.string.rule_second_fuck)
+    val threeFuckBanner = stringResource(Res.string.result_three_fuck_banner)
+    val basePotNoGoFormat = stringResource(Res.string.result_base_pot_no_go_format)
+    val basePotWithGoFormat = stringResource(Res.string.result_base_pot_with_go_format)
+    val basePotWithGoMultFormat = stringResource(Res.string.result_base_pot_with_go_mult_format)
+    val breakdownRoundWin = stringResource(Res.string.result_breakdown_round_win)
+    val breakdownRoundWinGoBakFormat = stringResource(Res.string.result_breakdown_round_win_gobak_format)
+    val breakdownOwnBaseFormat = stringResource(Res.string.result_breakdown_own_base_format)
+    val breakdownOwnBaseMultFormat = stringResource(Res.string.result_breakdown_own_base_mult_format)
+    val breakdownGoBakCoverFormat = stringResource(Res.string.result_breakdown_gobak_cover_format)
+    val breakdownGoBakExemptFormat = stringResource(Res.string.result_breakdown_gobak_exempt_format)
+    val breakdownBonusPerPlayerFormat = stringResource(Res.string.result_breakdown_bonus_per_player_format)
+    val breakdownSellPayFormat = stringResource(Res.string.result_breakdown_sell_pay_format)
+    val sellerBadgeCardsFormat = stringResource(Res.string.result_seller_badge_cards_format)
+    val sellerFormulaCardsFormat = stringResource(Res.string.result_seller_formula_cards_format)
+    val sellerReceiveEachFormat = stringResource(Res.string.result_seller_receive_each_format)
 
     return remember(
         baseScoreTitle, baseLabel, pointUnit, goUnit, bakUnit, wonUnit, personUnit,
         fuckName, firstDdadakName, sellName, winnerLabel, loserLabel, sellerRoleLabel,
         threeFuckLabel, peaBakLabel, lightBakLabel, mongBakLabel, goBakLabel,
-        goBakExemptLabel, selfBaseLossFormat, goBakCoverFormat, goBakExemptFormulaFormat
+        goBakExemptLabel, selfBaseLossFormat, goBakCoverFormat, goBakExemptFormulaFormat,
+        firstFuckName, secondFuckName, threeFuckBanner, basePotNoGoFormat, basePotWithGoFormat,
+        basePotWithGoMultFormat, breakdownRoundWin, breakdownRoundWinGoBakFormat,
+        breakdownOwnBaseFormat, breakdownOwnBaseMultFormat, breakdownGoBakCoverFormat,
+        breakdownGoBakExemptFormat, breakdownBonusPerPlayerFormat, breakdownSellPayFormat,
+        sellerBadgeCardsFormat, sellerFormulaCardsFormat, sellerReceiveEachFormat
     ) {
         RoundTraceFormatter.TraceTexts(
             baseScoreTitle = baseScoreTitle,
@@ -92,12 +135,34 @@ fun rememberTraceTexts(): RoundTraceFormatter.TraceTexts {
             selfBaseLossFormat = selfBaseLossFormat,
             goBakCoverFormat = goBakCoverFormat,
             goBakExemptFormulaFormat = goBakExemptFormulaFormat,
+            firstFuckName = firstFuckName,
+            secondFuckName = secondFuckName,
+            threeFuckBanner = threeFuckBanner,
+            basePotNoGoFormat = basePotNoGoFormat,
+            basePotWithGoFormat = basePotWithGoFormat,
+            basePotWithGoMultFormat = basePotWithGoMultFormat,
+            breakdownRoundWin = breakdownRoundWin,
+            breakdownRoundWinGoBakFormat = breakdownRoundWinGoBakFormat,
+            breakdownOwnBaseFormat = breakdownOwnBaseFormat,
+            breakdownOwnBaseMultFormat = breakdownOwnBaseMultFormat,
+            breakdownGoBakCoverFormat = breakdownGoBakCoverFormat,
+            breakdownGoBakExemptFormat = breakdownGoBakExemptFormat,
+            breakdownBonusPerPlayerFormat = breakdownBonusPerPlayerFormat,
+            breakdownSellPayFormat = breakdownSellPayFormat,
+            sellerBadgeCardsFormat = sellerBadgeCardsFormat,
+            sellerFormulaCardsFormat = sellerFormulaCardsFormat,
+            sellerReceiveEachFormat = sellerReceiveEachFormat,
         )
     }
 }
 
+@Immutable
 @Inject
 class RoundTraceFormatter {
+
+    override fun equals(other: Any?): Boolean = other is RoundTraceFormatter
+
+    override fun hashCode(): Int = this::class.hashCode()
 
     data class TraceTexts(
         val baseScoreTitle: String,
@@ -122,6 +187,50 @@ class RoundTraceFormatter {
         val selfBaseLossFormat: String = "Own base: %1\$s",
         val goBakCoverFormat: String = "%1\$s Go-bak cover",
         val goBakExemptFormulaFormat: String = "Exempted (%1\$s Go-bak)",
+        val firstFuckName: String = "First Ppeok",
+        val secondFuckName: String = "Double Ppeok",
+        val threeFuckBanner: String = "Triple Ppeok Instant Win (All Players Pay)",
+        val basePotNoGoFormat: String = "Base %1\$dpts × %2\$s",
+        val basePotWithGoFormat: String = "(Base %1\$dpts + %2\$dGo) × %3\$s",
+        val basePotWithGoMultFormat: String = "(Base %1\$dpts + %2\$dGo) × %3\$s × %4\$dx(%2\$dGo)",
+        val breakdownRoundWin: String = "Round Win",
+        val breakdownRoundWinGoBakFormat: String = "Round Win (%1\$s Go-bak solo)",
+        val breakdownOwnBaseFormat: String = "Own base (%1\$s)",
+        val breakdownOwnBaseMultFormat: String = "Own base (%1\$s × %2\$dx)",
+        val breakdownGoBakCoverFormat: String = "⚡ %1\$s Go-bak cover (%2\$dx)",
+        val breakdownGoBakExemptFormat: String = "Base score exempted (%1\$s Go-bak)",
+        val breakdownBonusPerPlayerFormat: String = "%1\$s bonus (%2\$s × %3\$d)",
+        val breakdownSellPayFormat: String = "Sell Brights paid (%1\$s)",
+        val sellerBadgeCardsFormat: String = "Seller · %1\$d",
+        val sellerFormulaCardsFormat: String = "%1\$d cards × %2\$s × %3\$d",
+        val sellerReceiveEachFormat: String = "+%1\$s each from %2\$d players",
+    )
+
+    data class RoundBasePotSummary(
+        val isThreeFuck: Boolean,
+        val formulaText: String,
+        val potAmountText: String,
+    )
+
+    enum class BreakdownRowTone {
+        WIN,
+        GO_BAK_COVER,
+        EXEMPT,
+        BONUS_POSITIVE,
+        LOSS_DEFAULT,
+    }
+
+    data class DetailBreakdownRow(
+        val label: String,
+        val amountText: String,
+        val amountValue: Int,
+        val tone: BreakdownRowTone,
+    )
+
+    data class DetailSellerSummary(
+        val badgeText: String,
+        val formulaText: String,
+        val receiveEachText: String,
     )
 
     data class TraceLine(
@@ -129,35 +238,6 @@ class RoundTraceFormatter {
         val formula: AnnotatedString,
         val amount: AnnotatedString
     )
-    
-    data class WinnerTraceLine(
-        val title: String,
-        val amount: AnnotatedString
-    )
-
-    fun toWinnerBreakdown(
-        winnerTerm: RoundTraceTerm,
-        texts: TraceTexts
-    ): List<WinnerTraceLine> {
-        val lines = mutableListOf<WinnerTraceLine>()
-        val factors = winnerTerm.factors
-        
-        val baseAmount = winnerTerm.amount - (factors.fuckAmount + factors.ddadakAmount + factors.sellAmount)
-
-        if (baseAmount != 0) {
-            lines.add(WinnerTraceLine(texts.baseScoreTitle, buildAmount(baseAmount, texts)))
-        }
-        if (factors.fuckAmount != 0) {
-            lines.add(WinnerTraceLine(texts.fuckName, buildAmount(factors.fuckAmount, texts)))
-        }
-        if (factors.ddadakAmount != 0) {
-            lines.add(WinnerTraceLine(texts.firstDdadakName, buildAmount(factors.ddadakAmount, texts)))
-        }
-        if (factors.sellAmount != 0) {
-            lines.add(WinnerTraceLine(texts.sellName, buildAmount(factors.sellAmount, texts)))
-        }
-        return lines
-    }
 
     fun toLines(
         terms: List<RoundTraceTerm>,
@@ -207,10 +287,10 @@ class RoundTraceFormatter {
         if (factors.isSeller) {
             return buildSellerFormula(factors, totalAmount, texts)
         }
-        if (factors.isSoloGoBakMode && factors.goBakExemptedAmount != 0) {
+        if (factors.goBakExemptedAmount != 0) {
             return buildGoBakExemptFormula(factors, totalAmount, texts)
         }
-        if (factors.isSoloGoBakMode && (factors.goBakCoveredAmount != 0 || factors.coveredLosers.isNotEmpty())) {
+        if (factors.goBakCoveredAmount != 0 || factors.coveredLosers.isNotEmpty()) {
             return buildGoBakSoloPayerFormula(factors, totalAmount, texts)
         }
         return buildDefaultFormula(factors, totalAmount, texts)
@@ -392,6 +472,445 @@ class RoundTraceFormatter {
                 else -> it
             }
         }.joinToString("")
+    }
+
+    fun toRoundBasePotSummary(
+        trace: RoundTrace,
+        texts: TraceTexts,
+    ): RoundBasePotSummary? {
+        val winnerTerm = trace.terms.firstOrNull { it.gamerId == trace.winnerId }
+        val isInstantThreeFuck = winnerTerm != null &&
+            TraceTag.THREE_FUCK in winnerTerm.traceTags &&
+            trace.terms.all { term ->
+                term.factors.isSeller ||
+                    (term.amount.toLong() - term.factors.fuckAmount - term.factors.ddadakAmount - term.factors.sellAmount) == 0L
+            }
+        if (isInstantThreeFuck) {
+            return RoundBasePotSummary(
+                isThreeFuck = true,
+                formulaText = texts.threeFuckBanner,
+                potAmountText = "",
+            )
+        }
+
+        val refFactors = trace.terms
+            .firstOrNull { !it.factors.isSeller && it.factors.baseScore > 0 }?.factors
+            ?: trace.terms.firstOrNull { !it.factors.isSeller }?.factors
+            ?: return null
+
+        if (refFactors.baseScore == 0 && refFactors.goCount == 0) {
+            return null
+        }
+
+        val perPointStr = "${formatNumber(refFactors.scorePerPoint)}${texts.wonUnit}"
+        val goCount = refFactors.goCount
+        val basePot = calculateBasePotAmount(refFactors)
+        val formulaText = when {
+            goCount <= 0 -> texts.basePotNoGoFormat
+                .replace("%1\$d", refFactors.baseScore.toString())
+                .replace("%2\$s", perPointStr)
+            goCount < 3 -> texts.basePotWithGoFormat
+                .replace("%2\$d", goCount.toString())
+                .replace("%3\$s", perPointStr)
+                .replace("%1\$d", refFactors.baseScore.toString())
+            else -> {
+                val goMult = 1L shl (goCount - 2).coerceAtMost(30)
+                texts.basePotWithGoMultFormat
+                    .replace("%4\$d", goMult.toString())
+                    .replace("%2\$d", goCount.toString())
+                    .replace("%3\$s", perPointStr)
+                    .replace("%1\$d", refFactors.baseScore.toString())
+            }
+        }
+        return RoundBasePotSummary(
+            isThreeFuck = false,
+            formulaText = formulaText,
+            potAmountText = "${formatNumber(basePot)}${texts.wonUnit}",
+        )
+    }
+
+    fun toDetailSellerSummary(
+        term: RoundTraceTerm?,
+        gamer: Gamer?,
+        texts: TraceTexts,
+    ): DetailSellerSummary? {
+        if (term == null || !term.factors.isSeller) return null
+        val cards = gamer?.score ?: 0
+        val badgeText = if (cards > 0) {
+            texts.sellerBadgeCardsFormat.replace("%1\$d", cards.toString())
+        } else {
+            texts.sellerRoleLabel
+        }
+        val buyerCount = term.factors.receiverCount.coerceAtLeast(1)
+        val sellAmountPerBuyer = term.factors.sellAmount.toLong() / buyerCount
+        val absPerBuyer = abs(sellAmountPerBuyer)
+        val unitPrice = if (cards > 0) absPerBuyer / cards else 0L
+        val formulaText = if (cards > 0 && unitPrice > 0L) {
+            texts.sellerFormulaCardsFormat
+                .replace("%3\$d", buyerCount.toString())
+                .replace("%2\$s", "${formatNumber(unitPrice)}${texts.wonUnit}")
+                .replace("%1\$d", cards.toString())
+        } else {
+            "${formatNumber(absPerBuyer)}${texts.wonUnit} × $buyerCount${texts.personUnit}"
+        }
+        val receiveEachText = texts.sellerReceiveEachFormat
+            .replace("%2\$d", buyerCount.toString())
+            .replace("%1\$s", "${formatNumber(absPerBuyer)}${texts.wonUnit}")
+        return DetailSellerSummary(
+            badgeText = badgeText,
+            formulaText = formulaText,
+            receiveEachText = receiveEachText,
+        )
+    }
+
+    fun toDetailCardBreakdown(
+        term: RoundTraceTerm,
+        gamer: Gamer?,
+        trace: RoundTrace?,
+        texts: TraceTexts,
+        gamers: List<Gamer> = emptyList(),
+    ): List<DetailBreakdownRow> {
+        if (term.factors.isSeller) {
+            val nonSellNet = (term.amount.toLong() - term.factors.sellAmount.toLong()).toInt()
+            if (nonSellNet == 0) return emptyList()
+            val normalizedTerm = term.copy(
+                amount = nonSellNet,
+                factors = term.factors.copy(isSeller = false, sellAmount = 0),
+            )
+            return toDetailCardBreakdown(normalizedTerm, gamer, trace, texts, gamers)
+        }
+
+        val isWinner = (trace != null && term.gamerId == trace.winnerId) ||
+            TraceTag.WINNER in term.traceTags
+        val fuckLabel = if (term.factors.fuckAmount != 0) {
+            resolveFuckLabel(gamer, term, trace, gamers, texts)
+        } else {
+            texts.fuckName
+        }
+
+        return if (isWinner) {
+            buildWinnerBreakdownRows(term, trace, fuckLabel, texts)
+        } else {
+            buildLoserBreakdownRows(term, trace, fuckLabel, texts)
+        }
+    }
+
+    private fun buildWinnerBreakdownRows(
+        term: RoundTraceTerm,
+        trace: RoundTrace?,
+        fuckLabel: String,
+        texts: TraceTexts,
+    ): List<DetailBreakdownRow> {
+        val rows = mutableListOf<DetailBreakdownRow>()
+        val factors = term.factors
+        val baseAmount = (term.amount.toLong() - factors.fuckAmount - factors.ddadakAmount - factors.sellAmount).toInt()
+
+        if (baseAmount != 0) {
+            val goBakPayers = trace?.terms
+                ?.filter { it.factors.coveredLosers.isNotEmpty() || it.factors.goBakCoveredAmount != 0 }
+                .orEmpty()
+            val label = if (goBakPayers.isNotEmpty()) {
+                val payerNames = goBakPayers.joinToString(", ") { it.playerName.ifBlank { it.label } }
+                texts.breakdownRoundWinGoBakFormat.replace("%1\$s", payerNames)
+            } else {
+                texts.breakdownRoundWin
+            }
+            rows.add(
+                DetailBreakdownRow(
+                    label = label,
+                    amountText = formatSignedPlain(baseAmount, texts),
+                    amountValue = baseAmount,
+                    tone = BreakdownRowTone.WIN,
+                )
+            )
+        }
+
+        when {
+            factors.fuckAmount > 0 -> {
+                val payerCount = payerCountFromTrace(trace, term.gamerId) { it.factors.fuckAmount < 0 }
+                rows.add(buildBonusRow(fuckLabel, factors.fuckAmount, payerCount, factors.receiverCount, texts))
+            }
+            factors.fuckAmount < 0 -> rows.add(
+                DetailBreakdownRow(
+                    label = fuckLabel,
+                    amountText = formatSignedPlain(factors.fuckAmount, texts),
+                    amountValue = factors.fuckAmount,
+                    tone = BreakdownRowTone.LOSS_DEFAULT,
+                )
+            )
+        }
+
+        when {
+            factors.ddadakAmount > 0 -> {
+                val payerCount = payerCountFromTrace(trace, term.gamerId) { it.factors.ddadakAmount < 0 }
+                rows.add(
+                    buildBonusRow(texts.firstDdadakName, factors.ddadakAmount, payerCount, factors.receiverCount, texts)
+                )
+            }
+            factors.ddadakAmount < 0 -> rows.add(
+                DetailBreakdownRow(
+                    label = texts.firstDdadakName,
+                    amountText = formatSignedPlain(factors.ddadakAmount, texts),
+                    amountValue = factors.ddadakAmount,
+                    tone = BreakdownRowTone.LOSS_DEFAULT,
+                )
+            )
+        }
+
+        if (factors.sellAmount != 0) {
+            val sellerNames = trace?.terms
+                ?.filter { it.factors.isSeller }
+                ?.map { it.playerName.ifBlank { it.label } }
+                ?.filter { it.isNotBlank() }
+                .orEmpty()
+            val sellLabel = if (factors.sellAmount < 0 && sellerNames.isNotEmpty()) {
+                texts.breakdownSellPayFormat.replace("%1\$s", sellerNames.joinToString(", "))
+            } else {
+                texts.sellName
+            }
+            rows.add(
+                DetailBreakdownRow(
+                    label = sellLabel,
+                    amountText = formatSignedPlain(factors.sellAmount, texts),
+                    amountValue = factors.sellAmount,
+                    tone = if (factors.sellAmount > 0) BreakdownRowTone.BONUS_POSITIVE else BreakdownRowTone.LOSS_DEFAULT,
+                )
+            )
+        }
+
+        return rows
+    }
+
+    private fun buildLoserBreakdownRows(
+        term: RoundTraceTerm,
+        trace: RoundTrace?,
+        fuckLabel: String,
+        texts: TraceTexts,
+    ): List<DetailBreakdownRow> {
+        val rows = mutableListOf<DetailBreakdownRow>()
+        val factors = term.factors
+        val isGoBakExempt = TraceTag.GO_BAK_EXEMPT in term.traceTags || factors.goBakExemptedAmount != 0
+        val isSoloGoBakPayer = factors.coveredLosers.isNotEmpty() || factors.goBakCoveredAmount != 0
+
+        when {
+            isGoBakExempt -> {
+                val payerName = factors.goBakPayerName.ifBlank { texts.goBakLabel }
+                rows.add(
+                    DetailBreakdownRow(
+                        label = texts.breakdownGoBakExemptFormat.replace("%1\$s", payerName),
+                        amountText = "0${texts.wonUnit}",
+                        amountValue = 0,
+                        tone = BreakdownRowTone.EXEMPT,
+                    )
+                )
+            }
+            isSoloGoBakPayer -> {
+                if (factors.selfBaseLoss != 0) {
+                    rows.add(buildOwnBaseRow(factors.selfBaseLoss, factors, texts))
+                }
+                if (factors.coveredLosers.isNotEmpty()) {
+                    factors.coveredLosers.forEach { covered ->
+                        val covMult = 1L shl covered.bakCount.coerceAtLeast(0).coerceAtMost(30)
+                        rows.add(
+                            DetailBreakdownRow(
+                                label = texts.breakdownGoBakCoverFormat
+                                    .replace("%2\$d", covMult.toString())
+                                    .replace("%1\$s", covered.playerName),
+                                amountText = formatSignedPlain(covered.amount, texts),
+                                amountValue = covered.amount,
+                                tone = BreakdownRowTone.GO_BAK_COVER,
+                            )
+                        )
+                    }
+                } else if (factors.goBakCoveredAmount != 0) {
+                    rows.add(
+                        DetailBreakdownRow(
+                            label = texts.goBakLabel,
+                            amountText = formatSignedPlain(factors.goBakCoveredAmount, texts),
+                            amountValue = factors.goBakCoveredAmount,
+                            tone = BreakdownRowTone.GO_BAK_COVER,
+                        )
+                    )
+                }
+            }
+            else -> {
+                val auxSum = factors.fuckAmount.toLong() + factors.ddadakAmount.toLong() + factors.sellAmount.toLong()
+                val baseLoss = (term.amount.toLong() - auxSum).toInt()
+                if (baseLoss != 0) {
+                    rows.add(buildOwnBaseRow(baseLoss, factors, texts))
+                }
+            }
+        }
+
+        if (factors.fuckAmount > 0) {
+            val payerCount = payerCountFromTrace(trace, term.gamerId) { it.factors.fuckAmount < 0 }
+            rows.add(buildBonusRow(fuckLabel, factors.fuckAmount, payerCount, factors.receiverCount, texts))
+        }
+        if (factors.ddadakAmount > 0) {
+            val payerCount = payerCountFromTrace(trace, term.gamerId) { it.factors.ddadakAmount < 0 }
+            rows.add(buildBonusRow(texts.firstDdadakName, factors.ddadakAmount, payerCount, factors.receiverCount, texts))
+        }
+        if (factors.sellAmount > 0) {
+            val payerCount = payerCountFromTrace(trace, term.gamerId) { it.factors.sellAmount < 0 }
+            rows.add(buildBonusRow(texts.sellName, factors.sellAmount, payerCount, factors.receiverCount, texts))
+        }
+
+        val feeParts = mutableListOf<String>()
+        var feeTotal = 0L
+        if (factors.fuckAmount < 0) {
+            feeParts.add("$fuckLabel (${formatSignedPlain(factors.fuckAmount, texts)})")
+            feeTotal += factors.fuckAmount
+        }
+        if (factors.ddadakAmount < 0) {
+            feeParts.add("${texts.firstDdadakName} (${formatSignedPlain(factors.ddadakAmount, texts)})")
+            feeTotal += factors.ddadakAmount
+        }
+        if (factors.sellAmount < 0) {
+            feeParts.add("${texts.sellName} (${formatSignedPlain(factors.sellAmount, texts)})")
+            feeTotal += factors.sellAmount
+        }
+        if (feeParts.isNotEmpty()) {
+            val feeTotalInt = feeTotal.toInt()
+            rows.add(
+                DetailBreakdownRow(
+                    label = feeParts.joinToString(" · "),
+                    amountText = formatSignedPlain(feeTotalInt, texts),
+                    amountValue = feeTotalInt,
+                    tone = BreakdownRowTone.LOSS_DEFAULT,
+                )
+            )
+        }
+
+        return rows
+    }
+
+    private fun buildOwnBaseRow(
+        amount: Int,
+        factors: CalculationFactors,
+        texts: TraceTexts,
+    ): DetailBreakdownRow {
+        val mult = 1L shl factors.bakCount.coerceAtLeast(0).coerceAtMost(30)
+        val potPerLoser = calculateBasePotAmount(factors)
+        val potValue = if (potPerLoser > 0L) potPerLoser else abs(amount.toLong()) / mult.coerceAtLeast(1L)
+        val potStr = "${formatNumber(potValue)}${texts.wonUnit}"
+        val label = if (mult > 1L) {
+            texts.breakdownOwnBaseMultFormat
+                .replace("%2\$d", mult.toString())
+                .replace("%1\$s", potStr)
+        } else {
+            texts.breakdownOwnBaseFormat.replace("%1\$s", potStr)
+        }
+        return DetailBreakdownRow(
+            label = label,
+            amountText = formatSignedPlain(amount, texts),
+            amountValue = amount,
+            tone = BreakdownRowTone.LOSS_DEFAULT,
+        )
+    }
+
+    private fun buildBonusRow(
+        bonusName: String,
+        totalAmount: Int,
+        tracedPayerCount: Int,
+        fallbackReceiverCount: Int,
+        texts: TraceTexts,
+    ): DetailBreakdownRow {
+        val payerCount = when {
+            tracedPayerCount > 0 -> tracedPayerCount
+            fallbackReceiverCount > 1 -> fallbackReceiverCount
+            else -> 1
+        }
+        val perPayer = totalAmount.toLong() / payerCount
+        val label = texts.breakdownBonusPerPlayerFormat
+            .replace("%3\$d", payerCount.toString())
+            .replace("%2\$s", "${formatNumber(perPayer)}${texts.wonUnit}")
+            .replace("%1\$s", bonusName)
+        return DetailBreakdownRow(
+            label = label,
+            amountText = formatSignedPlain(totalAmount, texts),
+            amountValue = totalAmount,
+            tone = BreakdownRowTone.BONUS_POSITIVE,
+        )
+    }
+
+    private inline fun payerCountFromTrace(
+        trace: RoundTrace?,
+        receiverGamerId: Long,
+        predicate: (RoundTraceTerm) -> Boolean,
+    ): Int {
+        if (trace == null) return 0
+        return trace.terms.count { it.gamerId != receiverGamerId && !it.factors.isSeller && predicate(it) }
+    }
+
+    private fun resolveFuckLabel(
+        gamer: Gamer?,
+        term: RoundTraceTerm,
+        trace: RoundTrace?,
+        gamers: List<Gamer>,
+        texts: TraceTexts,
+    ): String {
+        val ownOptions = gamer?.scoreOption.orEmpty()
+        if (term.factors.fuckAmount > 0) {
+            return when {
+                TraceTag.THREE_FUCK in term.traceTags || ScoreOption.ThreeFuck in ownOptions -> texts.threeFuckLabel
+                ScoreOption.SecondFuck in ownOptions -> texts.secondFuckName
+                ScoreOption.FirstFuck in ownOptions -> texts.firstFuckName
+                else -> texts.fuckName
+            }
+        }
+        val fuckEarners = trace?.terms
+            ?.filter { it.factors.fuckAmount > 0 }
+            .orEmpty()
+        val fuckEarnerIds = fuckEarners.mapTo(mutableSetOf()) { it.gamerId }
+        val relevantGamers = if (fuckEarnerIds.isNotEmpty()) {
+            gamers.filter { it.id in fuckEarnerIds }
+        } else {
+            gamers
+        }
+        val earnerOptions = relevantGamers
+            .asSequence()
+            .flatMap { it.scoreOption.asSequence() }
+            .filter {
+                it == ScoreOption.FirstFuck || it == ScoreOption.SecondFuck || it == ScoreOption.ThreeFuck
+            }
+            .distinct()
+            .toList()
+        if (earnerOptions.isEmpty() && fuckEarners.isNotEmpty() && fuckEarners.all { TraceTag.THREE_FUCK in it.traceTags }) {
+            return texts.threeFuckLabel
+        }
+        return when {
+            earnerOptions.size == 1 && earnerOptions.first() == ScoreOption.ThreeFuck -> texts.threeFuckLabel
+            earnerOptions.size == 1 && earnerOptions.first() == ScoreOption.SecondFuck -> texts.secondFuckName
+            earnerOptions.size == 1 && earnerOptions.first() == ScoreOption.FirstFuck -> texts.firstFuckName
+            else -> texts.fuckName
+        }
+    }
+
+    private fun calculateBasePotAmount(factors: CalculationFactors): Long {
+        val rawBase = (factors.baseScore.toLong() + factors.goCount).coerceAtLeast(0L)
+        if (rawBase == 0L || factors.scorePerPoint <= 0) return 0L
+        val goMult = if (factors.goCount >= 3) 1L shl (factors.goCount - 2).coerceAtMost(30) else 1L
+        val scorePts = factors.scorePerPoint.toLong()
+        val withUnit = if (rawBase > Int.MAX_VALUE.toLong() / scorePts) {
+            Int.MAX_VALUE.toLong()
+        } else {
+            rawBase * scorePts
+        }
+        return if (withUnit > Int.MAX_VALUE.toLong() / goMult) {
+            Int.MAX_VALUE.toLong()
+        } else {
+            withUnit * goMult
+        }
+    }
+
+    private fun formatSignedPlain(value: Int, texts: TraceTexts): String {
+        val sign = when {
+            value > 0 -> "+"
+            value < 0 -> "-"
+            else -> ""
+        }
+        val amount = abs(value.toLong()).separateComma()
+        return "$sign$amount${texts.wonUnit}"
     }
 
     fun formatAmount(value: Int, texts: TraceTexts): AnnotatedString = buildAmount(value, texts)

@@ -7,8 +7,14 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCSignatureOverride
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.usePinned
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.withContext
 import me.tatarka.inject.annotations.Inject
 import org.jetbrains.skia.Image
+import org.jetbrains.skia.Rect
+import org.jetbrains.skia.Surface
 import platform.Foundation.NSData
 import platform.Foundation.dataWithBytes
 import platform.UIKit.UIActivityItemSourceProtocol
@@ -24,33 +30,47 @@ import platform.darwin.NSObject
 
 @Inject
 actual class ScreenCaptureManager actual constructor() {
+    private val shareMutex = Mutex()
+
     actual suspend fun captureAndShare(
         graphicsLayer: GraphicsLayer,
         authority: String,
         fileNamePrefix: String
     ) {
+        if (!shareMutex.tryLock()) return
         try {
-            val imageBitmap = runCatching { graphicsLayer.toImageBitmap() }.getOrNull() ?: return
-            val uiImage = imageBitmap.toUIImage() ?: return
+            val imageBitmap = withContext(Dispatchers.Main.immediate) {
+                runCatching { graphicsLayer.toImageBitmap() }.getOrNull()
+            } ?: return
+            val bytes = withContext(Dispatchers.Default) {
+                imageBitmap.encodeToPngBytes()
+            } ?: return
+            val uiImage = bytes.toUIImage() ?: return
 
-            val itemSource = ImageActivityItemSource(uiImage)
-            val activityViewController = UIActivityViewController(
-                activityItems = listOf(itemSource),
-                applicationActivities = null
-            )
+            withContext(Dispatchers.Main.immediate) {
+                val itemSource = ImageActivityItemSource(uiImage)
+                val activityViewController = UIActivityViewController(
+                    activityItems = listOf(itemSource),
+                    applicationActivities = null
+                )
 
-            val presenter = topViewController() ?: return
-            activityViewController.popoverPresentationController?.apply {
-                sourceView = presenter.view
-                sourceRect = presenter.view.bounds
+                val presenter = topViewController() ?: return@withContext
+                activityViewController.popoverPresentationController?.apply {
+                    sourceView = presenter.view
+                    sourceRect = presenter.view.bounds
+                }
+                presenter.presentViewController(
+                    viewControllerToPresent = activityViewController,
+                    animated = true,
+                    completion = null
+                )
             }
-            presenter.presentViewController(
-                viewControllerToPresent = activityViewController,
-                animated = true,
-                completion = null
-            )
-        } catch (e: Throwable) {
-            // ignore all exceptions and errors
+        } catch (e: CancellationException) {
+            throw e
+        } catch (_: Throwable) {
+            // ignore all non-cancellation errors
+        } finally {
+            shareMutex.unlock()
         }
     }
 
@@ -93,17 +113,62 @@ private class ImageActivityItemSource(
     }
 }
 
-@OptIn(ExperimentalForeignApi::class)
-private fun ImageBitmap.toUIImage(): UIImage? {
+private fun ImageBitmap.encodeToPngBytes(maxDimension: Int = 4096): ByteArray? {
+    val skiaImage = try {
+        Image.makeFromBitmap(this.asSkiaBitmap())
+    } catch (_: Throwable) {
+        return null
+    }
     return try {
-        val skiaBitmap = this.asSkiaBitmap()
-        val skiaImage = Image.makeFromBitmap(skiaBitmap)
-        val bytes = skiaImage.encodeToData()?.bytes ?: return null
-        val nsData = bytes.usePinned { pinned ->
-            NSData.dataWithBytes(pinned.addressOf(0), bytes.size.toULong())
+        val longest = maxOf(skiaImage.width, skiaImage.height)
+        if (longest > maxDimension && skiaImage.width > 0 && skiaImage.height > 0) {
+            val ratio = maxDimension.toFloat() / longest.toFloat()
+            val targetW = (skiaImage.width * ratio).toInt().coerceAtLeast(1)
+            val targetH = (skiaImage.height * ratio).toInt().coerceAtLeast(1)
+            val surface = Surface.makeRasterN32Premul(targetW, targetH)
+            try {
+                surface.canvas.drawImageRect(
+                    skiaImage,
+                    Rect.makeWH(targetW.toFloat(), targetH.toFloat()),
+                )
+                val scaledImage = surface.makeImageSnapshot()
+                try {
+                    val data = scaledImage.encodeToData()
+                    try {
+                        data?.bytes
+                    } finally {
+                        data?.close()
+                    }
+                } finally {
+                    scaledImage.close()
+                }
+            } finally {
+                surface.close()
+            }
+        } else {
+            val data = skiaImage.encodeToData()
+            try {
+                data?.bytes
+            } finally {
+                data?.close()
+            }
+        }
+    } catch (_: Throwable) {
+        null
+    } finally {
+        skiaImage.close()
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun ByteArray.toUIImage(): UIImage? {
+    if (isEmpty()) return null
+    return try {
+        val nsData = usePinned { pinned ->
+            NSData.dataWithBytes(pinned.addressOf(0), size.toULong())
         }
         UIImage.imageWithData(nsData)
-    } catch (e: Throwable) {
+    } catch (_: Throwable) {
         null
     }
 }

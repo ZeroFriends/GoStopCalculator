@@ -93,9 +93,6 @@
     <string name="next_step_1">다음 (1/3)</string>
     <string name="next_step_2">다음 (2/3)</string>
     <string name="next_step_3">다음 (3/3)</string>
-    <string name="player_with_condition">플레이어(조건)</string>
-    <string name="formula">수식</string>
-    <string name="result">결과</string>
     <string name="calculation_result_title">계산 결과</string>
 
     <!-- 신규 보강 리소스 -->
@@ -124,10 +121,7 @@
     <string name="rule_sell">광팔기</string>
     <string name="rule_script_essential">필수 항목입니다.</string>
     <string name="rule_script_sell_four_players">4인 플레이 시에만 적용됩니다.</string>
-    <string name="trace_selling_history">광팔기 내역</string>
-    <string name="trace_loser_history">패자 내역</string>
     <string name="trace_base_score">기본 점수</string>
-    <string name="winner_with_name">승자 (%1$s)</string>
     <string name="settlement_receive_format">%1$s에게 %2$s을 받아야합니다.</string>
     <string name="settlement_pay_format">%1$s에게 %2$s을 줘야합니다.</string>
     <string name="person_unit">명</string>
@@ -211,10 +205,8 @@
     <string name="confirm_round_gobak_solo_desc_only">본인 1배 + 타 패자 판 점수 전액 대납</string>
     <string name="confirm_round_gobak_exempt_badge">고박 면제 (0원)</string>
     <string name="confirm_round_gobak_exempt_desc">%1$s 대납으로 판 점수 면제</string>
-    <string name="result_detail_subtitle">이번 라운드의 플레이어별 득실과 상세 계산 수식입니다.</string>
     <string name="result_settlement_subtitle">모든 라운드를 합산한 플레이어별 최종 수익과 송금 내역입니다.</string>
     <string name="result_player_count_badge_format">총 %1$d명 정산</string>
-    <string name="result_zero_sum_verified">오차 0원 (합계 일치)</string>
     <string name="result_section_players">플레이어별 정산내역</string>
     <string name="result_badge_transfer_guide">송금 안내</string>
     <string name="result_badge_net_gain">수익</string>
@@ -223,8 +215,29 @@
     <string name="result_no_transfer">정산 없음</string>
     <string name="result_transfer_receive_badge">받기</string>
     <string name="result_transfer_send_badge">보내기</string>
-    <string name="result_audit_title">정산 무결성 검증 (합계 검증)</string>
-    <string name="result_audit_total_gain">총 획득 합계</string>
-    <string name="result_audit_total_loss">총 지출 합계</string>
-    <string name="result_audit_balance_label">득실 합계 오차</string>
+    <string name="result_detail_title">라운드 상세보기</string>
+    <string name="result_player_count_short_format">총 %1$d명</string>
+    <string name="result_base_pot_badge">기준 판돈</string>
+    <string name="result_base_pot_no_go_format">기본 %1$d점 × %2$s</string>
+    <string name="result_base_pot_with_go_format">(기본 %1$d점 + %2$d고) × %3$s</string>
+    <string name="result_base_pot_with_go_mult_format">(기본 %1$d점 + %2$d고) × %3$s × %4$d배(%2$d고)</string>
+    <string name="result_three_fuck_banner">삼연 뻑 즉시 승리 (전원 지불)</string>
+    <string name="result_detail_section_players">플레이어별 상세 정산</string>
+    <string name="result_detail_badge_breakdown_transfer">계산 근거 + 송금</string>
+    <string name="result_breakdown_header">산출 내역</string>
+    <string name="result_breakdown_winner_subtitle">판돈 + 보너스 합산</string>
+    <string name="result_breakdown_round_win">판 승리</string>
+    <string name="result_breakdown_round_win_gobak_format">판 승리 (%1$s 독박 수령)</string>
+    <string name="result_breakdown_own_base_format">본인 판 점수 (%1$s)</string>
+    <string name="result_breakdown_own_base_mult_format">본인 판 점수 (%1$s × %2$d배)</string>
+    <string name="result_breakdown_gobak_cover_format">⚡ %1$s 고박 대납 (%2$d배)</string>
+    <string name="result_breakdown_gobak_exempt_format">판 점수 면제 (%1$s 고박 대납)</string>
+    <string name="result_breakdown_bonus_per_player_format">%1$s 보너스 (%2$s × %3$d명)</string>
+    <string name="result_breakdown_sell_pay_format">광팔기 지불 (%1$s)</string>
+    <string name="result_seller_badge_cards_format">광팔이 · %1$d장</string>
+    <string name="result_seller_formula_cards_format">%1$d장 × %2$s × %3$d명</string>
+    <string name="result_seller_receive_each_format">참여자 %2$d명에게 각 +%1$s 수령</string>
+    <string name="result_chip_bak_x2_format">%1$s ×2</string>
+    <string name="result_chip_gobak_solo">⚡ 고박 독박</string>
+    <string name="result_chip_go_format">%1$d고</string>
 </resources>

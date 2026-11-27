@@ -93,9 +93,6 @@
     <string name="next_step_1">次へ (1/3)</string>
     <string name="next_step_2">次へ (2/3)</string>
     <string name="next_step_3">次へ (3/3)</string>
-    <string name="player_with_condition">プレイヤー(条件)</string>
-    <string name="formula">計算式</string>
-    <string name="result">結果</string>
     <string name="calculation_result_title">計算結果</string>
 
     <!-- Additional Strings -->
@@ -124,10 +121,7 @@
     <string name="rule_sell">光売り</string>
     <string name="rule_script_essential">必須項目です。</string>
     <string name="rule_script_sell_four_players">4人プレイ時のみ適用されます。</string>
-    <string name="trace_selling_history">光売り内訳</string>
-    <string name="trace_loser_history">敗者内訳</string>
     <string name="trace_base_score">基本点数</string>
-    <string name="winner_with_name">勝者 (%1$s)</string>
     <string name="settlement_receive_format">%1$sから%2$s受け取る</string>
     <string name="settlement_pay_format">%1$sに%2$s支払う</string>
     <string name="person_unit">人</string>
@@ -211,10 +205,8 @@
     <string name="confirm_round_gobak_solo_desc_only">本人1倍 + 他敗者の基本点を全額立替</string>
     <string name="confirm_round_gobak_exempt_badge">免除 (0)</string>
     <string name="confirm_round_gobak_exempt_desc">%1$sの立替により基本点免除</string>
-    <string name="result_detail_subtitle">このラウンドのプレイヤー別収支と詳細な計算式です。</string>
     <string name="result_settlement_subtitle">全ラウンドを合算したプレイヤー別の最終収支と送金内訳です。</string>
     <string name="result_player_count_badge_format">計%1$d人精算</string>
-    <string name="result_zero_sum_verified">誤差0（合計一致）</string>
     <string name="result_section_players">プレイヤー別内訳</string>
     <string name="result_badge_transfer_guide">送金案内</string>
     <string name="result_badge_net_gain">プラス</string>
@@ -223,8 +215,29 @@
     <string name="result_no_transfer">精算なし</string>
     <string name="result_transfer_receive_badge">受取</string>
     <string name="result_transfer_send_badge">送金</string>
-    <string name="result_audit_title">精算整合性チェック（合計検証）</string>
-    <string name="result_audit_total_gain">獲得合計</string>
-    <string name="result_audit_total_loss">支出合計</string>
-    <string name="result_audit_balance_label">収支合計の誤差</string>
+    <string name="result_detail_title">ラウンド詳細</string>
+    <string name="result_player_count_short_format">計%1$d人</string>
+    <string name="result_base_pot_badge">基準レート</string>
+    <string name="result_base_pot_no_go_format">基本%1$d点 × %2$s</string>
+    <string name="result_base_pot_with_go_format">(基本%1$d点 + %2$dゴー) × %3$s</string>
+    <string name="result_base_pot_with_go_mult_format">(基本%1$d点 + %2$dゴー) × %3$s × %4$d倍(%2$dゴー)</string>
+    <string name="result_three_fuck_banner">三連プッ即勝利（全員支払い）</string>
+    <string name="result_detail_section_players">プレイヤー別詳細精算</string>
+    <string name="result_detail_badge_breakdown_transfer">計算根拠 + 送金</string>
+    <string name="result_breakdown_header">算出内訳</string>
+    <string name="result_breakdown_winner_subtitle">レート + ボーナス合算</string>
+    <string name="result_breakdown_round_win">ラウンド勝利</string>
+    <string name="result_breakdown_round_win_gobak_format">ラウンド勝利（%1$s 全額立替）</string>
+    <string name="result_breakdown_own_base_format">本人スコア（%1$s）</string>
+    <string name="result_breakdown_own_base_mult_format">本人スコア（%1$s × %2$d倍）</string>
+    <string name="result_breakdown_gobak_cover_format">⚡ %1$s ゴーバク立替（%2$d倍）</string>
+    <string name="result_breakdown_gobak_exempt_format">基本点免除（%1$s ゴーバク立替）</string>
+    <string name="result_breakdown_bonus_per_player_format">%1$s ボーナス（%2$s × %3$d人）</string>
+    <string name="result_breakdown_sell_pay_format">光売り支払い（%1$s）</string>
+    <string name="result_seller_badge_cards_format">光売り · %1$d枚</string>
+    <string name="result_seller_formula_cards_format">%1$d枚 × %2$s × %3$d人</string>
+    <string name="result_seller_receive_each_format">参加者%2$d人から各+%1$s受取</string>
+    <string name="result_chip_bak_x2_format">%1$s ×2</string>
+    <string name="result_chip_gobak_solo">⚡ ゴーバク全額立替</string>
+    <string name="result_chip_go_format">%1$dゴー</string>
 </resources>

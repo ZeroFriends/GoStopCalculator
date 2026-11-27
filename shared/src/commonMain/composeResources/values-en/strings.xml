@@ -93,9 +93,6 @@
     <string name="next_step_1">Next (1/3)</string>
     <string name="next_step_2">Next (2/3)</string>
     <string name="next_step_3">Next (3/3)</string>
-    <string name="player_with_condition">Player (Condition)</string>
-    <string name="formula">Formula</string>
-    <string name="result">Result</string>
     <string name="calculation_result_title">Calculation Result</string>
 
     <!-- Additional Strings -->
@@ -124,10 +121,7 @@
     <string name="rule_sell">Sell Brights</string>
     <string name="rule_script_essential">Required.</string>
     <string name="rule_script_sell_four_players">Applies to 4-player games only.</string>
-    <string name="trace_selling_history">Selling Breakdown</string>
-    <string name="trace_loser_history">Loser Breakdown</string>
     <string name="trace_base_score">Base Score</string>
-    <string name="winner_with_name">Winner (%1$s)</string>
     <string name="settlement_receive_format">Receive %2$s from %1$s</string>
     <string name="settlement_pay_format">Pay %2$s to %1$s</string>
     <string name="person_unit">p</string>
@@ -211,10 +205,8 @@
     <string name="confirm_round_gobak_solo_desc_only">Own x1 + covers other losers base loss</string>
     <string name="confirm_round_gobak_exempt_badge">Exempt (0)</string>
     <string name="confirm_round_gobak_exempt_desc">Base loss covered by %1$s</string>
-    <string name="result_detail_subtitle">Player gains, losses, and step-by-step formulas for this round.</string>
     <string name="result_settlement_subtitle">Cumulative net results and transfer breakdown across all rounds.</string>
     <string name="result_player_count_badge_format">%1$d Players</string>
-    <string name="result_zero_sum_verified">Zero-Sum Verified</string>
     <string name="result_section_players">Player Breakdown</string>
     <string name="result_badge_transfer_guide">Transfers</string>
     <string name="result_badge_net_gain">Gain</string>
@@ -223,8 +215,29 @@
     <string name="result_no_transfer">No transfer</string>
     <string name="result_transfer_receive_badge">Receive</string>
     <string name="result_transfer_send_badge">Send</string>
-    <string name="result_audit_title">Zero-Sum Balance Verification</string>
-    <string name="result_audit_total_gain">Total Gains</string>
-    <string name="result_audit_total_loss">Total Losses</string>
-    <string name="result_audit_balance_label">Net Discrepancy</string>
+    <string name="result_detail_title">Round Detail</string>
+    <string name="result_player_count_short_format">%1$d Players</string>
+    <string name="result_base_pot_badge">Base Stake</string>
+    <string name="result_base_pot_no_go_format">Base %1$dpts × %2$s</string>
+    <string name="result_base_pot_with_go_format">(Base %1$dpts + %2$dGo) × %3$s</string>
+    <string name="result_base_pot_with_go_mult_format">(Base %1$dpts + %2$dGo) × %3$s × %4$dx(%2$dGo)</string>
+    <string name="result_three_fuck_banner">Triple Ppeok Instant Win (All Players Pay)</string>
+    <string name="result_detail_section_players">Player Breakdown</string>
+    <string name="result_detail_badge_breakdown_transfer">Breakdown + Transfers</string>
+    <string name="result_breakdown_header">Breakdown</string>
+    <string name="result_breakdown_winner_subtitle">Stake + Bonus Total</string>
+    <string name="result_breakdown_round_win">Round Win</string>
+    <string name="result_breakdown_round_win_gobak_format">Round Win (%1$s Go-bak solo)</string>
+    <string name="result_breakdown_own_base_format">Own base (%1$s)</string>
+    <string name="result_breakdown_own_base_mult_format">Own base (%1$s × %2$dx)</string>
+    <string name="result_breakdown_gobak_cover_format">⚡ %1$s Go-bak cover (%2$dx)</string>
+    <string name="result_breakdown_gobak_exempt_format">Base score exempted (%1$s Go-bak)</string>
+    <string name="result_breakdown_bonus_per_player_format">%1$s bonus (%2$s × %3$d)</string>
+    <string name="result_breakdown_sell_pay_format">Sell Brights paid (%1$s)</string>
+    <string name="result_seller_badge_cards_format">Seller · %1$d</string>
+    <string name="result_seller_formula_cards_format">%1$d cards × %2$s × %3$d</string>
+    <string name="result_seller_receive_each_format">+%1$s each from %2$d players</string>
+    <string name="result_chip_bak_x2_format">%1$s ×2</string>
+    <string name="result_chip_gobak_solo">⚡ Go-bak Solo</string>
+    <string name="result_chip_go_format">%1$dGo</string>
 </resources>
