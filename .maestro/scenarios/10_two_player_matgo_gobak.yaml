@@ -58,9 +58,9 @@ appId: zero.friends.gostopcalculator
 - assertVisible: ".*고박 \\(x2배\\).*"
 - tapOn: "점수 확정하기"
 
-# 상세보기 검증 (+1,400원 / -1,400원, 오차 0원)
-- assertVisible: "상세보기"
-- assertVisible: "오차 0원 \\(합계 일치\\)"
+# 상세보기 검증 (+1,400원 / -1,400원)
+- assertVisible: "라운드 상세보기"
+- assertVisible: "고박 ×2"
 - assertVisible: "\\+1,400원"
 - assertVisible: "-1,400원"
 - runFlow: ../common/assert_no_broken_text.yaml

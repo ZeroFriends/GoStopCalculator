@@ -66,7 +66,7 @@ appId: zero.friends.gostopcalculator
 - tapOn: "점수 확정하기"
 
 # 11. 최종 라운드 결과 화면 (+1,400원 정산 확인) 및 보드 복귀
-- assertVisible: "상세보기"
+- assertVisible: "라운드 상세보기"
 - runFlow: ../common/assert_no_broken_text.yaml
 - assertVisible: "\\+1,400원"
 - tapOn: "Back"

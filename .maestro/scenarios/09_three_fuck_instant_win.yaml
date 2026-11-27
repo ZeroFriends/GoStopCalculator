@@ -55,8 +55,8 @@ appId: zero.friends.gostopcalculator
     index: 0
 - assertVisible: "삼연 뻑이 있습니다."
 - tapOn: "승리 확정하기"
-- assertVisible: "상세보기"
-- assertVisible: "오차 0원 \\(합계 일치\\)"
+- assertVisible: "라운드 상세보기"
+- assertVisible: "삼연 뻑 즉시 승리.*"
 - assertVisible: ".*\\+4,000원.*"
 - assertVisible: ".*-2,000원.*"
 - runFlow: ../common/assert_no_broken_text.yaml

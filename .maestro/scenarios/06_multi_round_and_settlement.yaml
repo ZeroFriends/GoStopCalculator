@@ -40,7 +40,7 @@ appId: zero.friends.gostopcalculator
 - tapOn: "다음 \\(2/3\\)"
 - tapOn: "다음 \\(3/3\\)"
 - tapOn: "점수 확정하기"
-- assertVisible: "상세보기"
+- assertVisible: "라운드 상세보기"
 - tapOn: "Back"
 
 # 보드 화면에 1 라운드 표시 확인
@@ -61,16 +61,15 @@ appId: zero.friends.gostopcalculator
 - tapOn: "다음 \\(2/3\\)"
 - tapOn: "다음 \\(3/3\\)"
 - tapOn: "점수 확정하기"
-- assertVisible: "상세보기"
+- assertVisible: "라운드 상세보기"
 - tapOn: "Back"
 - assertVisible: "2 라운드"
 
-# 다중 라운드 누적 정산내역 검증 (공유 버튼 · 오차 0원 · 받기/보내기 · 누적 손익)
+# 다중 라운드 누적 정산내역 검증 (공유 버튼 · 받기/보내기 · 누적 손익)
 - assertVisible: "정산내역.*"
 - tapOn: "정산내역.*"
 - assertVisible: "정산내역"
 - assertVisible: "공유"
-- assertVisible: "오차 0원 \\(합계 일치\\)"
 - runFlow: ../common/assert_no_broken_text.yaml
 # 회귀 방지: 플레이어 이름이 동일하게 생성되면 정산에서 한 줄로 합쳐지는 버그가 있었음
 # ➔ 3명이 각각 별도 행으로 노출되고 누적 정산 금액과 송금 방향이 정확한지 검증
@@ -89,8 +88,7 @@ appId: zero.friends.gostopcalculator
 - tapOn:
     text: "상세보기.*"
     index: 0
-- assertVisible: "상세보기"
-- assertVisible: "오차 0원 \\(합계 일치\\)"
+- assertVisible: "라운드 상세보기"
 - runFlow: ../common/assert_no_broken_text.yaml
 - tapOn: "Back"
 

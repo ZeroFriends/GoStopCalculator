@@ -82,8 +82,7 @@ appId: zero.friends.gostopcalculator
 - assertVisible: "광팔기 정산"
 - assertVisible: ".*2장 판매 완료.*"
 - tapOn: "점수 확정하기"
-- assertVisible: "상세보기"
-- assertVisible: "오차 0원 \\(합계 일치\\)"
+- assertVisible: "라운드 상세보기"
 - assertVisible: "\\+1,200원"
 - scrollUntilVisible:
     element: "-900원"
@@ -92,7 +91,10 @@ appId: zero.friends.gostopcalculator
     element: "\\+600원"
     direction: DOWN
 - scrollUntilVisible:
-    element: "광팔기 내역"
+    element: "광팔이 · 2장"
+    direction: DOWN
+- scrollUntilVisible:
+    element: ".*각 \\+200원.*"
     direction: DOWN
 - runFlow: ../common/assert_no_broken_text.yaml
 

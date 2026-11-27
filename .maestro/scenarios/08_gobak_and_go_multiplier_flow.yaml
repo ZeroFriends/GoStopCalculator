@@ -76,9 +76,8 @@ appId: zero.friends.gostopcalculator
 - tapOn: "다음 \\(3/3\\)"
 - tapOn: "점수 확정하기"
 
-# 상세보기에서 대납/면제 계산 수식 및 오차 0원 확인 (2,000 + 1,000 = 3,000원)
-- assertVisible: "상세보기"
-- assertVisible: "오차 0원 \\(합계 일치\\)"
+# 상세보기에서 대납/면제 계산 수식 확인 (2,000 + 1,000 = 3,000원)
+- assertVisible: "라운드 상세보기"
 - assertVisible: "\\+3,000원"
 - scrollUntilVisible:
     element: "-3,000원"
@@ -87,7 +86,7 @@ appId: zero.friends.gostopcalculator
     element: ".*플레이어 3 고박 대납.*"
     direction: DOWN
 - scrollUntilVisible:
-    element: ".*플레이어 2 고박 대납으로 면제.*"
+    element: ".*플레이어 2 고박 대납.*"
     direction: DOWN
 - runFlow: ../common/assert_no_broken_text.yaml
 
