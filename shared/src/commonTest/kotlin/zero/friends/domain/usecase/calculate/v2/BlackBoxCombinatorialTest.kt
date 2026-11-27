@@ -54,6 +54,8 @@ class BlackBoxCombinatorialTest {
         val sellCount: Int = 0,
         val isWinner: Boolean = false,
         val goCount: Int = 0,
+        val shakeCount: Int = 0,
+        val bombCount: Int = 0,
         val scoreOptions: List<ScoreOption> = emptyList(),
         val loserOptions: List<LoserOption> = emptyList()
     )
@@ -123,6 +125,8 @@ class BlackBoxCombinatorialTest {
                         else -> 0
                     },
                     go = if (spec.isWinner) spec.goCount else 0,
+                    shakeCount = if (spec.isWinner) spec.shakeCount else 0,
+                    bombCount = if (spec.isWinner) spec.bombCount else 0,
                     winnerOption = if (spec.isWinner) WinnerOption.Winner else null,
                     sellerOption = if (spec.isSeller) SellerOption.Seller else null,
                     scoreOption = spec.scoreOptions,
@@ -765,6 +769,111 @@ class BlackBoxCombinatorialTest {
                 }
             }
         }
+    }
+
+    @Test
+    fun `shake and bomb multipliers preserve invariants, metamorphic doubling, and equivalence across 2P-4P`() = runTest {
+        val rules = RuleSet(scorePerPoint = 100, fuckScore = 500, sellScore = 300)
+        val cases = buildList {
+            for (shake in 0..2) {
+                for (bomb in 0..2) {
+                    for (go in listOf(0, 3)) {
+                        // 2P 맞고
+                        add(
+                            RoundCase(
+                                tag = "2P-sh$shake-bo$bomb-go$go",
+                                rules = rules,
+                                players = listOf(
+                                    PlayerSpec("W", isWinner = true, goCount = go, shakeCount = shake, bombCount = bomb),
+                                    PlayerSpec("L1", loserOptions = listOf(LoserOption.PeaBak, LoserOption.GoBak)),
+                                )
+                            )
+                        )
+                        // 3P 고박 독박
+                        add(
+                            RoundCase(
+                                tag = "3P-GoBak-sh$shake-bo$bomb-go$go",
+                                rules = rules,
+                                players = listOf(
+                                    PlayerSpec("W", isWinner = true, goCount = go, shakeCount = shake, bombCount = bomb, scoreOptions = listOf(ScoreOption.FirstFuck)),
+                                    PlayerSpec("L1", loserOptions = listOf(LoserOption.LightBak, LoserOption.GoBak)),
+                                    PlayerSpec("L2", loserOptions = listOf(LoserOption.PeaBak)),
+                                )
+                            )
+                        )
+                        // 4P 1광팔이 + 고박
+                        add(
+                            RoundCase(
+                                tag = "4P-Sell-sh$shake-bo$bomb-go$go",
+                                rules = rules,
+                                players = listOf(
+                                    PlayerSpec("S", isSeller = true, sellCount = 2),
+                                    PlayerSpec("W", isWinner = true, goCount = go, shakeCount = shake, bombCount = bomb, scoreOptions = listOf(ScoreOption.FirstDdadak)),
+                                    PlayerSpec("L1", loserOptions = listOf(LoserOption.GoBak)),
+                                    PlayerSpec("L2", loserOptions = listOf(LoserOption.MongBak)),
+                                )
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+        runParallelBatches(cases, chunkSize = 36) { harness, case ->
+            val outcome = harness.evaluate(case)
+            assertBlackBoxInvariants(case, outcome)
+        }
+
+        // Metamorphic 법칙: 흔들기 +1회마다 기준 판돈 2배, shake=1 & bomb=1 == shake=2 & bomb=0
+        val harness = IsolatedHarness()
+        val baseOut = harness.evaluate(
+            RoundCase(
+                tag = "meta-base",
+                rules = RuleSet(scorePerPoint = 100, fuckScore = 0, sellScore = 0),
+                players = listOf(
+                    PlayerSpec("W", isWinner = true, goCount = 3, shakeCount = 0, bombCount = 0),
+                    PlayerSpec("L1", loserOptions = listOf(LoserOption.PeaBak)),
+                    PlayerSpec("L2"),
+                )
+            )
+        )
+        val shake1Out = harness.evaluate(
+            RoundCase(
+                tag = "meta-sh1",
+                rules = RuleSet(scorePerPoint = 100, fuckScore = 0, sellScore = 0),
+                players = listOf(
+                    PlayerSpec("W", isWinner = true, goCount = 3, shakeCount = 1, bombCount = 0),
+                    PlayerSpec("L1", loserOptions = listOf(LoserOption.PeaBak)),
+                    PlayerSpec("L2"),
+                )
+            )
+        )
+        val shake1Bomb1Out = harness.evaluate(
+            RoundCase(
+                tag = "meta-sh1-bo1",
+                rules = RuleSet(scorePerPoint = 100, fuckScore = 0, sellScore = 0),
+                players = listOf(
+                    PlayerSpec("W", isWinner = true, goCount = 3, shakeCount = 1, bombCount = 1),
+                    PlayerSpec("L1", loserOptions = listOf(LoserOption.PeaBak)),
+                    PlayerSpec("L2"),
+                )
+            )
+        )
+        val shake2Bomb0Out = harness.evaluate(
+            RoundCase(
+                tag = "meta-sh2-bo0",
+                rules = RuleSet(scorePerPoint = 100, fuckScore = 0, sellScore = 0),
+                players = listOf(
+                    PlayerSpec("W", isWinner = true, goCount = 3, shakeCount = 2, bombCount = 0),
+                    PlayerSpec("L1", loserOptions = listOf(LoserOption.PeaBak)),
+                    PlayerSpec("L2"),
+                )
+            )
+        )
+
+        assertEquals(baseOut.accountOf("W") * 2, shake1Out.accountOf("W"))
+        assertEquals(shake1Out.accountOf("W") * 2, shake1Bomb1Out.accountOf("W"))
+        assertEquals(shake1Bomb1Out.accountOf("W"), shake2Bomb0Out.accountOf("W"))
     }
 
     private fun validScoreOptionSets(): List<List<ScoreOption>> {

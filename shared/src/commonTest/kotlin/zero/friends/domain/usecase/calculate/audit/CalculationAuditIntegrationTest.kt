@@ -93,7 +93,13 @@ class CalculationAuditIntegrationTest {
         override suspend fun updateOption(id: Long, options: List<Option>) = Unit
         override suspend fun clearOption(id: Long, kClass: KClass<out Option>) = Unit
         override suspend fun updateAccount(gamer: Gamer, account: Int) = Unit
-        override suspend fun updateScore(gamer: Gamer, score: Int, go: Int) = Unit
+        override suspend fun updateScore(
+            gamer: Gamer,
+            score: Int,
+            go: Int,
+            shakeCount: Int,
+            bombCount: Int,
+        ) = Unit
         override suspend fun addAccount(gamer: Gamer, account: Int) = Unit
         override suspend fun findWinner(roundId: Long): Gamer = roundGamersFlow.value.first { it.winnerOption != null }
         override suspend fun findSeller(roundId: Long): Gamer? = roundGamersFlow.value.firstOrNull { it.sellerOption != null }

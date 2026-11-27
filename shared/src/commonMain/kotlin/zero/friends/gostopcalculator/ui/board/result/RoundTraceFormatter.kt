@@ -15,6 +15,8 @@ import zero.friends.domain.model.RoundTrace
 import zero.friends.domain.model.RoundTraceTerm
 import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.model.TraceTag
+import zero.friends.domain.usecase.calculate.calculateMaxPerLoser
+import zero.friends.domain.usecase.calculate.calculateShakeBombMultiplier
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.bak_unit
 import zero.friends.gostopcalculator.shared.generated.resources.base_label
@@ -22,6 +24,7 @@ import zero.friends.gostopcalculator.shared.generated.resources.go
 import zero.friends.gostopcalculator.shared.generated.resources.person_unit
 import zero.friends.gostopcalculator.shared.generated.resources.point
 import zero.friends.gostopcalculator.shared.generated.resources.result_base_pot_no_go_format
+import zero.friends.gostopcalculator.shared.generated.resources.result_base_pot_special_mult_format
 import zero.friends.gostopcalculator.shared.generated.resources.result_base_pot_with_go_format
 import zero.friends.gostopcalculator.shared.generated.resources.result_base_pot_with_go_mult_format
 import zero.friends.gostopcalculator.shared.generated.resources.result_breakdown_bonus_per_player_format
@@ -36,6 +39,7 @@ import zero.friends.gostopcalculator.shared.generated.resources.result_seller_ba
 import zero.friends.gostopcalculator.shared.generated.resources.result_seller_formula_cards_format
 import zero.friends.gostopcalculator.shared.generated.resources.result_seller_receive_each_format
 import zero.friends.gostopcalculator.shared.generated.resources.result_three_fuck_banner
+import zero.friends.gostopcalculator.shared.generated.resources.rule_bomb
 import zero.friends.gostopcalculator.shared.generated.resources.rule_first_ddadak
 import zero.friends.gostopcalculator.shared.generated.resources.rule_first_fuck
 import zero.friends.gostopcalculator.shared.generated.resources.rule_fuck
@@ -47,6 +51,7 @@ import zero.friends.gostopcalculator.shared.generated.resources.rule_pea_bak
 import zero.friends.gostopcalculator.shared.generated.resources.rule_second_fuck
 import zero.friends.gostopcalculator.shared.generated.resources.rule_sell
 import zero.friends.gostopcalculator.shared.generated.resources.rule_seller_role
+import zero.friends.gostopcalculator.shared.generated.resources.rule_shake
 import zero.friends.gostopcalculator.shared.generated.resources.rule_three_fuck
 import zero.friends.gostopcalculator.shared.generated.resources.rule_winner
 import zero.friends.gostopcalculator.shared.generated.resources.trace_base_score
@@ -100,6 +105,9 @@ fun rememberTraceTexts(): RoundTraceFormatter.TraceTexts {
     val sellerBadgeCardsFormat = stringResource(Res.string.result_seller_badge_cards_format)
     val sellerFormulaCardsFormat = stringResource(Res.string.result_seller_formula_cards_format)
     val sellerReceiveEachFormat = stringResource(Res.string.result_seller_receive_each_format)
+    val shakeName = stringResource(Res.string.rule_shake)
+    val bombName = stringResource(Res.string.rule_bomb)
+    val basePotSpecialMultFormat = stringResource(Res.string.result_base_pot_special_mult_format)
 
     return remember(
         baseScoreTitle, baseLabel, pointUnit, goUnit, bakUnit, wonUnit, personUnit,
@@ -110,7 +118,8 @@ fun rememberTraceTexts(): RoundTraceFormatter.TraceTexts {
         basePotWithGoMultFormat, breakdownRoundWin, breakdownRoundWinGoBakFormat,
         breakdownOwnBaseFormat, breakdownOwnBaseMultFormat, breakdownGoBakCoverFormat,
         breakdownGoBakExemptFormat, breakdownBonusPerPlayerFormat, breakdownSellPayFormat,
-        sellerBadgeCardsFormat, sellerFormulaCardsFormat, sellerReceiveEachFormat
+        sellerBadgeCardsFormat, sellerFormulaCardsFormat, sellerReceiveEachFormat,
+        shakeName, bombName, basePotSpecialMultFormat
     ) {
         RoundTraceFormatter.TraceTexts(
             baseScoreTitle = baseScoreTitle,
@@ -152,6 +161,9 @@ fun rememberTraceTexts(): RoundTraceFormatter.TraceTexts {
             sellerBadgeCardsFormat = sellerBadgeCardsFormat,
             sellerFormulaCardsFormat = sellerFormulaCardsFormat,
             sellerReceiveEachFormat = sellerReceiveEachFormat,
+            shakeName = shakeName,
+            bombName = bombName,
+            basePotSpecialMultFormat = basePotSpecialMultFormat,
         )
     }
 }
@@ -204,6 +216,9 @@ class RoundTraceFormatter {
         val sellerBadgeCardsFormat: String = "Seller · %1\$d",
         val sellerFormulaCardsFormat: String = "%1\$d cards × %2\$s × %3\$d",
         val sellerReceiveEachFormat: String = "+%1\$s each from %2\$d players",
+        val shakeName: String = "Shake",
+        val bombName: String = "Bomb",
+        val basePotSpecialMultFormat: String = "%1\$s × %2\$dx(%3\$s)",
     )
 
     data class RoundBasePotSummary(
@@ -363,15 +378,24 @@ class RoundTraceFormatter {
             append(baseScorePart.joinToString(" "))
             partCount++
         }
-        if (factors.goCount >= 3) {
-            if (length > 0) append("\n")
-            append("x 2${(factors.goCount - 2).toSuperscript()}(${factors.goCount}${texts.goUnit})")
-            partCount++
-        }
-        if (factors.bakCount > 0) {
-            if (length > 0) append("\n")
-            append("x 2${factors.bakCount.toSuperscript()}(${factors.bakCount}${texts.bakUnit})")
-            partCount++
+        if (totalScore > 0) {
+            if (factors.goCount >= 3) {
+                if (length > 0) append("\n")
+                append("x 2${(factors.goCount - 2).toSuperscript()}(${factors.goCount}${texts.goUnit})")
+                partCount++
+            }
+            val specialTotal = factors.shakeCount.coerceAtLeast(0) + factors.bombCount.coerceAtLeast(0)
+            if (specialTotal > 0) {
+                val specialLabel = buildSpecialLabel(factors.shakeCount, factors.bombCount, texts)
+                if (length > 0) append("\n")
+                append("x 2${specialTotal.toSuperscript()}($specialLabel)")
+                partCount++
+            }
+            if (factors.bakCount > 0) {
+                if (length > 0) append("\n")
+                append("x 2${factors.bakCount.toSuperscript()}(${factors.bakCount}${texts.bakUnit})")
+                partCount++
+            }
         }
         return partCount
     }
@@ -504,8 +528,9 @@ class RoundTraceFormatter {
 
         val perPointStr = "${formatNumber(refFactors.scorePerPoint)}${texts.wonUnit}"
         val goCount = refFactors.goCount
-        val basePot = calculateBasePotAmount(refFactors)
-        val formulaText = when {
+        val loserCount = resolveLoserCount(trace)
+        val basePot = calculateBasePotAmount(refFactors, loserCount)
+        val baseFormula = when {
             goCount <= 0 -> texts.basePotNoGoFormat
                 .replace("%1\$d", refFactors.baseScore.toString())
                 .replace("%2\$s", perPointStr)
@@ -522,11 +547,32 @@ class RoundTraceFormatter {
                     .replace("%1\$d", refFactors.baseScore.toString())
             }
         }
+        val specialMult = calculateShakeBombMultiplier(refFactors.shakeCount, refFactors.bombCount)
+        val formulaText = if (specialMult > 1) {
+            val specialLabel = buildSpecialLabel(refFactors.shakeCount, refFactors.bombCount, texts)
+            texts.basePotSpecialMultFormat
+                .replace("%3\$s", specialLabel)
+                .replace("%2\$d", specialMult.toString())
+                .replace("%1\$s", baseFormula)
+        } else {
+            baseFormula
+        }
         return RoundBasePotSummary(
             isThreeFuck = false,
             formulaText = formulaText,
             potAmountText = "${formatNumber(basePot)}${texts.wonUnit}",
         )
+    }
+
+    private fun buildSpecialLabel(
+        shakeCount: Int,
+        bombCount: Int,
+        texts: TraceTexts,
+    ): String {
+        return buildList {
+            if (shakeCount > 0) add(texts.shakeName)
+            if (bombCount > 0) add(texts.bombName)
+        }.joinToString("·")
     }
 
     fun toDetailSellerSummary(
@@ -691,6 +737,7 @@ class RoundTraceFormatter {
         val factors = term.factors
         val isGoBakExempt = TraceTag.GO_BAK_EXEMPT in term.traceTags || factors.goBakExemptedAmount != 0
         val isSoloGoBakPayer = factors.coveredLosers.isNotEmpty() || factors.goBakCoveredAmount != 0
+        val loserCount = resolveLoserCount(trace)
 
         when {
             isGoBakExempt -> {
@@ -706,7 +753,7 @@ class RoundTraceFormatter {
             }
             isSoloGoBakPayer -> {
                 if (factors.selfBaseLoss != 0) {
-                    rows.add(buildOwnBaseRow(factors.selfBaseLoss, factors, texts))
+                    rows.add(buildOwnBaseRow(factors.selfBaseLoss, factors, loserCount, texts))
                 }
                 if (factors.coveredLosers.isNotEmpty()) {
                     factors.coveredLosers.forEach { covered ->
@@ -737,7 +784,7 @@ class RoundTraceFormatter {
                 val auxSum = factors.fuckAmount.toLong() + factors.ddadakAmount.toLong() + factors.sellAmount.toLong()
                 val baseLoss = (term.amount.toLong() - auxSum).toInt()
                 if (baseLoss != 0) {
-                    rows.add(buildOwnBaseRow(baseLoss, factors, texts))
+                    rows.add(buildOwnBaseRow(baseLoss, factors, loserCount, texts))
                 }
             }
         }
@@ -787,10 +834,11 @@ class RoundTraceFormatter {
     private fun buildOwnBaseRow(
         amount: Int,
         factors: CalculationFactors,
+        loserCount: Int,
         texts: TraceTexts,
     ): DetailBreakdownRow {
         val mult = 1L shl factors.bakCount.coerceAtLeast(0).coerceAtMost(30)
-        val potPerLoser = calculateBasePotAmount(factors)
+        val potPerLoser = calculateBasePotAmount(factors, loserCount)
         val potValue = if (potPerLoser > 0L) potPerLoser else abs(amount.toLong()) / mult.coerceAtLeast(1L)
         val potStr = "${formatNumber(potValue)}${texts.wonUnit}"
         val label = if (mult > 1L) {
@@ -886,20 +934,36 @@ class RoundTraceFormatter {
         }
     }
 
-    private fun calculateBasePotAmount(factors: CalculationFactors): Long {
+    private fun resolveLoserCount(trace: RoundTrace?): Int {
+        if (trace == null) return 1
+        return trace.terms.count { !it.factors.isSeller && it.gamerId != trace.winnerId }
+            .coerceAtLeast(1)
+    }
+
+    private fun calculateBasePotAmount(
+        factors: CalculationFactors,
+        loserCount: Int = 1,
+    ): Long {
         val rawBase = (factors.baseScore.toLong() + factors.goCount).coerceAtLeast(0L)
         if (rawBase == 0L || factors.scorePerPoint <= 0) return 0L
+        val maxPerLoser = calculateMaxPerLoser(loserCount)
         val goMult = if (factors.goCount >= 3) 1L shl (factors.goCount - 2).coerceAtMost(30) else 1L
+        val specialMult = calculateShakeBombMultiplier(factors.shakeCount, factors.bombCount).toLong()
         val scorePts = factors.scorePerPoint.toLong()
-        val withUnit = if (rawBase > Int.MAX_VALUE.toLong() / scorePts) {
-            Int.MAX_VALUE.toLong()
+        val withUnit = if (rawBase > maxPerLoser / scorePts) {
+            maxPerLoser
         } else {
             rawBase * scorePts
         }
-        return if (withUnit > Int.MAX_VALUE.toLong() / goMult) {
-            Int.MAX_VALUE.toLong()
+        val withGo = if (withUnit > maxPerLoser / goMult) {
+            maxPerLoser
         } else {
             withUnit * goMult
+        }
+        return if (withGo > maxPerLoser / specialMult) {
+            maxPerLoser
+        } else {
+            withGo * specialMult
         }
     }
 

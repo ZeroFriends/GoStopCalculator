@@ -9,7 +9,7 @@
 - **프레임워크**: [Maestro](https://maestro.mobile.dev) `v2.12.1` 설치 완료
 - **MCP 연동**: `~/.gemini/config/mcp_config.json`에 `maestro mcp` 등록 완료
 - **디렉토리 구조**:
-  - [`.maestro/scenarios/`](file:///Users/kakao/sideproject/app/GoStopCalculator/.maestro/scenarios): 화면별/기능별 크로스 플랫폼(Android/iOS) E2E 시나리오 YAML 파일 (총 10종)
+  - [`.maestro/scenarios/`](file:///Users/kakao/sideproject/app/GoStopCalculator/.maestro/scenarios): 화면별/기능별 크로스 플랫폼(Android/iOS) E2E 시나리오 YAML 파일 (총 11종)
   - [`.maestro/common/assert_no_broken_text.yaml`](file:///Users/kakao/sideproject/app/GoStopCalculator/.maestro/common/assert_no_broken_text.yaml): 각 주요 화면 진입 시 미치환 포맷(`%d`, `%1$s`), `null`, `undefined`, `NaN`, 리터럴 `\n` 노출 차단 가드
   - [`.maestro/run_parallel_tests.sh`](file:///Users/kakao/sideproject/app/GoStopCalculator/.maestro/run_parallel_tests.sh): 부팅된 Android 에뮬레이터 및 iOS 시뮬레이터를 모두 감지해 `appId`를 자동 매핑하고 워커별로 병렬 분산 실행하는 스크립트 (`INCLUDE_PHYSICAL=1` 설정 시 USB 실기기 포함)
   - [`.maestro/i18n_audit.py`](file:///Users/kakao/sideproject/app/GoStopCalculator/.maestro/i18n_audit.py): `strings.xml`(ko/en/ja/default) 누락·포맷·미번역 및 UI 코드 내 하드코딩 한글 정적 감사
@@ -18,7 +18,7 @@
 
 ---
 
-## 2. 전체 시나리오 매트릭스 (총 10종 + 정적 다국어 감사)
+## 2. 전체 시나리오 매트릭스 (총 11종 + 정적 다국어 감사)
 
 | 번호 | 시나리오 파일 | 검증 내용 |
 | :--- | :--- | :--- |
@@ -32,6 +32,7 @@
 | **08** | `08_gobak_and_go_multiplier_flow.yaml` | **3인 고박 독박·면제 + 3고 배수**: 독박 배너·타 패자 민트 `고박 면제` 뱃지, 확인 모달 `'다시 확인'` 복귀 및 대납/면제 상세 수식 검증 |
 | **09** | `09_three_fuck_instant_win.yaml` | **삼연 뻑 즉시 승리 모달**: `'다시 확인'` 시 체크 해제 복귀, `'승리 확정하기'` 시 승자/패자 단계 스킵 및 전원 4배 정산 검증 |
 | **10** | `10_two_player_matgo_gobak.yaml` | **2인 맞고 고박**: 2인전 고박 단독 `x2배` 적용(독박/면제 배너 미노출) 및 결과 정산 검증 |
+| **11** | `11_shake_and_bomb_multiplier.yaml` | **승자 흔들기·폭탄 배수**: 승자 카드 탭 칩 토글(`총 ×4배`), 확인 모달(`+20점`) 및 상세보기(`2,000원`·칩·송금) E2E 검증 |
 | **i18n** | `i18n_audit.py` | **정적 리소스 감사**: `strings.xml`(ko/en/ja/default) 키 누락·포맷 지정자·하드코딩 한글 전수 검증 |
 
 ---
@@ -65,11 +66,11 @@ xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -configuration Debug 
 xcrun simctl install "$SIM_UDID" build/ios/Build/Products/Debug-iphonesimulator/iosApp.app
 ```
 
-### ③ 10개 시나리오 병렬 분산 실행 🚀
+### ③ 11개 시나리오 병렬 분산 실행 🚀
 ```bash
 ./.maestro/run_parallel_tests.sh
 ```
-- 부팅된 Android 에뮬레이터(`emulator-5554`, `emulator-5556`)와 iOS 시뮬레이터에 10개 시나리오가 자동 샤딩되어 **동시에 병렬 실행**됩니다.
+- 부팅된 Android 에뮬레이터(`emulator-5554`, `emulator-5556`)와 iOS 시뮬레이터에 11개 시나리오가 자동 샤딩되어 **동시에 병렬 실행**됩니다.
 - 각 기기별 로그는 `.maestro/logs/`에 저장되며, 터미널에 요약 결과가 출력됩니다.
 
 ---
@@ -79,7 +80,7 @@ xcrun simctl install "$SIM_UDID" build/ios/Build/Products/Debug-iphonesimulator/
 `main` 브랜치 푸시·PR 및 수동 실행(`workflow_dispatch`) 시 아래 3개 Job이 자동으로 실행됩니다.
 
 1. **`i18n-static-audit`** (`ubuntu-latest`): `python3 .maestro/i18n_audit.py` 정적 감사 (약 10초)
-2. **`android-maestro-e2e`** (`ubuntu-latest` + KVM): Android API 34 (`pixel_6`, `x86_64`) 에뮬레이터에서 한국어(`ko-KR`) 시나리오 10종 실행
-3. **`ios-maestro-e2e`** (`macos-latest` Apple Silicon): `iosSimulatorArm64` KMP 프레임워크 빌드 후 한국어(`ko-KR`) iPhone 시뮬레이터에서 10개 시나리오 실행 (`run_ios` 옵션으로 수동 제외 가능)
+2. **`android-maestro-e2e`** (`ubuntu-latest` + KVM): Android API 34 (`pixel_6`, `x86_64`) 에뮬레이터에서 한국어(`ko-KR`) 시나리오 11종 실행
+3. **`ios-maestro-e2e`** (`macos-latest` Apple Silicon): `iosSimulatorArm64` KMP 프레임워크 빌드 후 한국어(`ko-KR`) iPhone 시뮬레이터에서 11개 시나리오 실행 (`run_ios` 옵션으로 수동 제외 가능)
 
 - 실행 결과 로그 및 실패 스크린샷은 `maestro-android-results` / `maestro-ios-results` GitHub Artifact로 14일간 보관됩니다.

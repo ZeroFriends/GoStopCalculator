@@ -63,13 +63,17 @@ class CalculateLoserScoreUseCase @Inject constructor(
         }
         val accounts = mutableMapOf<Long, Int>()
         
-        // 승자 점수 (고 규칙 반영)
-        val winnerScore = calculateGoScore(winner.score, winner.go)
+        // 승자 점수 (고 + 흔들기·폭탄 규칙 반영)
+        val winnerScore = calculateWinnerScore(
+            baseScore = winner.score,
+            goCount = winner.go,
+            shakeCount = winner.shakeCount,
+            bombCount = winner.bombCount,
+        )
         val loserCount = losers.size
-        // 동일 라운드의 광팔기·뻑·첫따닥(Ui 상한 기준 최대 3,600만~6,000만) 가감 시 Int 오버플로우로
-        // Zero-Sum이 깨지지 않도록 판돈 상한에 보조 옵션 여유분(MAX_AUXILIARY_RESERVE)을 확보한다.
-        val maxTotalPayout = (Int.MAX_VALUE.toLong() - MAX_AUXILIARY_RESERVE).coerceAtLeast(1L)
-        val maxPerLoser = maxTotalPayout / loserCount.coerceAtLeast(1)
+        // 동일 라운드의 광팔기·뻑·첫따닥 가감 시 Int 오버플로우로 Zero-Sum이 깨지지 않도록
+        // 공통 상한(calculateMaxPerLoser)을 적용한다.
+        val maxPerLoser = calculateMaxPerLoser(loserCount)
 
         val loserAmounts = losers.associate { loser ->
             loser.id to calculateLoserAmount(
@@ -134,9 +138,5 @@ class CalculateLoserScoreUseCase @Inject constructor(
             baseAmount shl shift
         }
         return total.coerceIn(0L, maxAmount).toInt()
-    }
-
-    companion object {
-        private const val MAX_AUXILIARY_RESERVE = 60_000_000L
     }
 }

@@ -10,6 +10,8 @@ data class Gamer(
     val gameId: Long = 0,
     val score: Int = 0,
     val go: Int = 0,
+    val shakeCount: Int = 0,
+    val bombCount: Int = 0,
     val account: Int = 0,
     val winnerOption: WinnerOption? = null,
     val sellerOption: SellerOption? = null,

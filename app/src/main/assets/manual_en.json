@@ -23,7 +23,7 @@
       },
       {
         "header": "Shake & Bomb",
-        "body": "Holding 3 cards of the same month allows you to reveal them (Shake) or place all 3 on a matching floor card (Bomb). Winning after Shake or Bomb doubles (x2) your score."
+        "body": "Holding 3 cards of the same month allows you to reveal them (Shake) or place all 3 on a matching floor card (Bomb). Winning after Shake or Bomb doubles your score cumulatively for each occurrence (×2, ×4, ×8...)."
       },
       {
         "header": "Counter Go",

@@ -40,6 +40,8 @@ data class CalculationFactors(
     val goBakPayerName: String = "",
     val isSoloGoBakMode: Boolean = false,
     val coveredLosers: List<CoveredLoserDetail> = emptyList(),
+    val shakeCount: Int = 0,
+    val bombCount: Int = 0,
 )
 
 @Serializable

@@ -240,4 +240,14 @@
     <string name="result_chip_bak_x2_format">%1$s ×2</string>
     <string name="result_chip_gobak_solo">⚡ ゴーバク全額立替</string>
     <string name="result_chip_go_format">%1$dゴー</string>
+    <string name="rule_shake">揺らし</string>
+    <string name="rule_bomb">爆弾</string>
+    <string name="winner_special_multiplier_label">特殊倍率</string>
+    <string name="winner_total_multiplier_format">計 ×%1$d倍</string>
+    <string name="winner_multiplier_count_format">%1$s %2$d回 ×%3$d</string>
+    <string name="confirm_round_shake_bomb_label">揺らし・爆弾</string>
+    <string name="confirm_round_special_item_format">%1$s %2$d回</string>
+    <string name="confirm_round_special_total_format">%1$s (×%2$d倍)</string>
+    <string name="result_base_pot_special_mult_format">%1$s × %2$d倍(%3$s)</string>
+    <string name="result_chip_special_x2_format">%1$s ×2</string>
 </resources>

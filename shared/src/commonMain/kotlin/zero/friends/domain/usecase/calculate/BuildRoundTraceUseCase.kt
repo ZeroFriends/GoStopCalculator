@@ -126,8 +126,10 @@ class BuildRoundTraceUseCase @Inject constructor(
             }
         }
 
-        val baseScoreRaw = winner?.score ?: 0
-        val baseGo = winner?.go ?: 0
+        val baseScoreRaw = declaredWinner?.score ?: 0
+        val baseGo = declaredWinner?.go ?: 0
+        val baseShake = declaredWinner?.shakeCount?.coerceAtLeast(0) ?: 0
+        val baseBomb = declaredWinner?.bombCount?.coerceAtLeast(0) ?: 0
 
         val allTerms = gamers.mapNotNull { gamer ->
             val isWinner = winner?.id == gamer.id
@@ -198,6 +200,8 @@ class BuildRoundTraceUseCase @Inject constructor(
                 goBakPayerName = if (isGoBakExempted) goBakGamer?.name.orEmpty() else "",
                 isSoloGoBakMode = isSoloGoBakEligible && goBakGamer != null,
                 coveredLosers = coveredLoserDetails,
+                shakeCount = if (isSeller) 0 else baseShake,
+                bombCount = if (isSeller) 0 else baseBomb,
             )
 
             RoundTraceTerm(

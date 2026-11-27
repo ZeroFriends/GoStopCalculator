@@ -97,9 +97,15 @@ class GamerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateScore(gamer: Gamer, score: Int, go: Int) {
+    override suspend fun updateScore(
+        gamer: Gamer,
+        score: Int,
+        go: Int,
+        shakeCount: Int,
+        bombCount: Int,
+    ) {
         withContext(Dispatchers.Default) {
-            gamerDao.updateScore(gamer.id, score, go)
+            gamerDao.updateScore(gamer.id, score, go, shakeCount, bombCount)
         }
     }
 

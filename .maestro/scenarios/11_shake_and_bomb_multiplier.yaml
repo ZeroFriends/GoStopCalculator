@@ -1,0 +1,86 @@
+appId: zero.friends.gostopcalculator
+---
+# 시나리오: 승자 흔들기·폭탄 배수 (제안 1 탭 칩형) 입력 → 확인 모달 → 상세보기 정산 → 보드 반영 E2E 검증
+- launchApp:
+    clearState: true
+    stopApp: true
+
+# 1. 스플래시 종료 대기 및 새 게임 시작
+- runFlow: ../common/wait_for_history.yaml
+- tapOn: "시작하기"
+
+# 2. 플레이어 3명 추가
+- assertVisible: "플레이어 설정.*"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "다음"
+
+# 3. 게임 규칙 설정 (점당 100원)
+- assertVisible: "게임규칙.*"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn:
+    id: "rule_score_input_0"
+- inputText: "100"
+- tapOn: "게임규칙.*"
+- tapOn: "완료"
+
+# 4. 게임 보드 진입 및 라운드 준비 (3명 선택)
+- assertVisible: "진행내역.*"
+- tapOn: "게임시작"
+- assertVisible: "플레이어 리스트"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn: "플레이어 1"
+- tapOn: "플레이어 2"
+- tapOn: "플레이어 3"
+- tapOn: "완료"
+
+# 5. 옵션 점수(Phase 1) 스킵
+- assertVisible: "점수기록"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn: "다음 \\(1/3\\)"
+
+# 6. 승자 점수기록 (Phase 2): 플레이어 1에게 5점 + 흔들기 1회(×2) + 폭탄 1회(×2) -> 총 ×4배
+- assertVisible: "승자 점수기록"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn:
+    id: "winner_point_input_0"
+- inputText: "5"
+- tapOn: "승자 점수기록"
+- tapOn:
+    id: "winner_shake_chip_0"
+- tapOn:
+    id: "winner_bomb_chip_0"
+- assertVisible: "흔들기 ×2"
+- assertVisible: "폭탄 ×2"
+- assertVisible: "총 ×4배"
+- tapOn: "다음 \\(2/3\\)"
+
+# 7. 패자 점수기록 (Phase 3) ➔ 정산 확인 모달
+- assertVisible: "패자 점수기록"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn: "다음 \\(3/3\\)"
+
+# 8. 계산 확인 모달에서 흔들기·폭탄 배수 및 최종 점수(+20점) 검증 후 확정
+- assertVisible: "라운드 점수를 확정할까요\\?"
+- assertVisible: "\\+20점"
+- assertVisible: "흔들기 · 폭탄"
+- assertVisible: "흔들기 1회 · 폭탄 1회 \\(×4배\\)"
+- tapOn: "점수 확정하기"
+
+# 9. 라운드 상세보기에서 기준 판돈(2,000원) · 칩 · 승패 금액(+4,000원 / -2,000원) 검증 후 보드 복귀
+- assertVisible: "라운드 상세보기"
+- runFlow: ../common/assert_no_broken_text.yaml
+- assertVisible: "2,000원"
+- assertVisible: "흔들기 ×2"
+- assertVisible: "폭탄 ×2"
+- assertVisible: "\\+4,000원"
+- scrollUntilVisible:
+    element: "-2,000원"
+    direction: DOWN
+- tapOn: "Back"
+
+# 10. 보드 화면 1라운드 반영 검증
+- assertVisible: "진행내역.*"
+- assertVisible: "1 라운드"
+- runFlow: ../common/assert_no_broken_text.yaml

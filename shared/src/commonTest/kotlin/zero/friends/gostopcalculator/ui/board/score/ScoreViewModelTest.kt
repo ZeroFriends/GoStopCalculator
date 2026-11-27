@@ -348,4 +348,97 @@ class ScoreViewModelTest {
 
         assertTrue(gamerRepository.getRoundGamers(roundId).isEmpty())
     }
+
+    @Test
+    fun `흔들기·폭탄 배수는 범위 클램프·단계 복귀 보존·승자 교체 초기화·DB 저장이 정확히 동작한다`() = runTest {
+        val gameId = 1L
+        val roundId = 8L
+        val gamers = (1L..3L).map {
+            Gamer(id = it, playerId = it, gameId = gameId, roundId = roundId, name = "플레이어 $it")
+        }
+        gamerRepository.setRoundGamers(roundId, gamers)
+        ruleRepository.setRules(gameId, listOf(Rule(name = Const.Rule.Score, score = 100)))
+
+        val vm = createViewModel(gameId, roundId)
+        vm.onNextPhase() // Winner
+
+        // 승자 1에게 점수 + 흔들기(상한 초과 -> 3 클램프) + 폭탄(1) 적용
+        val p1 = vm.uiState().value.playerResults[0]
+        vm.updateWinner(p1, point = 5, go = 0, shakeCount = 9, bombCount = 1)
+        assertEquals(3, vm.uiState().value.winner?.shakeCount)
+        assertEquals(1, vm.uiState().value.winner?.bombCount)
+
+        // Loser 진입 후 다시 뒤로가기 -> 승자 흔들기/폭탄 보존
+        vm.onNextPhase()
+        assertEquals(Loser, vm.uiState().value.phase)
+        vm.onBackPhase()
+        assertEquals(Winner(true), vm.uiState().value.phase)
+        assertEquals(3, vm.uiState().value.winner?.shakeCount)
+        assertEquals(1, vm.uiState().value.winner?.bombCount)
+
+        // 다른 승자(플레이어 2)로 교체 시 플레이어 1 배수 초기화 및 새 승자 배수 반영
+        val p2 = vm.uiState().value.playerResults[1]
+        vm.updateWinner(p2, point = 4, go = 0, shakeCount = 1, bombCount = 1)
+        assertEquals(0, vm.uiState().value.playerResults[0].shakeCount)
+        assertEquals(0, vm.uiState().value.playerResults[0].bombCount)
+        assertEquals(1, vm.uiState().value.winner?.shakeCount)
+        assertEquals(1, vm.uiState().value.winner?.bombCount)
+
+        // 정산 확정 -> DB 저장 및 배수 정산 검증 (4점 * 100 * 4 = 1,600원/패자)
+        vm.onNextPhase() // Loser
+        vm.calculateGameResult()
+        val settled = gamerRepository.getRoundGamers(roundId)
+        val settledP2 = settled.first { it.id == 2L }
+        assertEquals(1, settledP2.shakeCount)
+        assertEquals(1, settledP2.bombCount)
+        assertEquals(3200, settledP2.account)
+        assertEquals(-1600, settled.first { it.id == 1L }.account)
+        assertEquals(-1600, settled.first { it.id == 3L }.account)
+    }
+
+    @Test
+    fun `비승자 0입력은 기존 승자 배수를 지우지 않으며, 승자 해제·Scoring 복귀·연속 흔들기 폭탄 탭을 정확히 처리한다`() = runTest {
+        val gameId = 1L
+        val roundId = 9L
+        val gamers = (1L..4L).map {
+            Gamer(id = it, playerId = it, gameId = gameId, roundId = roundId, name = "플레이어 $it")
+        }
+        gamerRepository.setRoundGamers(roundId, gamers)
+        ruleRepository.setRules(gameId, listOf(Rule(name = Const.Rule.Score, score = 100)))
+
+        val vm = createViewModel(gameId, roundId)
+        vm.updateSeller(gamers.last(), 1L)
+        vm.onNextPhase() // Selling -> Scoring
+        vm.onNextPhase() // Scoring -> Winner
+
+        // 승자(플레이어 1): +5점 ➔ 흔들기 2회 ➔ 폭탄 1회 원자적 연속 호출
+        vm.updateWinnerPoint(1L, 5L)
+        vm.cycleWinnerShake(1L)
+        vm.cycleWinnerShake(1L)
+        vm.cycleWinnerBomb(1L)
+        assertEquals(2, vm.uiState().value.winner?.shakeCount)
+        assertEquals(1, vm.uiState().value.winner?.bombCount)
+
+        // 비승자(플레이어 2) 필드에서 0 입력이 발생해도 기존 승자(플레이어 1) 상태 보존
+        vm.updateWinnerPoint(2L, 0L)
+        assertEquals(1L, vm.uiState().value.winner?.id)
+        assertEquals(2, vm.uiState().value.winner?.shakeCount)
+        assertEquals(1, vm.uiState().value.winner?.bombCount)
+
+        // 승자 본인을 0점·0고로 내리면 승자 및 흔들기/폭탄 모두 초기화
+        vm.updateWinnerPoint(1L, 0L)
+        assertNull(vm.uiState().value.winner)
+        assertEquals(0, vm.uiState().value.playerResults[0].shakeCount)
+        assertEquals(0, vm.uiState().value.playerResults[0].bombCount)
+
+        // 다시 승자 설정 후 Winner -> Scoring 뒤로가기 시 배수 초기화
+        vm.adjustWinnerPoint(1L, 3L)
+        vm.cycleWinnerShake(1L)
+        assertEquals(1, vm.uiState().value.winner?.shakeCount)
+        vm.onBackPhase()
+        assertEquals(Scoring, vm.uiState().value.phase)
+        assertNull(vm.uiState().value.winner)
+        assertEquals(0, vm.uiState().value.playerResults[0].shakeCount)
+        assertEquals(0, vm.uiState().value.playerResults[0].bombCount)
+    }
 }

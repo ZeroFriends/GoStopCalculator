@@ -178,8 +178,20 @@ fun ScoreScreen(
                 onNext = { if (!isNavigating) scoreViewModel.onNextPhase(phase) },
                 onBack = { if (!isNavigating) scoreViewModel.onBackPhase() },
                 onExit = handleExit,
-                onUpdateWinner = { gamer, point, go ->
-                    if (!isNavigating) scoreViewModel.updateWinner(gamer, point, go)
+                onAdjustWinnerPoint = { gamerId, delta ->
+                    if (!isNavigating) scoreViewModel.adjustWinnerPoint(gamerId, delta)
+                },
+                onUpdateWinnerPoint = { gamerId, point ->
+                    if (!isNavigating) scoreViewModel.updateWinnerPoint(gamerId, point)
+                },
+                onUpdateWinnerGo = { gamerId, go ->
+                    if (!isNavigating) scoreViewModel.updateWinnerGo(gamerId, go)
+                },
+                onCycleWinnerShake = { gamerId ->
+                    if (!isNavigating) scoreViewModel.cycleWinnerShake(gamerId)
+                },
+                onCycleWinnerBomb = { gamerId ->
+                    if (!isNavigating) scoreViewModel.cycleWinnerBomb(gamerId)
                 },
                 onShowManual = openManualAction
             )
