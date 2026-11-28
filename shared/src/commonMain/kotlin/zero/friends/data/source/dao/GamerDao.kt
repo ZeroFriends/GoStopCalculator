@@ -47,8 +47,8 @@ interface GamerDao : BaseDao<GamerEntity> {
     @Query("SELECT * FROM GamerEntity WHERE sellerOption NOT NULL and roundId = :roundId")
     suspend fun findSeller(roundId: Long): GamerEntity?
 
-    @Query("UPDATE GamerEntity SET score = :score, go = :go WHERE id = :gamerId")
-    suspend fun updateScore(gamerId: Long, score: Int, go: Int)
+    @Query("UPDATE GamerEntity SET score = :score, go = :go, shakeCount = :shakeCount, bombCount = :bombCount WHERE id = :gamerId")
+    suspend fun updateScore(gamerId: Long, score: Int, go: Int, shakeCount: Int = 0, bombCount: Int = 0)
 
     @Query("SELECT * FROM GamerEntity WHERE gameId = :gameId")
     suspend fun getGamers(gameId: Long): List<GamerEntity>

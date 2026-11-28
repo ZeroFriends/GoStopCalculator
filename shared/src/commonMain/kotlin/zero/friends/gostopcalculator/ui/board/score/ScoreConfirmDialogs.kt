@@ -44,7 +44,8 @@ import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Gamer
 import zero.friends.domain.model.LoserOption
 import zero.friends.domain.usecase.calculate.calculateGoMultiplier
-import zero.friends.domain.usecase.calculate.calculateGoScore
+import zero.friends.domain.usecase.calculate.calculateShakeBombMultiplier
+import zero.friends.domain.usecase.calculate.calculateWinnerScore
 import zero.friends.domain.usecase.calculate.isGoBakSoloCoverageMode
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.confirm_none
@@ -61,7 +62,10 @@ import zero.friends.gostopcalculator.shared.generated.resources.confirm_round_go
 import zero.friends.gostopcalculator.shared.generated.resources.confirm_round_penalty_label
 import zero.friends.gostopcalculator.shared.generated.resources.confirm_round_recheck
 import zero.friends.gostopcalculator.shared.generated.resources.confirm_round_selling_label
+import zero.friends.gostopcalculator.shared.generated.resources.confirm_round_shake_bomb_label
+import zero.friends.gostopcalculator.shared.generated.resources.confirm_round_special_item_format
 import zero.friends.gostopcalculator.shared.generated.resources.confirm_round_special_label
+import zero.friends.gostopcalculator.shared.generated.resources.confirm_round_special_total_format
 import zero.friends.gostopcalculator.shared.generated.resources.confirm_round_submit
 import zero.friends.gostopcalculator.shared.generated.resources.confirm_round_subtitle
 import zero.friends.gostopcalculator.shared.generated.resources.confirm_round_title
@@ -71,6 +75,8 @@ import zero.friends.gostopcalculator.shared.generated.resources.ic_hero_three_fu
 import zero.friends.gostopcalculator.shared.generated.resources.loser_gobak_exempt_with_bak_format
 import zero.friends.gostopcalculator.shared.generated.resources.loser_penalty_multiplier_format
 import zero.friends.gostopcalculator.shared.generated.resources.point
+import zero.friends.gostopcalculator.shared.generated.resources.rule_bomb
+import zero.friends.gostopcalculator.shared.generated.resources.rule_shake
 import zero.friends.gostopcalculator.shared.generated.resources.rule_three_fuck
 import zero.friends.gostopcalculator.shared.generated.resources.rule_winner
 import zero.friends.gostopcalculator.shared.generated.resources.selling_cards_sold_format
@@ -109,7 +115,10 @@ fun RoundConfirmDialog(
     val pointUnit = stringResource(Res.string.point)
     val baseScore = winner?.score ?: 0
     val goCount = winner?.go ?: 0
-    val totalScore = calculateGoScore(baseScore, goCount)
+    val shakeCount = winner?.shakeCount ?: 0
+    val bombCount = winner?.bombCount ?: 0
+    val totalScore = calculateWinnerScore(baseScore, goCount, shakeCount, bombCount)
+    val shakeBombMult = calculateShakeBombMultiplier(shakeCount, bombCount)
 
     val goDisplay = when {
         goCount <= 0 -> stringResource(Res.string.confirm_round_go_none_format, 0)
@@ -201,6 +210,60 @@ fun RoundConfirmDialog(
                     label = stringResource(Res.string.confirm_round_go_label),
                     value = goDisplay
                 )
+                if (shakeCount > 0 || bombCount > 0) {
+                    val activeItems = buildList {
+                        if (shakeCount > 0) {
+                            add(
+                                stringResource(
+                                    Res.string.confirm_round_special_item_format,
+                                    stringResource(Res.string.rule_shake),
+                                    shakeCount,
+                                )
+                            )
+                        }
+                        if (bombCount > 0) {
+                            add(
+                                stringResource(
+                                    Res.string.confirm_round_special_item_format,
+                                    stringResource(Res.string.rule_bomb),
+                                    bombCount,
+                                )
+                            )
+                        }
+                    }.joinToString(" · ")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.confirm_round_shake_bomb_label),
+                            fontSize = 12.5.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = ScoreMutedText,
+                            modifier = Modifier.padding(top = 2.dp, end = 8.dp)
+                        )
+                        FlowRow(
+                            modifier = Modifier.weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            StatusPillBadge(
+                                text = stringResource(
+                                    Res.string.confirm_round_special_total_format,
+                                    activeItems,
+                                    shakeBombMult,
+                                ),
+                                backgroundColor = ScoreSoftPinkBg,
+                                textColor = ScorePrimaryRed,
+                                fontSize = 11.5.sp,
+                                horizontalPadding = 8.dp,
+                                verticalPadding = 3.dp,
+                                maxLines = 2
+                            )
+                        }
+                    }
+                }
 
                 if (goBakSoloPayer != null) {
                     GoBakSoloPayerSummaryCard(

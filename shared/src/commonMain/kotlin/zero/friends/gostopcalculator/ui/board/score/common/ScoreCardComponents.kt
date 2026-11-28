@@ -39,6 +39,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -156,8 +159,10 @@ fun ScorePlayerCard(
     borderColor: Color = if (isHighlighted) ScorePrimaryRed else ScoreCardBorder,
     borderWidth: Dp = if (isHighlighted) 1.5.dp else 1.dp,
     elevation: Dp = if (isHighlighted) 4.dp else 2.dp,
+    enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
     clickRole: Role = Role.Button,
+    toggleableState: ToggleableState? = null,
     content: @Composable () -> Unit,
 ) {
     val shape = RoundedCornerShape(16.dp)
@@ -173,7 +178,10 @@ fun ScorePlayerCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(shape)
-                    .clickable(role = clickRole, onClick = onClick)
+                    .clickable(enabled = enabled, role = clickRole, onClick = onClick)
+                    .semantics {
+                        toggleableState?.let { this.toggleableState = it }
+                    }
             ) {
                 content()
             }
@@ -255,7 +263,7 @@ fun StatusPillBadge(
     fontSize: TextUnit = 11.sp,
     maxLines: Int = 1,
 ) {
-    val shape = RoundedCornerShape(100.dp)
+    val shape = if (maxLines > 1) RoundedCornerShape(8.dp) else RoundedCornerShape(100.dp)
     Surface(
         modifier = modifier,
         shape = shape,
@@ -280,6 +288,7 @@ fun StatusPillBadge(
                 fontSize = fontSize,
                 fontWeight = FontWeight.Bold,
                 color = textColor,
+                textAlign = TextAlign.Center,
                 maxLines = maxLines,
                 softWrap = maxLines > 1,
                 overflow = TextOverflow.Ellipsis

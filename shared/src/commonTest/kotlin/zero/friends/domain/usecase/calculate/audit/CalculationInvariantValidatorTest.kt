@@ -464,4 +464,32 @@ class CalculationInvariantValidatorTest {
             assertTrue(report.diagnosticPayload.contains("P2"))
         }
     }
+
+    @Test
+    fun `흔들기 및 폭탄 배수가 반영된 정산 라운드는 감사 위반 없이 정상 통과한다`() = runTest {
+        val rules = defaultRules(score = 100, fuck = 500, sell = 500)
+        val ruleRepo = MockRuleRepository().apply { setRules(1L, rules) }
+        val gamerRepo = MockGamerRepository()
+
+        val initial = listOf(
+            Gamer(id = 1, playerId = 11, roundId = 9, name = "승자", score = 5, go = 0, shakeCount = 1, bombCount = 1, winnerOption = WinnerOption.Winner),
+            Gamer(id = 2, playerId = 12, roundId = 9, name = "패자1"),
+            Gamer(id = 3, playerId = 13, roundId = 9, name = "패자2", loserOption = listOf(LoserOption.PeaBak)),
+        )
+        gamerRepo.setRoundGamers(9L, initial)
+        val loserUseCase = CalculateLoserScoreUseCase(ruleRepo, gamerRepo)
+        val calculateUseCase = CalculateGameResultUseCase(
+            ruleRepository = ruleRepo,
+            gamerRepository = gamerRepo,
+            updateAccountUseCase = UpdateAccountUseCase(gamerRepo),
+            calculateSellScoreUseCase = CalculateSellScoreUseCase(ruleRepo, gamerRepo),
+            calculateLoserScoreUseCase = loserUseCase,
+            calculateScoreOptionUseCase = CalculateScoreOptionUseCase(ruleRepo, gamerRepo),
+        )
+        calculateUseCase(gameId = 1L, roundId = 9L, seller = null, winner = initial.first())
+
+        val settledGamers = gamerRepo.getRoundGamers(9L)
+        val trace = BuildRoundTraceUseCase(ruleRepo, gamerRepo, loserUseCase).invoke(1L, 9L)
+        assertNull(validator.validateRound(AuditPhase.ROUND_CALCULATE, 1L, 9L, settledGamers, rules, trace))
+    }
 }

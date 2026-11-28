@@ -72,11 +72,17 @@ class CalculationInvariantValidator {
                 actual = sellers.size.toLong(),
             )
         }
-        if (seller != null && (seller.winnerOption != null || seller.loserOption.isNotEmpty() || seller.scoreOption.isNotEmpty())) {
+        if (seller != null &&
+            (seller.winnerOption != null ||
+                seller.loserOption.isNotEmpty() ||
+                seller.scoreOption.isNotEmpty() ||
+                seller.shakeCount != 0 ||
+                seller.bombCount != 0)
+        ) {
             val sellerAlias = aliasOfGamer(gamers, aliasByIndex, seller)
             violations += CalculationViolation(
                 code = CalculationViolationCode.SELLER_ROLE_CONTAMINATION,
-                message = "Seller $sellerAlias carries incompatible options (winner=${seller.winnerOption != null}, loser=${seller.loserOption.size}, scoreOpt=${seller.scoreOption.size})",
+                message = "Seller $sellerAlias carries incompatible options (winner=${seller.winnerOption != null}, loser=${seller.loserOption.size}, scoreOpt=${seller.scoreOption.size}, shake=${seller.shakeCount}, bomb=${seller.bombCount})",
             )
         }
 
@@ -602,6 +608,7 @@ class CalculationInvariantValidator {
                 }
                 appendLine(
                     "- $alias(id=${g.id},pid=${g.playerId}): role=$role, score=${g.score}, go=${g.go}, " +
+                        "shake=${g.shakeCount}, bomb=${g.bombCount}, " +
                         "scoreOpt=${g.scoreOption.map { it.name }}, loserOpt=${g.loserOption.map { it.name }}, " +
                         "account=${g.account}, targets=[$targetsText]"
                 )
@@ -609,7 +616,8 @@ class CalculationInvariantValidator {
             if (trace != null) {
                 val termsText = trace.terms.joinToString(", ") { term ->
                     val alias = aliasByGamerId[term.gamerId] ?: "UNKNOWN_GAMER"
-                    "$alias:${term.amount}(b=${term.factors.baseScore},g=${term.factors.goCount},bak=${term.factors.bakCount}," +
+                    "$alias:${term.amount}(b=${term.factors.baseScore},g=${term.factors.goCount}," +
+                        "sh=${term.factors.shakeCount},bo=${term.factors.bombCount},bak=${term.factors.bakCount}," +
                         "f=${term.factors.fuckAmount},d=${term.factors.ddadakAmount},s=${term.factors.sellAmount})"
                 }
                 appendLine("trace(winnerAlias=${aliasByGamerId[trace.winnerId] ?: "NONE"}, total=${trace.totalAmount}): [$termsText]")

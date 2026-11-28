@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -21,6 +22,7 @@ import zero.friends.domain.usecase.round.ObserveRoundListUseCase
 data class BoardUiState(
     val game: Game = Game(),
     val gameHistories: Map<Long, List<Gamer>> = emptyMap(),
+    val roundNames: Map<Long, String> = emptyMap(),
     val playerResults: List<PlayerResult> = emptyList(),
 )
 
@@ -40,9 +42,19 @@ class BoardViewModel @Inject constructor(
                 _uiState.update { it.copy(playerResults = playerList) }
             }.launchIn(this)
 
-            observeRoundListUseCase.invoke(gameId)
-                .onEach { roundLists ->
-                    _uiState.update { it.copy(gameHistories = roundLists) }
+            combine(
+                observeRoundListUseCase.invoke(gameId),
+                roundRepository.observeAllRound(gameId),
+            ) { roundLists, rounds ->
+                roundLists to rounds.associate { it.id to it.name }
+            }
+                .onEach { (roundLists, names) ->
+                    _uiState.update { state ->
+                        state.copy(
+                            gameHistories = roundLists,
+                            roundNames = names,
+                        )
+                    }
                 }
                 .launchIn(this)
         }
@@ -59,5 +71,21 @@ class BoardViewModel @Inject constructor(
         viewModelScope.launch {
             roundRepository.deleteRound(roundId)
         }
+    }
+
+    fun renameRound(roundId: Long, name: String) {
+        val normalized = name
+            .replace("\r", "")
+            .replace("\n", " ")
+            .trim()
+            .take(MAX_ROUND_NAME_LENGTH)
+            .trimEnd()
+        viewModelScope.launch {
+            roundRepository.updateRoundName(roundId, normalized)
+        }
+    }
+
+    companion object {
+        const val MAX_ROUND_NAME_LENGTH = 20
     }
 }

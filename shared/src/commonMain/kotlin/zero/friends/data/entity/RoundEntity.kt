@@ -21,10 +21,11 @@ import zero.friends.domain.model.Round
 )
 data class RoundEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val gameId: Long = 0
+    val gameId: Long = 0,
+    val name: String = "",
 ) {
     companion object {
-        fun RoundEntity.toRound() = Round(id, gameId)
+        fun RoundEntity.toRound() = Round(id = id, gameId = gameId, name = name)
     }
 }
 

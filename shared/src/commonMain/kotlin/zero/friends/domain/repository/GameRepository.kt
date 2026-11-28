@@ -9,4 +9,6 @@ interface GameRepository{
     fun observeGameList(): Flow<List<Game>>
     suspend fun getGame(gameId: Long): Game
     fun observeGame(gameId: Long): Flow<Game>
+    suspend fun updateGameName(gameId: Long, name: String)
+    suspend fun updateGameOrder(orderedGameIds: List<Long>)
 }

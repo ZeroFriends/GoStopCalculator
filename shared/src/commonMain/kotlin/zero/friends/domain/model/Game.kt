@@ -7,4 +7,5 @@ data class Game(
     val id: Long = 0,
     val name: String = "",
     val createdAt: String = "",
+    val sortOrder: Int = 0,
 )

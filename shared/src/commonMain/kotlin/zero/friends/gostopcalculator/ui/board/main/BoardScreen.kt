@@ -2,25 +2,32 @@ package zero.friends.gostopcalculator.ui.board.main
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
@@ -29,11 +36,15 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,16 +56,27 @@ import zero.friends.domain.model.PlayerResult
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.calculate_history
 import zero.friends.gostopcalculator.shared.generated.resources.delete
+import zero.friends.gostopcalculator.shared.generated.resources.delete_caution_badge
 import zero.friends.gostopcalculator.shared.generated.resources.delete_dialog_title
+import zero.friends.gostopcalculator.shared.generated.resources.delete_round_action
 import zero.friends.gostopcalculator.shared.generated.resources.empty_game_log
 import zero.friends.gostopcalculator.shared.generated.resources.game_history
 import zero.friends.gostopcalculator.shared.generated.resources.ic_error_outline_black
+import zero.friends.gostopcalculator.shared.generated.resources.ic_menu_book
 import zero.friends.gostopcalculator.shared.generated.resources.income_history
 import zero.friends.gostopcalculator.shared.generated.resources.info_game_start
+import zero.friends.gostopcalculator.shared.generated.resources.manage_round_label
+import zero.friends.gostopcalculator.shared.generated.resources.manual_entry_board
+import zero.friends.gostopcalculator.shared.generated.resources.rename_confirm
+import zero.friends.gostopcalculator.shared.generated.resources.rename_round_action
+import zero.friends.gostopcalculator.shared.generated.resources.rename_round_helper_format
+import zero.friends.gostopcalculator.shared.generated.resources.rename_round_placeholder
+import zero.friends.gostopcalculator.shared.generated.resources.round_number_format
 import zero.friends.gostopcalculator.shared.generated.resources.rule_title_text
 import zero.friends.gostopcalculator.shared.generated.resources.start_game
 import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
 import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
+import zero.friends.gostopcalculator.ui.board.score.common.ScoreDarkBadge
 import zero.friends.gostopcalculator.ui.common.CenterTextTopBar
 import zero.friends.gostopcalculator.ui.common.ContentsCard
 import zero.friends.gostopcalculator.ui.common.EmptyHistory
@@ -64,6 +86,14 @@ import zero.friends.gostopcalculator.ui.common.RoundedCornerText
 import zero.friends.gostopcalculator.ui.common.background.GoStopButtonBackground
 import zero.friends.gostopcalculator.ui.common.BackHandler
 import zero.friends.gostopcalculator.ui.dialog.BasicDialog
+import zero.friends.gostopcalculator.ui.dialog.ItemActionBottomSheet
+import zero.friends.gostopcalculator.ui.dialog.RenameDialog
+
+private data class RoundActionTarget(
+    val roundId: Long,
+    val roundNumber: Int,
+    val roundName: String,
+)
 
 private sealed interface BoardEvent {
 
@@ -71,9 +101,10 @@ private sealed interface BoardEvent {
     object Back : BoardEvent
     object StartGame : BoardEvent
     class Detail(val roundId: Long) : BoardEvent
-    class More(val roundId: Long) : BoardEvent
+    class More(val target: RoundActionTarget) : BoardEvent
     object OpenCalculated : BoardEvent
     object OpenRule : BoardEvent
+    object OpenManual : BoardEvent
 }
 
 @Composable
@@ -84,46 +115,121 @@ fun BoardScreen(
     openDetailScreen: (gameId: Long, roundId: Long) -> Unit = { _, _ -> },
     openCalculated: (gameId: Long) -> Unit = {},
     openRule: (gameId: Long) -> Unit = {},
+    openManual: () -> Unit = {},
 ) {
-    BackHandler(enabled = true) {
-        onBack()
-    }
-
     val scaffoldState = rememberScaffoldState()
 
     val uiState by boardViewModel.getUiState().collectAsState()
-    var openDialog by remember {
-        mutableStateOf<Long?>(null)
+    var actionSheetRoundId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var lastSheetRoundId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var renamingRoundId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var deletingRoundId by rememberSaveable { mutableStateOf<Long?>(null) }
+
+    val orderedRoundIds = uiState.gameHistories.keys.toList()
+    fun resolveRoundTarget(roundId: Long?): RoundActionTarget? {
+        if (roundId == null) return null
+        val index = orderedRoundIds.indexOf(roundId)
+        if (index < 0) return null
+        return RoundActionTarget(
+            roundId = roundId,
+            roundNumber = index + 1,
+            roundName = uiState.roundNames[roundId].orEmpty(),
+        )
     }
 
-    BoardScreen(
-        scaffoldState = scaffoldState,
-        uiState = uiState
-    ) { event ->
-        when (event) {
-            BoardEvent.Back -> onBack()
-            BoardEvent.StartGame -> onNext(uiState.game.id)
-            is BoardEvent.Detail -> {
-                openDetailScreen(uiState.game.id, event.roundId)
-            }
+    val actionSheetRound = resolveRoundTarget(actionSheetRoundId)
+    val sheetTarget = resolveRoundTarget(actionSheetRoundId ?: lastSheetRoundId)
+    val renameTarget = resolveRoundTarget(renamingRoundId)
 
-            is BoardEvent.More -> {
-                openDialog = event.roundId
-            }
+    BackHandler(enabled = actionSheetRound == null) {
+        onBack()
+    }
 
-            BoardEvent.OpenCalculated -> openCalculated(uiState.game.id)
-            BoardEvent.OpenRule -> openRule(uiState.game.id)
+    Box(modifier = Modifier.fillMaxSize()) {
+        BoardScreen(
+            scaffoldState = scaffoldState,
+            uiState = uiState,
+            isBottomSheetVisible = actionSheetRound != null,
+        ) { event ->
+            if (actionSheetRound != null) return@BoardScreen
+            when (event) {
+                BoardEvent.Back -> onBack()
+                BoardEvent.StartGame -> onNext(uiState.game.id)
+                is BoardEvent.Detail -> {
+                    openDetailScreen(uiState.game.id, event.roundId)
+                }
+
+                is BoardEvent.More -> {
+                    lastSheetRoundId = event.target.roundId
+                    actionSheetRoundId = event.target.roundId
+                }
+
+                BoardEvent.OpenCalculated -> openCalculated(uiState.game.id)
+                BoardEvent.OpenRule -> openRule(uiState.game.id)
+                BoardEvent.OpenManual -> openManual()
+            }
+        }
+
+        if (sheetTarget != null) {
+            val defaultTitle = stringResource(Res.string.round_number_format, sheetTarget.roundNumber)
+            val headerTitle = if (sheetTarget.roundName.isNotBlank()) {
+                "$defaultTitle · ${sheetTarget.roundName}"
+            } else {
+                defaultTitle
+            }
+            ItemActionBottomSheet(
+                visible = actionSheetRound != null,
+                eyebrow = stringResource(Res.string.manage_round_label),
+                title = headerTitle,
+                renameLabel = stringResource(Res.string.rename_round_action),
+                deleteLabel = stringResource(Res.string.delete_round_action),
+                deleteCautionLabel = stringResource(Res.string.delete_caution_badge),
+                onRename = {
+                    if (actionSheetRoundId != null) {
+                        val targetId = sheetTarget.roundId
+                        actionSheetRoundId = null
+                        renamingRoundId = targetId
+                    }
+                },
+                onDelete = {
+                    if (actionSheetRoundId != null) {
+                        val roundId = sheetTarget.roundId
+                        actionSheetRoundId = null
+                        deletingRoundId = roundId
+                    }
+                },
+                onDismiss = { actionSheetRoundId = null },
+            )
         }
     }
 
-    if (openDialog != null) {
+    if (renameTarget != null) {
+        val defaultTitle = stringResource(Res.string.round_number_format, renameTarget.roundNumber)
+        RenameDialog(
+            title = stringResource(Res.string.rename_round_action),
+            badgeText = defaultTitle,
+            initialValue = renameTarget.roundName,
+            placeholder = stringResource(Res.string.rename_round_placeholder),
+            helperText = stringResource(Res.string.rename_round_helper_format, defaultTitle),
+            maxLength = BoardViewModel.MAX_ROUND_NAME_LENGTH,
+            allowBlank = true,
+            confirmText = stringResource(Res.string.rename_confirm),
+            onConfirm = { newName ->
+                boardViewModel.renameRound(renameTarget.roundId, newName)
+                renamingRoundId = null
+            },
+            onDismiss = { renamingRoundId = null },
+        )
+    }
+
+    if (deletingRoundId != null) {
         BasicDialog(
             onDismiss = {
-                openDialog = null
+                deletingRoundId = null
             },
             onClick = {
-                val roundId = openDialog
-                openDialog = null
+                val roundId = deletingRoundId
+                deletingRoundId = null
                 if (roundId != null) {
                     boardViewModel.deleteRound(roundId)
                 }
@@ -139,6 +245,7 @@ fun BoardScreen(
 private fun BoardScreen(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     uiState: BoardUiState = BoardUiState(),
+    isBottomSheetVisible: Boolean = false,
     event: (BoardEvent) -> Unit = {},
 ) {
     val useNativeNavigation = LocalUseNativeNavigation.current
@@ -155,7 +262,8 @@ private fun BoardScreen(
                 onBack = { event(BoardEvent.Back) },
                 isRed = false,
                 actionText = stringResource(Res.string.rule_title_text),
-                onAction = { event(BoardEvent.OpenRule) }
+                onAction = { event(BoardEvent.OpenRule) },
+                swipeBackEnabled = !isBottomSheetVisible,
             )
         }
     ) { innerPadding ->
@@ -165,6 +273,7 @@ private fun BoardScreen(
             onClick = { event(BoardEvent.StartGame) },
             showGradient = showBottomGradient,
         ) {
+            val histories = remember(uiState.gameHistories) { uiState.gameHistories.toList().asReversed() }
             LazyColumn(
                 state = historyListState,
                 modifier = Modifier.fillMaxSize(),
@@ -176,24 +285,62 @@ private fun BoardScreen(
                     bottom = 16.dp,
                 )
             ) {
-                item {
+                item(key = "income_history", contentType = "income_history") {
                     IncomeHistory(
                         players = uiState.playerResults,
                         onClickCalculated = { event(BoardEvent.OpenCalculated) }
                     )
                 }
 
-                item {
+                item(key = "history_header", contentType = "history_header") {
                     Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = stringResource(Res.string.game_history),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(Res.string.game_history),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Surface(
+                            modifier = Modifier
+                                .defaultMinSize(minHeight = 36.dp)
+                                .clip(CircleShape)
+                                .testTag("board_manual_button")
+                                .clickable(role = Role.Button, onClick = { event(BoardEvent.OpenManual) }),
+                            shape = CircleShape,
+                            color = ScoreDarkBadge,
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            ) {
+                                Icon(
+                                    painter = painterResource(Res.drawable.ic_menu_book),
+                                    contentDescription = null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(14.dp),
+                                )
+                                Text(
+                                    text = stringResource(Res.string.manual_entry_board),
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    maxLines = 1,
+                                    softWrap = false,
+                                )
+                            }
+                        }
+                    }
                 }
 
                 if (uiState.gameHistories.isEmpty()) {
-                    item {
+                    item(key = "empty_history", contentType = "empty_history") {
                         EmptyHistory(
                             painter = painterResource(Res.drawable.ic_error_outline_black),
                             title = stringResource(Res.string.empty_game_log),
@@ -201,13 +348,29 @@ private fun BoardScreen(
                         )
                     }
                 } else {
-                    val histories = uiState.gameHistories.toList().asReversed()
-                    itemsIndexed(histories) { index, (roundId, gamer) ->
+                    itemsIndexed(
+                        items = histories,
+                        key = { _, (roundId, _) -> roundId },
+                        contentType = { _, _ -> "round_box" },
+                    ) { index, (roundId, gamer) ->
+                        val roundIndex = uiState.gameHistories.size - index - 1
+                        val customName = uiState.roundNames[roundId].orEmpty()
                         RoundBox(
-                            index = uiState.gameHistories.size - index - 1,
+                            index = roundIndex,
+                            roundName = customName,
                             gamers = gamer,
                             onClickDetail = { event(BoardEvent.Detail(roundId)) },
-                            onClickMore = { event(BoardEvent.More(roundId)) }
+                            onClickMore = {
+                                event(
+                                    BoardEvent.More(
+                                        RoundActionTarget(
+                                            roundId = roundId,
+                                            roundNumber = roundIndex + 1,
+                                            roundName = customName,
+                                        )
+                                    )
+                                )
+                            }
                         )
                     }
                 }

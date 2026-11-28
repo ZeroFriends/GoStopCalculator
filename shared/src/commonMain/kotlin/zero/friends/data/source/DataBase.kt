@@ -5,7 +5,10 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.sqlite.execSQL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import zero.friends.data.entity.GameEntity
@@ -28,7 +31,7 @@ import zero.friends.data.util.SerializationConverters
         GamerEntity::class,
         RoundEntity::class,
     ],
-    version = 2,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(SerializationConverters::class)
@@ -46,14 +49,39 @@ expect object DataBaseConstructor : RoomDatabaseConstructor<DataBase> {
     override fun initialize(): DataBase
 }
 
+val MIGRATION_2_3: Migration = object : Migration(2, 3) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
+            "ALTER TABLE GamerEntity ADD COLUMN shakeCount INTEGER NOT NULL DEFAULT 0"
+        )
+        connection.execSQL(
+            "ALTER TABLE GamerEntity ADD COLUMN bombCount INTEGER NOT NULL DEFAULT 0"
+        )
+    }
+}
+
+val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
+            "ALTER TABLE RoundEntity ADD COLUMN name TEXT NOT NULL DEFAULT ''"
+        )
+        connection.execSQL(
+            "ALTER TABLE GameEntity ADD COLUMN sortOrder INTEGER NOT NULL DEFAULT 0"
+        )
+        connection.execSQL(
+            "UPDATE GameEntity SET sortOrder = (SELECT COUNT(*) FROM GameEntity AS g2 WHERE g2.id < GameEntity.id)"
+        )
+    }
+}
 
 fun getRoomDatabase(
     builder: RoomDatabase.Builder<DataBase>
 ): DataBase {
     return builder
+        .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
         .fallbackToDestructiveMigration(dropAllTables = true)
         .setDriver(BundledSQLiteDriver())
-        .setQueryCoroutineContext(Dispatchers.Default)
+        .setQueryCoroutineContext(Dispatchers.IO)
         .build()
 }
 

@@ -652,6 +652,127 @@ class RoundTraceFormatterTest {
         )
         val overflowSummary = formatter.toRoundBasePotSummary(overflowTrace, sampleTexts)
         assertNotNull(overflowSummary)
-        assertTrue(overflowSummary.potAmountText.startsWith("2,147,483,647"))
+        assertTrue(overflowSummary.potAmountText.startsWith("2,087,483,647"))
+    }
+
+    @Test
+    fun `toRoundBasePotSummary and toLines format Shake and Bomb multipliers accurately`() {
+        val winnerTerm = RoundTraceTerm(
+            gamerId = 1L,
+            label = "Player 1",
+            amount = 4000,
+            playerName = "Player 1",
+            traceTags = listOf(TraceTag.WINNER),
+            factors = CalculationFactors(
+                isSeller = false,
+                baseScore = 2,
+                goCount = 3,
+                scorePerPoint = 100,
+                bakCount = 0,
+                fuckAmount = 0,
+                ddadakAmount = 0,
+                sellAmount = 0,
+                receiverCount = 1,
+                shakeCount = 1,
+                bombCount = 1,
+            ),
+        )
+        val trace = RoundTrace(
+            roundId = 10L,
+            gameId = 1L,
+            winnerId = 1L,
+            terms = listOf(winnerTerm),
+            totalAmount = 4000,
+        )
+
+        val potSummary = formatter.toRoundBasePotSummary(trace, sampleTexts)
+        assertNotNull(potSummary)
+        assertEquals("(Base 2pts + 3Go) × 100won × 2x(3Go) × 4x(Shake·Bomb)", potSummary.formulaText)
+        assertEquals("4,000won", potSummary.potAmountText)
+
+        val lines = formatter.toLines(listOf(winnerTerm), sampleTexts)
+        assertEquals(1, lines.size)
+        assertTrue(lines[0].formula.text.contains("Shake·Bomb"))
+
+        // 단독 흔들기(2회 -> ×4)
+        val shakeOnlyTrace = trace.copy(
+            terms = listOf(winnerTerm.copy(factors = winnerTerm.factors.copy(goCount = 0, shakeCount = 2, bombCount = 0)))
+        )
+        val shakeOnlyPot = formatter.toRoundBasePotSummary(shakeOnlyTrace, sampleTexts)
+        assertNotNull(shakeOnlyPot)
+        assertEquals("Base 2pts × 100won × 4x(Shake)", shakeOnlyPot.formulaText)
+        assertEquals("800won", shakeOnlyPot.potAmountText)
+
+        // 다회 폭탄(3회 -> ×8) + 3인전 maxPerLoser 클램프 일치 검증
+        val multiBombTrace = RoundTrace(
+            roundId = 11L,
+            gameId = 1L,
+            winnerId = 1L,
+            terms = listOf(
+                winnerTerm.copy(
+                    gamerId = 1L,
+                    factors = winnerTerm.factors.copy(
+                        baseScore = 7_000_000,
+                        goCount = 0,
+                        scorePerPoint = 100,
+                        shakeCount = 1,
+                        bombCount = 0,
+                    )
+                ),
+                winnerTerm.copy(
+                    gamerId = 2L,
+                    amount = -1_043_741_823,
+                    traceTags = listOf(TraceTag.LOSER),
+                    factors = winnerTerm.factors.copy(
+                        baseScore = 7_000_000,
+                        goCount = 0,
+                        scorePerPoint = 100,
+                        shakeCount = 1,
+                        bombCount = 0,
+                        selfBaseLoss = -1_043_741_823,
+                    )
+                ),
+                winnerTerm.copy(
+                    gamerId = 3L,
+                    amount = -1_043_741_823,
+                    traceTags = listOf(TraceTag.LOSER),
+                    factors = winnerTerm.factors.copy(
+                        baseScore = 7_000_000,
+                        goCount = 0,
+                        scorePerPoint = 100,
+                        shakeCount = 1,
+                        bombCount = 0,
+                        selfBaseLoss = -1_043_741_823,
+                    )
+                ),
+            ),
+            totalAmount = 2_087_483_646,
+        )
+        val cappedPot = formatter.toRoundBasePotSummary(multiBombTrace, sampleTexts)
+        assertNotNull(cappedPot)
+        assertEquals("1,043,741,823won", cappedPot.potAmountText)
+
+        // baseScore=0, goCount=0 인 경우 흔들기/박/고 배수가 보조 식에 출력되지 않아야 함
+        val auxZeroBaseTerm = winnerTerm.copy(
+            amount = 300,
+            traceTags = listOf(TraceTag.LOSER),
+            factors = CalculationFactors(
+                isSeller = false,
+                baseScore = 0,
+                goCount = 0,
+                scorePerPoint = 100,
+                bakCount = 1,
+                fuckAmount = 300,
+                ddadakAmount = 0,
+                sellAmount = 0,
+                receiverCount = 1,
+                shakeCount = 2,
+                bombCount = 1,
+            ),
+        )
+        val auxLines = formatter.toLines(listOf(auxZeroBaseTerm), sampleTexts)
+        assertEquals(1, auxLines.size)
+        assertTrue(!auxLines[0].formula.text.contains("Shake"))
+        assertTrue(!auxLines[0].formula.text.contains("bak"))
     }
 }

@@ -52,6 +52,7 @@ import zero.friends.domain.model.LoserOption
 import zero.friends.domain.model.ScoreOption
 import zero.friends.domain.model.Target
 import zero.friends.domain.model.TraceTag
+import zero.friends.domain.usecase.calculate.calculateShakeBombMultiplier
 import zero.friends.domain.usecase.calculate.effectiveBakOptions
 import zero.friends.domain.usecase.calculate.isGoBakSoloCoverageMode
 import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
@@ -70,6 +71,7 @@ import zero.friends.gostopcalculator.shared.generated.resources.result_breakdown
 import zero.friends.gostopcalculator.shared.generated.resources.result_chip_bak_x2_format
 import zero.friends.gostopcalculator.shared.generated.resources.result_chip_go_format
 import zero.friends.gostopcalculator.shared.generated.resources.result_chip_gobak_solo
+import zero.friends.gostopcalculator.shared.generated.resources.result_chip_special_x2_format
 import zero.friends.gostopcalculator.shared.generated.resources.result_detail_badge_breakdown_transfer
 import zero.friends.gostopcalculator.shared.generated.resources.result_detail_section_players
 import zero.friends.gostopcalculator.shared.generated.resources.result_detail_title
@@ -81,11 +83,14 @@ import zero.friends.gostopcalculator.shared.generated.resources.result_seller_ba
 import zero.friends.gostopcalculator.shared.generated.resources.result_settlement_subtitle
 import zero.friends.gostopcalculator.shared.generated.resources.result_transfer_receive_badge
 import zero.friends.gostopcalculator.shared.generated.resources.result_transfer_send_badge
+import zero.friends.gostopcalculator.shared.generated.resources.rule_bomb
 import zero.friends.gostopcalculator.shared.generated.resources.rule_seller_role
+import zero.friends.gostopcalculator.shared.generated.resources.rule_shake
 import zero.friends.gostopcalculator.shared.generated.resources.rule_three_fuck
 import zero.friends.gostopcalculator.shared.generated.resources.rule_winner
 import zero.friends.gostopcalculator.shared.generated.resources.share
 import zero.friends.gostopcalculator.shared.generated.resources.trace_go_bak_exempt_tag
+import zero.friends.gostopcalculator.shared.generated.resources.winner_multiplier_count_format
 import zero.friends.gostopcalculator.shared.generated.resources.won
 import zero.friends.gostopcalculator.theme.Blue
 import zero.friends.gostopcalculator.ui.board.score.common.PlayerIndexBadge
@@ -265,6 +270,7 @@ private fun ResultContent(
             }
 
             DetailHeroCard(
+                roundName = uiState.roundName,
                 playerCount = uiState.gamers.size,
                 potSummary = potSummary,
             )
@@ -432,6 +438,7 @@ private fun ResultHeroCard(
 
 @Composable
 private fun DetailHeroCard(
+    roundName: String = "",
     playerCount: Int,
     potSummary: RoundTraceFormatter.RoundBasePotSummary?,
 ) {
@@ -473,14 +480,27 @@ private fun DetailHeroCard(
                         )
                     }
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = stringResource(Res.string.result_detail_title),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = ScoreTextDark,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Column(modifier = Modifier.weight(1f, fill = false)) {
+                        Text(
+                            text = stringResource(Res.string.result_detail_title),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = ScoreTextDark,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        if (roundName.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = roundName,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = ScoreMutedText,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
                 }
 
                 if (playerCount > 0) {
@@ -504,50 +524,93 @@ private fun DetailHeroCard(
                     color = ScoreSoftPinkBg,
                     border = BorderStroke(1.dp, ScoreSoftPinkBorder)
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp, vertical = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
+                    val useStackedLayout = !potSummary.isThreeFuck &&
+                        potSummary.potAmountText.isNotEmpty() &&
+                        potSummary.formulaText.length > 26
+                    if (useStackedLayout) {
+                        Column(
                             modifier = Modifier
-                                .weight(1f)
-                                .padding(end = if (potSummary.potAmountText.isNotEmpty()) 8.dp else 0.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp, vertical = 10.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-                            StatusPillBadge(
-                                text = if (potSummary.isThreeFuck) {
-                                    stringResource(Res.string.rule_three_fuck)
-                                } else {
-                                    stringResource(Res.string.result_base_pot_badge)
-                                },
-                                backgroundColor = ScorePrimaryRed,
-                                textColor = Color.White,
-                                fontSize = 10.5.sp,
-                                horizontalPadding = 8.dp,
-                                verticalPadding = 3.dp
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                StatusPillBadge(
+                                    text = stringResource(Res.string.result_base_pot_badge),
+                                    backgroundColor = ScorePrimaryRed,
+                                    textColor = Color.White,
+                                    fontSize = 10.5.sp,
+                                    horizontalPadding = 8.dp,
+                                    verticalPadding = 3.dp
+                                )
+                                Text(
+                                    text = potSummary.potAmountText,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = ScoreTextDark,
+                                    maxLines = 1,
+                                    softWrap = false
+                                )
+                            }
                             Text(
                                 text = potSummary.formulaText,
                                 fontSize = 12.5.sp,
                                 lineHeight = 17.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = ScoreTextDark,
-                                modifier = Modifier.weight(1f, fill = false)
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
-                        if (potSummary.potAmountText.isNotEmpty()) {
-                            Text(
-                                text = potSummary.potAmountText,
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = ScoreTextDark,
-                                maxLines = 1,
-                                softWrap = false
-                            )
+                    } else {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp, vertical = 10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(end = if (potSummary.potAmountText.isNotEmpty()) 8.dp else 0.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                StatusPillBadge(
+                                    text = if (potSummary.isThreeFuck) {
+                                        stringResource(Res.string.rule_three_fuck)
+                                    } else {
+                                        stringResource(Res.string.result_base_pot_badge)
+                                    },
+                                    backgroundColor = ScorePrimaryRed,
+                                    textColor = Color.White,
+                                    fontSize = 10.5.sp,
+                                    horizontalPadding = 8.dp,
+                                    verticalPadding = 3.dp
+                                )
+                                Text(
+                                    text = potSummary.formulaText,
+                                    fontSize = 12.5.sp,
+                                    lineHeight = 17.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = ScoreTextDark,
+                                    modifier = Modifier.weight(1f, fill = false)
+                                )
+                            }
+                            if (potSummary.potAmountText.isNotEmpty()) {
+                                Text(
+                                    text = potSummary.potAmountText,
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = ScoreTextDark,
+                                    maxLines = 1,
+                                    softWrap = false
+                                )
+                            }
                         }
                     }
                 }
@@ -914,6 +977,48 @@ private fun buildDetailChips(
             chips.add(
                 DetailChipSpec(
                     text = stringResource(Res.string.result_chip_go_format, gamer.go),
+                    backgroundColor = ScoreSoftPinkBg,
+                    textColor = ScorePrimaryRed,
+                    borderColor = ScoreSoftPinkBorder,
+                )
+            )
+        }
+        if (gamer.shakeCount > 0) {
+            val shakeName = stringResource(Res.string.rule_shake)
+            val shakeText = if (gamer.shakeCount == 1) {
+                stringResource(Res.string.result_chip_special_x2_format, shakeName)
+            } else {
+                stringResource(
+                    Res.string.winner_multiplier_count_format,
+                    shakeName,
+                    gamer.shakeCount,
+                    calculateShakeBombMultiplier(gamer.shakeCount, 0),
+                )
+            }
+            chips.add(
+                DetailChipSpec(
+                    text = shakeText,
+                    backgroundColor = ScoreSoftPinkBg,
+                    textColor = ScorePrimaryRed,
+                    borderColor = ScoreSoftPinkBorder,
+                )
+            )
+        }
+        if (gamer.bombCount > 0) {
+            val bombName = stringResource(Res.string.rule_bomb)
+            val bombText = if (gamer.bombCount == 1) {
+                stringResource(Res.string.result_chip_special_x2_format, bombName)
+            } else {
+                stringResource(
+                    Res.string.winner_multiplier_count_format,
+                    bombName,
+                    gamer.bombCount,
+                    calculateShakeBombMultiplier(0, gamer.bombCount),
+                )
+            }
+            chips.add(
+                DetailChipSpec(
+                    text = bombText,
                     backgroundColor = ScoreSoftPinkBg,
                     textColor = ScorePrimaryRed,
                     borderColor = ScoreSoftPinkBorder,

@@ -43,6 +43,6 @@ sealed interface Route {
         data class Calculate(val gameId: Long) : Board
 
         @Serializable
-        data object Manual : Board
+        data class Manual(val initialTab: Int = 0) : Board
     }
 }

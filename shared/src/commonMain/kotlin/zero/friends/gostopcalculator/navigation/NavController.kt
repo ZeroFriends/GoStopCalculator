@@ -1,6 +1,7 @@
 package zero.friends.gostopcalculator.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,6 +21,7 @@ class NavBackStackEntry(
     }
 }
 
+@Stable
 class NavController(
     startDestination: Route,
     private val onNativeNavigate: ((NativeNavCommand) -> Unit)? = null,
@@ -44,27 +46,54 @@ class NavController(
         )
     }
 
+    private fun shouldDelegateToNative(route: Route, options: NavOptionsBuilder): Boolean {
+        if (onNativeNavigate == null) return false
+        val isSplashToHistory = route is Route.History &&
+            options.popUpToRoute == Route.Splash::class
+        return !isSplashToHistory
+    }
+
     fun navigate(route: Route, builder: (NavOptionsBuilder.() -> Unit)? = null) {
         val options = NavOptionsBuilder().apply { builder?.invoke(this) }
-        val nativeDelegate = onNativeNavigate
-        if (nativeDelegate != null) {
-            val isSplashToHistory = route is Route.History &&
-                options.popUpToRoute == Route.Splash::class
-            if (!isSplashToHistory) {
-                val popTarget = when (options.popUpToRoute) {
-                    Route.History::class -> NativePopTarget.HISTORY
-                    Route.Board.Main::class -> NativePopTarget.BOARD_MAIN
-                    else -> NativePopTarget.NONE
-                }
-                nativeDelegate(
-                    NativeNavCommand(
-                        route = route,
-                        popTarget = popTarget,
-                        popInclusive = options.inclusive,
-                    )
-                )
-                return
+        navigateInternal(route = route, options = options, expectedRoute = null)
+    }
+
+    fun navigateFrom(
+        expectedRoute: Route,
+        route: Route,
+        builder: (NavOptionsBuilder.() -> Unit)? = null,
+    ): Boolean {
+        val options = NavOptionsBuilder().apply { builder?.invoke(this) }
+        if (!shouldDelegateToNative(route, options)) {
+            if (_backStack.isEmpty() || currentRoute != expectedRoute) {
+                return false
             }
+        }
+        navigateInternal(route = route, options = options, expectedRoute = expectedRoute)
+        return true
+    }
+
+    private fun navigateInternal(
+        route: Route,
+        options: NavOptionsBuilder,
+        expectedRoute: Route?,
+    ) {
+        val nativeDelegate = onNativeNavigate
+        if (nativeDelegate != null && shouldDelegateToNative(route, options)) {
+            val popTarget = when (options.popUpToRoute) {
+                Route.History::class -> NativePopTarget.HISTORY
+                Route.Board.Main::class -> NativePopTarget.BOARD_MAIN
+                else -> NativePopTarget.NONE
+            }
+            nativeDelegate(
+                NativeNavCommand(
+                    route = route,
+                    popTarget = popTarget,
+                    popInclusive = options.inclusive,
+                    expectedRoute = expectedRoute,
+                )
+            )
+            return
         }
 
         if (options.popUpToRoute != null) {
@@ -101,6 +130,21 @@ class NavController(
             return true
         }
         return false
+    }
+
+    fun popBackStackFrom(
+        expectedRoute: Route,
+        onEmpty: () -> Unit = {},
+    ): Boolean {
+        if (onNativePop == null) {
+            if (_backStack.isEmpty() || currentRoute != expectedRoute) {
+                return false
+            }
+        }
+        if (!popBackStack()) {
+            onEmpty()
+        }
+        return true
     }
 
     internal fun clear() {

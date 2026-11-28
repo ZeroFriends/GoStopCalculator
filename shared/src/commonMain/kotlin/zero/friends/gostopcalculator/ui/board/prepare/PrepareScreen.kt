@@ -1,6 +1,5 @@
 package zero.friends.gostopcalculator.ui.board.prepare
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material.Text
@@ -23,24 +23,19 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import zero.friends.domain.model.Player
 import zero.friends.gostopcalculator.navigation.LocalNativeTopBarHeight
@@ -48,8 +43,10 @@ import zero.friends.gostopcalculator.navigation.LocalUseNativeNavigation
 import zero.friends.gostopcalculator.shared.generated.resources.Res
 import zero.friends.gostopcalculator.shared.generated.resources.complete
 import zero.friends.gostopcalculator.shared.generated.resources.fail_over_gamer
+import zero.friends.gostopcalculator.shared.generated.resources.ic_check_small
 import zero.friends.gostopcalculator.shared.generated.resources.ic_hero_group
 import zero.friends.gostopcalculator.shared.generated.resources.player_list
+import zero.friends.gostopcalculator.shared.generated.resources.prepare_create_round_error
 import zero.friends.gostopcalculator.shared.generated.resources.prepare_highlight_2_to_4
 import zero.friends.gostopcalculator.shared.generated.resources.prepare_participating_badge
 import zero.friends.gostopcalculator.shared.generated.resources.prepare_selected_count_format
@@ -84,14 +81,17 @@ fun PrepareScreen(
     onBack: () -> Unit = {},
     onShowToast: (String) -> Unit = {}
 ) {
-    BackHandler(enabled = true) {
-        onBack()
-    }
     val scaffoldState = rememberScaffoldState()
     val uiState by prepareViewModel.uiState().collectAsState()
     val failOverGamerAlert = stringResource(Res.string.fail_over_gamer)
+    val createRoundErrorAlert = stringResource(Res.string.prepare_create_round_error)
     val scope = rememberCoroutineScope()
-    var isSubmitting by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = true) {
+        if (!uiState.isSubmitting) {
+            onBack()
+        }
+    }
 
     PrepareScreen(
         scaffoldState = scaffoldState,
@@ -99,15 +99,19 @@ fun PrepareScreen(
         event = { event ->
             when (event) {
                 PrepareEvent.Back -> {
-                    onBack()
+                    if (!uiState.isSubmitting) {
+                        onBack()
+                    }
                 }
                 PrepareEvent.Complete -> {
-                    if (!isSubmitting) {
-                        isSubmitting = true
-                        prepareViewModel.createNewRound { roundId ->
-                            onComplete(uiState.game.id, roundId)
+                    prepareViewModel.createNewRound(
+                        onCreate = onComplete,
+                        onError = {
+                            scope.launch {
+                                scaffoldState.snackbarHostState.showSnackbar(createRoundErrorAlert)
+                            }
                         }
-                    }
+                    )
                 }
                 is PrepareEvent.OnClickPlayer -> {
                     prepareViewModel.onClickPlayer(event.isCheck, event.player) {
@@ -130,6 +134,8 @@ private fun PrepareScreen(
 ) {
     val topBarPadding = if (LocalUseNativeNavigation.current) LocalNativeTopBarHeight.current else 0.dp
 
+    val canComplete = uiState.canSubmit
+
     Scaffold(
         scaffoldState = scaffoldState,
         backgroundColor = ScoreCanvasBg,
@@ -138,13 +144,14 @@ private fun PrepareScreen(
                 text = uiState.game.name,
                 onBack = { event(PrepareEvent.Back) },
                 isRed = false,
+                swipeBackEnabled = !uiState.isSubmitting,
             )
         }
     ) { innerPadding ->
         GoStopButtonBackground(
             modifier = Modifier.padding(innerPadding),
             buttonString = stringResource(Res.string.complete),
-            buttonEnabled = uiState.selectedPlayers.size >= 2,
+            buttonEnabled = canComplete,
             showGradient = true,
             backgroundColor = ScoreCanvasBg,
             onClick = { event(PrepareEvent.Complete) },
@@ -203,6 +210,7 @@ private fun PrepareScreen(
                         index = index,
                         player = player,
                         isCheck = isCheck,
+                        enabled = !uiState.isSubmitting,
                         onClick = { event(PrepareEvent.OnClickPlayer(player, !isCheck)) }
                     )
                 }
@@ -216,12 +224,15 @@ private fun PlayerPickItem(
     index: Int,
     player: Player,
     isCheck: Boolean,
+    enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
     ScorePlayerCard(
         isHighlighted = isCheck,
+        enabled = enabled,
         onClick = onClick,
         clickRole = Role.Checkbox,
+        toggleableState = ToggleableState(isCheck),
     ) {
         Row(
             modifier = Modifier
@@ -280,22 +291,12 @@ private fun SelectionCheckCircle(checked: Boolean) {
                 .background(ScorePrimaryRed),
             contentAlignment = Alignment.Center
         ) {
-            Canvas(modifier = Modifier.size(12.dp)) {
-                val path = Path().apply {
-                    moveTo(size.width * 0.14f, size.height * 0.52f)
-                    lineTo(size.width * 0.42f, size.height * 0.80f)
-                    lineTo(size.width * 0.88f, size.height * 0.24f)
-                }
-                drawPath(
-                    path = path,
-                    color = Color.White,
-                    style = Stroke(
-                        width = 2.dp.toPx(),
-                        cap = StrokeCap.Round,
-                        join = StrokeJoin.Round
-                    )
-                )
-            }
+            Icon(
+                painter = painterResource(Res.drawable.ic_check_small),
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(14.dp),
+            )
         }
     } else {
         Box(

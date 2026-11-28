@@ -1,0 +1,91 @@
+appId: zero.friends.gostopcalculator
+---
+# 시나리오: 게임 이름 변경(홈 3점 바텀시트) & 라운드 이름 변경(보드 3점 바텀시트) → 상세보기 반영 → 기본명 초기화 E2E 검증
+- launchApp:
+    clearState: true
+    stopApp: true
+
+# 1. 새 게임 생성 및 보드 진입
+- runFlow: ../common/wait_for_history.yaml
+- tapOn: "시작하기"
+- assertVisible: "플레이어 설정.*"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "\\+ 플레이어 추가"
+- tapOn: "다음"
+- assertVisible: "게임규칙.*"
+- tapOn:
+    id: "rule_score_input_0"
+- inputText: "100"
+- tapOn: "게임규칙.*"
+- tapOn: "완료"
+
+# 2. 1라운드 완료 후 보드 복귀
+- assertVisible: "진행내역.*"
+- tapOn: "게임시작"
+- tapOn: "플레이어 1"
+- tapOn: "플레이어 2"
+- tapOn: "플레이어 3"
+- tapOn: "완료"
+- tapOn: "다음 \\(1/3\\)"
+- tapOn:
+    id: "winner_point_input_0"
+- inputText: "5"
+- tapOn: "승자 점수기록"
+- tapOn: "다음 \\(2/3\\)"
+- tapOn: "다음 \\(3/3\\)"
+- tapOn: "점수 확정하기"
+- assertVisible: "라운드 상세보기"
+- tapOn: "Back"
+- assertVisible: "1 라운드"
+
+# 3. 보드에서 라운드 3점 메뉴 ➔ 라운드 이름 변경 ➔ 상세보기 연동 확인
+- tapOn:
+    id: "round_more_button_0"
+- assertVisible: "라운드 이름 변경"
+- assertVisible: "라운드 삭제"
+- tapOn: "라운드 이름 변경"
+- tapOn:
+    id: "rename_text_input"
+- inputText: "광박 대역전판"
+- tapOn:
+    id: "rename_confirm_button"
+- assertVisible: "광박 대역전판"
+- runFlow: ../common/assert_no_broken_text.yaml
+
+- tapOn: "상세보기.*"
+- assertVisible: "라운드 상세보기"
+- assertVisible: "광박 대역전판"
+- tapOn: "Back"
+
+# 4. 라운드 이름 비워두고 저장 시 기본 이름("1 라운드")으로 복귀
+- tapOn:
+    id: "round_more_button_0"
+- tapOn: "라운드 이름 변경"
+- tapOn:
+    id: "rename_clear_button"
+- tapOn:
+    id: "rename_confirm_button"
+- assertVisible: "1 라운드"
+- assertNotVisible: "광박 대역전판"
+
+# 5. 홈으로 돌아가 게임 카드 3점 버튼(⋮) 탭 ➔ 게임 이름 변경 ➔ 보드 상단 제목 반영 검증
+- tapOn: "Back"
+- assertVisible: "진행내역.*"
+- tapOn:
+    id: "game_more_button_0"
+- assertVisible: "게임 이름 변경"
+- assertVisible: "게임 삭제"
+- tapOn: "게임 이름 변경"
+- tapOn:
+    id: "rename_clear_button"
+- tapOn:
+    id: "rename_text_input"
+- inputText: "금요일밤 고스톱"
+- tapOn:
+    id: "rename_confirm_button"
+- assertVisible: "금요일밤 고스톱"
+- tapOn: "금요일밤 고스톱"
+- assertVisible: "게임시작"
+- assertVisible: "금요일밤 고스톱"
+- runFlow: ../common/assert_no_broken_text.yaml

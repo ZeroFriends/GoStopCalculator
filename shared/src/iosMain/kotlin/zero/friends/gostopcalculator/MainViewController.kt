@@ -82,6 +82,7 @@ fun ScreenViewController(
                     route = targetRoute,
                     popTarget = popTarget,
                     popInclusive = inclusive,
+                    expectedRoute = route,
                 )
             )
         },

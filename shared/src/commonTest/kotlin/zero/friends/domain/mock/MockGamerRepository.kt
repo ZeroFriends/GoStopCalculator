@@ -166,8 +166,21 @@ class MockGamerRepository : GamerRepository {
         notifyFlows(gamer.roundId)
     }
 
-    override suspend fun updateScore(gamer: Gamer, score: Int, go: Int) {
-        mutateGamer(gamer.id) { it.copy(score = score, go = go) }
+    override suspend fun updateScore(
+        gamer: Gamer,
+        score: Int,
+        go: Int,
+        shakeCount: Int,
+        bombCount: Int,
+    ) {
+        mutateGamer(gamer.id) {
+            it.copy(
+                score = score,
+                go = go,
+                shakeCount = shakeCount,
+                bombCount = bombCount,
+            )
+        }
     }
 
     override suspend fun addAccount(gamer: Gamer, account: Int) {

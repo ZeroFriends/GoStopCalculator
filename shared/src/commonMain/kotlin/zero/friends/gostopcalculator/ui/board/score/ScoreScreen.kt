@@ -5,8 +5,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import zero.friends.domain.model.ScoreOption
 import zero.friends.gostopcalculator.ui.board.score.loser.LoserScreen
 import zero.friends.gostopcalculator.ui.board.score.manual.ManualFullScreenDialog
-import zero.friends.gostopcalculator.ui.board.score.manual.ManualViewModel
+import zero.friends.gostopcalculator.ui.board.score.manual.ManualTab
 import zero.friends.gostopcalculator.ui.board.score.scoring.ScoringScreen
 import zero.friends.gostopcalculator.ui.board.score.selling.SellingScreen
 import zero.friends.gostopcalculator.ui.board.score.winner.WinnerScreen
@@ -24,17 +24,16 @@ import zero.friends.gostopcalculator.ui.common.BackHandler
 @Composable
 fun ScoreScreen(
     scoreViewModel: ScoreViewModel,
-    manualViewModel: ManualViewModel? = null,
     onBack: (gameId: Long?) -> Unit,
     onExit: (gameId: Long) -> Unit,
     onComplete: (gameId: Long, roundId: Long) -> Unit,
     onShowToast: (String) -> Unit = {},
-    onOpenManual: (() -> Unit)? = null,
+    onOpenManual: ((initialTab: Int) -> Unit)? = null,
 ) {
-    var openExtraDialog by remember { mutableStateOf(false) }
-    var threeFuckDialog by remember { mutableStateOf(false) }
-    var completeDialog by remember { mutableStateOf(false) }
-    var isNavigating by remember { mutableStateOf(false) }
+    var openExtraDialog by rememberSaveable { mutableStateOf(false) }
+    var threeFuckDialog by rememberSaveable { mutableStateOf(false) }
+    var completeDialog by rememberSaveable { mutableStateOf(false) }
+    var isNavigating by rememberSaveable { mutableStateOf(false) }
 
     BackHandler(enabled = true) {
         if (!isNavigating) {
@@ -44,11 +43,12 @@ fun ScoreScreen(
 
     val uiState by scoreViewModel.uiState().collectAsState()
     val scope = rememberCoroutineScope()
+    val defaultManualTab = defaultManualTabForPhase(uiState.phase).index
 
     val openManualAction: () -> Unit = {
         if (onOpenManual != null) {
-            onOpenManual()
-        } else if (manualViewModel != null) {
+            onOpenManual(defaultManualTab)
+        } else {
             openExtraDialog = true
         }
     }
@@ -94,12 +94,10 @@ fun ScoreScreen(
     if (openExtraDialog) {
         when (uiState.phase) {
             is Selling -> SellingInfoDialog { openExtraDialog = false }
-            else -> if (manualViewModel != null) {
-                ManualFullScreenDialog(
-                    manualViewModel = manualViewModel,
-                    onDismiss = { openExtraDialog = false }
-                )
-            }
+            else -> ManualFullScreenDialog(
+                initialTab = defaultManualTab,
+                onDismiss = { openExtraDialog = false }
+            )
         }
     }
 
@@ -178,8 +176,20 @@ fun ScoreScreen(
                 onNext = { if (!isNavigating) scoreViewModel.onNextPhase(phase) },
                 onBack = { if (!isNavigating) scoreViewModel.onBackPhase() },
                 onExit = handleExit,
-                onUpdateWinner = { gamer, point, go ->
-                    if (!isNavigating) scoreViewModel.updateWinner(gamer, point, go)
+                onAdjustWinnerPoint = { gamerId, delta ->
+                    if (!isNavigating) scoreViewModel.adjustWinnerPoint(gamerId, delta)
+                },
+                onUpdateWinnerPoint = { gamerId, point ->
+                    if (!isNavigating) scoreViewModel.updateWinnerPoint(gamerId, point)
+                },
+                onUpdateWinnerGo = { gamerId, go ->
+                    if (!isNavigating) scoreViewModel.updateWinnerGo(gamerId, go)
+                },
+                onCycleWinnerShake = { gamerId ->
+                    if (!isNavigating) scoreViewModel.cycleWinnerShake(gamerId)
+                },
+                onCycleWinnerBomb = { gamerId ->
+                    if (!isNavigating) scoreViewModel.cycleWinnerBomb(gamerId)
                 },
                 onShowManual = openManualAction
             )
@@ -200,4 +210,10 @@ fun ScoreScreen(
             )
         }
     }
+}
+
+internal fun defaultManualTabForPhase(phase: Phase): ManualTab = when (phase) {
+    is Selling -> ManualTab.MonthlyCards
+    is Scoring, is Winner -> ManualTab.GoAndBonus
+    is Loser -> ManualTab.Penalties
 }

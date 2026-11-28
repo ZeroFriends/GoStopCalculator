@@ -135,4 +135,130 @@ class NavControllerTest {
         navController.clear()
         assertTrue(navController.backStackIds.isEmpty())
     }
+
+    @Test
+    fun `navigateFrom guards against duplicate or stale callbacks after route changes`() {
+        val navController = NavController(Route.History)
+        navController.navigate(Route.Board.Main(1L))
+        navController.navigate(Route.Board.Prepare(1L))
+
+        assertTrue(
+            navController.navigateFrom(
+                expectedRoute = Route.Board.Prepare(1L),
+                route = Route.Board.Score(1L, 10L),
+            ) {
+                popUpTo<Route.Board.Main> { inclusive = false }
+            }
+        )
+        assertEquals(Route.Board.Score(1L, 10L), navController.currentRoute)
+        assertEquals(3, navController.backStackIds.size)
+
+        // Duplicate callback from Prepare after Score is already current
+        assertFalse(
+            navController.navigateFrom(
+                expectedRoute = Route.Board.Prepare(1L),
+                route = Route.Board.Score(1L, 11L),
+            ) {
+                popUpTo<Route.Board.Main> { inclusive = false }
+            }
+        )
+        assertEquals(Route.Board.Score(1L, 10L), navController.currentRoute)
+        assertEquals(3, navController.backStackIds.size)
+
+        // Stale async Prepare callback arriving after user navigated back to Board.Main
+        navController.popBackStack()
+        assertEquals(Route.Board.Main(1L), navController.currentRoute)
+        assertFalse(
+            navController.navigateFrom(
+                expectedRoute = Route.Board.Prepare(1L),
+                route = Route.Board.Score(1L, 12L),
+            )
+        )
+        assertEquals(Route.Board.Main(1L), navController.currentRoute)
+    }
+
+    @Test
+    fun `popBackStackFrom pops once for expected route and calls onEmpty on root`() {
+        val navController = NavController(Route.History)
+        navController.navigate(Route.Board.Main(1L))
+        navController.navigate(Route.Board.Prepare(1L))
+
+        assertTrue(navController.popBackStackFrom(Route.Board.Prepare(1L)))
+        assertEquals(Route.Board.Main(1L), navController.currentRoute)
+
+        // Duplicate back event from already-popped Prepare is ignored
+        assertFalse(navController.popBackStackFrom(Route.Board.Prepare(1L)))
+        assertEquals(Route.Board.Main(1L), navController.currentRoute)
+
+        assertTrue(navController.popBackStackFrom(Route.Board.Main(1L)))
+        assertEquals(Route.History, navController.currentRoute)
+
+        var emptyClosed = 0
+        assertTrue(navController.popBackStackFrom(Route.History) { emptyClosed++ })
+        assertEquals(1, emptyClosed)
+    }
+
+    @Test
+    fun `navigateFrom and popBackStackFrom return false after clear`() {
+        val navController = NavController(Route.History)
+        navController.clear()
+
+        assertFalse(navController.navigateFrom(Route.History, Route.Precondition.Player))
+        assertFalse(navController.popBackStackFrom(Route.History))
+    }
+
+    @Test
+    fun `native delegate forwards navigateFrom and popBackStackFrom`() {
+        val commands = mutableListOf<NativeNavCommand>()
+        var popCount = 0
+        val navController = NavController(
+            startDestination = Route.Splash,
+            onNativeNavigate = { commands += it },
+            onNativePop = { popCount++ },
+        )
+
+        assertTrue(
+            navController.navigateFrom(
+                expectedRoute = Route.Splash,
+                route = Route.History,
+            ) {
+                popUpTo<Route.Splash> { inclusive = true }
+            }
+        )
+        assertTrue(commands.isEmpty())
+        assertEquals(Route.History, navController.currentRoute)
+
+        // Duplicate Splash -> History transition must still be guarded on Compose _backStack even in native delegate mode
+        assertFalse(
+            navController.navigateFrom(
+                expectedRoute = Route.Splash,
+                route = Route.History,
+            ) {
+                popUpTo<Route.Splash> { inclusive = true }
+            }
+        )
+        assertEquals(Route.History, navController.currentRoute)
+
+        assertTrue(
+            navController.navigateFrom(
+                expectedRoute = Route.Board.Prepare(5L),
+                route = Route.Board.Score(5L, 9L),
+            ) {
+                popUpTo<Route.Board.Main> { inclusive = false }
+            }
+        )
+        assertEquals(
+            listOf(
+                NativeNavCommand(
+                    route = Route.Board.Score(5L, 9L),
+                    popTarget = NativePopTarget.BOARD_MAIN,
+                    popInclusive = false,
+                    expectedRoute = Route.Board.Prepare(5L),
+                )
+            ),
+            commands,
+        )
+        assertTrue(navController.popBackStackFrom(Route.Board.Prepare(5L)))
+        assertEquals(1, popCount)
+    }
 }

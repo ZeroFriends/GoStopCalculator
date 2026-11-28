@@ -354,4 +354,75 @@ class GroundTruthOracleTest {
         assertEquals(-5000, gamerRepository.getGamerAccount(3))
         assertEquals(0, gamerRepository.getGamerAccount(4))
     }
+
+    @Test
+    fun `Oracle Case 17 - 맞고 2인 5점 흔들기 1회 폭탄 1회 피박 8배 정산`() = runTest {
+        val gameId = 1L; val roundId = 17L
+        // 2인 맞고: 5점 × 100원 × 흔들기1(2) × 폭탄1(2) = 2,000원, 피박(2) 적용 -> 4,000원
+        val winner = Gamer(id = 1, roundId = roundId, score = 5, shakeCount = 1, bombCount = 1)
+        val loser = Gamer(id = 2, roundId = roundId, loserOption = listOf(LoserOption.PeaBak))
+
+        gamerRepository.setRoundGamers(roundId, listOf(winner, loser))
+        setupRules(gameId, score = 100, sell = 0)
+
+        useCase(gameId, roundId, seller = null, winner = winner)
+
+        assertEquals(4000, gamerRepository.getGamerAccount(1))
+        assertEquals(-4000, gamerRepository.getGamerAccount(2))
+    }
+
+    @Test
+    fun `Oracle Case 18 - 고스톱 3인 2점 3고 흔들기1 폭탄1 고박 독박 정산`() = runTest {
+        val gameId = 1L; val roundId = 18L
+        // 기준 판돈 = (2+3)*2 * 100 * 4(흔들기·폭탄) = 4,000원
+        // 패자1(무박): 원래 4,000원 -> 고박 대납으로 0원
+        // 고박자(광박): 본인 4,000*2 = 8,000원 + 대납 4,000원 = -12,000원
+        val winner = Gamer(id = 1, roundId = roundId, score = 2, go = 3, shakeCount = 1, bombCount = 1)
+        val exemptedLoser = Gamer(id = 2, roundId = roundId)
+        val goBakLoser = Gamer(
+            id = 3,
+            roundId = roundId,
+            loserOption = listOf(LoserOption.LightBak, LoserOption.GoBak),
+        )
+
+        gamerRepository.setRoundGamers(roundId, listOf(winner, exemptedLoser, goBakLoser))
+        setupRules(gameId, score = 100, sell = 0)
+
+        useCase(gameId, roundId, seller = null, winner = winner)
+
+        assertEquals(12000, gamerRepository.getGamerAccount(1))
+        assertEquals(0, gamerRepository.getGamerAccount(2))
+        assertEquals(-12000, gamerRepository.getGamerAccount(3))
+    }
+
+    @Test
+    fun `Oracle Case 19 - 4인 1광팔이 첫뻑과 흔들기2 폭탄1 동시 정산 시 보조 정산은 배수 미적용`() = runTest {
+        val gameId = 1L; val roundId = 19L
+        // 점당 100, 뻑 300, 광팔기 200 (2장)
+        // 승자(2점, 흔들기 2회 + 폭탄 1회 = ×8): 기준 판돈 2 * 100 * 8 = 1,600원
+        // 패자 2명: 각 -1,600원 -> 승자 +3,200원
+        // 첫 뻑(승자 보유): 300원 × 2명 = +600원 (흔들기·폭탄 ×8 미적용)
+        // 광팔이(플레이어 4, 2장): 400원 × 3명 = +1,200원 (승자·패자2 각 -400원)
+        val seller = Gamer(id = 4, roundId = roundId, score = 2)
+        val winner = Gamer(
+            id = 1,
+            roundId = roundId,
+            score = 2,
+            shakeCount = 2,
+            bombCount = 1,
+            scoreOption = listOf(ScoreOption.FirstFuck),
+        )
+        val loser1 = Gamer(id = 2, roundId = roundId)
+        val loser2 = Gamer(id = 3, roundId = roundId)
+
+        gamerRepository.setRoundGamers(roundId, listOf(winner, loser1, loser2, seller))
+        setupRules(gameId, score = 100, fuck = 300, sell = 200)
+
+        useCase(gameId, roundId, seller = seller, winner = winner)
+
+        assertEquals(3200 + 600 - 400, gamerRepository.getGamerAccount(1))
+        assertEquals(-1600 - 300 - 400, gamerRepository.getGamerAccount(2))
+        assertEquals(-1600 - 300 - 400, gamerRepository.getGamerAccount(3))
+        assertEquals(1200, gamerRepository.getGamerAccount(4))
+    }
 }
