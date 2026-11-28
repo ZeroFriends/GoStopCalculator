@@ -68,11 +68,23 @@
     <string name="over_game_name_alert">Cannot exceed 16 characters.</string>
     <string name="over_player_name_alert">Cannot exceed 12 characters.</string>
     <string name="error_msg_phase_not_exist">Phase does not exist.</string>
-    <string name="help_score">Per Point : At the end of the game, calculate points and pay the corresponding amount to the winner. (Winner points x Rate per point)</string>
-    <string name="help_fuck">Ppeok : Drawing a matching card on the first turn results in a First Ppeok, receiving the configured amount from others. Consecutive misses double the amount (Double Ppeok), and three consecutive misses (Triple Ppeok) awards 4x and wins the game.</string>
-    <string name="help_ddaddak">Ddadak : Matching two cards of the same month on the table and flipping another matching card from the deck to capture all four cards.</string>
-    <string name="help_ddaddak_sub">Unlike Ppeok, consecutive Ddadak does not award extra bonus payouts.</string>
-    <string name="help_selling">Selling Brights : In 4-player GoStop, all players except three must sit out, selling their bright cards (Gwang) for points.</string>
+    <string name="rule_help_title">Rule Amount Guide</string>
+    <string name="rule_help_subtitle">Check how each payout option settles before starting</string>
+    <string name="rule_help_badge_required">Required</string>
+    <string name="rule_help_badge_instant">Instant Payout</string>
+    <string name="rule_help_badge_auto_x3">Auto · 3x/pt</string>
+    <string name="rule_help_badge_4p_only">4P Only</string>
+    <string name="rule_help_score_desc">Settle winner&apos;s final score × per-point rate</string>
+    <string name="rule_help_score_example_default_format">Ex: %1$d pts × %2$s won = %3$s won (sample)</string>
+    <string name="rule_help_score_example_live_format">Current: %1$d pts × %2$s won = %3$s won</string>
+    <string name="rule_help_fuck_desc">Collect immediately from all other players starting from turn 1</string>
+    <string name="rule_help_fuck_chip_1">1st Ppeok ×1</string>
+    <string name="rule_help_fuck_chip_2">2nd ×2</string>
+    <string name="rule_help_fuck_chip_3">3rd ×4 Win</string>
+    <string name="rule_help_ddadak_desc">Sweep 4 same-month cards on turn 1 to collect 3× per-point rate</string>
+    <string name="rule_help_ddadak_note">* Unlike Ppeok, consecutive Ddadak gives no extra bonus.</string>
+    <string name="rule_help_selling_desc">In 4P games, 1 sitting-out player sells Bright/2-Pi cards at this unit rate</string>
+    <string name="rule_help_manual_shortcut">View Full GoStop Manual →</string>
     <string name="dialog_text_complete">Calculate settlement for this round?</string>
     <string name="manual_title">Scoring Rules</string>
     <string name="manual">GoStop Guide</string>

@@ -263,6 +263,13 @@ fun RouteScreenContent(
                     )
                 },
                 onBack = onBack,
+                onOpenManual = {
+                    onNavigate(
+                        Route.Board.Manual(initialTab = ManualTab.GameFlow.index),
+                        NativePopTarget.NONE,
+                        false,
+                    )
+                },
             )
         }
 

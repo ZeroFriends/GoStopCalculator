@@ -68,11 +68,23 @@
     <string name="over_game_name_alert">16자를 초과할 수 없습니다.</string>
     <string name="over_player_name_alert">12자를 초과할 수 없습니다.</string>
     <string name="error_msg_phase_not_exist">없는 페이즈 입니다.</string>
-    <string name="help_score">점 당 : 게임이 끝나면 점수를 계산해 그에 해당하는 금액을 승자에게 지불. (승자점수 x 점 당)</string>
-    <string name="help_fuck">뻑 : 게임이 시작되고 처음 패에서 뻑이 났으면 첫뻑이라 하며, 설정된 금액을 다른 사람에게서 받는다. 연속으로 뻑이 났으면 연뻑이라 하며, 추가로 약속된 금액의 2배, 뻑이 3번 나는 경우 삼연뻑이라 하며, 설정 금액의 4배를 받고 게임승리.</string>
-    <string name="help_ddaddak">따닥 : 바닥에 같은 월의 패가 2장 깔려 있을 때, 이를 먹으려고 패를 내려놓고 더미에서 뒤집었을 때 같은 월이 나와서 4장이 한꺼번에 나온 경우, 이를 따닥이라고 한다.</string>
-    <string name="help_ddaddak_sub">뻑과는 달리 연속으로 따닥을 했다고 돈을 추가로 받지는 않는다.</string>
-    <string name="help_selling">광팔기 : 4인 고스톱을 치는 경우, 세 명을 제외한 나머지는 게임에서 빠져야 하는데 이를 광팔이라고 한다.</string>
+    <string name="rule_help_title">금액 설정 도움말</string>
+    <string name="rule_help_subtitle">판 시작 전 각 항목의 정산 기준을 확인하세요</string>
+    <string name="rule_help_badge_required">필수</string>
+    <string name="rule_help_badge_instant">즉시 정산</string>
+    <string name="rule_help_badge_auto_x3">자동 · 점당×3</string>
+    <string name="rule_help_badge_4p_only">4인 전용</string>
+    <string name="rule_help_score_desc">승자 최종 점수 × 점당 금액으로 정산</string>
+    <string name="rule_help_score_example_default_format">예: %1$d점 × %2$s원 = %3$s원 (예시)</string>
+    <string name="rule_help_score_example_live_format">현재 설정: %1$d점 × %2$s원 = %3$s원</string>
+    <string name="rule_help_fuck_desc">첫 턴부터 연속 뻑 발생 시 다른 참여자 전원에게 즉시 수령</string>
+    <string name="rule_help_fuck_chip_1">첫뻑 ×1</string>
+    <string name="rule_help_fuck_chip_2">연뻑 ×2</string>
+    <string name="rule_help_fuck_chip_3">삼연뻑 ×4 승리</string>
+    <string name="rule_help_ddadak_desc">첫 턴에 바닥 같은 월 2장+2장을 한 번에 먹으면 점당×3 즉시 수령</string>
+    <string name="rule_help_ddadak_note">* 뻑과 달리 연속 따닥은 추가금이 없습니다.</string>
+    <string name="rule_help_selling_desc">4인 게임 시 휴식자 1명이 손패의 광·쌍피를 장당 설정 금액으로 판매</string>
+    <string name="rule_help_manual_shortcut">전체 고스톱 설명서 보기 →</string>
     <string name="dialog_text_complete">해당 라운드의 금액 계산을 하시겠습니까?</string>
     <string name="manual_title">점수 계산 법</string>
     <string name="manual">고스톱 설명서</string>

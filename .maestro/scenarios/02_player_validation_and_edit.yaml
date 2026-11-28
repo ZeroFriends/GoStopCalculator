@@ -47,12 +47,21 @@ appId: zero.friends.gostopcalculator
 - assertVisible: "2명"
 - runFlow: ../common/assert_no_broken_text.yaml
 
-# 규칙 설정(2/2) 진입 및 도움말 다이얼로그 검증 후 히스토리 복귀
+# 규칙 설정(2/2) 진입 및 도움말 다이얼로그·설명서 바로가기 검증 후 히스토리 복귀
 - tapOn: "다음"
 - assertVisible: "게임규칙.*"
 - assertVisible: "게임 설정 \\(2/2\\)"
 - tapOn: "도움말"
-- assertVisible: "점 당 : .*"
+- assertVisible: "금액 설정 도움말"
+- assertVisible: "예: 5점 × 100원 = 500원 \\(예시\\)"
+- assertVisible: "삼연뻑 ×4 승리"
+- tapOn:
+    id: "rule_help_manual_shortcut"
+- assertVisible: "고스톱 설명서"
+- tapOn: "Back"
+- assertVisible: "게임규칙.*"
+- assertNotVisible: "금액 설정 도움말"
+- tapOn: "도움말"
 - tapOn: "확인"
 - assertVisible: "게임규칙.*"
 - tapOn: "Back"

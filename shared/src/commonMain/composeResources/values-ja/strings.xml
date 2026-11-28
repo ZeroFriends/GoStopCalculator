@@ -68,11 +68,23 @@
     <string name="over_game_name_alert">16文字を超えることはできません。</string>
     <string name="over_player_name_alert">12文字を超えることはできません。</string>
     <string name="error_msg_phase_not_exist">存在しないフェーズです。</string>
-    <string name="help_score">点あたり : ゲーム終了時に点数を計算し、その金額を勝者に支払います。(勝者点数 x 点単価)</string>
-    <string name="help_fuck">プッ : 初手で場札と山札が一致したプッ（初プッ）は設定金額を受け取ります。連続すると2倍（連プッ）、3連続（三連プッ）で4倍を受け取り自動勝利となります。</string>
-    <string name="help_ddaddak">タダク : 場の2枚を取り、さらに山札から同じ月の札をめくって4枚すべて獲得した状態です。</string>
-    <string name="help_ddaddak_sub">プッと異なり、連続でタダクをしても追加のボーナスはありません。</string>
-    <string name="help_selling">光売り : 4人プレイ時、3人以外はゲームから抜ける必要があります。これを光売りと呼びます。</string>
+    <string name="rule_help_title">金額設定のヘルプ</string>
+    <string name="rule_help_subtitle">対局前に各項目の精算基準を確認できます</string>
+    <string name="rule_help_badge_required">必須</string>
+    <string name="rule_help_badge_instant">即時精算</string>
+    <string name="rule_help_badge_auto_x3">自動 · 単価×3</string>
+    <string name="rule_help_badge_4p_only">4人専用</string>
+    <string name="rule_help_score_desc">勝者の最終点数 × 点単価で精算します</string>
+    <string name="rule_help_score_example_default_format">例: %1$d点 × %2$sウォン = %3$sウォン（例）</string>
+    <string name="rule_help_score_example_live_format">現在設定: %1$d点 × %2$sウォン = %3$sウォン</string>
+    <string name="rule_help_fuck_desc">初手から連続プッ発生時に他の参加者全員から即時受け取ります</string>
+    <string name="rule_help_fuck_chip_1">初プッ ×1</string>
+    <string name="rule_help_fuck_chip_2">連プッ ×2</string>
+    <string name="rule_help_fuck_chip_3">三連プッ ×4 勝利</string>
+    <string name="rule_help_ddadak_desc">初手で同月の場札2枚＋山札を合わせて4枚取ると単価×3を即時獲得</string>
+    <string name="rule_help_ddadak_note">* プッと異なり、連続タダクによる追加ボーナスはありません。</string>
+    <string name="rule_help_selling_desc">4人対局時、休み1名が手札の光・双ピを1枚あたりの設定額で売却</string>
+    <string name="rule_help_manual_shortcut">ゴーストップ説明書をすべて見る →</string>
     <string name="dialog_text_complete">このラウンドの精算を計算しますか？</string>
     <string name="manual_title">点数計算のルール</string>
     <string name="manual">ゴーストップ説明書</string>
