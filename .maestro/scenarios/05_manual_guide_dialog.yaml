@@ -1,7 +1,7 @@
 appId: zero.friends.gostopcalculator
 ---
 # ==========================================
-# 시나리오: 고스톱 설명서(Manual) 다이얼로그 확인 및 닫기
+# 시나리오: 통합 고스톱 설명서(홈·보드·점수기록) & 5개 탭·월별 패 검증
 # ==========================================
 
 - launchApp:
@@ -10,7 +10,7 @@ appId: zero.friends.gostopcalculator
 
 - runFlow: ../common/wait_for_history.yaml
 
-# 히스토리 상단 Guide 버튼 클릭 시 이용 가이드 다이얼로그 노출 및 페이지 전환/닫기 검증
+# 1. 히스토리 상단 Guide 버튼 클릭 시 이용 가이드 다이얼로그 노출 및 페이지 전환/닫기 검증
 - tapOn: "Guide"
 - assertVisible: "다음"
 - assertVisible: "Close"
@@ -19,15 +19,38 @@ appId: zero.friends.gostopcalculator
 - tapOn: "Close"
 - assertVisible: "시작하기"
 
+# 2. 홈 상단 "고스톱 룰" 버튼으로 5개 탭 통합 설명서 진입 및 광팔이 바로가기·월별 패 필터 확인
+- tapOn:
+    id: "history_manual_button"
+- assertVisible: "고스톱 설명서"
+- assertVisible: "인원별 세팅 한눈에"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn:
+    id: "manual_selling_shortcut"
+- assertVisible: "광 \\(5장\\)"
+- tapOn:
+    id: "manual_filter_all"
+- assertVisible: "1월 · 송학"
+- scrollUntilVisible:
+    element: "9월 · 국진"
+    direction: DOWN
+    timeout: 15000
+- assertVisible: "9월 · 국진"
+- tapOn:
+    id: "manual_filter_selling"
+- assertVisible: "광 \\(5장\\)"
+- tapOn: "Back"
+- assertVisible: "시작하기"
+
 - tapOn: "시작하기"
 
-# 플레이어 3명 추가
+# 3. 플레이어 3명 추가
 - tapOn: "\\+ 플레이어 추가"
 - tapOn: "\\+ 플레이어 추가"
 - tapOn: "\\+ 플레이어 추가"
 - tapOn: "다음"
 
-# 룰 설정 (점당 100원 입력)
+# 4. 룰 설정 (점당 100원 입력)
 - assertVisible: "게임규칙.*"
 - runFlow: ../common/assert_no_broken_text.yaml
 - tapOn:
@@ -36,27 +59,29 @@ appId: zero.friends.gostopcalculator
 - tapOn: "게임규칙.*"
 - tapOn: "완료"
 
-# 보드 진입 ➔ 판 시작
+# 5. 보드 진입 ➔ "룰·화투패" 진입점(족보·점수 탭 기본 오픈) 확인
+- tapOn:
+    id: "board_manual_button"
+- assertVisible: "고스톱 설명서"
+- assertVisible: "5광"
+- runFlow: ../common/assert_no_broken_text.yaml
+- tapOn: "Back"
+
+# 6. 판 시작 ➔ 점수 기록 화면에서 "고스톱 설명서"(고·배수 탭 기본 오픈) 진입 및 닫기
 - tapOn: "게임시작"
 - tapOn: "플레이어 1"
 - tapOn: "플레이어 2"
 - tapOn: "플레이어 3"
 - tapOn: "완료"
 
-# 점수 기록 화면에서 "고스톱 설명서" 클릭
 - assertVisible: "점수기록"
 - runFlow: ../common/assert_no_broken_text.yaml
 - assertVisible: "고스톱 설명서"
 - tapOn: "고스톱 설명서"
 
-# 설명서 전체화면 다이얼로그 노출 확인
-- assertVisible: "점수 계산 법"
+- assertVisible: "고 \\(Go\\)"
 - runFlow: ../common/assert_no_broken_text.yaml
-- assertVisible: "고스톱 설명서"
 
-# 뒤로가기로 설명서 닫기
 - tapOn: "Back"
-
-# 점수 기록 화면으로 정상 복귀 확인
 - assertVisible: "점수기록"
 - runFlow: ../common/assert_no_broken_text.yaml

@@ -354,6 +354,11 @@ final class NativeNavigationController: UINavigationController, UINavigationCont
                 self.popToRootViewController(animated: true)
                 return
             }
+            if NativeNavigationKt.isManualRoute(route: targetRoute),
+               let topHostVC = self.topViewController as? NativeHostViewController,
+               NativeNavigationKt.isManualRoute(route: topHostVC.route) {
+                return
+            }
 
             let current = self.viewControllers
             var newControllers = current

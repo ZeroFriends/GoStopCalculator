@@ -4,7 +4,6 @@ import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 import zero.friends.data.repository.GameRepositoryImpl
 import zero.friends.data.repository.GamerRepositoryImpl
-import zero.friends.data.repository.ManualRepositoryImpl
 import zero.friends.data.repository.PlayerRepositoryImpl
 import zero.friends.data.repository.RoundRepositoryImpl
 import zero.friends.data.repository.RuleRepositoryImpl
@@ -20,7 +19,6 @@ import zero.friends.data.source.preference.Preference
 import zero.friends.domain.preference.AppPreference
 import zero.friends.domain.repository.GameRepository
 import zero.friends.domain.repository.GamerRepository
-import zero.friends.domain.repository.ManualRepository
 import zero.friends.domain.repository.PlayerRepository
 import zero.friends.domain.repository.RoundRepository
 import zero.friends.domain.repository.RuleRepository
@@ -77,9 +75,6 @@ abstract class DataComponent {
 
     @Provides
     fun provideRoundRepository(dao: RoundDao): RoundRepository = RoundRepositoryImpl(dao)
-
-    @Provides
-    fun provideManualRepository(): ManualRepository = ManualRepositoryImpl()
 
     @Provides
     fun provideCleanEmptyRoundsUseCase(

@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -15,11 +16,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
@@ -29,6 +32,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -78,9 +82,11 @@ import zero.friends.gostopcalculator.shared.generated.resources.game_more_cd_for
 import zero.friends.gostopcalculator.shared.generated.resources.guide
 import zero.friends.gostopcalculator.shared.generated.resources.history
 import zero.friends.gostopcalculator.shared.generated.resources.history_reorder_hint
+import zero.friends.gostopcalculator.shared.generated.resources.ic_menu_book
 import zero.friends.gostopcalculator.shared.generated.resources.ic_more_black
 import zero.friends.gostopcalculator.shared.generated.resources.info_new_game_start
 import zero.friends.gostopcalculator.shared.generated.resources.manage_game_label
+import zero.friends.gostopcalculator.shared.generated.resources.manual_entry_home
 import zero.friends.gostopcalculator.shared.generated.resources.move_down_action
 import zero.friends.gostopcalculator.shared.generated.resources.move_up_action
 import zero.friends.gostopcalculator.shared.generated.resources.new_game
@@ -93,6 +99,8 @@ import zero.friends.gostopcalculator.shared.generated.resources.start
 import zero.friends.gostopcalculator.shared.generated.resources.today_game
 import zero.friends.gostopcalculator.ui.board.score.common.ScoreMutedText
 import zero.friends.gostopcalculator.ui.board.score.common.ScorePrimaryRed
+import zero.friends.gostopcalculator.ui.board.score.common.ScoreSoftPinkBg
+import zero.friends.gostopcalculator.ui.board.score.common.ScoreSoftPinkBorder
 import zero.friends.gostopcalculator.ui.common.BackHandler
 import zero.friends.gostopcalculator.ui.common.EmptyHistory
 import zero.friends.gostopcalculator.ui.common.GoStopButton
@@ -112,6 +120,7 @@ private sealed class HistoryEvent {
 
     object StartGame : HistoryEvent()
     object ShowGuide : HistoryEvent()
+    object ShowManual : HistoryEvent()
     class ShowRound(val game: Game) : HistoryEvent()
     class ShowMore(val game: Game) : HistoryEvent()
     class ReorderGames(val orderedGameIds: List<Long>) : HistoryEvent()
@@ -122,6 +131,7 @@ fun HistoryScreen(
     viewModel: HistoryViewModel,
     onStartGame: () -> Unit = {},
     onShowRound: (Game) -> Unit = {},
+    onOpenManual: () -> Unit = {},
     onCloseApp: () -> Unit = {},
     showDebugAdToggle: Boolean = false,
     onToggleDebugAd: (() -> Unit)? = null
@@ -201,6 +211,7 @@ fun HistoryScreen(
                 when (event) {
                     is HistoryEvent.ShowRound -> onShowRound(event.game)
                     HistoryEvent.ShowGuide -> manualShowGuide = true
+                    HistoryEvent.ShowManual -> onOpenManual()
                     HistoryEvent.StartGame -> onStartGame()
                     is HistoryEvent.ShowMore -> {
                         lastSheetGameId = event.game.id
@@ -291,32 +302,75 @@ private fun NewGame(
     onToggleDebugAd: (() -> Unit)? = null
 ) {
     Column(Modifier.padding(16.dp)) {
-        SubTitleText(stringResource(Res.string.new_game))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SubTitleText(stringResource(Res.string.new_game))
+            if (showDebugAdToggle) {
+                val isDebugAdEnabled = GoogleAdmob.isDebugAdEnabled
+                val onToggle = onToggleDebugAd ?: {
+                    GoogleAdmob.isDebugAdEnabled = !GoogleAdmob.isDebugAdEnabled
+                }
+                RoundedCornerText(
+                    text = if (isDebugAdEnabled) "Ad ON" else "Ad OFF",
+                    color = if (isDebugAdEnabled) Color(0xFFFF5252) else Color(0xFF9E9E9E),
+                    fontSize = 12.sp,
+                    onClick = onToggle
+                )
+            }
+        }
         Spacer(modifier = Modifier.height(4.dp))
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TitleText(text = stringResource(Res.string.today_game))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (showDebugAdToggle) {
-                    val isDebugAdEnabled = GoogleAdmob.isDebugAdEnabled
-                    val onToggle = onToggleDebugAd ?: {
-                        GoogleAdmob.isDebugAdEnabled = !GoogleAdmob.isDebugAdEnabled
+            Box(modifier = Modifier.weight(1f)) {
+                TitleText(text = stringResource(Res.string.today_game))
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .defaultMinSize(minHeight = 36.dp)
+                        .clip(CircleShape)
+                        .testTag("history_manual_button")
+                        .clickable(role = Role.Button, onClick = { event(HistoryEvent.ShowManual) }),
+                    shape = CircleShape,
+                    color = ScoreSoftPinkBg,
+                    border = BorderStroke(1.dp, ScoreSoftPinkBorder),
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_menu_book),
+                            contentDescription = null,
+                            tint = ScorePrimaryRed,
+                            modifier = Modifier.size(14.dp),
+                        )
+                        Text(
+                            text = stringResource(Res.string.manual_entry_home),
+                            color = ScorePrimaryRed,
+                            fontSize = 12.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            softWrap = false,
+                        )
                     }
-                    RoundedCornerText(
-                        text = if (isDebugAdEnabled) "Ad ON" else "Ad OFF",
-                        color = if (isDebugAdEnabled) Color(0xFFFF5252) else Color(0xFF9E9E9E),
-                        fontSize = 14.sp,
-                        onClick = onToggle
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
                 }
                 RoundedCornerText(
                     text = stringResource(Res.string.guide),
                     color = Color(0xFFFF5252),
                     fontSize = 14.sp,
+                    modifier = Modifier.defaultMinSize(minHeight = 36.dp),
                     onClick = { event(HistoryEvent.ShowGuide) }
                 )
             }

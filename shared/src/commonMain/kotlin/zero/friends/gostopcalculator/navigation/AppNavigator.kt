@@ -28,7 +28,7 @@ import zero.friends.gostopcalculator.ui.board.rule.RuleLogViewModel
 import zero.friends.gostopcalculator.ui.board.score.ScoreScreen
 import zero.friends.gostopcalculator.ui.board.score.ScoreViewModel
 import zero.friends.gostopcalculator.ui.board.score.manual.ManualScreen
-import zero.friends.gostopcalculator.ui.board.score.manual.ManualViewModel
+import zero.friends.gostopcalculator.ui.board.score.manual.ManualTab
 import zero.friends.gostopcalculator.ui.history.HistoryScreen
 import zero.friends.gostopcalculator.ui.history.HistoryViewModel
 import zero.friends.gostopcalculator.ui.precondition.PlayerScreen
@@ -60,6 +60,9 @@ fun AppNavigator(
         )
         val navigateRoute: (Route, NativePopTarget, Boolean) -> Unit = { targetRoute, popTarget, inclusive ->
             navController.navigate(targetRoute) {
+                if (targetRoute is Route.Board.Manual) {
+                    launchSingleTop = true
+                }
                 when (popTarget) {
                     NativePopTarget.NONE -> Unit
                     NativePopTarget.HISTORY -> popUpTo<Route.History> { this.inclusive = inclusive }
@@ -109,6 +112,11 @@ fun AppNavigator(
                     },
                     onShowRound = { game ->
                         navController.navigate(Route.Board.Main(game.id))
+                    },
+                    onOpenManual = {
+                        navController.navigate(Route.Board.Manual()) {
+                            launchSingleTop = true
+                        }
                     },
                     onCloseApp = onCloseApp,
                     showDebugAdToggle = showDebugAdToggle,
@@ -283,6 +291,9 @@ fun RouteScreenContent(
                 },
                 openRule = { gameId ->
                     onNavigate(Route.Board.RuleLog(gameId), NativePopTarget.NONE, false)
+                },
+                openManual = {
+                    onNavigate(Route.Board.Manual(initialTab = ManualTab.CardScores.index), NativePopTarget.NONE, false)
                 }
             )
         }
@@ -309,17 +320,9 @@ fun RouteScreenContent(
             val scoreViewModel: ScoreViewModel = viewModel(key = "${route.gameId}_${route.roundId}") {
                 appComponent.scoreViewModelFactory(route.gameId, route.roundId)
             }
-            val manualViewModel: ManualViewModel? = if (useNativeNavigation) {
-                null
-            } else {
-                viewModel(key = "${route.gameId}_${route.roundId}_manual") {
-                    appComponent.manualViewModel
-                }
-            }
 
             ScoreScreen(
                 scoreViewModel = scoreViewModel,
-                manualViewModel = manualViewModel,
                 onBack = { onBack() },
                 onExit = { gameId ->
                     onNavigate(
@@ -338,7 +341,9 @@ fun RouteScreenContent(
                     }
                 },
                 onOpenManual = if (useNativeNavigation) {
-                    { onNavigate(Route.Board.Manual, NativePopTarget.NONE, false) }
+                    { initialTab ->
+                        onNavigate(Route.Board.Manual(initialTab = initialTab), NativePopTarget.NONE, false)
+                    }
                 } else {
                     null
                 },
@@ -399,12 +404,8 @@ fun RouteScreenContent(
         }
 
         is Route.Board.Manual -> {
-            val manualViewModel: ManualViewModel = viewModel(key = "manual_screen") {
-                appComponent.manualViewModel
-            }
-
             ManualScreen(
-                manualViewModel = manualViewModel,
+                initialTab = route.initialTab,
                 onBack = onBack,
             )
         }

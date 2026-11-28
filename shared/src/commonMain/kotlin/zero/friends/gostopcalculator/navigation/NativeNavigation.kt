@@ -85,6 +85,8 @@ fun defaultNativeTopBarConfig(route: Route): NativeTopBarConfig = when (route) {
 
 fun isHistoryRoute(route: Route): Boolean = route is Route.History
 
+fun isManualRoute(route: Route): Boolean = route is Route.Board.Manual
+
 fun isBoardMainRoute(route: Route): Boolean = route is Route.Board.Main
 
 fun isSameBoardMainRoute(first: Route, second: Route): Boolean =

@@ -14,6 +14,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
+import zero.friends.gostopcalculator.ui.common.enableTestTagsAsResourceId
 
 @Composable
 actual fun FullScreenDialog(onDismiss: () -> Unit, content: @Composable () -> Unit) {
@@ -50,7 +51,11 @@ actual fun FullScreenDialog(onDismiss: () -> Unit, content: @Composable () -> Un
                     }
                 }
             }
-            Surface(modifier = Modifier.fillMaxSize()) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .enableTestTagsAsResourceId()
+            ) {
                 content()
             }
         }

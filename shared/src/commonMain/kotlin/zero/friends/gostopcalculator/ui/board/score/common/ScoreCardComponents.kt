@@ -255,7 +255,7 @@ fun StatusPillBadge(
     fontSize: TextUnit = 11.sp,
     maxLines: Int = 1,
 ) {
-    val shape = RoundedCornerShape(100.dp)
+    val shape = if (maxLines > 1) RoundedCornerShape(8.dp) else RoundedCornerShape(100.dp)
     Surface(
         modifier = modifier,
         shape = shape,
@@ -280,6 +280,7 @@ fun StatusPillBadge(
                 fontSize = fontSize,
                 fontWeight = FontWeight.Bold,
                 color = textColor,
+                textAlign = TextAlign.Center,
                 maxLines = maxLines,
                 softWrap = maxLines > 1,
                 overflow = TextOverflow.Ellipsis

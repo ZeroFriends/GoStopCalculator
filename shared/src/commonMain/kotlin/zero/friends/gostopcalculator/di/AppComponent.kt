@@ -12,7 +12,6 @@ import zero.friends.gostopcalculator.ui.board.result.RoundTraceFormatter
 import zero.friends.gostopcalculator.ui.board.result.ScreenType
 import zero.friends.gostopcalculator.ui.board.score.ScoreViewModel
 import zero.friends.gostopcalculator.ui.board.score.end.EndViewModel
-import zero.friends.gostopcalculator.ui.board.score.manual.ManualViewModel
 import zero.friends.gostopcalculator.ui.history.HistoryViewModel
 import zero.friends.gostopcalculator.ui.precondition.PlayerViewModel
 import zero.friends.gostopcalculator.ui.precondition.RuleViewModel
@@ -25,7 +24,6 @@ abstract class AppComponent(
 ) {
     abstract val historyViewModel: HistoryViewModel
     abstract val playerViewModel: PlayerViewModel
-    abstract val manualViewModel: ManualViewModel
     abstract val guideViewModel: GuideViewModel
     abstract val screenCaptureManager: ScreenCaptureManager
     abstract val roundTraceFormatter: RoundTraceFormatter
