@@ -23,10 +23,7 @@ import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +47,7 @@ import zero.friends.gostopcalculator.shared.generated.resources.complete
 import zero.friends.gostopcalculator.shared.generated.resources.fail_over_gamer
 import zero.friends.gostopcalculator.shared.generated.resources.ic_hero_group
 import zero.friends.gostopcalculator.shared.generated.resources.player_list
+import zero.friends.gostopcalculator.shared.generated.resources.prepare_create_round_error
 import zero.friends.gostopcalculator.shared.generated.resources.prepare_highlight_2_to_4
 import zero.friends.gostopcalculator.shared.generated.resources.prepare_participating_badge
 import zero.friends.gostopcalculator.shared.generated.resources.prepare_selected_count_format
@@ -84,14 +82,15 @@ fun PrepareScreen(
     onBack: () -> Unit = {},
     onShowToast: (String) -> Unit = {}
 ) {
-    BackHandler(enabled = true) {
-        onBack()
-    }
     val scaffoldState = rememberScaffoldState()
     val uiState by prepareViewModel.uiState().collectAsState()
     val failOverGamerAlert = stringResource(Res.string.fail_over_gamer)
+    val createRoundErrorAlert = stringResource(Res.string.prepare_create_round_error)
     val scope = rememberCoroutineScope()
-    var isSubmitting by remember { mutableStateOf(false) }
+
+    BackHandler(enabled = !uiState.isSubmitting) {
+        onBack()
+    }
 
     PrepareScreen(
         scaffoldState = scaffoldState,
@@ -99,15 +98,19 @@ fun PrepareScreen(
         event = { event ->
             when (event) {
                 PrepareEvent.Back -> {
-                    onBack()
+                    if (!uiState.isSubmitting) {
+                        onBack()
+                    }
                 }
                 PrepareEvent.Complete -> {
-                    if (!isSubmitting) {
-                        isSubmitting = true
-                        prepareViewModel.createNewRound { roundId ->
-                            onComplete(uiState.game.id, roundId)
+                    prepareViewModel.createNewRound(
+                        onCreate = onComplete,
+                        onError = {
+                            scope.launch {
+                                scaffoldState.snackbarHostState.showSnackbar(createRoundErrorAlert)
+                            }
                         }
-                    }
+                    )
                 }
                 is PrepareEvent.OnClickPlayer -> {
                     prepareViewModel.onClickPlayer(event.isCheck, event.player) {
@@ -138,13 +141,14 @@ private fun PrepareScreen(
                 text = uiState.game.name,
                 onBack = { event(PrepareEvent.Back) },
                 isRed = false,
+                swipeBackEnabled = !uiState.isSubmitting,
             )
         }
     ) { innerPadding ->
         GoStopButtonBackground(
             modifier = Modifier.padding(innerPadding),
             buttonString = stringResource(Res.string.complete),
-            buttonEnabled = uiState.selectedPlayers.size >= 2,
+            buttonEnabled = uiState.selectedPlayers.size >= 2 && !uiState.isSubmitting,
             showGradient = true,
             backgroundColor = ScoreCanvasBg,
             onClick = { event(PrepareEvent.Complete) },
@@ -203,6 +207,7 @@ private fun PrepareScreen(
                         index = index,
                         player = player,
                         isCheck = isCheck,
+                        enabled = !uiState.isSubmitting,
                         onClick = { event(PrepareEvent.OnClickPlayer(player, !isCheck)) }
                     )
                 }
@@ -216,10 +221,12 @@ private fun PlayerPickItem(
     index: Int,
     player: Player,
     isCheck: Boolean,
+    enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
     ScorePlayerCard(
         isHighlighted = isCheck,
+        enabled = enabled,
         onClick = onClick,
         clickRole = Role.Checkbox,
     ) {

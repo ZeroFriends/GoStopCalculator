@@ -26,6 +26,7 @@ data class NativeNavCommand(
     val route: Route,
     val popTarget: NativePopTarget = NativePopTarget.NONE,
     val popInclusive: Boolean = false,
+    val expectedRoute: Route? = null,
 )
 
 data class NativeTopBarConfig(
@@ -91,3 +92,5 @@ fun isBoardMainRoute(route: Route): Boolean = route is Route.Board.Main
 
 fun isSameBoardMainRoute(first: Route, second: Route): Boolean =
     first is Route.Board.Main && second is Route.Board.Main && first.gameId == second.gameId
+
+fun isSameRoute(first: Route, second: Route): Boolean = first == second

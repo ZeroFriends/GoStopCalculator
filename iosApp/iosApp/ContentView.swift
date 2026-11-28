@@ -350,6 +350,18 @@ final class NativeNavigationController: UINavigationController, UINavigationCont
     func handle(_ command: NativeNavCommand) {
         DispatchQueue.main.async {
             let targetRoute = command.route
+            if let expectedRoute = command.expectedRoute {
+                let matchesTop: Bool
+                if let topHostVC = self.topViewController as? NativeHostViewController {
+                    matchesTop = NativeNavigationKt.isSameRoute(first: topHostVC.route, second: expectedRoute)
+                } else {
+                    matchesTop = (self.topViewController === self.rootHostVC) &&
+                        NativeNavigationKt.isHistoryRoute(route: expectedRoute)
+                }
+                if !matchesTop {
+                    return
+                }
+            }
             if NativeNavigationKt.isHistoryRoute(route: targetRoute) {
                 self.popToRootViewController(animated: true)
                 return

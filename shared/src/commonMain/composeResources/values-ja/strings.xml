@@ -441,4 +441,5 @@
     <string name="hwatu_license_url">https://creativecommons.org/licenses/by-sa/4.0/</string>
     <string name="hwatu_license_mod_label">改変内容と適用範囲</string>
     <string name="hwatu_license_mod_value">元のSVG図案を札ごとに分割し、表示用WebP画像へ変換して収録しています。CC BY-SA 4.0は変換された48枚の花札図案リソースにのみ適用され、アプリコードおよび独自作成のボーナス札アイコンとは区別されます。</string>
+    <string name="prepare_create_round_error">ラウンドを作成できませんでした。もう一度お試しください。</string>
 </resources>

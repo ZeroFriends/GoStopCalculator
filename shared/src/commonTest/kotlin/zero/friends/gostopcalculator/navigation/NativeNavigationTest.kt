@@ -53,5 +53,15 @@ class NativeNavigationTest {
         assertTrue(isSameBoardMainRoute(Route.Board.Main(42L), Route.Board.Main(42L)))
         assertFalse(isSameBoardMainRoute(Route.Board.Main(42L), Route.Board.Main(99L)))
         assertFalse(isSameBoardMainRoute(Route.Board.Main(42L), Route.Board.Prepare(42L)))
+
+        assertTrue(isSameRoute(Route.Board.Prepare(42L), Route.Board.Prepare(42L)))
+        assertFalse(isSameRoute(Route.Board.Prepare(42L), Route.Board.Score(42L, 1L)))
+        assertEquals(
+            Route.Board.Prepare(42L),
+            NativeNavCommand(
+                route = Route.Board.Score(42L, 1L),
+                expectedRoute = Route.Board.Prepare(42L),
+            ).expectedRoute,
+        )
     }
 }

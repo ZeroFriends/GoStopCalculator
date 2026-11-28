@@ -156,6 +156,7 @@ fun ScorePlayerCard(
     borderColor: Color = if (isHighlighted) ScorePrimaryRed else ScoreCardBorder,
     borderWidth: Dp = if (isHighlighted) 1.5.dp else 1.dp,
     elevation: Dp = if (isHighlighted) 4.dp else 2.dp,
+    enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
     clickRole: Role = Role.Button,
     content: @Composable () -> Unit,
@@ -173,7 +174,7 @@ fun ScorePlayerCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(shape)
-                    .clickable(role = clickRole, onClick = onClick)
+                    .clickable(enabled = enabled, role = clickRole, onClick = onClick)
             ) {
                 content()
             }

@@ -37,12 +37,6 @@ import zero.friends.gostopcalculator.ui.precondition.RuleScreen
 import zero.friends.gostopcalculator.ui.precondition.RuleViewModel
 import zero.friends.gostopcalculator.ui.splash.SplashScreen
 
-fun NavController.safePopBackStack(onCloseApp: () -> Unit = {}) {
-    if (!popBackStack()) {
-        onCloseApp()
-    }
-}
-
 @Composable
 fun AppNavigator(
     appComponent: AppComponent = remember { createAppComponent() },
@@ -58,20 +52,24 @@ fun AppNavigator(
             onNativeNavigate = onNativeNavigate,
             onNativePop = onNativePop,
         )
-        val navigateRoute: (Route, NativePopTarget, Boolean) -> Unit = { targetRoute, popTarget, inclusive ->
-            navController.navigate(targetRoute) {
-                if (targetRoute is Route.Board.Manual) {
-                    launchSingleTop = true
-                }
-                when (popTarget) {
-                    NativePopTarget.NONE -> Unit
-                    NativePopTarget.HISTORY -> popUpTo<Route.History> { this.inclusive = inclusive }
-                    NativePopTarget.BOARD_MAIN -> popUpTo<Route.Board.Main> { this.inclusive = inclusive }
+        val navigateFromRoute: (Route, Route, NativePopTarget, Boolean) -> Unit = remember(navController) {
+            { expectedRoute, targetRoute, popTarget, inclusive ->
+                navController.navigateFrom(expectedRoute, targetRoute) {
+                    if (targetRoute is Route.Board.Manual) {
+                        launchSingleTop = true
+                    }
+                    when (popTarget) {
+                        NativePopTarget.NONE -> Unit
+                        NativePopTarget.HISTORY -> popUpTo<Route.History> { this.inclusive = inclusive }
+                        NativePopTarget.BOARD_MAIN -> popUpTo<Route.Board.Main> { this.inclusive = inclusive }
+                    }
                 }
             }
         }
-        val popRoute: () -> Unit = {
-            navController.safePopBackStack(onCloseApp)
+        val popFromRoute: (Route) -> Unit = remember(navController, onCloseApp) {
+            { expectedRoute ->
+                navController.popBackStackFrom(expectedRoute, onEmpty = onCloseApp)
+            }
         }
 
         NavHost(
@@ -83,7 +81,7 @@ fun AppNavigator(
 
                 fun tryNavigateToHistory() {
                     if (isCleanUpDone && isSplashAnimDone) {
-                        navController.navigate(Route.History) {
+                        navController.navigateFrom(Route.Splash, Route.History) {
                             popUpTo<Route.Splash> { inclusive = true }
                         }
                     }
@@ -108,13 +106,13 @@ fun AppNavigator(
                 HistoryScreen(
                     viewModel = historyViewModel,
                     onStartGame = {
-                        navController.navigate(Route.Precondition.Player)
+                        navController.navigateFrom(Route.History, Route.Precondition.Player)
                     },
                     onShowRound = { game ->
-                        navController.navigate(Route.Board.Main(game.id))
+                        navController.navigateFrom(Route.History, Route.Board.Main(game.id))
                     },
                     onOpenManual = {
-                        navController.navigate(Route.Board.Manual()) {
+                        navController.navigateFrom(Route.History, Route.Board.Manual()) {
                             launchSingleTop = true
                         }
                     },
@@ -123,96 +121,35 @@ fun AppNavigator(
                 )
             }
 
-            composable<Route.Precondition.Player> { route ->
-                RouteScreenContent(
-                    route = route,
-                    appComponent = appComponent,
-                    onNavigate = navigateRoute,
-                    onBack = popRoute,
-                    onShowAd = onShowAd,
-                )
-            }
-
-            composable<Route.Precondition.Rule> { route ->
-                RouteScreenContent(
-                    route = route,
-                    appComponent = appComponent,
-                    onNavigate = navigateRoute,
-                    onBack = popRoute,
-                    onShowAd = onShowAd,
-                )
-            }
-
-            composable<Route.Board.Main> { route ->
-                RouteScreenContent(
-                    route = route,
-                    appComponent = appComponent,
-                    onNavigate = navigateRoute,
-                    onBack = popRoute,
-                    onShowAd = onShowAd,
-                )
-            }
-
-            composable<Route.Board.Prepare> { route ->
-                RouteScreenContent(
-                    route = route,
-                    appComponent = appComponent,
-                    onNavigate = navigateRoute,
-                    onBack = popRoute,
-                    onShowAd = onShowAd,
-                )
-            }
-
-            composable<Route.Board.Score> { route ->
-                RouteScreenContent(
-                    route = route,
-                    appComponent = appComponent,
-                    onNavigate = navigateRoute,
-                    onBack = popRoute,
-                    onShowAd = onShowAd,
-                )
-            }
-
-            composable<Route.Board.Calculate> { route ->
-                RouteScreenContent(
-                    route = route,
-                    appComponent = appComponent,
-                    onNavigate = navigateRoute,
-                    onBack = popRoute,
-                    onShowAd = onShowAd,
-                )
-            }
-
-            composable<Route.Board.Detail> { route ->
-                RouteScreenContent(
-                    route = route,
-                    appComponent = appComponent,
-                    onNavigate = navigateRoute,
-                    onBack = popRoute,
-                    onShowAd = onShowAd,
-                )
-            }
-
-            composable<Route.Board.RuleLog> { route ->
-                RouteScreenContent(
-                    route = route,
-                    appComponent = appComponent,
-                    onNavigate = navigateRoute,
-                    onBack = popRoute,
-                    onShowAd = onShowAd,
-                )
-            }
-
-            composable<Route.Board.Manual> { route ->
-                RouteScreenContent(
-                    route = route,
-                    appComponent = appComponent,
-                    onNavigate = navigateRoute,
-                    onBack = popRoute,
-                    onShowAd = onShowAd,
-                )
-            }
+            screenComposable<Route.Precondition.Player>(appComponent, navigateFromRoute, popFromRoute, onShowAd)
+            screenComposable<Route.Precondition.Rule>(appComponent, navigateFromRoute, popFromRoute, onShowAd)
+            screenComposable<Route.Board.Main>(appComponent, navigateFromRoute, popFromRoute, onShowAd)
+            screenComposable<Route.Board.Prepare>(appComponent, navigateFromRoute, popFromRoute, onShowAd)
+            screenComposable<Route.Board.Score>(appComponent, navigateFromRoute, popFromRoute, onShowAd)
+            screenComposable<Route.Board.Calculate>(appComponent, navigateFromRoute, popFromRoute, onShowAd)
+            screenComposable<Route.Board.Detail>(appComponent, navigateFromRoute, popFromRoute, onShowAd)
+            screenComposable<Route.Board.RuleLog>(appComponent, navigateFromRoute, popFromRoute, onShowAd)
+            screenComposable<Route.Board.Manual>(appComponent, navigateFromRoute, popFromRoute, onShowAd)
         }
+    }
+}
+
+private inline fun <reified T : Route> NavGraphBuilder.screenComposable(
+    appComponent: AppComponent,
+    noinline navigateFromRoute: (Route, Route, NativePopTarget, Boolean) -> Unit,
+    noinline popFromRoute: (Route) -> Unit,
+    noinline onShowAd: (onCompleted: () -> Unit) -> Unit,
+) {
+    composable<T> { route ->
+        RouteScreenContent(
+            route = route,
+            appComponent = appComponent,
+            onNavigate = { target, popTarget, inclusive ->
+                navigateFromRoute(route, target, popTarget, inclusive)
+            },
+            onBack = { popFromRoute(route) },
+            onShowAd = onShowAd,
+        )
     }
 }
 

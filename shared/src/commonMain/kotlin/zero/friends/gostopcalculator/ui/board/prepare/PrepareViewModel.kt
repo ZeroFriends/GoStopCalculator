@@ -2,6 +2,8 @@ package zero.friends.gostopcalculator.ui.board.prepare
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -17,7 +19,8 @@ import zero.friends.domain.usecase.round.CreateNewRoundUseCase
 data class PrepareUiState(
     val game: Game = Game(),
     val players: List<Player> = emptyList(),
-    val selectedPlayers: List<Player> = emptyList()
+    val selectedPlayers: List<Player> = emptyList(),
+    val isSubmitting: Boolean = false,
 )
 
 class PrepareViewModel @Inject constructor(
@@ -31,40 +34,65 @@ class PrepareViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val game = gameRepository.getGame(gameId)
-            _uiState.update {
-                it.copy(
-                    game = game,
-                    players = playerRepository.getPlayers(gameId = game.id)
-                )
+            try {
+                val game = gameRepository.getGame(gameId)
+                val players = playerRepository.getPlayers(gameId = game.id)
+                _uiState.update {
+                    it.copy(
+                        game = game,
+                        players = players,
+                    )
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                // Keep default empty state if initial load fails cleanly instead of crashing scope.
             }
         }
     }
 
-    fun createNewRound(onCreate: (roundId: Long) -> Unit) {
+    fun createNewRound(
+        onCreate: (gameId: Long, roundId: Long) -> Unit,
+        onError: (Throwable) -> Unit = {},
+    ) {
+        val currentState = _uiState.value
+        if (currentState.isSubmitting || currentState.selectedPlayers.size < 2) return
+
+        _uiState.update { it.copy(isSubmitting = true) }
         viewModelScope.launch {
-            val roundId = createNewRound.invoke(uiState().value.game.id, uiState().value.selectedPlayers)
-            onCreate(roundId)
+            try {
+                val roundId = createNewRound.invoke(currentState.game.id, currentState.selectedPlayers)
+                ensureActive()
+                onCreate(currentState.game.id, roundId)
+            } catch (e: CancellationException) {
+                _uiState.update { it.copy(isSubmitting = false) }
+                throw e
+            } catch (e: Throwable) {
+                _uiState.update { it.copy(isSubmitting = false) }
+                onError(e)
+            }
         }
     }
 
     fun onClickPlayer(check: Boolean, player: Player, overPlayerCount: () -> Unit = {}) {
-        viewModelScope.launch {
-            runCatching {
-                if (check) {
-                    if (uiState().value.selectedPlayers.size < 4) {
-                        _uiState.update {
-                            it.copy(selectedPlayers = it.selectedPlayers + player)
-                        }
-                    } else {
-                        overPlayerCount()
-                    }
+        var reachedPlayerLimit = false
+        _uiState.update { state ->
+            if (state.isSubmitting) return@update state
+            if (check) {
+                if (state.selectedPlayers.any { it.id == player.id }) {
+                    state
+                } else if (state.selectedPlayers.size < 4) {
+                    state.copy(selectedPlayers = state.selectedPlayers + player)
                 } else {
-                    _uiState.update {
-                        it.copy(selectedPlayers = it.selectedPlayers - player)
-                    }
+                    reachedPlayerLimit = true
+                    state
                 }
+            } else {
+                state.copy(selectedPlayers = state.selectedPlayers.filterNot { it.id == player.id })
             }
+        }
+        if (reachedPlayerLimit) {
+            overPlayerCount()
         }
     }
 }

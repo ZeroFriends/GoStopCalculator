@@ -441,4 +441,5 @@
     <string name="hwatu_license_url">https://creativecommons.org/licenses/by-sa/4.0/</string>
     <string name="hwatu_license_mod_label">Modifications &amp; Scope</string>
     <string name="hwatu_license_mod_value">Individual cards were split from the original SVG set and converted to WebP images for display. CC BY-SA 4.0 applies only to the 48 adapted Hwatu card images; the app codebase and custom bonus-Pi artwork are separate works.</string>
+    <string name="prepare_create_round_error">Failed to create round. Please try again.</string>
 </resources>
