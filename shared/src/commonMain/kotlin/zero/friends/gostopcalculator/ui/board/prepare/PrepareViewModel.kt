@@ -21,7 +21,10 @@ data class PrepareUiState(
     val players: List<Player> = emptyList(),
     val selectedPlayers: List<Player> = emptyList(),
     val isSubmitting: Boolean = false,
-)
+) {
+    val canSubmit: Boolean
+        get() = selectedPlayers.size >= 2 && !isSubmitting
+}
 
 class PrepareViewModel @Inject constructor(
     @Assisted private val gameId: Long,
@@ -56,7 +59,7 @@ class PrepareViewModel @Inject constructor(
         onError: (Throwable) -> Unit = {},
     ) {
         val currentState = _uiState.value
-        if (currentState.isSubmitting || currentState.selectedPlayers.size < 2) return
+        if (!currentState.canSubmit) return
 
         _uiState.update { it.copy(isSubmitting = true) }
         viewModelScope.launch {
@@ -67,7 +70,7 @@ class PrepareViewModel @Inject constructor(
             } catch (e: CancellationException) {
                 _uiState.update { it.copy(isSubmitting = false) }
                 throw e
-            } catch (e: Throwable) {
+            } catch (e: Exception) {
                 _uiState.update { it.copy(isSubmitting = false) }
                 onError(e)
             }
@@ -77,6 +80,7 @@ class PrepareViewModel @Inject constructor(
     fun onClickPlayer(check: Boolean, player: Player, overPlayerCount: () -> Unit = {}) {
         var reachedPlayerLimit = false
         _uiState.update { state ->
+            reachedPlayerLimit = false
             if (state.isSubmitting) return@update state
             if (check) {
                 if (state.selectedPlayers.any { it.id == player.id }) {

@@ -110,7 +110,9 @@ final class NativeHostViewController: UIViewController {
                 weakNav?.handle(command)
             },
             onGoBack: {
-                weakNav?.pop()
+                if let vc = weakSelf {
+                    weakNav?.pop(from: vc)
+                }
             },
             onUpdateTopBar: { newConfig in
                 DispatchQueue.main.async {
@@ -319,7 +321,7 @@ final class NativeHostViewController: UIViewController {
         if config.onBack != nil {
             config.invokeBack()
         } else {
-            navController?.pop()
+            navController?.pop(from: self)
         }
     }
 
@@ -416,6 +418,15 @@ final class NativeNavigationController: UINavigationController, UINavigationCont
             if self.viewControllers.count > 1 {
                 self.popViewController(animated: true)
             }
+        }
+    }
+
+    func pop(from expectedVC: UIViewController) {
+        DispatchQueue.main.async {
+            guard self.topViewController === expectedVC, self.viewControllers.count > 1 else {
+                return
+            }
+            self.popViewController(animated: true)
         }
     }
 

@@ -441,5 +441,14 @@
     <string name="hwatu_license_url">https://creativecommons.org/licenses/by-sa/4.0/</string>
     <string name="hwatu_license_mod_label">改変内容と適用範囲</string>
     <string name="hwatu_license_mod_value">元のSVG図案を札ごとに分割し、表示用WebP画像へ変換して収録しています。CC BY-SA 4.0は変換された48枚の花札図案リソースにのみ適用され、アプリコードおよび独自作成のボーナス札アイコンとは区別されます。</string>
+    <string name="network_gate_badge">オフライン状態</string>
+    <string name="network_gate_title">ネットワーク接続が必要です</string>
+    <string name="network_gate_subtitle">現在オフライン状態です。\n快適なご利用のためネットワークに接続してください。</string>
+    <string name="network_gate_check_wifi">Wi-Fiまたはモバイルデータがオンか確認</string>
+    <string name="network_gate_check_airplane">機内モードがオンの場合は解除</string>
+    <string name="network_gate_retry_failed">まだネットワークに接続されていません</string>
+    <string name="network_gate_retry_button">接続を再確認</string>
+    <string name="network_gate_continue_countdown">オフラインで続行 (%1$d秒)</string>
+    <string name="network_gate_continue_button">オフラインで続行</string>
     <string name="prepare_create_round_error">ラウンドを作成できませんでした。もう一度お試しください。</string>
 </resources>

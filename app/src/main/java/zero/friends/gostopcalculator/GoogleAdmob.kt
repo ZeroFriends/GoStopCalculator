@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
+import android.os.SystemClock
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.gms.ads.AdError
@@ -13,7 +14,13 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import me.tatarka.inject.annotations.Inject
 import zero.friends.gostopcalculator.util.log
 import java.lang.ref.WeakReference
@@ -31,6 +38,19 @@ class AdException(
     override val cause: Throwable? = null,
 ) : Throwable(message, cause)
 
+internal fun shouldShowOfflineGate(
+    isDebugBuild: Boolean,
+    isDebugAdEnabled: Boolean,
+    isInCooldown: Boolean,
+    hasReadyAd: Boolean,
+    isNetworkConnected: Boolean,
+): Boolean {
+    if (isDebugBuild && !isDebugAdEnabled) return false
+    if (isInCooldown) return false
+    if (hasReadyAd) return false
+    return !isNetworkConnected
+}
+
 internal fun shouldRecoverStaleAdSession(
     isShowingAd: Boolean,
     trackedHostAlive: Boolean,
@@ -46,10 +66,16 @@ internal fun isActivityEligibleForAd(
     isAtLeastResumed: Boolean,
 ): Boolean = !isFinishing && !isDestroyed && isAtLeastResumed
 
+internal fun isCooldownWindowActive(
+    lastMarkedElapsedMs: Long,
+    nowElapsedMs: Long,
+    cooldownMillis: Long,
+): Boolean = lastMarkedElapsedMs > 0L && (nowElapsedMs - lastMarkedElapsedMs) in 0L until cooldownMillis
+
 @Inject
 class GoogleAdmob(
     private val context: Context,
-    netWorkChecker: NetWorkChecker
+    private val netWorkChecker: NetWorkChecker
 ) {
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         log.e("GoogleAdmob coroutine failed: ${throwable.message}")
@@ -62,9 +88,11 @@ class GoogleAdmob(
     private val maxRetryCount = 3
 
     private var interstitialAd: InterstitialAd? = null
+    private var activeShowingAd: InterstitialAd? = null
     private var isConnect = false
     private var isLoading = false
     private var isShowingAd = false
+    private var activeShowSessionId: Long = 0L
     private var didShowFullScreen = false
     private var adActivityPausedHost = false
     private var showingActivityRef: WeakReference<Activity>? = null
@@ -76,7 +104,7 @@ class GoogleAdmob(
             set(value) {
                 SharedGoogleAdmob.isDebugAdEnabled = value
             }
-        private var lastAdDismissedTime: Long = 0L
+        private var lastAdCooldownMarkedAtElapsedMs: Long = 0L
         private const val AD_COOLDOWN_MILLIS: Long = 10_000L
         private const val AD_SHOW_WATCHDOG_MILLIS: Long = 3_000L
         private const val AD_RESUME_RECOVERY_MILLIS: Long = 500L
@@ -88,12 +116,12 @@ class GoogleAdmob(
         netWorkChecker { connected ->
             isConnect = connected
             if (connected) {
+                retryCount = 0
                 if (interstitialAd == null) {
                     reload()
                 }
             } else {
                 cancelRetry()
-                interstitialAd = null
             }
         }
 
@@ -113,34 +141,80 @@ class GoogleAdmob(
             }
 
             override fun onActivityResumed(activity: Activity) {
-                if (isShowingAd && activity === showingActivityRef?.get() && adActivityPausedHost) {
+                val sessionId = activeShowSessionId
+                if (isShowingAd && activity === showingActivityRef?.get() && adActivityPausedHost && didShowFullScreen) {
                     resumeRecoveryJob?.cancel()
                     resumeRecoveryJob = scope.launch {
                         delay(AD_RESUME_RECOVERY_MILLIS)
                         val host = showingActivityRef?.get()
-                        if (isShowingAd && host != null && isActivityForegroundEligible(host)) {
+                        if (isShowingAd && sessionId == activeShowSessionId && host != null && isActivityForegroundEligible(host)) {
                             log.e("Ad closed without callback after host resumed; recovering ad state.")
-                            completeShowingSession(AdCallback.OnError, reloadAfter = true)
+                            markCooldownNow()
+                            completeShowingSession(
+                                sessionId = sessionId,
+                                result = AdCallback.OnError,
+                                reloadAfter = true,
+                                invokeCallback = true,
+                            )
                         }
                     }
                 }
             }
 
             override fun onActivityDestroyed(activity: Activity) {
-                if (isShowingAd && activity === showingActivityRef?.get() && activity.isFinishing) {
-                    completeShowingSession(AdCallback.OnError, reloadAfter = false)
+                if (isShowingAd && activity === showingActivityRef?.get()) {
+                    completeShowingSession(
+                        sessionId = activeShowSessionId,
+                        result = AdCallback.OnError,
+                        reloadAfter = false,
+                        invokeCallback = false,
+                    )
                 }
             }
         })
     }
+
+    private fun isCooldownActive(): Boolean = isCooldownWindowActive(
+        lastMarkedElapsedMs = lastAdCooldownMarkedAtElapsedMs,
+        nowElapsedMs = SystemClock.elapsedRealtime(),
+        cooldownMillis = AD_COOLDOWN_MILLIS,
+    )
+
+    private fun markCooldownNow() {
+        lastAdCooldownMarkedAtElapsedMs = SystemClock.elapsedRealtime()
+    }
+
+    fun markOfflineGateContinued() {
+        markCooldownNow()
+    }
+
+    fun shouldGateOfflineAd(): Boolean {
+        return shouldShowOfflineGate(
+            isDebugBuild = BuildConfig.DEBUG,
+            isDebugAdEnabled = isDebugAdEnabled,
+            isInCooldown = isCooldownActive(),
+            hasReadyAd = interstitialAd != null,
+            isNetworkConnected = netWorkChecker.isCurrentlyConnected(),
+        )
+    }
+
+    fun isNetworkConnected(): Boolean = netWorkChecker.isCurrentlyConnected()
 
     private fun cancelRetry() {
         retryJob?.cancel()
         retryJob = null
     }
 
+    private fun recordAdExceptionSafely(message: String, cause: Throwable? = null) {
+        runCatching {
+            FirebaseCrashlytics.getInstance().recordException(AdException(message, cause))
+        }
+    }
+
     fun reload() {
-        if (isLoading || interstitialAd != null) return
+        val connected = netWorkChecker.isCurrentlyConnected()
+        isConnect = connected
+        if (isLoading || interstitialAd != null || !connected) return
         isLoading = true
 
         val adUnitId = if (BuildConfig.DEBUG) {
@@ -149,55 +223,80 @@ class GoogleAdmob(
             BuildConfig.AD_UNIT_ID
         }
 
-        InterstitialAd.load(
-            context,
-            adUnitId,
-            AdRequest.Builder().build(),
-            object : InterstitialAdLoadCallback() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    isLoading = false
-                    interstitialAd = null
-                    log.e("onAdFailedToLoad: code=${adError.code}, message=${adError.message}")
-                    FirebaseCrashlytics.getInstance().recordException(
-                        AdException("AD_UNIT_ID = $adUnitId / code : ${adError.code} / ${adError.message}")
-                    )
+        try {
+            InterstitialAd.load(
+                context,
+                adUnitId,
+                AdRequest.Builder().build(),
+                object : InterstitialAdLoadCallback() {
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
+                        isLoading = false
+                        interstitialAd = null
+                        log.e("onAdFailedToLoad: code=${adError.code}, message=${adError.message}")
+                        if (adError.code != AdRequest.ERROR_CODE_NETWORK_ERROR &&
+                            adError.code != AdRequest.ERROR_CODE_NO_FILL
+                        ) {
+                            recordAdExceptionSafely(
+                                "AD_UNIT_ID = $adUnitId / code : ${adError.code} / ${adError.message}"
+                            )
+                        }
 
-                    cancelRetry()
-                    if (retryCount < maxRetryCount) {
-                        retryCount++
-                        retryJob = scope.launch {
-                            delay(5000L)
-                            if (isConnect && interstitialAd == null) {
-                                reload()
+                        cancelRetry()
+                        if (retryCount < maxRetryCount && netWorkChecker.isCurrentlyConnected()) {
+                            retryCount++
+                            retryJob = scope.launch {
+                                delay(5000L)
+                                if (netWorkChecker.isCurrentlyConnected() && interstitialAd == null) {
+                                    reload()
+                                }
                             }
                         }
                     }
-                }
 
-                override fun onAdLoaded(ad: InterstitialAd) {
-                    isLoading = false
-                    retryCount = 0
-                    cancelRetry()
-                    interstitialAd = ad
-                    log.d("onAdLoaded Success")
+                    override fun onAdLoaded(ad: InterstitialAd) {
+                        isLoading = false
+                        retryCount = 0
+                        cancelRetry()
+                        interstitialAd = ad
+                        log.d("onAdLoaded Success")
+                    }
                 }
-            }
-        )
+            )
+        } catch (e: CancellationException) {
+            isLoading = false
+            throw e
+        } catch (e: Exception) {
+            isLoading = false
+            log.e("Exception while requesting interstitial ad load: ${e.message}")
+            recordAdExceptionSafely("Exception while requesting interstitial ad load: ${e.message}", e)
+        }
     }
 
-    private fun completeShowingSession(result: AdCallback, reloadAfter: Boolean) {
+    private fun completeShowingSession(
+        sessionId: Long,
+        result: AdCallback,
+        reloadAfter: Boolean,
+        invokeCallback: Boolean = true,
+    ) {
+        if (!isShowingAd || sessionId != activeShowSessionId) return
+
         showWatchdogJob?.cancel()
         showWatchdogJob = null
         resumeRecoveryJob?.cancel()
         resumeRecoveryJob = null
+        activeShowingAd?.fullScreenContentCallback = null
+        activeShowingAd = null
         isShowingAd = false
         didShowFullScreen = false
         adActivityPausedHost = false
         showingActivityRef = null
         val callback = pendingAdCallback
         pendingAdCallback = null
-        callback?.invoke(result)
-        if (reloadAfter) {
+
+        if (invokeCallback) {
+            callback?.invoke(result)
+        }
+        if (reloadAfter && netWorkChecker.isCurrentlyConnected()) {
             reload()
         }
     }
@@ -225,7 +324,12 @@ class GoogleAdmob(
             )
         ) {
             log.e("Recovering stale isShowingAd session from inactive/destroyed host activity.")
-            completeShowingSession(AdCallback.OnError, reloadAfter = false)
+            completeShowingSession(
+                sessionId = activeShowSessionId,
+                result = AdCallback.OnError,
+                reloadAfter = false,
+                invokeCallback = false,
+            )
         } else if (isShowingAd) {
             log.d("Skipping duplicate showAd call: ad is already showing.")
             return
@@ -239,10 +343,7 @@ class GoogleAdmob(
             return
         }
 
-        val currentTime = System.currentTimeMillis()
-        val elapsedTime = currentTime - lastAdDismissedTime
-
-        if (elapsedTime < AD_COOLDOWN_MILLIS) {
+        if (isCooldownActive()) {
             log.d("Skipping ad: Cooldown active.")
             adCallback(AdCallback.OnSuccess)
             return
@@ -259,7 +360,9 @@ class GoogleAdmob(
                 return
             }
 
+            val sessionId = ++activeShowSessionId
             interstitialAd = null
+            activeShowingAd = currentAd
             isShowingAd = true
             didShowFullScreen = false
             adActivityPausedHost = false
@@ -269,7 +372,12 @@ class GoogleAdmob(
             currentAd.fullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdShowedFullScreenContent() {
                     super.onAdShowedFullScreenContent()
+                    if (!isShowingAd || sessionId != activeShowSessionId) return
                     didShowFullScreen = true
+                    val host = showingActivityRef?.get()
+                    if (host != null && !isActivityForegroundEligible(host)) {
+                        adActivityPausedHost = true
+                    }
                     showWatchdogJob?.cancel()
                     showWatchdogJob = null
                     log.d("onAdShowedFullScreenContent: Ad presented.")
@@ -277,48 +385,76 @@ class GoogleAdmob(
 
                 override fun onAdDismissedFullScreenContent() {
                     super.onAdDismissedFullScreenContent()
+                    if (!isShowingAd || sessionId != activeShowSessionId) return
                     log.d("onAdDismissedFullScreenContent: User closed ad.")
-                    lastAdDismissedTime = System.currentTimeMillis()
-                    completeShowingSession(AdCallback.OnSuccess, reloadAfter = true)
+                    markCooldownNow()
+                    completeShowingSession(
+                        sessionId = sessionId,
+                        result = AdCallback.OnSuccess,
+                        reloadAfter = true,
+                        invokeCallback = true,
+                    )
                 }
 
                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                     super.onAdFailedToShowFullScreenContent(adError)
+                    if (!isShowingAd || sessionId != activeShowSessionId) return
                     log.e("onAdFailedToShow: code=${adError.code}, message=${adError.message}")
-                    FirebaseCrashlytics.getInstance().recordException(
-                        AdException("Failed to show ad: ${adError.message}")
+                    recordAdExceptionSafely("Failed to show ad: ${adError.message}")
+                    completeShowingSession(
+                        sessionId = sessionId,
+                        result = AdCallback.OnError,
+                        reloadAfter = true,
+                        invokeCallback = true,
                     )
-                    completeShowingSession(AdCallback.OnError, reloadAfter = true)
                 }
             }
             showWatchdogJob?.cancel()
             showWatchdogJob = scope.launch {
                 delay(AD_SHOW_WATCHDOG_MILLIS)
-                if (isShowingAd && !didShowFullScreen && !adActivityPausedHost) {
-                    log.e("Ad show watchdog expired without presentation; recovering state.")
-                    completeShowingSession(AdCallback.OnError, reloadAfter = true)
+                if (isShowingAd && sessionId == activeShowSessionId && !didShowFullScreen) {
+                    val host = showingActivityRef?.get()
+                    val hostForeground = host != null && isActivityForegroundEligible(host)
+                    log.e("Ad show watchdog expired without presentation; recovering state (hostForeground=$hostForeground).")
+                    completeShowingSession(
+                        sessionId = sessionId,
+                        result = AdCallback.OnError,
+                        reloadAfter = true,
+                        invokeCallback = hostForeground,
+                    )
                 }
             }
             log.d("Showing ad on ${activity.localClassName}")
             try {
                 currentAd.show(activity)
             } catch (e: CancellationException) {
+                completeShowingSession(
+                    sessionId = sessionId,
+                    result = AdCallback.OnError,
+                    reloadAfter = false,
+                    invokeCallback = false,
+                )
                 throw e
             } catch (e: Exception) {
                 log.e("Exception while showing ad: ${e.message}")
-                FirebaseCrashlytics.getInstance().recordException(
-                    AdException("Exception while showing ad: ${e.message}", e)
+                recordAdExceptionSafely("Exception while showing ad: ${e.message}", e)
+                completeShowingSession(
+                    sessionId = sessionId,
+                    result = AdCallback.OnError,
+                    reloadAfter = true,
+                    invokeCallback = true,
                 )
-                completeShowingSession(AdCallback.OnError, reloadAfter = true)
             }
         } else {
-            log.e("No ad ready to show! isConnect=$isConnect")
-            if (isConnect) {
+            val connected = netWorkChecker.isCurrentlyConnected()
+            isConnect = connected
+            log.e("No ad ready to show! isConnect=$connected")
+            if (connected) {
                 adCallback(AdCallback.OnError)
+                reload()
             } else {
                 adCallback(AdCallback.LostNetwork)
             }
-            reload()
         }
     }
 }

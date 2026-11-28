@@ -36,11 +36,15 @@ class MainActivity : ComponentActivity() {
         val app = application as? GoStopApplication
         val appContext = applicationContext
         lifecycleScope.launch(Dispatchers.IO) {
-            MobileAds.initialize(appContext) { status ->
-                log.d("MobileAds.initialize completed. status=$status")
-                lifecycleScope.launch(Dispatchers.Main) {
-                    app?.androidAppComponent?.googleAdmob?.reload()
+            runCatching {
+                MobileAds.initialize(appContext) { status ->
+                    log.d("MobileAds.initialize completed. status=$status")
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        app?.androidAppComponent?.googleAdmob?.reload()
+                    }
                 }
+            }.onFailure { error ->
+                log.e("MobileAds.initialize failed: ${error.message}")
             }
         }
 
@@ -58,18 +62,38 @@ class MainActivity : ComponentActivity() {
                         onCompleted()
                     }
                 }
+                val shouldGateOfflineAd: () -> Boolean = {
+                    app?.androidAppComponent?.googleAdmob?.shouldGateOfflineAd() == true
+                }
+                val onRetryNetwork: () -> Boolean = {
+                    val admob = app?.androidAppComponent?.googleAdmob
+                    val connected = admob?.isNetworkConnected() ?: true
+                    if (connected) {
+                        admob?.reload()
+                    }
+                    connected
+                }
+                val onContinueOffline: () -> Unit = {
+                    app?.androidAppComponent?.googleAdmob?.markOfflineGateContinued()
+                }
                 if (appComponent != null) {
                     AppNavigator(
                         appComponent = appComponent,
                         showDebugAdToggle = BuildConfig.DEBUG,
                         onCloseApp = { finish() },
                         onShowAd = showAd,
+                        shouldGateOfflineAd = shouldGateOfflineAd,
+                        onRetryNetwork = onRetryNetwork,
+                        onContinueOffline = onContinueOffline,
                     )
                 } else {
                     AppNavigator(
                         showDebugAdToggle = BuildConfig.DEBUG,
                         onCloseApp = { finish() },
                         onShowAd = showAd,
+                        shouldGateOfflineAd = shouldGateOfflineAd,
+                        onRetryNetwork = onRetryNetwork,
+                        onContinueOffline = onContinueOffline,
                     )
                 }
             }

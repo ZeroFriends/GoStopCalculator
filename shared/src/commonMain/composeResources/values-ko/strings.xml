@@ -441,5 +441,14 @@
     <string name="hwatu_license_url">https://creativecommons.org/licenses/by-sa/4.0/</string>
     <string name="hwatu_license_mod_label">변경 내역 및 적용 범위</string>
     <string name="hwatu_license_mod_value">원본 SVG 도안을 개별 패 단위로 분할한 뒤 앱 표시용 WebP 이미지로 변환해 수록했습니다. CC BY-SA 4.0 라이선스는 변환된 48장 화투 도안 리소스에 적용되며, 앱 소스 코드 및 별도 제작된 보너스피 도안은 해당 리소스와 구분됩니다.</string>
+    <string name="network_gate_badge">오프라인 상태</string>
+    <string name="network_gate_title">네트워크 연결이 필요합니다</string>
+    <string name="network_gate_subtitle">현재 오프라인 상태입니다.\n원활한 서비스 이용을 위해 네트워크를 연결해 주세요.</string>
+    <string name="network_gate_check_wifi">Wi-Fi 또는 모바일 데이터 켜짐 확인</string>
+    <string name="network_gate_check_airplane">비행기 탑승 모드가 켜져 있다면 해제</string>
+    <string name="network_gate_retry_failed">아직 네트워크에 연결되지 않았습니다</string>
+    <string name="network_gate_retry_button">연결 다시 확인</string>
+    <string name="network_gate_continue_countdown">오프라인으로 계속 보기 (%1$d초)</string>
+    <string name="network_gate_continue_button">오프라인으로 계속 보기</string>
     <string name="prepare_create_round_error">라운드를 생성하지 못했습니다. 다시 시도해 주세요.</string>
 </resources>

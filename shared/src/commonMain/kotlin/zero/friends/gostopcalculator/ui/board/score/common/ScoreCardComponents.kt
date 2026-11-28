@@ -39,6 +39,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.toggleableState
+import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -159,6 +162,7 @@ fun ScorePlayerCard(
     enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
     clickRole: Role = Role.Button,
+    toggleableState: ToggleableState? = null,
     content: @Composable () -> Unit,
 ) {
     val shape = RoundedCornerShape(16.dp)
@@ -175,6 +179,9 @@ fun ScorePlayerCard(
                     .fillMaxWidth()
                     .clip(shape)
                     .clickable(enabled = enabled, role = clickRole, onClick = onClick)
+                    .semantics {
+                        toggleableState?.let { this.toggleableState = it }
+                    }
             ) {
                 content()
             }
