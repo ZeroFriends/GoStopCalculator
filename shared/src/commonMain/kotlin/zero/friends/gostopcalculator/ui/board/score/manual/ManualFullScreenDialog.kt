@@ -301,7 +301,8 @@ fun ManualScreen(
                     .weight(1f)
                     .fillMaxWidth()
                     .background(color = ScoreCanvasBg),
-                state = pagerState
+                state = pagerState,
+                beyondViewportPageCount = 1,
             ) { page ->
                 when (ManualTab.fromIndex(page)) {
                     ManualTab.GameFlow -> GameFlowTab(
@@ -879,7 +880,11 @@ private fun CardScoresTab() {
             }
         }
         item(key = "pi_full", contentType = "score_combo_full") {
-            ScoreComboCard(spec = HwatuDeck.piScoreCombo, modifier = Modifier.fillMaxWidth())
+            ScoreComboCard(
+                spec = HwatuDeck.piScoreCombo,
+                modifier = Modifier.fillMaxWidth(),
+                compactCards = false,
+            )
         }
         item(key = "scores_credit", contentType = "credit_footer") {
             HwatuCreditFooter()
@@ -891,6 +896,7 @@ private fun CardScoresTab() {
 private fun ScoreComboCard(
     spec: ScoreComboCardSpec,
     modifier: Modifier = Modifier,
+    compactCards: Boolean = spec.cards.size >= 5,
 ) {
     ManualCard(modifier = modifier) {
         Box(
@@ -901,12 +907,15 @@ private fun ScoreComboCard(
                 .padding(vertical = 8.dp, horizontal = 6.dp),
             contentAlignment = Alignment.Center,
         ) {
-            val isFiveOrMore = spec.cards.size >= 5
-            val cardWidth = if (isFiveOrMore) 28.dp else 34.dp
-            val effectiveOverlap = if (isFiveOrMore) maxOf(spec.overlapDp, 13) else spec.overlapDp
+            val cardWidth = if (compactCards) 28.dp else 34.dp
+            val cardHeight = if (compactCards) 46.dp else 56.dp
+            val effectiveOverlap = if (compactCards) maxOf(spec.overlapDp, 13) else spec.overlapDp
             val step = cardWidth - effectiveOverlap.dp
             Box(
-                modifier = Modifier.width(cardWidth + step * (spec.cards.size - 1)),
+                modifier = Modifier.size(
+                    width = cardWidth + step * (spec.cards.size - 1),
+                    height = cardHeight,
+                ),
                 contentAlignment = Alignment.CenterStart,
             ) {
                 spec.cards.forEachIndexed { index, drawableRes ->
@@ -916,8 +925,7 @@ private fun ScoreComboCard(
                         contentScale = ContentScale.FillBounds,
                         modifier = Modifier
                             .offset(x = step * index)
-                            .width(cardWidth)
-                            .aspectRatio(103f / 168f)
+                            .size(width = cardWidth, height = cardHeight)
                             .clip(RoundedCornerShape(4.dp))
                             .border(0.5.dp, ScoreBorderNeutral, RoundedCornerShape(4.dp))
                     )
